@@ -1,6 +1,6 @@
-# OneClickAdventures - Junior Developer Onboarding Guide
+# Ergos Continental - Junior Developer Onboarding Guide
 
-Welcome to the OneClickAdventures team. This guide will walk you from zero to productive. Take your time, follow the order, and do not hesitate to ask questions -- that is what the team is here for.
+Welcome to the Ergos Continental team. This guide will walk you from zero to productive. Take your time, follow the order, and do not hesitate to ask questions -- that is what the team is here for.
 
 ---
 
@@ -22,9 +22,9 @@ Welcome to the OneClickAdventures team. This guide will walk you from zero to pr
 
 ## 1. Welcome and Platform Overview
 
-### What is OneClickAdventures?
+### What is Ergos Continental?
 
-OneClickAdventures is a **hotel booking platform built for travel agencies**. Think of it as a tool that lets travel agencies search across multiple hotel providers at once, compare prices, book rooms for their customers, and manage everything from a single dashboard.
+Ergos Continental is a **hotel booking platform built for travel agencies**. Think of it as a tool that lets travel agencies search across multiple hotel providers at once, compare prices, book rooms for their customers, and manage everything from a single dashboard.
 
 On the other side, our internal team uses a backoffice dashboard to manage agencies, configure hotel providers, track commissions, and monitor the platform.
 
@@ -378,21 +378,22 @@ This is a structured 4-week learning path. You do not need to memorize everythin
 |---|---|---|
 | 1 | This onboarding guide (you are here) | Overall structure, how to run things locally |
 | 2 | [ARCHITECTURE.md](ARCHITECTURE.md) - Sections 1-2 | C4 Context and Container diagrams -- understand what talks to what |
-| 3 | Each repo's `README.md` | Setup instructions, available scripts, project-specific notes |
+| 3 | Each repo's README — [`backend-service`](../../../backend-service/README.md), [`agency-app`](../../../agency-app/README.md), [`backoffice-app`](../../../backoffice-app/README.md) | Setup instructions, available scripts, project-specific notes |
 | 4 | Spend time understanding the domain | What is hotel booking? What are GDS providers? How do travel agencies work? |
 
-**Goal for Week 1:** You can explain what OneClickAdventures does, name the 4 repos and their purposes, and run the project locally.
+**Goal for Week 1:** You can explain what Ergos Continental does, name the 4 repos and their purposes, and run the project locally.
 
 ### Week 2: Understand the Backend
 
 | Order | What to Read | Focus On |
 |---|---|---|
-| 1 | `backend-service/docs/ARCHITECTURE.md` | Internal backend architecture |
-| 2 | `backend-service/docs/VENDOR_ARCHITECTURE.md` | How GDS adapters work |
-| 3 | `backend-service/src/domains/*/routes/` | API endpoints -- read each domain's route file |
-| 4 | `backend-service/src/domains/*/models/` | Mongoose schemas -- understand the data model per domain |
-| 5 | `backend-service/src/shared/adapters/` | GDS adapter implementations -- adapter pattern in action |
-| 6 | [ARCHITECTURE.md](ARCHITECTURE.md) - Sections 3, 5 | Sequence diagrams and data architecture |
+| 1 | [`backend-service/docs/DEVELOPMENT_GUIDE.md`](../../../backend-service/docs/DEVELOPMENT_GUIDE.md) | Day-to-day workflow, adding endpoints, testing, available scripts |
+| 2 | `backend-service/docs/ARCHITECTURE.md` | Internal backend architecture |
+| 3 | `backend-service/docs/VENDOR_ARCHITECTURE.md` | How GDS adapters work |
+| 4 | `backend-service/src/domains/*/routes/` | API endpoints -- read each domain's route file |
+| 5 | `backend-service/src/domains/*/models/` | Mongoose schemas -- understand the data model per domain |
+| 6 | `backend-service/src/shared/adapters/` | GDS adapter implementations -- adapter pattern in action |
+| 7 | [ARCHITECTURE.md](ARCHITECTURE.md) - Sections 3, 5 | Sequence diagrams and data architecture |
 
 **Goal for Week 2:** You can trace a request from an API endpoint through to the database. You understand the adapter pattern and can explain how hotel data flows from GDS providers into MongoDB.
 
@@ -400,12 +401,13 @@ This is a structured 4-week learning path. You do not need to memorize everythin
 
 | Order | What to Read | Focus On |
 |---|---|---|
-| 1 | `agency-app/src/routers/index.tsx` | All routes and page structure |
-| 2 | `agency-app/src/api/` | How the frontend calls the backend (Axios setup, interceptors) |
-| 3 | `agency-app/src/store/` or Redux slices | Redux Toolkit state management |
-| 4 | `backoffice-app/src/modules/` | Module-based organization |
-| 5 | `backoffice-app` role-based routing | How `getRoutesByRole()` works |
-| 6 | Play with both apps in the browser | Click through every page, watch Network tab |
+| 1 | [`agency-app/README.md`](../../../agency-app/README.md) | Project structure, Makefile orchestrator, available scripts, environment modes |
+| 2 | `agency-app/src/routers/index.tsx` | All routes and page structure |
+| 3 | `agency-app/src/api/` | How the frontend calls the backend (Axios setup, interceptors) |
+| 4 | `agency-app/src/store/` or Redux slices | Redux Toolkit state management |
+| 5 | `backoffice-app/src/modules/` | Module-based organization |
+| 6 | `backoffice-app` role-based routing | How `getRoutesByRole()` works |
+| 7 | Play with both apps in the browser | Click through every page, watch Network tab |
 
 **Goal for Week 3:** You can navigate both frontend codebases. You know where to add a new page, how the API layer works, and how state management is structured.
 
@@ -429,7 +431,7 @@ These are the concepts you will encounter repeatedly. You do not need to master 
 
 ### GDS (Global Distribution System) and Hotel Providers
 
-A GDS is a network that enables travel agencies to access hotel inventory and make reservations. OneClickAdventures integrates with multiple GDS providers, each with its own API:
+A GDS is a network that enables travel agencies to access hotel inventory and make reservations. Ergos Continental integrates with multiple GDS providers, each with its own API:
 
 - **Dingus** (SOAP/XML) - Covers vendors: dingus, archipelago, roxa, melia
 - **Hotetec** (REST/JSON) - Covers vendors: hotetec, rocu, bdmd
@@ -966,8 +968,8 @@ _Fill in the names above once you have been introduced to the team._
 
 ### Communication Channels
 
-- **Slack**: _#oneclickadventures-dev_ (main dev channel)
-- **Slack**: _#oneclickadventures-alerts_ (production alerts)
+- **Slack**: _#ergos-continental-dev_ (main dev channel)
+- **Slack**: _#ergos-continental-alerts_ (production alerts)
 - **GitHub**: Use PR comments for code-specific discussions
 - **Meetings**: _[Add recurring meeting schedule]_
 
