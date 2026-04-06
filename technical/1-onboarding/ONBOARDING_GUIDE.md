@@ -12,10 +12,11 @@ Welcome to the OneClickAdventures team. This guide will walk you from zero to pr
 4. [Running the Project Locally](#4-running-the-project-locally)
 5. [Documentation Reading Order (Learning Path)](#5-documentation-reading-order-learning-path)
 6. [Key Concepts to Understand](#6-key-concepts-to-understand)
-7. [Common Development Tasks](#7-common-development-tasks)
-8. [Useful Commands Cheatsheet](#8-useful-commands-cheatsheet)
-9. [Who to Ask for Help](#9-who-to-ask-for-help)
-10. [Glossary](#10-glossary)
+7. [Code Quality Standards](#7-code-quality-standards) — Commit messages, changelog, pre-commit hooks, testing
+8. [Common Development Tasks](#8-common-development-tasks)
+9. [Useful Commands Cheatsheet](#9-useful-commands-cheatsheet)
+10. [Who to Ask for Help](#10-who-to-ask-for-help)
+11. [Glossary](#11-glossary)
 
 ---
 
@@ -153,7 +154,9 @@ git clone git@github.com:<org>/backend-service.git
 git clone git@github.com:<org>/alibaba-infra.git
 ```
 
-Replace `<org>` with the actual GitHub organization name. After cloning, your directory should look like:
+> **Note:** Replace `<org>` with the actual GitHub organization name provided by your team lead.
+
+After cloning, your directory should look like:
 
 ```
 ~/projects/oneclickadventures/
@@ -169,19 +172,19 @@ Replace `<org>` with the actual GitHub organization name. After cloning, your di
 
 ### Option A: One-Command Setup (Recommended)
 
-We provide a **Makefile** at the root of the `oneclickadventures` directory that automates everything. This is the fastest way to get running.
+The **agency-app** repo contains the orchestrator Makefile that manages all three services from a single location. This is the fastest way to get running.
 
 #### First-time setup
 
 ```bash
-cd ~/projects/oneclickadventures
+cd ~/projects/oneclickadventures/agency-app
 
 # Install all tools, npm dependencies, and generate .env files
 make setup
 ```
 
 This will:
-1. Check/install system tools (Homebrew, Node.js 22, Docker, Git, jq)
+1. Check/install system tools (Homebrew, Bun, Node.js, Docker, Git, jq)
 2. Run `bun install` in all 3 app repos
 3. Generate `.env` files with the correct local defaults
 
@@ -386,9 +389,9 @@ This is a structured 4-week learning path. You do not need to memorize everythin
 |---|---|---|
 | 1 | `backend-service/docs/ARCHITECTURE.md` | Internal backend architecture |
 | 2 | `backend-service/docs/VENDOR_ARCHITECTURE.md` | How GDS adapters work |
-| 3 | `backend-service/src/routes/` | All API endpoints -- read each route file |
-| 4 | `backend-service/src/models/` | Mongoose schemas -- understand the data model |
-| 5 | `backend-service/src/adapters/` | GDS integration code -- adapter pattern in action |
+| 3 | `backend-service/src/domains/*/routes/` | API endpoints -- read each domain's route file |
+| 4 | `backend-service/src/domains/*/models/` | Mongoose schemas -- understand the data model per domain |
+| 5 | `backend-service/src/shared/adapters/` | GDS adapter implementations -- adapter pattern in action |
 | 6 | [ARCHITECTURE.md](ARCHITECTURE.md) - Sections 3, 5 | Sequence diagrams and data architecture |
 
 **Goal for Week 2:** You can trace a request from an API endpoint through to the database. You understand the adapter pattern and can explain how hotel data flows from GDS providers into MongoDB.
@@ -494,7 +497,275 @@ Every code change follows this pipeline:
 
 ---
 
-## 7. Common Development Tasks
+## 7. Code Quality Standards
+
+This section explains the automated quality gates enforced across all repositories: commit message format, changelog generation, and testing conventions.
+
+### Conventional Commits
+
+All repositories enforce the [Conventional Commits](https://www.conventionalcommits.org/) format via **commitlint** (configured in `commitlint.config.ts`, enforced by the `.hooks/commit-msg` git hook). Every commit message must follow this structure:
+
+```
+<type>(<scope>): <description>
+
+[optional body]
+
+[optional footer(s)]
+```
+
+#### Allowed Types
+
+| Type | When to Use | Example |
+|------|-------------|---------|
+| `feat` | A new feature or user-facing functionality | `feat: add hotel filter by star rating` |
+| `fix` | A bug fix | `fix: correct price rounding on checkout` |
+| `docs` | Documentation-only changes | `docs: add API endpoint reference for bookings` |
+| `style` | Formatting, whitespace, semicolons (no logic change) | `style: fix indentation in hotel service` |
+| `refactor` | Code restructuring without changing behavior | `refactor: extract guest validation into shared util` |
+| `perf` | Performance improvement | `perf: cache GDS search results in Redis` |
+| `test` | Adding or updating tests | `test: add unit tests for cancellation schema` |
+| `build` | Build system or dependency changes | `build: upgrade Mantine to v8.2` |
+| `ci` | CI/CD pipeline changes | `ci: add coverage report to GitHub Actions` |
+| `chore` | Maintenance tasks, tooling, configs | `chore: bump actions/checkout to v4` |
+| `revert` | Reverting a previous commit | `revert: revert feat: add hotel filter` |
+
+#### Scope (Optional)
+
+The scope provides extra context about what area of the codebase is affected. It goes in parentheses after the type:
+
+```bash
+feat(search): add destination autocomplete
+fix(booking): handle empty guest list gracefully
+refactor(adapters): simplify Dingus XML parser
+ci(changelog): add auto-generation workflow
+```
+
+Common scopes: `search`, `booking`, `auth`, `adapters`, `swagger`, `redux`, `ui`, `api`.
+
+#### Rules
+
+- **Subject line must not be empty** and should be lowercase
+- **Type must not be empty** and must be one of the allowed types above
+- **No period at the end** of the subject line
+- **Use imperative mood** in the description ("add" not "added", "fix" not "fixes")
+
+#### What Happens When You Commit
+
+```
+$ git commit -m "added new feature"
+⧗   input: added new feature
+✖   subject may not be empty [subject-empty]
+✖   type may not be empty [type-empty]
+✖   found 2 problems, 0 warnings
+
+$ git commit -m "feat: add hotel star rating filter"
+✔   All good!
+```
+
+#### Breaking Changes
+
+For commits that introduce breaking changes, add `!` after the type or use a `BREAKING CHANGE:` footer:
+
+```bash
+feat!: redesign booking API response structure
+
+# or
+
+feat: redesign booking API response structure
+
+BREAKING CHANGE: booking response now returns rooms as nested objects instead of flat array
+```
+
+---
+
+### Changelog
+
+Both `backend-service` and `agency-app` use [changelogen](https://github.com/unjs/changelogen) to auto-generate a `CHANGELOG.md` from conventional commit history.
+
+#### Manual Commands
+
+```bash
+# Preview what the changelog would look like (dry run, no file changes)
+bun run changelog:preview
+
+# Generate/update CHANGELOG.md
+bun run changelog
+
+# Bump version in package.json + update CHANGELOG.md + create a git tag
+bun run release
+```
+
+#### Automatic Generation (CI/CD)
+
+A GitHub Actions workflow (`.github/workflows/changelog.yml`) runs automatically when a PR is merged to `master`:
+
+1. Checks out the repo with full git history
+2. Runs `bun run changelog` to regenerate `CHANGELOG.md`
+3. Commits the updated file back to `master` with the message `docs: update changelog [skip ci]`
+
+The `[skip ci]` tag prevents the commit from triggering the workflow again (avoiding infinite loops).
+
+#### How Commits Map to Changelog Sections
+
+| Commit Type | Changelog Section |
+|-------------|-------------------|
+| `feat` | 🚀 Enhancements |
+| `fix` | 🩹 Fixes |
+| `perf` | 🔥 Performance |
+| `refactor` | 💅 Refactors |
+| `docs` | 📖 Documentation |
+| `build` | 📦 Build |
+| `test` | ✅ Tests |
+| `style` | 🎨 Styles |
+| `ci` | 🤖 CI |
+| `chore` | 🏡 Chore |
+
+Commits with non-conventional messages are ignored by changelogen and will not appear in the changelog.
+
+---
+
+### Pre-commit Hooks
+
+Both repos have a `.hooks/pre-commit` script that runs automatically before every commit. Git is configured to use this directory via the `prepare` script (`git config core.hooksPath .hooks`), which runs on `bun install`.
+
+#### backend-service Pre-commit
+
+Runs three steps sequentially — if any step fails, the commit is aborted:
+
+1. **Format** — Runs Prettier on all staged `.ts`/`.tsx` files and re-stages them
+2. **Type-check** — Runs `tsc --noEmit` to catch TypeScript errors across the entire project
+3. **Unit tests** — Runs every `*.test.ts` file individually via `bun test`
+
+#### agency-app Pre-commit
+
+Same structure, three steps:
+
+1. **Format** — Runs Prettier on all staged `.ts`/`.tsx` files and re-stages them
+2. **Lint** — Runs ESLint with `--fix` on staged files and re-stages them
+3. **Unit tests** — Runs `bun test` (all test files)
+
+---
+
+### Testing Conventions
+
+All tests use the **bun:test** runner (built into Bun). The syntax is identical to Jest: `describe`, `it`, `expect`.
+
+#### Unit Tests
+
+Unit tests live alongside the code they test, inside `__tests__/` directories:
+
+```
+src/domains/booking/
+  __tests__/
+    booking.schema.test.ts     ← tests for the Zod schema
+    booking.dto.test.ts        ← tests for the DTO
+  schemas/
+    booking.schema.ts
+  booking.dto.ts
+```
+
+**File naming**: `<module-name>.test.ts` (always `.test.ts` suffix).
+
+**Test structure**:
+
+```ts
+import { describe, it, expect } from "bun:test"
+
+describe("FunctionOrModuleName", () => {
+  it("should do something specific", () => {
+    const result = myFunction(input)
+    expect(result).toBe(expectedOutput)
+  })
+
+  it("should handle edge case", () => {
+    expect(() => myFunction(badInput)).toThrow()
+  })
+})
+```
+
+**What to test in unit tests**:
+- Pure functions and utilities (date calculations, formatting, parsing)
+- Zod schema validation (valid input accepted, invalid input rejected)
+- Redux reducers and selectors (state transitions)
+- Business logic (guest builders, price calculations, occupancy codes)
+
+**What NOT to test in unit tests**:
+- API calls (mock them or use integration tests)
+- React component rendering (use E2E tests for UI)
+- Database interactions (use integration tests)
+
+#### Running Unit Tests
+
+```bash
+# All unit tests
+bun test
+
+# Specific file
+bun test src/domains/booking/__tests__/booking.schema.test.ts
+
+# With coverage report
+bun test --coverage
+
+# Watch mode (re-runs on file changes)
+bun test --watch
+```
+
+#### Integration Tests (backend-service Only)
+
+Integration tests verify real communication with external GDS providers (Dingus, Hotetec, Roibos). They live in a dedicated directory:
+
+```
+src/domains/hotel/__tests__/integration/
+  run-all-tests.ts          ← orchestrator that runs all vendor tests
+  dingus/
+    test-basic.ts           ← basic Dingus API connectivity
+    test-e2e.ts             ← full search → book → cancel flow
+    test-cancellation.ts
+    test-modification.ts
+  hotetec/
+    test-integration.ts
+    test-e2e.ts
+    test-cancellation.ts
+  roibos/
+    test-integration.ts
+    test-e2e.ts
+```
+
+**File naming**: `test-<description>.ts` (no `.test.ts` suffix — these are NOT picked up by `bun test`).
+
+**Running integration tests**:
+
+```bash
+# All vendors
+bun run test:integration
+
+# Specific vendor
+bun run test:hotetec
+```
+
+Integration tests require valid GDS credentials in `.env` and make real API calls to external services. They are **not** part of the pre-commit hook or CI pipeline — run them manually when testing GDS adapter changes.
+
+#### E2E Tests (agency-app Only)
+
+End-to-end tests use Cypress and are configured in `.github/workflows/cypress-e2e.yml`. These run in CI against a real browser.
+
+---
+
+### Summary Table
+
+| Tool | Purpose | Triggered By |
+|------|---------|--------------|
+| **commitlint** | Validates commit message format | `.hooks/commit-msg` (every commit) |
+| **Prettier** | Code formatting | `.hooks/pre-commit` (every commit) |
+| **ESLint** | Linting (agency-app) | `.hooks/pre-commit` (every commit) |
+| **tsc --noEmit** | Type-checking (backend-service) | `.hooks/pre-commit` (every commit) |
+| **bun test** | Unit tests | `.hooks/pre-commit` (every commit) |
+| **changelogen** | Changelog generation | CI on merge to master + manual via `bun run changelog` |
+| **Cypress** | E2E browser tests (agency-app) | CI workflow |
+
+---
+
+## 8. Common Development Tasks
 
 ### How to Add a New API Endpoint
 
@@ -533,20 +804,15 @@ routes/myFeature.routes.ts
 
 ### How to Run Tests
 
-```bash
-# Backend
-cd ~/projects/oneclickadventures/backend-service
-bun run test           # Run all tests
-bun run test:watch # Run tests in watch mode
+See [Section 7 — Testing Conventions](#testing-conventions) for commands and conventions.
 
-# Agency App
-cd ~/projects/oneclickadventures/agency-app
-bun run test
+**Quick reference** — run `bun test` from within each repo:
 
-# Backoffice App
-cd ~/projects/oneclickadventures/backoffice-app
-bun run test
-```
+| Repo | Directory |
+|------|-----------|
+| Backend | `cd ~/projects/oneclickadventures/backend-service` |
+| Agency App | `cd ~/projects/oneclickadventures/agency-app` |
+| Backoffice App | `cd ~/projects/oneclickadventures/backoffice-app` |
 
 ### How to Deploy Changes
 
@@ -572,7 +838,7 @@ kubectl logs -f deployment/<app-name> -n applications
 
 ---
 
-## 8. Useful Commands Cheatsheet
+## 9. Useful Commands Cheatsheet
 
 ### Git Workflow
 
@@ -681,7 +947,9 @@ open http://localhost:3001/admin/queues
 
 ---
 
-## 9. Who to Ask for Help
+## 10. Who to Ask for Help
+
+> **Action Required:** Before distributing this guide, replace all _[Name]_ placeholders below with actual team member names.
 
 ### Team Contacts
 
@@ -713,7 +981,7 @@ _Fill in the names above once you have been introduced to the team._
 
 ---
 
-## 10. Glossary
+## 11. Glossary
 
 | Term | Definition |
 |---|---|
