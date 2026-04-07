@@ -1,0 +1,2072 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ergos Continental — Financial Projections & Investor Overview</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+:root {
+  --navy: #0f0f3d; --navy-mid: #1a1a4e; --navy-light: #2e2e6e;
+  --teal: #0fa89b; --teal-bright: #11c4b5; --teal-dark: #0d8a7f;
+  --cream: #fdf6ec; --cream-dark: #f0e0c8;
+  --red: #d32f2f; --red-light: #ffebee;
+  --green: #1b8a42; --green-light: #e8f5e9;
+  --orange: #e67e00; --orange-light: #fff3e0;
+  --blue: #1565c0; --blue-light: #e3f2fd;
+  --purple: #6a1b9a; --purple-light: #f3e5f5;
+  --text-primary: #1a1a2e; --text-secondary: #3d3d5c;
+  --text-muted: #5c5c7a; --text-light: #7a7a96;
+  --border: #d0d0e0; --border-light: #e8e8f0;
+  --bg-white: #ffffff; --bg-gray: #f5f5fa;
+  --shadow-sm: 0 1px 4px rgba(15,15,61,0.06);
+  --shadow: 0 2px 12px rgba(15,15,61,0.08);
+  --shadow-lg: 0 8px 32px rgba(15,15,61,0.12);
+  --radius: 10px; --radius-lg: 14px;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'DM Sans', sans-serif; background: var(--bg-gray);
+  color: var(--text-primary); min-height: 100vh; line-height: 1.6; font-size: 15px;
+}
+.app-header {
+  background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 100%);
+  color: white; padding: 18px 32px; display: flex; align-items: center;
+  justify-content: space-between; position: sticky; top: 0; z-index: 200;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.2);
+}
+.app-header h1 { font-family: 'DM Serif Display', serif; font-size: 22px; font-weight: 400; letter-spacing: 0.3px; }
+.app-header .subtitle { font-size: 12px; opacity: 0.8; margin-top: 2px; font-weight: 500; }
+.header-right { display: flex; align-items: center; gap: 16px; }
+.lang-btns { display: flex; gap: 4px; }
+.lang-btn {
+  padding: 5px 11px; border-radius: 14px; border: 1.5px solid rgba(255,255,255,0.35);
+  background: transparent; color: rgba(255,255,255,0.9); font-family: 'DM Sans', sans-serif;
+  font-size: 11px; font-weight: 700; cursor: pointer; transition: all 0.2s; letter-spacing: 0.3px;
+}
+.lang-btn:hover { background: rgba(255,255,255,0.12); color: #fff; }
+.lang-btn.active { background: #fff; color: var(--navy); border-color: #fff; }
+.nav-tabs {
+  background: var(--bg-white); border-bottom: 2px solid var(--border); display: flex;
+  padding: 0 32px; position: sticky; top: 62px; z-index: 190; overflow-x: auto;
+}
+.nav-tab {
+  padding: 14px 22px; font-size: 13px; font-weight: 600; color: var(--text-muted);
+  cursor: pointer; border-bottom: 3px solid transparent; margin-bottom: -2px;
+  white-space: nowrap; transition: all 0.2s; background: none;
+  border-top: none; border-left: none; border-right: none; font-family: 'DM Sans', sans-serif;
+}
+.nav-tab:hover { color: var(--text-primary); background: var(--bg-gray); }
+.nav-tab.active { color: var(--teal-dark); border-bottom-color: var(--teal); }
+.nav-tab .tab-num {
+  display: inline-block; width: 22px; height: 22px; line-height: 22px; text-align: center;
+  border-radius: 50%; background: var(--border-light); color: var(--text-muted);
+  font-size: 11px; font-weight: 700; margin-right: 6px;
+}
+.nav-tab.active .tab-num { background: var(--teal); color: #fff; }
+.section { display: none; padding: 32px; max-width: 1300px; margin: 0 auto; }
+.section.active { display: block; }
+.bp-card {
+  background: var(--bg-white); border-radius: var(--radius-lg); padding: 28px 32px;
+  margin-bottom: 24px; box-shadow: var(--shadow); border: 1px solid var(--border-light);
+}
+.bp-card h2 {
+  font-family: 'DM Serif Display', serif; font-size: 24px; color: var(--navy);
+  margin-bottom: 16px; padding-bottom: 12px; border-bottom: 2px solid var(--border-light);
+}
+.bp-card h3 { font-size: 17px; font-weight: 700; color: var(--navy-mid); margin: 20px 0 10px; }
+.bp-card h4 { font-size: 15px; font-weight: 700; color: var(--text-primary); margin: 16px 0 8px; }
+.bp-card p { color: var(--text-secondary); margin-bottom: 12px; line-height: 1.7; }
+.bp-card strong { color: var(--text-primary); }
+.bp-card ul, .bp-card ol { margin: 8px 0 14px 20px; color: var(--text-secondary); }
+.bp-card li { margin-bottom: 6px; line-height: 1.6; }
+.callout {
+  padding: 16px 20px; border-radius: var(--radius); margin: 14px 0;
+  border-left: 4px solid; font-size: 14px; line-height: 1.6;
+}
+.callout-warning { background: var(--orange-light); border-color: var(--orange); color: #5d3a00; }
+.callout-info { background: var(--blue-light); border-color: var(--blue); color: #0d3b73; }
+.callout-success { background: var(--green-light); border-color: var(--green); color: #0d4a1f; }
+.callout-danger { background: var(--red-light); border-color: var(--red); color: #7a1a1a; }
+.callout-purple { background: var(--purple-light); border-color: var(--purple); color: #3a0d54; }
+.callout-teal { background: #e0f7f5; border-color: var(--teal); color: #064d46; }
+.bp-table {
+  width: 100%; border-collapse: collapse; font-size: 13px; margin: 12px 0 16px;
+}
+.bp-table th {
+  text-align: left; padding: 10px 14px; background: var(--navy); color: #fff;
+  font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: 0.4px;
+}
+.bp-table th:first-child { border-radius: 6px 0 0 0; }
+.bp-table th:last-child { border-radius: 0 6px 0 0; }
+.bp-table td {
+  padding: 10px 14px; border-bottom: 1px solid var(--border-light);
+  color: var(--text-secondary); vertical-align: top;
+}
+.bp-table tr:hover td { background: var(--bg-gray); }
+.bp-table td strong { color: var(--text-primary); }
+.bp-table .money { text-align: right; font-variant-numeric: tabular-nums; }
+.bp-table .pct { text-align: right; }
+.bp-table tr.row-total td { font-weight: 700; background: var(--cream); border-top: 2px solid var(--border); color: var(--text-primary); }
+.bp-table tr.row-subtotal td { font-weight: 600; background: var(--bg-gray); }
+.kpi-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 24px; }
+.kpi-card {
+  background: var(--bg-white); border-radius: var(--radius); padding: 18px 20px;
+  box-shadow: var(--shadow-sm); border: 1px solid var(--border-light);
+}
+.kpi-card .kpi-label {
+  font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px;
+  color: var(--text-muted); font-weight: 600; margin-bottom: 6px;
+}
+.kpi-card .kpi-value {
+  font-family: 'DM Serif Display', serif; font-size: 28px; color: var(--navy); line-height: 1.1;
+}
+.kpi-card .kpi-sub { font-size: 12px; color: var(--text-muted); margin-top: 4px; font-weight: 500; }
+.kpi-value.positive { color: var(--green) !important; }
+.kpi-value.negative { color: var(--red) !important; }
+.chart-card {
+  background: var(--bg-white); border-radius: var(--radius); padding: 20px;
+  box-shadow: var(--shadow-sm); border: 1px solid var(--border-light); margin-bottom: 20px;
+}
+.chart-card h3 { font-size: 14px; font-weight: 700; color: var(--navy-mid); margin-bottom: 14px; }
+.chart-row { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom: 24px; }
+.chart-card.full { grid-column: 1 / -1; }
+.conf-tag { display: inline-block; font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 4px; vertical-align: middle; }
+.conf-high { background: #c8e6c9; color: #1b5e20; }
+.conf-medium { background: #fff9c4; color: #6d5e00; }
+.conf-low { background: #ffcdd2; color: #b71c1c; }
+.conf-unknown { background: #e0e0e0; color: #424242; }
+[lang-content="es"] { display: none; }
+body.lang-es [lang-content="en"] { display: none; }
+body.lang-es [lang-content="es"] { display: inline; }
+body.lang-es .bp-card [lang-content="es"],
+body.lang-es .callout [lang-content="es"],
+body.lang-es .chart-card [lang-content="es"],
+body.lang-es .kpi-card [lang-content="es"] { display: block; }
+body.lang-es span[lang-content="es"] { display: inline; }
+@media (max-width: 1200px) {
+  .kpi-row { grid-template-columns: repeat(2, 1fr); }
+  .chart-row { grid-template-columns: 1fr; }
+}
+@media (max-width: 768px) {
+  .app-header { flex-direction: column; gap: 10px; padding: 14px 16px; }
+  .nav-tabs { padding: 0 12px; }
+  .section { padding: 16px; }
+  .kpi-row { grid-template-columns: 1fr; }
+  .bp-card { padding: 20px; }
+}
+@media print {
+  .app-header { position: static; }
+  .nav-tabs { display: none; }
+  .control-panel { display: none; }
+  .section { display: block !important; padding: 20px 0; page-break-inside: avoid; }
+  body { font-size: 12px; }
+  .cv-layout { display: block !important; }
+  .cv-inputs { position: static !important; max-height: none !important; border-right: none !important; }
+}
+/* ═══ Commission Validator (Tab 8) ═══ */
+.cv-layout {
+  display: grid; grid-template-columns: 340px 1fr; gap: 0;
+  background: var(--bg-white); border-radius: var(--radius-lg);
+  box-shadow: var(--shadow); overflow: hidden; border: 1px solid var(--border-light);
+}
+.cv-inputs {
+  background: var(--bg-white); border-right: 2px solid var(--border); padding: 24px;
+  overflow-y: auto; max-height: 80vh; position: sticky; top: 180px;
+}
+.cv-outputs { padding: 28px 32px; background: var(--bg-gray); }
+.cv-input-section { margin-bottom: 22px; }
+.cv-input-section-title {
+  font-size: 11px; text-transform: uppercase; letter-spacing: 1.2px;
+  color: var(--text-muted); font-weight: 700; margin-bottom: 14px;
+  padding-bottom: 6px; border-bottom: 2px solid var(--border-light);
+}
+.cv-input-group { margin-bottom: 18px; }
+.cv-input-label { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 3px; }
+.cv-input-label-text { font-size: 13px; font-weight: 600; color: var(--text-primary); }
+.cv-input-value {
+  font-size: 14px; font-weight: 700; color: var(--navy); min-width: 60px; text-align: right;
+}
+.cv-input-hint { font-size: 11px; color: var(--text-muted); margin-bottom: 5px; line-height: 1.4; }
+.cv-inputs input[type="range"] {
+  width: 100%; height: 6px; -webkit-appearance: none; appearance: none;
+  background: linear-gradient(to right, var(--teal) 0%, var(--border-light) 0%);
+  border-radius: 3px; outline: none; cursor: pointer;
+}
+.cv-inputs input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none; width: 20px; height: 20px; border-radius: 50%;
+  background: var(--teal); border: 3px solid #fff; box-shadow: 0 1px 6px rgba(0,0,0,0.25); cursor: pointer;
+}
+.cv-inputs input[type="range"]::-moz-range-thumb {
+  width: 20px; height: 20px; border-radius: 50%; background: var(--teal);
+  border: 3px solid #fff; box-shadow: 0 1px 6px rgba(0,0,0,0.25); cursor: pointer;
+}
+.cv-range-limits { display: flex; justify-content: space-between; font-size: 10px; color: var(--text-light); margin-top: 2px; }
+.cv-reset-btn {
+  width: 100%; padding: 10px; border-radius: 8px; border: 1.5px solid var(--border);
+  background: var(--bg-gray); color: var(--text-secondary); font-family: 'DM Sans', sans-serif;
+  font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s; margin-top: 8px;
+}
+.cv-reset-btn:hover { border-color: var(--teal); color: var(--teal-dark); background: #e0f7f5; }
+.cv-product-tabs { display: flex; gap: 4px; margin-bottom: 20px; }
+.cv-product-tab {
+  flex: 1; padding: 9px 8px; border-radius: 8px; border: 1.5px solid var(--border);
+  background: var(--bg-gray); color: var(--text-secondary); font-family: 'DM Sans', sans-serif;
+  font-size: 12px; font-weight: 700; cursor: pointer; transition: all 0.15s; text-align: center;
+}
+.cv-product-tab:hover { border-color: var(--teal); color: var(--teal-dark); }
+.cv-product-tab.active { background: var(--teal); color: #fff; border-color: var(--teal); }
+.cv-price-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 16px 0; }
+.cv-price-stat {
+  background: var(--bg-gray); border-radius: var(--radius); padding: 16px 20px; text-align: center;
+}
+.cv-price-stat .cv-stat-value {
+  font-family: 'DM Serif Display', serif; font-size: 24px; color: var(--navy); margin-bottom: 4px;
+}
+.cv-price-stat .cv-stat-label { font-size: 12px; color: var(--text-muted); font-weight: 600; }
+.dz-matrix { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 12px; }
+.dz-matrix th {
+  padding: 8px 10px; background: var(--navy); color: #fff;
+  font-weight: 600; font-size: 11px; text-align: center; letter-spacing: 0.3px;
+}
+.dz-matrix th:first-child { border-radius: 6px 0 0 0; text-align: left; }
+.dz-matrix th:last-child { border-radius: 0 6px 0 0; }
+.dz-matrix td {
+  padding: 8px 10px; text-align: center; font-weight: 600;
+  border-bottom: 1px solid var(--border-light); font-variant-numeric: tabular-nums;
+  transition: all 0.15s;
+}
+.dz-matrix td:first-child { text-align: left; font-weight: 700; color: var(--text-primary); background: var(--bg-gray); }
+.dz-matrix .dz-green { background: var(--green-light); color: var(--green); }
+.dz-matrix .dz-amber { background: var(--orange-light); color: #7a4a00; }
+.dz-matrix .dz-red { background: var(--red-light); color: var(--red); }
+.dz-matrix .dz-current {
+  outline: 3px solid var(--teal); outline-offset: -2px; border-radius: 4px;
+  font-weight: 800; font-size: 13px;
+}
+@media (max-width: 900px) {
+  .cv-layout { grid-template-columns: 1fr; }
+  .cv-inputs { position: static; max-height: none; border-right: none; border-bottom: 2px solid var(--border); }
+  .cv-price-grid { grid-template-columns: 1fr; }
+}
+/* ═══ Control Panel ═══ */
+.control-panel {
+  background: linear-gradient(135deg, #1a1a4e 0%, #2e2e6e 100%);
+  padding: 12px 32px; display: flex; align-items: center; gap: 24px;
+  position: sticky; top: 124px; z-index: 180;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.15); flex-wrap: wrap;
+}
+.stream-group { display: flex; align-items: center; gap: 8px; }
+.stream-group .stream-label {
+  color: rgba(255,255,255,0.92); font-size: 13px; font-weight: 600; white-space: nowrap;
+}
+.stream-group .stream-label.disabled { opacity: 0.5; }
+.toggle-switch { position: relative; width: 38px; height: 20px; flex-shrink: 0; }
+.toggle-switch input { display: none; }
+.toggle-switch .slider {
+  position: absolute; inset: 0; background: rgba(255,255,255,0.2);
+  border-radius: 10px; cursor: pointer; transition: 0.25s;
+}
+.toggle-switch .slider:before {
+  content: ''; position: absolute; width: 14px; height: 14px;
+  left: 3px; bottom: 3px; background: #fff; border-radius: 50%; transition: 0.25s;
+}
+.toggle-switch input:checked + .slider { background: var(--teal); }
+.toggle-switch input:checked + .slider:before { transform: translateX(18px); }
+.toggle-switch input:disabled + .slider { opacity: 0.45; cursor: default; }
+.scenario-group { display: flex; align-items: center; gap: 6px; }
+.scenario-select {
+  background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.25);
+  color: #fff; padding: 4px 8px; border-radius: 6px;
+  font-family: 'DM Sans', sans-serif; font-size: 12px; cursor: pointer;
+}
+.scenario-select:disabled { opacity: 0.35; cursor: default; }
+.scenario-select option { background: var(--navy); color: #fff; }
+.cp-divider { width: 1px; height: 24px; background: rgba(255,255,255,0.18); }
+.stream-row-hotel td:first-child { padding-left: 24px; color: var(--text-muted); font-size: 12px; }
+.stream-row-flight td:first-child { padding-left: 24px; color: var(--text-muted); font-size: 12px; }
+.stream-row-transfer td:first-child { padding-left: 24px; color: var(--text-muted); font-size: 12px; }
+@media (max-width: 768px) {
+  .control-panel { padding: 10px 12px; gap: 12px; top: 110px; }
+}
+</style>
+</head>
+<body>
+<!-- HEADER -->
+<header class="app-header">
+  <div>
+    <h1><span lang-content="en">Ergos Continental</span><span lang-content="es">Ergos Continental</span></h1>
+    <div class="subtitle"><span lang-content="en">Financial Projections & Investor Overview -- v1.0</span><span lang-content="es">Proyecciones Financieras y Vision para Inversionistas -- v1.0</span></div>
+  </div>
+  <div class="header-right">
+    <div class="lang-btns">
+      <button class="lang-btn active" onclick="setLang('en')">EN</button>
+      <button class="lang-btn" onclick="setLang('es')">ES</button>
+    </div>
+  </div>
+</header>
+
+<!-- NAVIGATION -->
+<nav class="nav-tabs" id="navTabs">
+  <button class="nav-tab active" onclick="showTab('overview',this)"><span class="tab-num">1</span><span lang-content="en">Investor Overview</span><span lang-content="es">Vision del Inversionista</span></button>
+  <button class="nav-tab" onclick="showTab('pnl',this)"><span class="tab-num">2</span><span lang-content="en">P&L Projections</span><span lang-content="es">Proyecciones P&G</span></button>
+  <button class="nav-tab" onclick="showTab('ebitda',this)"><span class="tab-num">3</span><span lang-content="en">EBITDA & Margins</span><span lang-content="es">EBITDA y Margenes</span></button>
+  <button class="nav-tab" onclick="showTab('cashflow',this)"><span class="tab-num">4</span><span lang-content="en">Cash Flow</span><span lang-content="es">Flujo de Caja</span></button>
+  <button class="nav-tab" onclick="showTab('commission',this)"><span class="tab-num">5</span><span lang-content="en">Product Margin Calculator</span><span lang-content="es">Calculadora de Margen por Producto</span></button>
+  <button class="nav-tab" onclick="showTab('uniteconomics',this)"><span class="tab-num">6</span><span lang-content="en">Unit Economics</span><span lang-content="es">Economia Unitaria</span></button>
+  <button class="nav-tab" onclick="showTab('funding',this)"><span class="tab-num">7</span><span lang-content="en">Funding & Valuation</span><span lang-content="es">Financiamiento y Valoracion</span></button>
+  <button class="nav-tab" onclick="showTab('glossary',this)"><span class="tab-num">8</span><span lang-content="en">Glossary</span><span lang-content="es">Glosario</span></button>
+</nav>
+
+<!-- CONTROL PANEL -->
+<div class="control-panel">
+  <div class="stream-group">
+    <label class="toggle-switch"><input type="checkbox" checked disabled><span class="slider"></span></label>
+    <span class="stream-label disabled">Hotels</span>
+  </div>
+  <div class="cp-divider"></div>
+  <div class="stream-group">
+    <label class="toggle-switch"><input type="checkbox" id="toggle-flights" checked onchange="recalc()"><span class="slider"></span></label>
+    <span class="stream-label">Flights</span>
+    <div class="scenario-group" id="flight-scenario-group">
+      <select class="scenario-select" id="flight-scenario" onchange="recalc()">
+        <option value="moderate">Moderate (75%)</option>
+        <option value="conservative">Conservative (50%)</option>
+        <option value="aggressive">Aggressive (100%)</option>
+      </select>
+    </div>
+  </div>
+  <div class="cp-divider"></div>
+  <div class="stream-group">
+    <label class="toggle-switch"><input type="checkbox" id="toggle-transfers" checked onchange="recalc()"><span class="slider"></span></label>
+    <span class="stream-label">Transfers</span>
+    <div class="scenario-group" id="transfer-scenario-group">
+      <select class="scenario-select" id="transfer-scenario" onchange="recalc()">
+        <option value="a">A: $45 / 30% attach</option>
+        <option value="b">B: $60 / 20% attach</option>
+      </select>
+    </div>
+  </div>
+</div>
+
+<!-- ============ TAB 1: INVESTOR OVERVIEW ============ -->
+<div class="section active" id="sec-overview">
+
+  <div class="callout callout-teal" style="margin-bottom:24px;">
+    <strong><span lang-content="en">What is Ergos Continental?</span><span lang-content="es">Que es Ergos Continental?</span></strong>
+    <span lang-content="en">A B2B travel aggregation platform that connects GDS hotel suppliers (Juniper, Hoteltec, Dingus, Restel/Hotelbeds) with travel agencies across Latin America. Ergos earns a margin on every booking by marking up the supplier net price and distributing through a network of independent sales agents.</span>
+    <span lang-content="es">Una plataforma B2B de agregacion de viajes que conecta proveedores de hoteles GDS (Juniper, Hoteltec, Dingus, Restel/Hotelbeds) con agencias de viajes en toda America Latina. Ergos gana un margen en cada reserva al agregar un margen sobre el precio neto del proveedor y distribuyendo a traves de una red de agentes de ventas independientes.</span>
+  </div>
+
+  <div class="kpi-row">
+    <div class="kpi-card">
+      <div class="kpi-label"><span lang-content="en">Revenue Model</span><span lang-content="es">Modelo de Ingresos</span></div>
+      <div class="kpi-value" style="font-size:22px"><span lang-content="en">Transaction Fee</span><span lang-content="es">Comision por Transaccion</span></div>
+      <div class="kpi-sub" id="kpi-revenue-model-sub"><span lang-content="en">~10.7% gross margin on sell price</span><span lang-content="es">~10.7% margen bruto sobre precio de venta</span></div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label"><span lang-content="en">Capital Intensity</span><span lang-content="es">Intensidad de Capital</span></div>
+      <div class="kpi-value" style="font-size:22px"><span lang-content="en">Asset-Light</span><span lang-content="es">Activos Ligeros</span></div>
+      <div class="kpi-sub"><span lang-content="en">No inventory, no physical assets</span><span lang-content="es">Sin inventario, sin activos fisicos</span></div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label"><span lang-content="en">Cost Structure</span><span lang-content="es">Estructura de Costos</span></div>
+      <div class="kpi-value" style="font-size:22px">~70% <span lang-content="en">Variable</span><span lang-content="es">Variable</span></div>
+      <div class="kpi-sub"><span lang-content="en">Agent payouts scale with revenue</span><span lang-content="es">Pagos a agentes escalan con ingresos</span></div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label"><span lang-content="en">Target Market</span><span lang-content="es">Mercado Objetivo</span></div>
+      <div class="kpi-value" style="font-size:22px">LATAM</div>
+      <div class="kpi-sub"><span lang-content="en">Travel agencies, B2B distribution</span><span lang-content="es">Agencias de viajes, distribucion B2B</span></div>
+    </div>
+  </div>
+
+  <div class="bp-card">
+    <h2><span lang-content="en">Business Model Summary</span><span lang-content="es">Resumen del Modelo de Negocio</span></h2>
+    <h3><span lang-content="en">How Ergos Makes Money</span><span lang-content="es">Como Gana Dinero Ergos</span></h3>
+    <ol>
+      <li><span lang-content="en"><strong>GDS suppliers</strong> provide hotel rooms at wholesale net rates</span><span lang-content="es"><strong>Los proveedores GDS</strong> proporcionan habitaciones de hotel a tarifas netas mayoristas</span></li>
+      <li><span lang-content="en"><strong>Ergos targets ~10.7% gross margin</strong> on the sell price (derived from ~12% markup on supplier cost) -- this is the gross revenue</span><span lang-content="es"><strong>Ergos apunta a ~10.7% de margen bruto</strong> sobre el precio de venta (derivado de ~12% de markup sobre el costo del proveedor) -- este es el ingreso bruto</span></li>
+      <li><span lang-content="en"><strong>Travel agencies</strong> book through the Ergos platform at the marked-up price</span><span lang-content="es"><strong>Las agencias de viajes</strong> reservan a traves de la plataforma Ergos al precio con margen</span></li>
+      <li><span lang-content="en"><strong>Independent sales agents</strong> earn 15-40% of Ergos's gross margin for bringing agencies to the platform</span><span lang-content="es"><strong>Agentes de ventas independientes</strong> ganan 15-40% del margen bruto de Ergos por traer agencias a la plataforma</span></li>
+    </ol>
+
+    <h3><span lang-content="en">Revenue Streams</span><span lang-content="es">Flujos de Ingreso</span></h3>
+    <table class="bp-table">
+      <thead>
+        <tr>
+          <th><span lang-content="en">Stream</span><span lang-content="es">Flujo</span></th>
+          <th><span lang-content="en">Description</span><span lang-content="es">Descripcion</span></th>
+          <th><span lang-content="en">Status</span><span lang-content="es">Estado</span></th>
+        </tr>
+      </thead>
+      <tbody id="revenue-streams-body">
+        <tr>
+          <td><strong><span lang-content="en">Hotel Bookings</span><span lang-content="es">Reservas de Hoteles</span></strong></td>
+          <td><span lang-content="en">~10.7% gross margin on sell price (primary revenue)</span><span lang-content="es">~10.7% margen bruto sobre precio de venta (ingreso principal)</span></td>
+          <td><span class="conf-tag conf-high"><span lang-content="en">CORE</span><span lang-content="es">PRINCIPAL</span></span></td>
+        </tr>
+        <tr>
+          <td><strong><span lang-content="en">Transfers (Mozio)</span><span lang-content="es">Traslados (Mozio)</span></strong></td>
+          <td><span lang-content="en">Airport/hotel transfers via Mozio API integration</span><span lang-content="es">Traslados aeropuerto/hotel via integracion API Mozio</span></td>
+          <td><span class="conf-tag conf-medium"><span lang-content="en">PLANNED</span><span lang-content="es">PLANEADO</span></span></td>
+        </tr>
+        <tr>
+          <td><strong><span lang-content="en">Travel Insurance</span><span lang-content="es">Seguro de Viaje</span></strong></td>
+          <td><span lang-content="en">Bundled insurance products at checkout</span><span lang-content="es">Productos de seguro incluidos al momento de pago</span></td>
+          <td><span class="conf-tag conf-low"><span lang-content="en">FUTURE</span><span lang-content="es">FUTURO</span></span></td>
+        </tr>
+        <tr>
+          <td><strong><span lang-content="en">Activities & Tours</span><span lang-content="es">Actividades y Tours</span></strong></td>
+          <td><span lang-content="en">Experience marketplace for agencies to upsell</span><span lang-content="es">Marketplace de experiencias para que las agencias vendan mas</span></td>
+          <td><span class="conf-tag conf-low"><span lang-content="en">FUTURE</span><span lang-content="es">FUTURO</span></span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="bp-card">
+    <h2><span lang-content="en">Key Competitive Advantages</span><span lang-content="es">Ventajas Competitivas Clave</span></h2>
+    <ul>
+      <li><span lang-content="en"><strong>Multi-GDS aggregation:</strong> Access to Juniper, Hoteltec, Dingus, and Restel/Hotelbeds from a single platform -- agencies don't need to manage multiple supplier contracts</span><span lang-content="es"><strong>Agregacion multi-GDS:</strong> Acceso a Juniper, Hoteltec, Dingus y Restel/Hotelbeds desde una sola plataforma -- las agencias no necesitan gestionar multiples contratos con proveedores</span></li>
+      <li><span lang-content="en"><strong>Asset-light distribution:</strong> Sales agents are independent contractors, not employees. Channel cost is 100% variable and scales with revenue</span><span lang-content="es"><strong>Distribucion con activos ligeros:</strong> Los agentes de ventas son contratistas independientes, no empleados. El costo de canal es 100% variable y escala con los ingresos</span></li>
+      <li><span lang-content="en"><strong>Negotiated volume discounts:</strong> Pre-negotiated cost reductions with hotel chains (Negotiated Discount) create pricing advantages that agencies can't get independently</span><span lang-content="es"><strong>Descuentos por volumen negociados:</strong> Reducciones de costo pre-negociadas con cadenas hoteleras (Descuento Negociado) crean ventajas de precios que las agencias no pueden obtener de forma independiente</span></li>
+      <li><span lang-content="en"><strong>LATAM focus:</strong> Purpose-built for the Latin American travel agency market, with Spanish-first UX and local payment methods</span><span lang-content="es"><strong>Enfoque en LATAM:</strong> Construido a proposito para el mercado de agencias de viajes en America Latina, con UX en espanol y metodos de pago locales</span></li>
+    </ul>
+  </div>
+</div>
+
+<!-- ============ TAB 2: P&L PROJECTIONS ============ -->
+<div class="section" id="sec-pnl">
+  <div class="callout callout-info" style="margin-bottom:24px;" id="pnl-callout"></div>
+  <div class="bp-card">
+    <h2><span lang-content="en">Key Assumptions</span><span lang-content="es">Supuestos Clave</span></h2>
+    <div id="assumptions-table-container"></div>
+  </div>
+  <div class="bp-card">
+    <h2><span lang-content="en">Projected Profit & Loss Statement</span><span lang-content="es">Estado de Resultados Proyectado</span></h2>
+    <div id="pnl-table-container"></div>
+    <div class="callout callout-warning" id="pnl-confidence-callout"></div>
+  </div>
+  <div class="chart-card full">
+    <h3><span lang-content="en">Revenue vs. Operating Expenses (3-Year)</span><span lang-content="es">Ingresos vs. Gastos Operativos (3 Anos)</span></h3>
+    <canvas id="chart-pnl" height="300"></canvas>
+  </div>
+</div>
+
+<!-- ============ TAB 3: EBITDA & MARGINS ============ -->
+<div class="section" id="sec-ebitda">
+
+  <div class="bp-card">
+    <h2><span lang-content="en">What is EBITDA and Why It Matters</span><span lang-content="es">Que es el EBITDA y Por Que Importa</span></h2>
+    <p><span lang-content="en"><strong>EBITDA</strong> stands for <strong>Earnings Before Interest, Taxes, Depreciation, and Amortization</strong>. It measures a company's operational profitability by stripping out:</span><span lang-content="es"><strong>EBITDA</strong> significa <strong>Ganancias Antes de Intereses, Impuestos, Depreciacion y Amortizacion</strong>. Mide la rentabilidad operacional de una empresa eliminando:</span></p>
+    <ul>
+      <li><span lang-content="en"><strong>Interest:</strong> How the company is financed (debt vs equity) -- irrelevant to core operations</span><span lang-content="es"><strong>Intereses:</strong> Como se financia la empresa (deuda vs capital) -- irrelevante para las operaciones principales</span></li>
+      <li><span lang-content="en"><strong>Taxes:</strong> Vary by jurisdiction and structure -- not a reflection of operational performance</span><span lang-content="es"><strong>Impuestos:</strong> Varian por jurisdiccion y estructura -- no reflejan el rendimiento operacional</span></li>
+      <li><span lang-content="en"><strong>Depreciation & Amortization:</strong> Non-cash accounting charges for past capital investments</span><span lang-content="es"><strong>Depreciacion y Amortizacion:</strong> Cargos contables no monetarios por inversiones de capital pasadas</span></li>
+    </ul>
+    <div class="callout callout-teal">
+      <span lang-content="en"><strong>Why investors care:</strong> EBITDA lets them compare Ergos to other companies regardless of tax jurisdictions, debt levels, or accounting methods. It answers: "How much cash does the core business actually generate?"</span>
+      <span lang-content="es"><strong>Por que importa a los inversionistas:</strong> El EBITDA les permite comparar Ergos con otras empresas independientemente de jurisdicciones fiscales, niveles de deuda o metodos contables. Responde: "Cuanto efectivo genera realmente el negocio principal?"</span>
+    </div>
+  </div>
+
+  <div class="kpi-row" id="ebitda-kpi-row"></div>
+
+  <div class="bp-card">
+    <h2><span lang-content="en">Margin Progression</span><span lang-content="es">Progresion de Margenes</span></h2>
+    <div id="margin-table-container"></div>
+    <div class="callout callout-success">
+      <span lang-content="en"><strong>Why margins are high:</strong> Ergos runs lean — the founder + small team handles engineering, operations, and support. Fixed costs (salaries, cloud) are extremely low relative to revenue. Agent payouts (variable) scale linearly, but the tiny fixed-cost base creates exceptional operating leverage. Salaries are budgeted to grow gradually as the platform generates more revenue.</span>
+      <span lang-content="es"><strong>Por que los margenes son altos:</strong> Ergos opera con eficiencia — el fundador + un equipo pequeno maneja ingenieria, operaciones y soporte. Los costos fijos (salarios, cloud) son extremadamente bajos en relacion a los ingresos. Los pagos a agentes (variable) escalan linealmente, pero la base minima de costos fijos crea un apalancamiento operativo excepcional. Los salarios estan presupuestados para crecer gradualmente conforme la plataforma genere mas ingresos.</span>
+    </div>
+  </div>
+
+  <div class="bp-card">
+    <h2><span lang-content="en">Industry Benchmarks — EBITDA Comparison</span><span lang-content="es">Benchmarks de la Industria — Comparacion EBITDA</span></h2>
+    <div id="benchmark-table-container"></div>
+  </div>
+
+  <div class="chart-card full">
+    <h3><span lang-content="en">EBITDA Margin Progression</span><span lang-content="es">Progresion del Margen EBITDA</span></h3>
+    <canvas id="chart-ebitda" height="280"></canvas>
+  </div>
+</div>
+
+<!-- ============ TAB 4: CASH FLOW ============ -->
+<div class="section" id="sec-cashflow">
+  <div class="bp-card">
+    <h2><span lang-content="en">Cash Flow Projection</span><span lang-content="es">Proyeccion de Flujo de Caja</span></h2>
+    <div id="cashflow-table-container"></div>
+  </div>
+  <div class="bp-card">
+    <h2><span lang-content="en">Cash Flow Characteristics</span><span lang-content="es">Caracteristicas del Flujo de Caja</span></h2>
+    <ul>
+      <li><span lang-content="en"><strong>Positive cash flow from Year 1.</strong> The asset-light model means no large upfront capital expenditure. Revenue starts from the first booking.</span><span lang-content="es"><strong>Flujo de caja positivo desde el Ano 1.</strong> El modelo de activos ligeros significa que no hay grandes gastos de capital iniciales. Los ingresos comienzan desde la primera reserva.</span></li>
+      <li><span lang-content="en"><strong>Working capital gap is manageable.</strong> Agencies pay net-30, but GDS suppliers may require faster settlement. The gap is small relative to revenue and shrinks proportionally as volume grows.</span><span lang-content="es"><strong>La brecha de capital de trabajo es manejable.</strong> Las agencias pagan a 30 dias, pero los proveedores GDS pueden requerir liquidacion mas rapida. La brecha es pequena en relacion a los ingresos y se reduce proporcionalmente a medida que crece el volumen.</span></li>
+      <li><span lang-content="en"><strong>No inventory risk.</strong> Ergos never purchases room nights in advance. All revenue is earned per-transaction.</span><span lang-content="es"><strong>Sin riesgo de inventario.</strong> Ergos nunca compra noches de hotel por adelantado. Todos los ingresos se ganan por transaccion.</span></li>
+      <li><span lang-content="en"><strong>Minimal CapEx.</strong> As a software platform, capital expenditure is limited to laptops and minor equipment. All infrastructure is cloud-based (OpEx).</span><span lang-content="es"><strong>CapEx minimo.</strong> Como plataforma de software, los gastos de capital se limitan a laptops y equipo menor. Toda la infraestructura es basada en la nube (OpEx).</span></li>
+    </ul>
+  </div>
+  <div class="bp-card">
+    <h2><span lang-content="en">Breakeven Analysis</span><span lang-content="es">Analisis de Punto de Equilibrio</span></h2>
+    <div id="breakeven-table-container"></div>
+    <div class="callout callout-success" id="breakeven-callout"></div>
+  </div>
+</div>
+
+<!-- ============ TAB 5: COMMISSION VALIDATOR ============ -->
+<div class="section" id="sec-commission">
+  <div class="cv-layout">
+    <div class="cv-inputs">
+      <!-- Product type selector -->
+      <div class="cv-product-tabs">
+        <button class="cv-product-tab active" onclick="cvSetProduct('hotel',this)">
+          <span lang-content="en">Hotels</span><span lang-content="es">Hoteles</span>
+        </button>
+        <button class="cv-product-tab" onclick="cvSetProduct('flight',this)">
+          <span lang-content="en">Flights</span><span lang-content="es">Vuelos</span>
+        </button>
+        <button class="cv-product-tab" onclick="cvSetProduct('transfer',this)">
+          <span lang-content="en">Transfers</span><span lang-content="es">Traslados</span>
+        </button>
+      </div>
+
+      <!-- Shared parameters -->
+      <div class="cv-input-section">
+        <div class="cv-input-section-title">
+          <span lang-content="en">Shared Parameters</span>
+          <span lang-content="es">Parametros Compartidos</span>
+        </div>
+        <div class="cv-input-group">
+          <div class="cv-input-label">
+            <span class="cv-input-label-text"><span lang-content="en">Agent Tier Share</span><span lang-content="es">Participacion del Agente</span></span>
+            <span class="cv-input-value" id="cv-val-agentShare">20%</span>
+          </div>
+          <div class="cv-input-hint"><span lang-content="en">Agent's share of gross margin</span><span lang-content="es">Parte del agente del margen bruto</span></div>
+          <input type="range" id="cv-agentShare" min="15" max="40" value="20" step="1" oninput="cvRecalc()">
+          <div class="cv-range-limits"><span>15%</span><span>40%</span></div>
+        </div>
+        <div class="cv-input-group">
+          <div class="cv-input-label">
+            <span class="cv-input-label-text"><span lang-content="en">Agency Rebate</span><span lang-content="es">Descuento de Agencia</span></span>
+            <span class="cv-input-value" id="cv-val-agencyRebate">0.0%</span>
+          </div>
+          <div class="cv-input-hint"><span lang-content="en">Volume rebate on sell price</span><span lang-content="es">Descuento por volumen sobre precio de venta</span></div>
+          <input type="range" id="cv-agencyRebate" min="0" max="5" value="0" step="0.5" oninput="cvRecalc()">
+          <div class="cv-range-limits"><span>0%</span><span>5%</span></div>
+        </div>
+      </div>
+
+      <!-- Hotel-specific parameters -->
+      <div class="cv-input-section cv-product-params" id="cv-params-hotel">
+        <div class="cv-input-section-title">
+          <span lang-content="en">Hotel Parameters</span>
+          <span lang-content="es">Parametros de Hotel</span>
+        </div>
+        <div class="cv-input-group">
+          <div class="cv-input-label">
+            <span class="cv-input-label-text"><span lang-content="en">Base Commission</span><span lang-content="es">Comision Base</span></span>
+            <span class="cv-input-value" id="cv-val-baseCommission">12.0%</span>
+          </div>
+          <div class="cv-input-hint"><span lang-content="en">Markup on supplier net rate</span><span lang-content="es">Margen sobre tarifa neta del proveedor</span></div>
+          <input type="range" id="cv-baseCommission" min="8" max="25" value="12" step="0.5" oninput="cvRecalc()">
+          <div class="cv-range-limits"><span>8%</span><span>25%</span></div>
+        </div>
+        <div class="cv-input-group">
+          <div class="cv-input-label">
+            <span class="cv-input-label-text"><span lang-content="en">Price Adjustment</span><span lang-content="es">Ajuste de Precio</span></span>
+            <span class="cv-input-value" id="cv-val-priceAdjustment">1.00x</span>
+          </div>
+          <div class="cv-input-hint"><span lang-content="en">Negotiated cost multiplier (&lt;1 = discount)</span><span lang-content="es">Multiplicador de costo negociado (&lt;1 = descuento)</span></div>
+          <input type="range" id="cv-priceAdjustment" min="0.80" max="1.20" value="1.00" step="0.01" oninput="cvRecalc()">
+          <div class="cv-range-limits"><span>0.80x</span><span>1.20x</span></div>
+        </div>
+        <div class="cv-input-group">
+          <div class="cv-input-label">
+            <span class="cv-input-label-text"><span lang-content="en">Supplier Net Rate</span><span lang-content="es">Tarifa Neta del Proveedor</span></span>
+            <span class="cv-input-value" id="cv-val-supplierNet">$139</span>
+          </div>
+          <div class="cv-input-hint"><span lang-content="en">Base rate from supplier (USD)</span><span lang-content="es">Tarifa base del proveedor (USD)</span></div>
+          <input type="range" id="cv-supplierNet" min="50" max="500" value="139" step="1" oninput="cvRecalc()">
+          <div class="cv-range-limits"><span>$50</span><span>$500</span></div>
+        </div>
+      </div>
+
+      <!-- Flight-specific parameters -->
+      <div class="cv-input-section cv-product-params" id="cv-params-flight" style="display:none">
+        <div class="cv-input-section-title">
+          <span lang-content="en">Flight Parameters</span>
+          <span lang-content="es">Parametros de Vuelo</span>
+        </div>
+        <div class="cv-input-group">
+          <div class="cv-input-label">
+            <span class="cv-input-label-text"><span lang-content="en">Avg Ticket Price</span><span lang-content="es">Precio Promedio del Boleto</span></span>
+            <span class="cv-input-value" id="cv-val-ticketPrice">$350</span>
+          </div>
+          <div class="cv-input-hint"><span lang-content="en">Average one-way/round-trip ticket price</span><span lang-content="es">Precio promedio de boleto ida/vuelta</span></div>
+          <input type="range" id="cv-ticketPrice" min="50" max="1500" value="350" step="10" oninput="cvRecalc()">
+          <div class="cv-range-limits"><span>$50</span><span>$1,500</span></div>
+        </div>
+        <div class="cv-input-group">
+          <div class="cv-input-label">
+            <span class="cv-input-label-text"><span lang-content="en">Fee Per Segment</span><span lang-content="es">Tarifa por Segmento</span></span>
+            <span class="cv-input-value" id="cv-val-feePerSegment">$10</span>
+          </div>
+          <div class="cv-input-hint"><span lang-content="en">Fixed service fee per flight segment</span><span lang-content="es">Tarifa fija de servicio por segmento de vuelo</span></div>
+          <input type="range" id="cv-feePerSegment" min="0" max="30" value="10" step="1" oninput="cvRecalc()">
+          <div class="cv-range-limits"><span>$0</span><span>$30</span></div>
+        </div>
+        <div class="cv-input-group">
+          <div class="cv-input-label">
+            <span class="cv-input-label-text"><span lang-content="en">Margin on Ticket</span><span lang-content="es">Margen sobre Boleto</span></span>
+            <span class="cv-input-value" id="cv-val-flightMarginPct">2.9%</span>
+          </div>
+          <div class="cv-input-hint"><span lang-content="en">% margin on ticket price (in addition to segment fee)</span><span lang-content="es">% de margen sobre precio del boleto (ademas de la tarifa por segmento)</span></div>
+          <input type="range" id="cv-flightMarginPct" min="0" max="8" value="2.9" step="0.1" oninput="cvRecalc()">
+          <div class="cv-range-limits"><span>0%</span><span>8%</span></div>
+        </div>
+      </div>
+
+      <!-- Transfer-specific parameters -->
+      <div class="cv-input-section cv-product-params" id="cv-params-transfer" style="display:none">
+        <div class="cv-input-section-title">
+          <span lang-content="en">Transfer Parameters</span>
+          <span lang-content="es">Parametros de Traslado</span>
+        </div>
+        <div class="cv-input-group">
+          <div class="cv-input-label">
+            <span class="cv-input-label-text"><span lang-content="en">Transfer Sell Price</span><span lang-content="es">Precio de Venta del Traslado</span></span>
+            <span class="cv-input-value" id="cv-val-transferPrice">$45</span>
+          </div>
+          <div class="cv-input-hint"><span lang-content="en">Average transfer booking sell price</span><span lang-content="es">Precio promedio de venta por reserva de traslado</span></div>
+          <input type="range" id="cv-transferPrice" min="15" max="200" value="45" step="1" oninput="cvRecalc()">
+          <div class="cv-range-limits"><span>$15</span><span>$200</span></div>
+        </div>
+        <div class="cv-input-group">
+          <div class="cv-input-label">
+            <span class="cv-input-label-text"><span lang-content="en">Gross Margin %</span><span lang-content="es">% de Margen Bruto</span></span>
+            <span class="cv-input-value" id="cv-val-transferGmPct">8.0%</span>
+          </div>
+          <div class="cv-input-hint"><span lang-content="en">Ergos margin as % of sell price</span><span lang-content="es">Margen Ergos como % del precio de venta</span></div>
+          <input type="range" id="cv-transferGmPct" min="3" max="20" value="8" step="0.5" oninput="cvRecalc()">
+          <div class="cv-range-limits"><span>3%</span><span>20%</span></div>
+        </div>
+      </div>
+
+      <button class="cv-reset-btn" onclick="cvReset()">
+        <span lang-content="en">Reset to Defaults</span>
+        <span lang-content="es">Restablecer Valores</span>
+      </button>
+    </div>
+
+    <!-- RIGHT: OUTPUTS -->
+    <div class="cv-outputs">
+      <div class="kpi-row">
+        <div class="kpi-card">
+          <div class="kpi-label"><span lang-content="en">Sell Price</span><span lang-content="es">Precio de Venta</span></div>
+          <div class="kpi-value" id="cv-kpi-sellPrice">--</div>
+          <div class="kpi-sub" id="cv-kpi-sellPrice-sub"></div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label"><span lang-content="en">Gross Margin</span><span lang-content="es">Margen Bruto</span></div>
+          <div class="kpi-value" id="cv-kpi-grossMargin">--</div>
+          <div class="kpi-sub" id="cv-kpi-grossMargin-sub"></div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label"><span lang-content="en">Agent Payout</span><span lang-content="es">Pago al Agente</span></div>
+          <div class="kpi-value" id="cv-kpi-agentPayout">--</div>
+          <div class="kpi-sub" id="cv-kpi-agentPayout-sub"></div>
+        </div>
+        <div class="kpi-card" id="cv-kpi-netMargin-card">
+          <div class="kpi-label"><span lang-content="en">Net Margin (Ergos)</span><span lang-content="es">Margen Neto (Ergos)</span></div>
+          <div class="kpi-value" id="cv-kpi-netMargin">--</div>
+          <div class="kpi-sub" id="cv-kpi-netMargin-sub"></div>
+        </div>
+      </div>
+
+      <div id="cv-margin-callout" class="callout callout-success" style="margin-bottom:24px;">
+        <span lang-content="en" id="cv-callout-en"></span>
+        <span lang-content="es" id="cv-callout-es"></span>
+      </div>
+
+      <div class="bp-card">
+        <h2><span lang-content="en">Per-Booking Waterfall</span><span lang-content="es">Cascada por Reserva</span></h2>
+        <table class="bp-table">
+          <thead><tr>
+            <th style="width:50%"><span lang-content="en">Line Item</span><span lang-content="es">Concepto</span></th>
+            <th class="money">USD</th>
+            <th class="pct"><span lang-content="en">% of Sell</span><span lang-content="es">% de Venta</span></th>
+          </tr></thead>
+          <tbody id="cv-waterfall-body"></tbody>
+        </table>
+      </div>
+
+      <div class="chart-card">
+        <h3><span lang-content="en">Industry Benchmark Comparison — Gross Margin %</span><span lang-content="es">Comparacion con la Industria — % Margen Bruto</span></h3>
+        <div style="position:relative; height:220px;"><canvas id="cv-benchmarkChart"></canvas></div>
+      </div>
+
+      <div class="bp-card">
+        <h2><span lang-content="en">End-Consumer Price Impact</span><span lang-content="es">Impacto en el Precio al Consumidor</span></h2>
+        <div class="cv-price-grid">
+          <div class="cv-price-stat">
+            <div class="cv-stat-value" id="cv-pi-premium-usd">--</div>
+            <div class="cv-stat-label"><span lang-content="en">Premium over base cost</span><span lang-content="es">Prima sobre costo base</span></div>
+          </div>
+          <div class="cv-price-stat">
+            <div class="cv-stat-value" id="cv-pi-premium-pct">--</div>
+            <div class="cv-stat-label"><span lang-content="en">Markup percentage</span><span lang-content="es">Porcentaje de margen</span></div>
+          </div>
+        </div>
+        <div class="callout callout-teal">
+          <span lang-content="en" id="cv-pi-text-en"></span>
+          <span lang-content="es" id="cv-pi-text-es"></span>
+        </div>
+      </div>
+
+      <div class="bp-card">
+        <h2><span lang-content="en">Danger Zone Matrix</span><span lang-content="es">Matriz de Zona de Peligro</span></h2>
+        <p>
+          <span lang-content="en">Net margin % for each combination of Agent Tier Share (columns) and Agency Rebate (rows) with current product parameters. Cells below <strong>7%</strong> are in the <strong style="color:var(--red)">danger zone</strong>.</span>
+          <span lang-content="es">% de margen neto para cada combinacion de Participacion del Agente (columnas) y Descuento de Agencia (filas) con los parametros actuales del producto. Celdas por debajo de <strong>7%</strong> estan en la <strong style="color:var(--red)">zona de peligro</strong>.</span>
+        </p>
+        <div style="overflow-x:auto;"><table class="dz-matrix" id="cv-dz-table"></table></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ TAB 6: UNIT ECONOMICS ============ -->
+<div class="section" id="sec-uniteconomics">
+  <div class="bp-card">
+    <h2><span lang-content="en">Per-Booking Unit Economics (Blended)</span><span lang-content="es">Economia Unitaria por Reserva (Combinada)</span></h2>
+    <div id="unit-econ-table-container"></div>
+  </div>
+  <div class="bp-card" id="unit-econ-breakdown-card" style="display:none">
+    <h2><span lang-content="en">Per-Stream Breakdown</span><span lang-content="es">Desglose por Producto</span></h2>
+    <div id="unit-econ-breakdown-container"></div>
+  </div>
+  <div class="bp-card">
+    <h2><span lang-content="en">Customer Acquisition Cost (CAC)</span><span lang-content="es">Costo de Adquisicion de Cliente (CAC)</span></h2>
+    <table class="bp-table">
+      <thead><tr><th style="width:50%"><span lang-content="en">Component</span><span lang-content="es">Componente</span></th><th class="money"><span lang-content="en">Cost</span><span lang-content="es">Costo</span></th></tr></thead>
+      <tbody>
+        <tr><td><span lang-content="en">Agent onboarding bonus (per agency)</span><span lang-content="es">Bono de incorporacion del agente (por agencia)</span></td><td class="money">$25-$150</td></tr>
+        <tr><td><span lang-content="en">Agent time to onboard (estimated value)</span><span lang-content="es">Tiempo del agente para incorporar (valor estimado)</span></td><td class="money">~$50</td></tr>
+        <tr><td><span lang-content="en">Platform onboarding support cost</span><span lang-content="es">Costo de soporte de incorporacion de plataforma</span></td><td class="money">~$30</td></tr>
+        <tr class="row-total"><td><strong><span lang-content="en">Blended CAC per agency</span><span lang-content="es">CAC combinado por agencia</span></strong></td><td class="money"><strong>~$130</strong></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="bp-card">
+    <h2><span lang-content="en">Lifetime Value (LTV)</span><span lang-content="es">Valor de Vida del Cliente (LTV)</span></h2>
+    <div id="ltv-table-container"></div>
+  </div>
+  <div class="kpi-row" id="unit-econ-kpi-row"></div>
+  <div class="callout callout-success" id="unit-econ-callout"></div>
+</div>
+
+<!-- ============ TAB 7: FUNDING & VALUATION ============ -->
+<div class="section" id="sec-funding">
+
+  <div class="bp-card">
+    <h2><span lang-content="en">Investment Scenarios</span><span lang-content="es">Escenarios de Inversion</span></h2>
+    <p><span lang-content="en">Three ways an investor, buyer, or lender might evaluate Ergos Continental:</span><span lang-content="es">Tres formas en que un inversionista, comprador o prestamista podria evaluar Ergos Continental:</span></p>
+
+    <div id="funding-scenarios-container"></div>
+  </div>
+
+  <div class="bp-card">
+    <h2><span lang-content="en">Use of Funds</span><span lang-content="es">Uso de Fondos</span></h2>
+    <table class="bp-table">
+      <thead>
+        <tr>
+          <th><span lang-content="en">Category</span><span lang-content="es">Categoria</span></th>
+          <th class="money"><span lang-content="en">% Allocation</span><span lang-content="es">% Asignacion</span></th>
+          <th><span lang-content="en">Purpose</span><span lang-content="es">Proposito</span></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong><span lang-content="en">Engineering & Product</span><span lang-content="es">Ingenieria y Producto</span></strong></td>
+          <td class="money">40%</td>
+          <td><span lang-content="en">Additional GDS integrations, mobile app, API improvements</span><span lang-content="es">Integraciones GDS adicionales, app movil, mejoras de API</span></td>
+        </tr>
+        <tr>
+          <td><strong><span lang-content="en">Sales & Agent Network</span><span lang-content="es">Ventas y Red de Agentes</span></strong></td>
+          <td class="money">30%</td>
+          <td><span lang-content="en">Agent recruitment, onboarding bonuses, training programs</span><span lang-content="es">Reclutamiento de agentes, bonos de incorporacion, programas de capacitacion</span></td>
+        </tr>
+        <tr>
+          <td><strong><span lang-content="en">Operations & Support</span><span lang-content="es">Operaciones y Soporte</span></strong></td>
+          <td class="money">20%</td>
+          <td><span lang-content="en">Customer support team, supplier relationship management</span><span lang-content="es">Equipo de soporte al cliente, gestion de relaciones con proveedores</span></td>
+        </tr>
+        <tr>
+          <td><strong><span lang-content="en">Working Capital Reserve</span><span lang-content="es">Reserva de Capital de Trabajo</span></strong></td>
+          <td class="money">10%</td>
+          <td><span lang-content="en">Buffer for payment timing gaps, seasonal fluctuations</span><span lang-content="es">Colchon para brechas de tiempo de pago, fluctuaciones estacionales</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="bp-card">
+    <h2><span lang-content="en">Key Risk Factors</span><span lang-content="es">Factores de Riesgo Clave</span></h2>
+    <table class="bp-table">
+      <thead>
+        <tr>
+          <th><span lang-content="en">Risk</span><span lang-content="es">Riesgo</span></th>
+          <th><span lang-content="en">Impact</span><span lang-content="es">Impacto</span></th>
+          <th><span lang-content="en">Mitigation</span><span lang-content="es">Mitigacion</span></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong><span lang-content="en">Agency churn</span><span lang-content="es">Abandono de agencias</span></strong></td>
+          <td><span lang-content="en">Direct revenue loss</span><span lang-content="es">Perdida directa de ingresos</span></td>
+          <td><span lang-content="en">Dormant agency escalation system, competitive pricing, platform stickiness</span><span lang-content="es">Sistema de escalacion de agencias inactivas, precios competitivos, adherencia a la plataforma</span></td>
+        </tr>
+        <tr>
+          <td><strong><span lang-content="en">GDS supplier dependency</span><span lang-content="es">Dependencia de proveedores GDS</span></strong></td>
+          <td><span lang-content="en">Supply disruption</span><span lang-content="es">Interrupcion de suministro</span></td>
+          <td><span lang-content="en">Multi-GDS strategy (4 suppliers), no single-supplier concentration &gt;40%</span><span lang-content="es">Estrategia multi-GDS (4 proveedores), sin concentracion de un solo proveedor &gt;40%</span></td>
+        </tr>
+        <tr>
+          <td><strong><span lang-content="en">FX volatility (LATAM)</span><span lang-content="es">Volatilidad FX (LATAM)</span></strong></td>
+          <td><span lang-content="en">Margin compression</span><span lang-content="es">Compresion de margenes</span></td>
+          <td><span lang-content="en">USD-denominated supplier contracts, pass-through FX model</span><span lang-content="es">Contratos con proveedores en USD, modelo de FX pass-through</span></td>
+        </tr>
+        <tr>
+          <td><strong><span lang-content="en">Competitive entry</span><span lang-content="es">Entrada competitiva</span></strong></td>
+          <td><span lang-content="en">Pricing pressure</span><span lang-content="es">Presion de precios</span></td>
+          <td><span lang-content="en">First-mover advantage in LATAM B2B niche, agent network as moat</span><span lang-content="es">Ventaja de primer movimiento en nicho B2B LATAM, red de agentes como barrera</span></td>
+        </tr>
+        <tr>
+          <td><strong><span lang-content="en">Regulatory changes</span><span lang-content="es">Cambios regulatorios</span></strong></td>
+          <td><span lang-content="en">Compliance costs</span><span lang-content="es">Costos de cumplimiento</span></td>
+          <td><span lang-content="en">Legal reserve, modular architecture for tax/compliance per jurisdiction</span><span lang-content="es">Reserva legal, arquitectura modular para impuestos/cumplimiento por jurisdiccion</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="callout callout-purple">
+    <strong><span lang-content="en">Document Companion:</span><span lang-content="es">Documento Companero:</span></strong>
+    <span lang-content="en">This financial overview is designed to be read alongside the <a href="ergos-commission-model.html" style="color:var(--purple)">Commission & Operational Model</a>, which provides the detailed unit economics, agent tier structure, and safety checks that underpin these projections.</span>
+    <span lang-content="es">Esta vision financiera esta disenada para leerse junto con el <a href="ergos-commission-model.html" style="color:var(--purple)">Modelo de Comisiones y Operaciones</a>, que proporciona la economia unitaria detallada, la estructura de niveles de agentes y las verificaciones de seguridad que sustentan estas proyecciones.</span>
+  </div>
+</div>
+
+<!-- ============ TAB 8: GLOSSARY ============ -->
+<div class="section" id="sec-glossary">
+
+  <div class="callout callout-teal" style="margin-bottom:24px;">
+    <strong><span lang-content="en">How to use this glossary:</span><span lang-content="es">Como usar este glosario:</span></strong>
+    <span lang-content="en">Every financial term used in this document is defined below, organized by category. Terms are ordered from foundational concepts to more advanced metrics so you can read top-to-bottom if you're new to financial analysis.</span>
+    <span lang-content="es">Cada termino financiero utilizado en este documento se define a continuacion, organizado por categoria. Los terminos estan ordenados de conceptos fundamentales a metricas mas avanzadas para que pueda leer de arriba a abajo si es nuevo en el analisis financiero.</span>
+  </div>
+
+  <!-- Revenue & Pricing -->
+  <div class="bp-card">
+    <h2><span lang-content="en">Revenue & Pricing Terms</span><span lang-content="es">Terminos de Ingresos y Precios</span></h2>
+    <table class="bp-table">
+      <thead>
+        <tr>
+          <th style="width:22%"><span lang-content="en">Term</span><span lang-content="es">Termino</span></th>
+          <th><span lang-content="en">Definition</span><span lang-content="es">Definicion</span></th>
+          <th style="width:28%"><span lang-content="en">Ergos Example</span><span lang-content="es">Ejemplo Ergos</span></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>GMV</strong><br><span style="font-size:11px; color:var(--text-muted)">Gross Merchandise Volume</span></td>
+          <td><span lang-content="en">The total dollar value of all transactions processed through the platform. This is NOT Ergos's revenue -- it's how much agencies paid in total. Think of it as the "cash register total."</span><span lang-content="es">El valor total en dolares de todas las transacciones procesadas a traves de la plataforma. Esto NO es el ingreso de Ergos -- es cuanto pagaron las agencias en total. Pienselo como el "total de la caja registradora."</span></td>
+          <td><span lang-content="en">If 100 agencies each book $5K/month: GMV = $500K/month</span><span lang-content="es">Si 100 agencias reservan $5K/mes cada una: GMV = $500K/mes</span></td>
+        </tr>
+        <tr>
+          <td><strong><span lang-content="en">Gross Revenue</span><span lang-content="es">Ingreso Bruto</span></strong></td>
+          <td><span lang-content="en">The portion of GMV that Ergos actually earns -- the gross margin between what Ergos pays the supplier and what the agency pays. This is Ergos's "top line" income before any expenses.</span><span lang-content="es">La porcion del GMV que Ergos realmente gana -- el margen bruto entre lo que Ergos paga al proveedor y lo que paga la agencia. Este es el ingreso "de primera linea" de Ergos antes de cualquier gasto.</span></td>
+          <td><span lang-content="en">~10.3% of GMV. If GMV = $6M, gross revenue = ~$617K</span><span lang-content="es">~10.3% del GMV. Si GMV = $6M, ingreso bruto = ~$617K</span></td>
+        </tr>
+        <tr>
+          <td><strong><span lang-content="en">Net Revenue</span><span lang-content="es">Ingreso Neto</span></strong></td>
+          <td><span lang-content="en">Gross revenue minus agent payouts. This is the money Ergos keeps to run the business before paying fixed costs like salaries, servers, and rent.</span><span lang-content="es">Ingreso bruto menos los pagos a agentes. Este es el dinero que Ergos conserva para operar el negocio antes de pagar costos fijos como salarios, servidores y alquiler.</span></td>
+          <td><span lang-content="en">$617K gross - $123K agents = $494K net</span><span lang-content="es">$617K bruto - $123K agentes = $494K neto</span></td>
+        </tr>
+        <tr>
+          <td><strong><span lang-content="en">Take Rate</span><span lang-content="es">Tasa de Comision</span></strong></td>
+          <td><span lang-content="en">The percentage of GMV that the platform keeps as revenue. A key metric for marketplace businesses. Higher take rate = more revenue per dollar of bookings.</span><span lang-content="es">El porcentaje del GMV que la plataforma retiene como ingreso. Una metrica clave para negocios de marketplace. Mayor tasa = mas ingreso por dolar de reservas.</span></td>
+          <td><span lang-content="en">Ergos take rate = ~10.3% (gross revenue / GMV)</span><span lang-content="es">Tasa de Ergos = ~10.3% (ingreso bruto / GMV)</span></td>
+        </tr>
+        <tr>
+          <td><strong><span lang-content="en">Revenue Multiple</span><span lang-content="es">Multiplo de Ingresos</span></strong></td>
+          <td><span lang-content="en">A valuation method that multiplies annual revenue by a factor (e.g., 6x). Used for early-stage companies where profitability hasn't stabilized yet. "If revenue is $2M and the multiple is 6x, the company is valued at $12M."</span><span lang-content="es">Un metodo de valoracion que multiplica los ingresos anuales por un factor (ej: 6x). Se usa para empresas en etapa temprana donde la rentabilidad aun no se ha estabilizado. "Si el ingreso es $2M y el multiplo es 6x, la empresa se valora en $12M."</span></td>
+          <td><span lang-content="en">4-8x gross revenue is typical for travel-tech</span><span lang-content="es">4-8x el ingreso bruto es tipico para travel-tech</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Profitability Metrics -->
+  <div class="bp-card">
+    <h2><span lang-content="en">Profitability Metrics</span><span lang-content="es">Metricas de Rentabilidad</span></h2>
+    <table class="bp-table">
+      <thead>
+        <tr>
+          <th style="width:22%"><span lang-content="en">Term</span><span lang-content="es">Termino</span></th>
+          <th><span lang-content="en">Definition</span><span lang-content="es">Definicion</span></th>
+          <th style="width:28%"><span lang-content="en">Ergos Example</span><span lang-content="es">Ejemplo Ergos</span></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong><span lang-content="en">Gross Margin</span><span lang-content="es">Margen Bruto</span></strong></td>
+          <td><span lang-content="en">Revenue minus the direct cost of delivering the service. For Ergos, direct cost = what we pay the GDS supplier. Gross margin % of sell price is the PRIMARY metric — the markup on cost basis is simply the derived lever needed to achieve the target gross margin.</span><span lang-content="es">Ingresos menos el costo directo de entregar el servicio. Para Ergos, costo directo = lo que pagamos al proveedor GDS. El % de margen bruto sobre el precio de venta es la metrica PRIMARIA — el markup sobre la base de costo es simplemente la palanca derivada necesaria para lograr el margen bruto objetivo.</span></td>
+          <td><span lang-content="en">$16.04 per booking (10.3% of agency price)</span><span lang-content="es">$16.04 por reserva (10.3% del precio agencia)</span></td>
+        </tr>
+        <tr>
+          <td><strong>EBITDA</strong><br><span style="font-size:11px; color:var(--text-muted)">Earnings Before Interest, Taxes, Depreciation & Amortization</span></td>
+          <td><span lang-content="en">The profit a company makes from its core operations, ignoring how it's financed (interest), where it's taxed (taxes), and past investment write-offs (D&A). It answers: <strong>"How much cash does the actual business generate?"</strong> Investors use it to compare companies across different countries and capital structures.</span><span lang-content="es">El beneficio que una empresa obtiene de sus operaciones principales, ignorando como se financia (intereses), donde tributa (impuestos) y las amortizaciones de inversiones pasadas (D&A). Responde: <strong>"Cuanto efectivo genera realmente el negocio?"</strong> Los inversionistas lo usan para comparar empresas entre diferentes paises y estructuras de capital.</span></td>
+          <td><span lang-content="en">Year 1: $392K (63.5% margin)<br>Year 3: $2.81M (63.7% margin)</span><span lang-content="es">Ano 1: $392K (63.5% margen)<br>Ano 3: $2.81M (63.7% margen)</span></td>
+        </tr>
+        <tr>
+          <td><strong><span lang-content="en">EBITDA Margin</span><span lang-content="es">Margen EBITDA</span></strong></td>
+          <td><span lang-content="en">EBITDA divided by gross revenue, expressed as a percentage. Shows what fraction of every revenue dollar becomes operational profit. Higher = more efficient business.</span><span lang-content="es">EBITDA dividido por ingreso bruto, expresado como porcentaje. Muestra que fraccion de cada dolar de ingreso se convierte en ganancia operacional. Mayor = negocio mas eficiente.</span></td>
+          <td><span lang-content="en">Stays around 63-66% — consistently strong due to lean operations</span><span lang-content="es">Se mantiene alrededor de 63-66% — consistentemente fuerte debido a operaciones eficientes</span></td>
+        </tr>
+        <tr>
+          <td><strong><span lang-content="en">Net Income</span><span lang-content="es">Ingreso Neto</span></strong></td>
+          <td><span lang-content="en">The "bottom line" -- what's left after ALL costs including interest, taxes, and depreciation. This is the actual profit that belongs to the owners/shareholders.</span><span lang-content="es">La "linea final" -- lo que queda despues de TODOS los costos incluyendo intereses, impuestos y depreciacion. Esta es la ganancia real que pertenece a los propietarios/accionistas.</span></td>
+          <td><span lang-content="en">Year 1: $285K | Year 3: $2.08M</span><span lang-content="es">Ano 1: $285K | Ano 3: $2.08M</span></td>
+        </tr>
+        <tr>
+          <td><strong><span lang-content="en">Operating Leverage</span><span lang-content="es">Apalancamiento Operativo</span></strong></td>
+          <td><span lang-content="en">When fixed costs stay roughly the same but revenue grows, each new dollar of revenue contributes more to profit. Like a restaurant: the rent doesn't change whether you serve 50 or 500 customers, so more customers = higher margins.</span><span lang-content="es">Cuando los costos fijos permanecen aproximadamente iguales pero los ingresos crecen, cada nuevo dolar de ingreso contribuye mas a la ganancia. Como un restaurante: el alquiler no cambia ya sea que sirva a 50 o 500 clientes, asi que mas clientes = margenes mas altos.</span></td>
+          <td><span lang-content="en">Ergos's fixed costs (salaries, servers) grow slower than revenue, so margins expand each year</span><span lang-content="es">Los costos fijos de Ergos (salarios, servidores) crecen mas lento que los ingresos, por lo que los margenes se expanden cada ano</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Cost Structure -->
+  <div class="bp-card">
+    <h2><span lang-content="en">Cost Structure Terms</span><span lang-content="es">Terminos de Estructura de Costos</span></h2>
+    <table class="bp-table">
+      <thead>
+        <tr>
+          <th style="width:22%"><span lang-content="en">Term</span><span lang-content="es">Termino</span></th>
+          <th><span lang-content="en">Definition</span><span lang-content="es">Definicion</span></th>
+          <th style="width:28%"><span lang-content="en">Ergos Example</span><span lang-content="es">Ejemplo Ergos</span></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong><span lang-content="en">Fixed Costs</span><span lang-content="es">Costos Fijos</span></strong></td>
+          <td><span lang-content="en">Expenses that stay roughly the same regardless of how many bookings Ergos processes. You pay these even if no one books a single hotel.</span><span lang-content="es">Gastos que permanecen aproximadamente iguales sin importar cuantas reservas procese Ergos. Se pagan incluso si nadie reserva un solo hotel.</span></td>
+          <td><span lang-content="en">Salaries, cloud servers, office rent, legal fees, GDS licensing</span><span lang-content="es">Salarios, servidores cloud, alquiler de oficina, gastos legales, licencias GDS</span></td>
+        </tr>
+        <tr>
+          <td><strong><span lang-content="en">Variable Costs</span><span lang-content="es">Costos Variables</span></strong></td>
+          <td><span lang-content="en">Expenses that scale directly with the number of bookings. More bookings = proportionally more cost. Zero bookings = zero variable cost.</span><span lang-content="es">Gastos que escalan directamente con el numero de reservas. Mas reservas = proporcionalmente mas costo. Cero reservas = cero costo variable.</span></td>
+          <td><span lang-content="en">Agent payouts, payment processing fees (~0.3% of GMV)</span><span lang-content="es">Pagos a agentes, tarifas de procesamiento de pagos (~0.3% del GMV)</span></td>
+        </tr>
+        <tr>
+          <td><strong>OpEx</strong><br><span style="font-size:11px; color:var(--text-muted)">Operating Expenditure</span></td>
+          <td><span lang-content="en">Day-to-day running costs of the business. Includes both fixed and variable costs. In the P&L, this is everything between "Net Revenue" and "EBITDA."</span><span lang-content="es">Costos del dia a dia para operar el negocio. Incluye tanto costos fijos como variables. En el P&G, es todo entre "Ingreso Neto" y "EBITDA."</span></td>
+          <td><span lang-content="en">Year 1 OpEx: ~$102K</span><span lang-content="es">OpEx Ano 1: ~$102K</span></td>
+        </tr>
+        <tr>
+          <td><strong>CapEx</strong><br><span style="font-size:11px; color:var(--text-muted)">Capital Expenditure</span></td>
+          <td><span lang-content="en">Money spent on long-term assets -- things that last more than a year (equipment, major software purchases). Unlike OpEx, CapEx is "amortized" (spread out) over the asset's useful life in accounting.</span><span lang-content="es">Dinero gastado en activos a largo plazo -- cosas que duran mas de un ano (equipo, compras importantes de software). A diferencia del OpEx, el CapEx se "amortiza" (distribuye) durante la vida util del activo en contabilidad.</span></td>
+          <td><span lang-content="en">Minimal for Ergos: laptops, equipment. Infrastructure is cloud-based (OpEx).</span><span lang-content="es">Minimo para Ergos: laptops, equipo. La infraestructura es basada en la nube (OpEx).</span></td>
+        </tr>
+        <tr>
+          <td><strong>D&A</strong><br><span style="font-size:11px; color:var(--text-muted)">Depreciation & Amortization</span></td>
+          <td><span lang-content="en"><strong>Depreciation:</strong> Spreading the cost of a physical asset (e.g., a $12K server) over its useful life (e.g., 3 years = $4K/year expense). <strong>Amortization:</strong> Same concept but for intangible assets (software licenses, patents). These are "non-cash" -- no money actually leaves the bank account each month.</span><span lang-content="es"><strong>Depreciacion:</strong> Distribuir el costo de un activo fisico (ej: un servidor de $12K) durante su vida util (ej: 3 anos = $4K/ano de gasto). <strong>Amortizacion:</strong> Mismo concepto pero para activos intangibles (licencias de software, patentes). Estos son "no monetarios" -- no sale dinero de la cuenta bancaria cada mes.</span></td>
+          <td><span lang-content="en">Year 1: $12K D&A (small because Ergos is asset-light)</span><span lang-content="es">Ano 1: $12K D&A (pequeno porque Ergos tiene pocos activos)</span></td>
+        </tr>
+        <tr>
+          <td><strong>G&A</strong><br><span style="font-size:11px; color:var(--text-muted)">General & Administrative</span></td>
+          <td><span lang-content="en">Overhead costs not directly tied to building the product or selling it: accounting, HR, office supplies, insurance, corporate subscriptions.</span><span lang-content="es">Costos generales no directamente vinculados a construir el producto o venderlo: contabilidad, RRHH, suministros de oficina, seguros, suscripciones corporativas.</span></td>
+          <td><span lang-content="en">Year 1: $6K</span><span lang-content="es">Ano 1: $6K</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Cash Flow -->
+  <div class="bp-card">
+    <h2><span lang-content="en">Cash Flow Terms</span><span lang-content="es">Terminos de Flujo de Caja</span></h2>
+    <table class="bp-table">
+      <thead>
+        <tr>
+          <th style="width:22%"><span lang-content="en">Term</span><span lang-content="es">Termino</span></th>
+          <th><span lang-content="en">Definition</span><span lang-content="es">Definicion</span></th>
+          <th style="width:28%"><span lang-content="en">Ergos Example</span><span lang-content="es">Ejemplo Ergos</span></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong><span lang-content="en">Free Cash Flow (FCF)</span><span lang-content="es">Flujo de Caja Libre (FCL)</span></strong></td>
+          <td><span lang-content="en">The actual cash left over after paying all operating costs, taxes, and capital investments. Unlike net income (which includes non-cash charges), FCF tells you <strong>how much real money is in the bank</strong>. This is the cash available to pay dividends, buy back shares, pay down debt, or reinvest.</span><span lang-content="es">El efectivo real que queda despues de pagar todos los costos operativos, impuestos e inversiones de capital. A diferencia del ingreso neto (que incluye cargos no monetarios), el FCL te dice <strong>cuanto dinero real hay en el banco</strong>. Este es el efectivo disponible para pagar dividendos, recomprar acciones, pagar deudas o reinvertir.</span></td>
+          <td><span lang-content="en">Year 1: $252K<br>Year 3: $2.02M</span><span lang-content="es">Ano 1: $252K<br>Ano 3: $2.02M</span></td>
+        </tr>
+        <tr>
+          <td><strong><span lang-content="en">Working Capital</span><span lang-content="es">Capital de Trabajo</span></strong></td>
+          <td><span lang-content="en">The cash needed to cover the timing gap between when you pay your suppliers and when your customers pay you. If you pay a GDS supplier today but the agency pays you in 30 days, you need working capital to bridge that gap.</span><span lang-content="es">El efectivo necesario para cubrir la brecha de tiempo entre cuando pagas a tus proveedores y cuando tus clientes te pagan. Si pagas a un proveedor GDS hoy pero la agencia te paga en 30 dias, necesitas capital de trabajo para cubrir esa brecha.</span></td>
+          <td><span lang-content="en">Agencies pay net-30; GDS suppliers may require faster settlement</span><span lang-content="es">Las agencias pagan a 30 dias; los proveedores GDS pueden requerir liquidacion mas rapida</span></td>
+        </tr>
+        <tr>
+          <td><strong><span lang-content="en">Breakeven</span><span lang-content="es">Punto de Equilibrio</span></strong></td>
+          <td><span lang-content="en">The point where total revenue exactly equals total costs -- no profit, no loss. Every booking beyond breakeven is pure profit contribution. A lower breakeven means the business reaches profitability faster.</span><span lang-content="es">El punto donde los ingresos totales igualan exactamente los costos totales -- sin ganancia, sin perdida. Cada reserva mas alla del punto de equilibrio es pura contribucion a la ganancia. Un punto de equilibrio mas bajo significa que el negocio alcanza la rentabilidad mas rapido.</span></td>
+          <td><span lang-content="en">~543 bookings/month or ~17 active agencies</span><span lang-content="es">~543 reservas/mes o ~17 agencias activas</span></td>
+        </tr>
+        <tr>
+          <td><strong><span lang-content="en">Burn Rate</span><span lang-content="es">Tasa de Consumo</span></strong></td>
+          <td><span lang-content="en">How fast a company spends cash each month before reaching profitability. A company with $500K in the bank and a $50K/month burn rate has 10 months of "runway" before running out of money.</span><span lang-content="es">Que tan rapido una empresa gasta efectivo cada mes antes de alcanzar la rentabilidad. Una empresa con $500K en el banco y una tasa de consumo de $50K/mes tiene 10 meses de "pista" antes de quedarse sin dinero.</span></td>
+          <td><span lang-content="en">Ergos is projected cash-flow positive from Year 1 -- no ongoing burn</span><span lang-content="es">Ergos esta proyectado como positivo en flujo de caja desde el Ano 1 -- sin consumo continuo</span></td>
+        </tr>
+        <tr>
+          <td><strong><span lang-content="en">Runway</span><span lang-content="es">Pista</span></strong></td>
+          <td><span lang-content="en">How many months of cash a company has before it runs out, given its current burn rate. Runway = cash on hand / monthly burn rate. Investors want to see at least 12-18 months of runway.</span><span lang-content="es">Cuantos meses de efectivo tiene una empresa antes de que se agote, dada su tasa de consumo actual. Pista = efectivo disponible / tasa de consumo mensual. Los inversionistas quieren ver al menos 12-18 meses de pista.</span></td>
+          <td><span lang-content="en">N/A if cash-flow positive; relevant only in pre-revenue stage</span><span lang-content="es">N/A si es positivo en flujo de caja; relevante solo en etapa pre-ingresos</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Unit Economics -->
+  <div class="bp-card">
+    <h2><span lang-content="en">Unit Economics Terms</span><span lang-content="es">Terminos de Economia Unitaria</span></h2>
+    <table class="bp-table">
+      <thead>
+        <tr>
+          <th style="width:22%"><span lang-content="en">Term</span><span lang-content="es">Termino</span></th>
+          <th><span lang-content="en">Definition</span><span lang-content="es">Definicion</span></th>
+          <th style="width:28%"><span lang-content="en">Ergos Example</span><span lang-content="es">Ejemplo Ergos</span></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>CAC</strong><br><span style="font-size:11px; color:var(--text-muted)">Customer Acquisition Cost</span></td>
+          <td><span lang-content="en">How much it costs to get one new paying customer. Includes all sales, marketing, and onboarding expenses divided by the number of new customers acquired. Lower CAC = more efficient growth.</span><span lang-content="es">Cuanto cuesta obtener un nuevo cliente que pague. Incluye todos los gastos de ventas, marketing e incorporacion divididos entre el numero de nuevos clientes adquiridos. Menor CAC = crecimiento mas eficiente.</span></td>
+          <td><span lang-content="en">~$130 per agency (onboarding bonus + support time)</span><span lang-content="es">~$130 por agencia (bono de incorporacion + tiempo de soporte)</span></td>
+        </tr>
+        <tr>
+          <td><strong>LTV</strong><br><span style="font-size:11px; color:var(--text-muted)">Lifetime Value</span></td>
+          <td><span lang-content="en">How much total net revenue one customer generates over their entire relationship with your company. A customer who stays 24 months and generates $365/month has an LTV of $8,748.</span><span lang-content="es">Cuanto ingreso neto total genera un cliente durante toda su relacion con tu empresa. Un cliente que permanece 24 meses y genera $365/mes tiene un LTV de $8,748.</span></td>
+          <td><span lang-content="en">$8,748 per agency (24 months x $364/month)</span><span lang-content="es">$8,748 por agencia (24 meses x $364/mes)</span></td>
+        </tr>
+        <tr>
+          <td><strong>LTV / CAC <span lang-content="en">Ratio</span><span lang-content="es">Ratio</span></strong></td>
+          <td><span lang-content="en">The ratio of customer lifetime value to acquisition cost. Tells you how much return you get for every dollar spent acquiring a customer. <strong>Rule of thumb:</strong> &gt;3x is good, &gt;5x is excellent. Below 1x means you lose money on every customer.</span><span lang-content="es">El ratio entre el valor de vida del cliente y el costo de adquisicion. Te dice cuanto retorno obtienes por cada dolar gastado en adquirir un cliente. <strong>Regla general:</strong> &gt;3x es bueno, &gt;5x es excelente. Por debajo de 1x significa que pierdes dinero en cada cliente.</span></td>
+          <td><span lang-content="en">67x -- exceptionally strong due to low CAC and high booking volume per agency</span><span lang-content="es">67x -- excepcionalmente fuerte debido al bajo CAC y alto volumen de reservas por agencia</span></td>
+        </tr>
+        <tr>
+          <td><strong><span lang-content="en">CAC Payback Period</span><span lang-content="es">Periodo de Recuperacion del CAC</span></strong></td>
+          <td><span lang-content="en">How long it takes for a new customer to generate enough revenue to cover their acquisition cost. If CAC is $130 and monthly net revenue per customer is $365, payback = less than 11 days.</span><span lang-content="es">Cuanto tiempo toma para que un nuevo cliente genere suficiente ingreso para cubrir su costo de adquisicion. Si el CAC es $130 y el ingreso neto mensual por cliente es $365, la recuperacion = menos de 11 dias.</span></td>
+          <td><span lang-content="en">&lt;11 days (target: &lt;12 months)</span><span lang-content="es">&lt;11 dias (objetivo: &lt;12 meses)</span></td>
+        </tr>
+        <tr>
+          <td><strong><span lang-content="en">Churn Rate</span><span lang-content="es">Tasa de Abandono</span></strong></td>
+          <td><span lang-content="en">The percentage of customers who stop using the platform each month. 5% monthly churn means you lose 5 out of every 100 agencies per month. High churn kills LTV and requires aggressive acquisition just to stay flat.</span><span lang-content="es">El porcentaje de clientes que dejan de usar la plataforma cada mes. 5% de abandono mensual significa que pierdes 5 de cada 100 agencias por mes. Un abandono alto mata el LTV y requiere adquisicion agresiva solo para mantenerse estable.</span></td>
+          <td><span lang-content="en">Estimated 3-5% monthly (low confidence -- needs real data)</span><span lang-content="es">Estimado 3-5% mensual (baja confianza -- necesita datos reales)</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Valuation & Funding -->
+  <div class="bp-card">
+    <h2><span lang-content="en">Valuation & Funding Terms</span><span lang-content="es">Terminos de Valoracion y Financiamiento</span></h2>
+    <table class="bp-table">
+      <thead>
+        <tr>
+          <th style="width:22%"><span lang-content="en">Term</span><span lang-content="es">Termino</span></th>
+          <th><span lang-content="en">Definition</span><span lang-content="es">Definicion</span></th>
+          <th style="width:28%"><span lang-content="en">Ergos Example</span><span lang-content="es">Ejemplo Ergos</span></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong><span lang-content="en">EBITDA Multiple</span><span lang-content="es">Multiplo de EBITDA</span></strong></td>
+          <td><span lang-content="en">A valuation method that multiplies EBITDA by a factor to estimate company worth. Used for mature, profitable businesses. A 12x multiple on $2.81M EBITDA = $33.7M valuation. The multiple reflects growth potential, market position, and risk.</span><span lang-content="es">Un metodo de valoracion que multiplica el EBITDA por un factor para estimar el valor de la empresa. Se usa para negocios maduros y rentables. Un multiplo de 12x sobre $2.81M de EBITDA = $33.7M de valoracion. El multiplo refleja el potencial de crecimiento, la posicion en el mercado y el riesgo.</span></td>
+          <td><span lang-content="en">10-15x is typical for travel-tech acquisitions</span><span lang-content="es">10-15x es tipico para adquisiciones de travel-tech</span></td>
+        </tr>
+        <tr>
+          <td><strong>DSCR</strong><br><span style="font-size:11px; color:var(--text-muted)">Debt Service Coverage Ratio</span></td>
+          <td><span lang-content="en">EBITDA divided by annual loan payments (principal + interest). Shows whether the company generates enough cash to comfortably cover its debt. Lenders typically require DSCR &gt; 1.25x. At 1.5x, the company earns $1.50 for every $1.00 of debt payments.</span><span lang-content="es">EBITDA dividido por los pagos anuales del prestamo (principal + intereses). Muestra si la empresa genera suficiente efectivo para cubrir comodamente su deuda. Los prestamistas tipicamente requieren DSCR &gt; 1.25x. A 1.5x, la empresa gana $1.50 por cada $1.00 de pagos de deuda.</span></td>
+          <td><span lang-content="en">Year 2 EBITDA of $1.25M supports ~$830K/year debt service at 1.5x DSCR</span><span lang-content="es">EBITDA del Ano 2 de $1.25M soporta ~$830K/ano de servicio de deuda a 1.5x DSCR</span></td>
+        </tr>
+        <tr>
+          <td><strong><span lang-content="en">Equity Investment</span><span lang-content="es">Inversion de Capital</span></strong></td>
+          <td><span lang-content="en">An investor gives the company money in exchange for ownership (shares). The investor hopes the company grows in value so their shares become worth more. The company does NOT have to repay this money.</span><span lang-content="es">Un inversionista le da dinero a la empresa a cambio de propiedad (acciones). El inversionista espera que la empresa crezca en valor para que sus acciones valgan mas. La empresa NO tiene que devolver este dinero.</span></td>
+          <td><span lang-content="en">$500K-$1.5M raise at 4-8x revenue valuation</span><span lang-content="es">Ronda de $500K-$1.5M a valoracion de 4-8x ingresos</span></td>
+        </tr>
+        <tr>
+          <td><strong><span lang-content="en">Debt Financing</span><span lang-content="es">Financiamiento por Deuda</span></strong></td>
+          <td><span lang-content="en">Borrowing money that MUST be repaid with interest over time. The lender does not get ownership. Advantage: you keep 100% of the company. Disadvantage: fixed payments regardless of how the business performs.</span><span lang-content="es">Pedir dinero prestado que DEBE ser devuelto con intereses a lo largo del tiempo. El prestamista no obtiene propiedad. Ventaja: mantienes el 100% de la empresa. Desventaja: pagos fijos sin importar como se desempene el negocio.</span></td>
+          <td><span lang-content="en">~$3.3M supportable at 5yr / 8% interest</span><span lang-content="es">~$3.3M soportable a 5 anos / 8% de interes</span></td>
+        </tr>
+        <tr>
+          <td><strong>CAGR</strong><br><span style="font-size:11px; color:var(--text-muted)">Compound Annual Growth Rate</span></td>
+          <td><span lang-content="en">The smoothed annual growth rate over a period. If EBITDA goes from $392K to $2.81M in 3 years, the CAGR is ~168%. It tells you: "If growth were perfectly steady each year, what would the annual rate be?"</span><span lang-content="es">La tasa de crecimiento anual suavizada durante un periodo. Si el EBITDA pasa de $392K a $2.81M en 3 anos, el CAGR es ~168%. Te dice: "Si el crecimiento fuera perfectamente constante cada ano, cual seria la tasa anual?"</span></td>
+          <td><span lang-content="en">EBITDA CAGR: ~168% over 3 years</span><span lang-content="es">TCAC del EBITDA: ~168% en 3 anos</span></td>
+        </tr>
+        <tr>
+          <td><strong><span lang-content="en">Asset-Light</span><span lang-content="es">Activos Ligeros</span></strong></td>
+          <td><span lang-content="en">A business model that doesn't require owning expensive physical assets (factories, inventory, real estate) to operate. Software platforms are typically asset-light. This means less capital needed upfront, higher returns on invested capital, and faster scaling.</span><span lang-content="es">Un modelo de negocio que no requiere poseer activos fisicos costosos (fabricas, inventario, bienes raices) para operar. Las plataformas de software son tipicamente de activos ligeros. Esto significa menos capital necesario por adelantado, mayores retornos sobre el capital invertido y escalamiento mas rapido.</span></td>
+          <td><span lang-content="en">Ergos owns no hotels, no inventory. All infrastructure is cloud-based.</span><span lang-content="es">Ergos no posee hoteles ni inventario. Toda la infraestructura es basada en la nube.</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- P&L Statement Structure -->
+  <div class="bp-card">
+    <h2><span lang-content="en">How to Read a P&L Statement</span><span lang-content="es">Como Leer un Estado de Resultados</span></h2>
+    <p><span lang-content="en">A Profit & Loss statement (also called an Income Statement) reads top-to-bottom, subtracting costs at each level:</span><span lang-content="es">Un Estado de Resultados (tambien llamado Estado de Perdidas y Ganancias) se lee de arriba a abajo, restando costos en cada nivel:</span></p>
+    <div style="background: var(--bg-gray); border-radius: 8px; padding: 20px 24px; font-family: monospace; font-size: 13px; line-height: 2; color: var(--text-secondary); margin: 16px 0;">
+<span lang-content="en">
+<strong style="color:var(--navy)">GMV</strong> (total bookings value)                    $5,990,400<br>
+&nbsp;&nbsp;- Supplier costs (what we pay GDS)              ($5,373,504)<br>
+= <strong style="color:var(--navy)">GROSS REVENUE</strong> (our gross margin)               $616,896<br>
+&nbsp;&nbsp;- Agent payouts (variable)                       ($123,379)<br>
+= <strong style="color:var(--navy)">NET REVENUE</strong> (ours to keep)                    $493,517<br>
+&nbsp;&nbsp;- Salaries, servers, etc. (fixed)                ($101,731)<br>
+= <strong style="color:var(--teal)">EBITDA</strong> (operating profit)                      $391,786<br>
+&nbsp;&nbsp;- Depreciation & Amortization                     ($12,000)<br>
+&nbsp;&nbsp;- Taxes                                           ($94,947)<br>
+= <strong style="color:var(--green)">NET INCOME</strong> (bottom line profit)                $284,839
+</span>
+<span lang-content="es">
+<strong style="color:var(--navy)">GMV</strong> (valor total de reservas)                   $5,990,400<br>
+&nbsp;&nbsp;- Costos del proveedor (lo que pagamos al GDS)   ($5,373,504)<br>
+= <strong style="color:var(--navy)">INGRESO BRUTO</strong> (nuestro margen bruto)           $616,896<br>
+&nbsp;&nbsp;- Pagos a agentes (variable)                     ($123,379)<br>
+= <strong style="color:var(--navy)">INGRESO NETO</strong> (lo que nos queda)               $493,517<br>
+&nbsp;&nbsp;- Salarios, servidores, etc. (fijos)             ($101,731)<br>
+= <strong style="color:var(--teal)">EBITDA</strong> (ganancia operacional)                  $391,786<br>
+&nbsp;&nbsp;- Depreciacion y Amortizacion                     ($12,000)<br>
+&nbsp;&nbsp;- Impuestos                                       ($94,947)<br>
+= <strong style="color:var(--green)">INGRESO NETO</strong> (ganancia final)                 $284,839
+</span>
+    </div>
+    <div class="callout callout-info">
+      <span lang-content="en"><strong>Key takeaway:</strong> Each line going down subtracts a different type of cost. The further down you go, the more "real" the profit number becomes. EBITDA shows operational health; Net Income shows what the owners actually keep.</span>
+      <span lang-content="es"><strong>Conclusion clave:</strong> Cada linea hacia abajo resta un tipo diferente de costo. Cuanto mas abajo va, mas "real" se vuelve el numero de ganancia. El EBITDA muestra la salud operacional; el Ingreso Neto muestra lo que los propietarios realmente conservan.</span>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ═══════════════════════════════════════════════════
+   HELPERS
+   ═══════════════════════════════════════════════════ */
+const $ = id => document.getElementById(id);
+const L = (en, es) => '<span lang-content="en">'+en+'</span><span lang-content="es">'+es+'</span>';
+const fmt = n => n < 0 ? '($'+Math.abs(Math.round(n)).toLocaleString()+')' : '$'+Math.round(n).toLocaleString();
+const fmtNeg = n => n <= 0 ? '($'+Math.abs(Math.round(n)).toLocaleString()+')' : '$'+Math.round(n).toLocaleString();
+const fmtK = n => { const a=Math.abs(n); const s=n<0?'-':''; if(a>=1e6) return s+'$'+(a/1e6).toFixed(2)+'M'; if(a>=1e3) return s+'$'+Math.round(a/1e3).toLocaleString()+'K'; return s+'$'+Math.round(a); };
+const fmtPct = (n,d) => (n*100).toFixed(d===undefined?1:d)+'%';
+const fmtN = n => Math.round(n).toLocaleString();
+
+/* ═══════════════════════════════════════════════════
+   CONFIG — all assumptions in one place
+   ═══════════════════════════════════════════════════ */
+const CONFIG = {
+  agencies:     [100, 250, 500],
+  agentShare:   [0.20, 0.22, 0.24],
+  baseTeam:     [2, 4, 8],
+  extraHeadPerStream: [0, 0.5, 1],
+
+  hotel: {
+    bookingsPerAgency: [32, 38, 42],
+    avgBookingValue:   [156, 162, 170],
+    gmPct:             0.103
+  },
+
+  flight: {
+    avgTicketPrice:  350,
+    feePerSegment:   10,
+    marginPct:       0.029,
+    scenarios: {
+      conservative: { volumeRatio: 0.50, label: 'Conservative (50%)' },
+      moderate:     { volumeRatio: 0.75, label: 'Moderate (75%)' },
+      aggressive:   { volumeRatio: 1.00, label: 'Aggressive (100%)' }
+    }
+  },
+
+  transfer: {
+    gmPct: 0.08,
+    scenarios: {
+      a: { avgPrice: 45, attachRate: 0.30, label: 'A: $45 / 30%' },
+      b: { avgPrice: 60, attachRate: 0.20, label: 'B: $60 / 20%' }
+    }
+  },
+
+  expenses: {
+    baseSalaryPerPerson: [26280, 24000, 22500],
+    cloudBase:           [25200, 42000, 72000],
+    cloudPerStream:      [0, 4200, 9600],
+    salesMarketing:      [0, 24000, 60000],
+    supportOps:          [0, 0, 36000],
+    genAdmin:            [6000, 12000, 36000],
+    paymentPctOfGMV:     0.003
+  },
+
+  da:             [12000, 24000, 36000],
+  taxRate:        0.25,
+  workingCapital: [30000, 45000, 60000],
+  capex:          [15000, 25000, 40000],
+  cac:            130
+};
+
+/* ═══════════════════════════════════════════════════
+   COMPUTED — populated by recalc()
+   ═══════════════════════════════════════════════════ */
+const C = { years: [{},{},{}] };
+
+/* ═══════════════════════════════════════════════════
+   RECALC ENGINE
+   ═══════════════════════════════════════════════════ */
+function recalc() {
+  const flights = $('toggle-flights').checked;
+  const transfers = $('toggle-transfers').checked;
+  const fScen = $('flight-scenario').value;
+  const tScen = $('transfer-scenario').value;
+  const fVolRatio = CONFIG.flight.scenarios[fScen].volumeRatio;
+  const tAttach = CONFIG.transfer.scenarios[tScen].attachRate;
+  const tAvgPrice = CONFIG.transfer.scenarios[tScen].avgPrice;
+  const flightGMPerBooking = CONFIG.flight.feePerSegment + CONFIG.flight.avgTicketPrice * CONFIG.flight.marginPct;
+  const streamCount = 1 + (flights?1:0) + (transfers?1:0);
+
+  $('flight-scenario-group').style.display = flights ? '' : 'none';
+  $('transfer-scenario-group').style.display = transfers ? '' : 'none';
+
+  let cumulativeCash = 0;
+
+  for (let y = 0; y < 3; y++) {
+    const d = C.years[y];
+    const ag = CONFIG.agencies[y];
+    const hotelBPM = CONFIG.hotel.bookingsPerAgency[y];
+    const hotelABV = CONFIG.hotel.avgBookingValue[y];
+
+    // Hotel
+    d.hotelBookings = ag * hotelBPM * 12;
+    d.hotelGMV = d.hotelBookings * hotelABV;
+    d.hotelGrossRev = d.hotelGMV * CONFIG.hotel.gmPct;
+    d.hotelGRPerBooking = hotelABV * CONFIG.hotel.gmPct;
+
+    // Flights
+    d.flightBPM = flights ? hotelBPM * fVolRatio : 0;
+    d.flightBookings = flights ? ag * d.flightBPM * 12 : 0;
+    d.flightGMV = d.flightBookings * CONFIG.flight.avgTicketPrice;
+    d.flightGrossRev = d.flightBookings * flightGMPerBooking;
+    d.flightGRPerBooking = flightGMPerBooking;
+
+    // Transfers
+    d.transferBPM = transfers ? hotelBPM * tAttach : 0;
+    d.transferBookings = transfers ? ag * d.transferBPM * 12 : 0;
+    d.transferGMV = d.transferBookings * tAvgPrice;
+    d.transferGrossRev = d.transferGMV * CONFIG.transfer.gmPct;
+    d.transferGRPerBooking = transfers ? tAvgPrice * CONFIG.transfer.gmPct : 0;
+
+    // Totals
+    d.totalBookings = d.hotelBookings + d.flightBookings + d.transferBookings;
+    d.totalGMV = d.hotelGMV + d.flightGMV + d.transferGMV;
+    d.totalGrossRev = d.hotelGrossRev + d.flightGrossRev + d.transferGrossRev;
+    d.blendedGMPct = d.totalGMV > 0 ? d.totalGrossRev / d.totalGMV : 0;
+
+    // Agent payouts & net revenue
+    d.agentPayouts = d.totalGrossRev * CONFIG.agentShare[y];
+    d.netRevenue = d.totalGrossRev - d.agentPayouts;
+
+    // Team & expenses
+    const extraStreams = (flights?1:0) + (transfers?1:0);
+    d.team = CONFIG.baseTeam[y] + Math.ceil(extraStreams * CONFIG.extraHeadPerStream[y]);
+    d.salaries = d.team * CONFIG.expenses.baseSalaryPerPerson[y];
+    d.cloud = CONFIG.expenses.cloudBase[y] + extraStreams * CONFIG.expenses.cloudPerStream[y];
+    d.salesMktg = CONFIG.expenses.salesMarketing[y];
+    d.supportOps = CONFIG.expenses.supportOps[y];
+    d.genAdmin = CONFIG.expenses.genAdmin[y];
+    d.paymentProc = d.totalGMV * CONFIG.expenses.paymentPctOfGMV;
+    d.totalOpex = d.salaries + d.cloud + d.salesMktg + d.supportOps + d.genAdmin + d.paymentProc;
+    d.fixedOpex = d.salaries + d.cloud + d.salesMktg + d.supportOps + d.genAdmin;
+
+    // EBITDA
+    d.ebitda = d.netRevenue - d.totalOpex;
+    d.ebitdaMargin = d.totalGrossRev > 0 ? d.ebitda / d.totalGrossRev : 0;
+
+    // Below EBITDA
+    d.da = CONFIG.da[y];
+    d.ebt = d.ebitda - d.da;
+    d.taxes = Math.max(0, d.ebt * CONFIG.taxRate);
+    d.netIncome = d.ebt - d.taxes;
+    d.netIncomeMargin = d.totalGrossRev > 0 ? d.netIncome / d.totalGrossRev : 0;
+
+    // Cash flow
+    d.wc = CONFIG.workingCapital[y];
+    d.capex = CONFIG.capex[y];
+    d.fcf = d.ebitda - d.taxes - d.wc - d.capex;
+    cumulativeCash += d.fcf;
+    d.cumulativeCash = cumulativeCash;
+
+    // Margins
+    d.netRevMargin = d.totalGrossRev > 0 ? d.netRevenue / d.totalGrossRev : 0;
+    d.opLeverage = d.totalOpex > 0 ? d.netRevenue / d.totalOpex : 0;
+
+    // Per-booking blended
+    d.blendedAvgValue = d.totalBookings > 0 ? d.totalGMV / d.totalBookings : 0;
+    d.blendedGrossRevPB = d.totalBookings > 0 ? d.totalGrossRev / d.totalBookings : 0;
+    d.blendedAgentPB = d.totalBookings > 0 ? d.agentPayouts / d.totalBookings : 0;
+    d.blendedNetRevPB = d.totalBookings > 0 ? d.netRevenue / d.totalBookings : 0;
+    d.blendedOpexPB = d.totalBookings > 0 ? d.totalOpex / d.totalBookings : 0;
+    d.blendedEbitdaPB = d.totalBookings > 0 ? d.ebitda / d.totalBookings : 0;
+
+    // Monthly per-agency bookings
+    d.monthlyBookingsPerAgency = hotelBPM + d.flightBPM + d.transferBPM;
+  }
+
+  // Breakeven (Y1)
+  const y0 = C.years[0];
+  C.monthlyFixed = y0.fixedOpex / 12;
+  C.netRevPB = y0.blendedNetRevPB;
+  C.grossRevPB = y0.blendedGrossRevPB;
+  C.breakevenBookings = C.netRevPB > 0 ? Math.ceil(C.monthlyFixed / C.netRevPB) : Infinity;
+  C.breakevenAgencies = Math.ceil(C.breakevenBookings / y0.monthlyBookingsPerAgency);
+
+  // LTV / CAC (Y1-based)
+  C.monthlyNetRevPerAgency = y0.blendedNetRevPB * y0.monthlyBookingsPerAgency;
+  C.ltv = C.monthlyNetRevPerAgency * 24;
+  C.ltvCac = CONFIG.cac > 0 ? C.ltv / CONFIG.cac : 0;
+  C.cacPaybackDays = C.monthlyNetRevPerAgency > 0 ? Math.ceil(CONFIG.cac / (C.monthlyNetRevPerAgency / 30)) : Infinity;
+
+  // Funding
+  const y1 = C.years[1], y2 = C.years[2];
+  C.scenA_rev = y1.totalGrossRev;
+  C.scenA_valLow = C.scenA_rev * 4;
+  C.scenA_valHigh = C.scenA_rev * 8;
+  C.scenB_ebitda = y2.ebitda;
+  C.scenB_acqLow = C.scenB_ebitda * 10;
+  C.scenB_acqHigh = C.scenB_ebitda * 15;
+  C.scenC_ebitda = y1.ebitda;
+  C.scenC_maxDS = C.scenC_ebitda / 1.5;
+  // PV of annuity: PMT * [(1-(1+r)^-n)/r], r=0.08, n=5
+  C.scenC_loan = C.scenC_maxDS * ((1 - Math.pow(1.08, -5)) / 0.08);
+
+  C.streamCount = streamCount;
+  C.flights = flights;
+  C.transfers = transfers;
+
+  // EBITDA CAGR
+  C.ebitdaCagr = y0.ebitda > 0 ? Math.pow(y2.ebitda / y0.ebitda, 1/2) - 1 : 0;
+
+  // ── Update all DOM sections ──
+  updateOverviewTab();
+  updatePnlTab();
+  updateEbitdaTab();
+  updateCashflowTab();
+  updateUnitEconomicsTab();
+  updateFundingTab();
+  renderPnlChart();
+  renderEbitdaChart();
+}
+
+/* ═══════════════════════════════════════════════════
+   TAB UPDATERS
+   ═══════════════════════════════════════════════════ */
+
+function updateOverviewTab() {
+  const streams = ['Hotels'];
+  if (C.flights) streams.push('Flights');
+  if (C.transfers) streams.push('Transfers');
+  const sub = $('kpi-revenue-model-sub');
+  if (sub) sub.innerHTML = L(
+    streams.join(' + ') + ' — blended ~' + fmtPct(C.years[0].blendedGMPct) + ' gross margin',
+    streams.join(' + ') + ' — ~' + fmtPct(C.years[0].blendedGMPct) + ' margen bruto combinado'
+  );
+  // Revenue streams table
+  const tb = $('revenue-streams-body');
+  if (!tb) return;
+  let h = '';
+  h += '<tr><td><strong>'+L('Hotel Bookings','Reservas de Hoteles')+'</strong></td>';
+  h += '<td>'+L('~10.3% gross margin on sell price (primary revenue)','~10.3% margen bruto sobre precio de venta (ingreso principal)')+'</td>';
+  h += '<td><span class="conf-tag conf-high">'+L('CORE','PRINCIPAL')+'</span></td></tr>';
+  if (C.flights) {
+    h += '<tr><td><strong>'+L('Flight Bookings','Reservas de Vuelos')+'</strong></td>';
+    h += '<td>'+L('$10/segment + ~2.9% margin on $350 avg ticket','$10/segmento + ~2.9% margen en boleto promedio de $350')+'</td>';
+    h += '<td><span class="conf-tag conf-high">'+L('CORE','PRINCIPAL')+'</span></td></tr>';
+  }
+  if (C.transfers) {
+    h += '<tr><td><strong>'+L('Transfers (Mozio)','Traslados (Mozio)')+'</strong></td>';
+    h += '<td>'+L('Airport/hotel transfers via Mozio API — ~8% margin','Traslados aeropuerto/hotel via API Mozio — ~8% margen')+'</td>';
+    h += '<td><span class="conf-tag '+(C.transfers?'conf-high':'conf-medium')+'">'+L(C.transfers?'CORE':'PLANNED',C.transfers?'PRINCIPAL':'PLANEADO')+'</span></td></tr>';
+  } else {
+    h += '<tr><td><strong>'+L('Transfers (Mozio)','Traslados (Mozio)')+'</strong></td>';
+    h += '<td>'+L('Airport/hotel transfers via Mozio API integration','Traslados aeropuerto/hotel via integracion API Mozio')+'</td>';
+    h += '<td><span class="conf-tag conf-medium">'+L('PLANNED','PLANEADO')+'</span></td></tr>';
+  }
+  h += '<tr><td><strong>'+L('Travel Insurance','Seguro de Viaje')+'</strong></td>';
+  h += '<td>'+L('Bundled insurance products at checkout','Productos de seguro incluidos al momento de pago')+'</td>';
+  h += '<td><span class="conf-tag conf-low">'+L('FUTURE','FUTURO')+'</span></td></tr>';
+  h += '<tr><td><strong>'+L('Activities & Tours','Actividades y Tours')+'</strong></td>';
+  h += '<td>'+L('Experience marketplace for agencies to upsell','Marketplace de experiencias para que las agencias vendan mas')+'</td>';
+  h += '<td><span class="conf-tag conf-low">'+L('FUTURE','FUTURO')+'</span></td></tr>';
+  tb.innerHTML = h;
+}
+
+function updatePnlTab() {
+  const d = C.years;
+  // Callout
+  $('pnl-callout').innerHTML = '<strong>'+L('Note:','Nota:')+'</strong> '+ (C.streamCount > 1
+    ? L('Projections include '+C.streamCount+' revenue streams (use toggles above to adjust). Agent share and operating costs scale with total gross revenue.',
+        'Las proyecciones incluyen '+C.streamCount+' flujos de ingresos (usa los controles arriba para ajustar). La participacion del agente y costos operativos escalan con el ingreso bruto total.')
+    : L('All projections are based on hotel booking revenue only (core business). Enable Flights and/or Transfers above to see multi-stream projections.',
+        'Todas las proyecciones se basan solo en ingresos de reservas hoteleras (negocio principal). Habilita Vuelos y/o Traslados arriba para ver proyecciones multi-producto.'));
+
+  // Assumptions table
+  let a = '<table class="bp-table"><thead><tr><th>'+L('Assumption','Supuesto')+'</th><th>'+L('Year 1','Ano 1')+'</th><th>'+L('Year 2','Ano 2')+'</th><th>'+L('Year 3','Ano 3')+'</th><th>'+L('Confidence','Confianza')+'</th></tr></thead><tbody>';
+  a += '<tr><td>'+L('Active agencies (avg)','Agencias activas (prom)')+'</td><td class="money">'+CONFIG.agencies[0]+'</td><td class="money">'+CONFIG.agencies[1]+'</td><td class="money">'+CONFIG.agencies[2]+'</td><td><span class="conf-tag conf-medium">MEDIUM</span></td></tr>';
+  a += '<tr><td>'+L('Hotel bookings/agency/month','Reservas hotel/agencia/mes')+'</td><td class="money">'+CONFIG.hotel.bookingsPerAgency[0]+'</td><td class="money">'+CONFIG.hotel.bookingsPerAgency[1]+'</td><td class="money">'+CONFIG.hotel.bookingsPerAgency[2]+'</td><td><span class="conf-tag conf-medium">MEDIUM</span></td></tr>';
+  a += '<tr><td>'+L('Avg hotel booking value','Valor promedio reserva hotel')+'</td><td class="money">$'+CONFIG.hotel.avgBookingValue[0]+'</td><td class="money">$'+CONFIG.hotel.avgBookingValue[1]+'</td><td class="money">$'+CONFIG.hotel.avgBookingValue[2]+'</td><td><span class="conf-tag conf-medium">MEDIUM</span></td></tr>';
+  if (C.flights) {
+    a += '<tr><td>'+L('Flight bookings/agency/month','Reservas vuelos/agencia/mes')+'</td><td class="money">'+Math.round(d[0].flightBPM)+'</td><td class="money">'+Math.round(d[1].flightBPM)+'</td><td class="money">'+Math.round(d[2].flightBPM)+'</td><td><span class="conf-tag conf-medium">MEDIUM</span></td></tr>';
+    a += '<tr><td>'+L('Avg flight ticket price','Precio promedio boleto aereo')+'</td><td class="money" colspan="3">$'+CONFIG.flight.avgTicketPrice+'</td><td><span class="conf-tag conf-medium">MEDIUM</span></td></tr>';
+  }
+  if (C.transfers) {
+    const ts = CONFIG.transfer.scenarios[$('transfer-scenario').value];
+    a += '<tr><td>'+L('Transfer attach rate (to hotels)','Tasa de vinculacion traslados (a hoteles)')+'</td><td class="money" colspan="3">'+fmtPct(ts.attachRate,0)+'</td><td><span class="conf-tag conf-medium">MEDIUM</span></td></tr>';
+    a += '<tr><td>'+L('Avg transfer price','Precio promedio traslado')+'</td><td class="money" colspan="3">$'+ts.avgPrice+'</td><td><span class="conf-tag conf-medium">MEDIUM</span></td></tr>';
+  }
+  a += '<tr><td>'+L('Blended Gross Margin (% of GMV)','Margen Bruto Combinado (% del GMV)')+'</td><td class="money">'+fmtPct(d[0].blendedGMPct)+'</td><td class="money">'+fmtPct(d[1].blendedGMPct)+'</td><td class="money">'+fmtPct(d[2].blendedGMPct)+'</td><td><span class="conf-tag conf-high">HIGH</span></td></tr>';
+  a += '<tr><td>'+L('Agent Share (blended)','Participacion del Agente (combinada)')+'</td><td class="money">'+fmtPct(CONFIG.agentShare[0],0)+'</td><td class="money">'+fmtPct(CONFIG.agentShare[1],0)+'</td><td class="money">'+fmtPct(CONFIG.agentShare[2],0)+'</td><td><span class="conf-tag conf-medium">MEDIUM</span></td></tr>';
+  a += '<tr><td>'+L('Team size (people)','Tamano del equipo (personas)')+'</td><td class="money">'+d[0].team+'</td><td class="money">'+d[1].team+'</td><td class="money">'+d[2].team+'</td><td><span class="conf-tag conf-medium">MEDIUM</span></td></tr>';
+  a += '</tbody></table>';
+  $('assumptions-table-container').innerHTML = a;
+
+  // P&L table
+  let p = '<table class="bp-table"><thead><tr><th style="width:40%">'+L('Line Item','Concepto')+'</th><th class="money">'+L('Year 1','Ano 1')+'</th><th class="money">'+L('Year 2','Ano 2')+'</th><th class="money">'+L('Year 3','Ano 3')+'</th></tr></thead><tbody>';
+  // GMV
+  p += '<tr><td><strong>'+L('Gross Booking Volume (GMV)','Volumen Bruto de Reservas (GMV)')+'</strong></td>'+d.map(y=>'<td class="money">'+fmt(y.totalGMV)+'</td>').join('')+'</tr>';
+  p += '<tr><td style="padding-left:24px;color:var(--text-muted);font-size:12px">'+L('(Total bookings)','(Total reservas)')+'</td>'+d.map(y=>'<td class="money" style="color:var(--text-muted);font-size:12px">'+fmtN(y.totalBookings)+'</td>').join('')+'</tr>';
+  if (C.streamCount > 1) {
+    p += '<tr><td style="padding-left:24px;color:var(--text-muted);font-size:12px">'+L('Hotel GMV','GMV Hoteles')+'</td>'+d.map(y=>'<td class="money" style="color:var(--text-muted);font-size:12px">'+fmt(y.hotelGMV)+'</td>').join('')+'</tr>';
+    if (C.flights) p += '<tr><td style="padding-left:24px;color:var(--text-muted);font-size:12px">'+L('Flight GMV','GMV Vuelos')+'</td>'+d.map(y=>'<td class="money" style="color:var(--text-muted);font-size:12px">'+fmt(y.flightGMV)+'</td>').join('')+'</tr>';
+    if (C.transfers) p += '<tr><td style="padding-left:24px;color:var(--text-muted);font-size:12px">'+L('Transfer GMV','GMV Traslados')+'</td>'+d.map(y=>'<td class="money" style="color:var(--text-muted);font-size:12px">'+fmt(y.transferGMV)+'</td>').join('')+'</tr>';
+  }
+  // Gross Revenue
+  p += '<tr class="row-subtotal"><td><strong>'+L('Gross Revenue (Ergos Gross Margin)','Ingreso Bruto (Margen Bruto Ergos)')+'</strong></td>'+d.map(y=>'<td class="money"><strong>'+fmt(y.totalGrossRev)+'</strong></td>').join('')+'</tr>';
+  if (C.streamCount > 1) {
+    p += '<tr><td style="padding-left:24px;color:var(--text-muted);font-size:12px">'+L('Hotel Revenue','Ingreso Hoteles')+'</td>'+d.map(y=>'<td class="money" style="color:var(--text-muted);font-size:12px">'+fmt(y.hotelGrossRev)+'</td>').join('')+'</tr>';
+    if (C.flights) p += '<tr><td style="padding-left:24px;color:var(--text-muted);font-size:12px">'+L('Flight Revenue','Ingreso Vuelos')+'</td>'+d.map(y=>'<td class="money" style="color:var(--text-muted);font-size:12px">'+fmt(y.flightGrossRev)+'</td>').join('')+'</tr>';
+    if (C.transfers) p += '<tr><td style="padding-left:24px;color:var(--text-muted);font-size:12px">'+L('Transfer Revenue','Ingreso Traslados')+'</td>'+d.map(y=>'<td class="money" style="color:var(--text-muted);font-size:12px">'+fmt(y.transferGrossRev)+'</td>').join('')+'</tr>';
+  }
+  // Agent payouts
+  p += '<tr><td>'+L('Agent Payouts (variable)','Pagos a Agentes (variable)')+'</td>'+d.map(y=>'<td class="money">'+fmtNeg(-y.agentPayouts)+'</td>').join('')+'</tr>';
+  p += '<tr><td style="padding-left:24px;color:var(--text-muted);font-size:12px">'+L('(Agent Share % of gross revenue)','(Participacion del Agente % del ingreso bruto)')+'</td>'+[0,1,2].map(i=>'<td class="money" style="color:var(--text-muted);font-size:12px">'+fmtPct(CONFIG.agentShare[i],0)+'</td>').join('')+'</tr>';
+  // Net revenue
+  p += '<tr class="row-subtotal"><td><strong>'+L('Net Revenue (after agent payouts)','Ingreso Neto (despues de pagos a agentes)')+'</strong></td>'+d.map(y=>'<td class="money"><strong>'+fmt(y.netRevenue)+'</strong></td>').join('')+'</tr>';
+  p += '<tr><td colspan="4" style="padding:4px;border:none;"></td></tr>';
+  // OpEx header
+  p += '<tr><td colspan="4" style="font-weight:700;color:var(--navy-mid);text-transform:uppercase;font-size:12px;letter-spacing:0.5px;padding-top:14px;">'+L('Operating Expenses (Fixed)','Gastos Operativos (Fijos)')+'</td></tr>';
+  p += '<tr><td>'+L('Salaries (team)','Salarios (equipo)')+'</td>'+d.map(y=>'<td class="money">'+fmtNeg(-y.salaries)+'</td>').join('')+'</tr>';
+  p += '<tr><td>'+L('Cloud Infrastructure + APIs','Infraestructura Cloud + APIs')+'</td>'+d.map(y=>'<td class="money">'+fmtNeg(-y.cloud)+'</td>').join('')+'</tr>';
+  p += '<tr><td>'+L('Sales & Marketing','Ventas y Marketing')+'</td>'+d.map(y=>'<td class="money">'+(y.salesMktg===0?'$0':fmtNeg(-y.salesMktg))+'</td>').join('')+'</tr>';
+  p += '<tr><td>'+L('Customer Support & Ops','Soporte al Cliente y Operaciones')+'</td>'+d.map(y=>'<td class="money">'+(y.supportOps===0?'$0':fmtNeg(-y.supportOps))+'</td>').join('')+'</tr>';
+  p += '<tr><td>'+L('General & Admin / Legal','Generales, Admin y Legal')+'</td>'+d.map(y=>'<td class="money">'+fmtNeg(-y.genAdmin)+'</td>').join('')+'</tr>';
+  p += '<tr><td>'+L('Payment Processing (Stripe/local)','Procesamiento de Pagos (Stripe/local)')+'</td>'+d.map(y=>'<td class="money">'+fmtNeg(-y.paymentProc)+'</td>').join('')+'</tr>';
+  p += '<tr><td style="padding-left:24px;color:var(--text-muted);font-size:12px">'+L('(~0.3% of GMV)','(~0.3% del GMV)')+'</td><td></td><td></td><td></td></tr>';
+  p += '<tr class="row-subtotal"><td><strong>'+L('Total Operating Expenses','Total Gastos Operativos')+'</strong></td>'+d.map(y=>'<td class="money"><strong>'+fmtNeg(-y.totalOpex)+'</strong></td>').join('')+'</tr>';
+  p += '<tr><td colspan="4" style="padding:4px;border:none;"></td></tr>';
+  // EBITDA
+  p += '<tr class="row-total"><td><strong>EBITDA</strong></td>'+d.map(y=>'<td class="money"><strong>'+fmt(y.ebitda)+'</strong></td>').join('')+'</tr>';
+  p += '<tr><td>'+L('EBITDA Margin (% of gross revenue)','Margen EBITDA (% del ingreso bruto)')+'</td>'+d.map(y=>'<td class="money">'+fmtPct(y.ebitdaMargin)+'</td>').join('')+'</tr>';
+  p += '<tr><td>'+L('Depreciation & Amortization','Depreciacion y Amortizacion')+'</td>'+d.map(y=>'<td class="money">'+fmtNeg(-y.da)+'</td>').join('')+'</tr>';
+  p += '<tr><td>'+L('Interest Expense','Gasto por Intereses')+'</td><td class="money">$0</td><td class="money">$0</td><td class="money">$0</td></tr>';
+  p += '<tr><td>'+L('Taxes (~25%)','Impuestos (~25%)')+'</td>'+d.map(y=>'<td class="money">'+fmtNeg(-y.taxes)+'</td>').join('')+'</tr>';
+  p += '<tr class="row-total"><td><strong>'+L('Net Income','Ingreso Neto')+'</strong></td>'+d.map(y=>'<td class="money"><strong style="color:var(--'+(y.netIncome>=0?'green':'red')+')">'+fmt(y.netIncome)+'</strong></td>').join('')+'</tr>';
+  p += '<tr><td>'+L('Net Income Margin','Margen de Ingreso Neto')+'</td>'+d.map(y=>'<td class="money">'+fmtPct(y.netIncomeMargin)+'</td>').join('')+'</tr>';
+  p += '</tbody></table>';
+  $('pnl-table-container').innerHTML = p;
+
+  // Confidence callout
+  $('pnl-confidence-callout').innerHTML = L(
+    '<strong>Confidence level:</strong> Year 1 figures are modeled from unit economics with MEDIUM confidence. Years 2-3 assume successful market penetration and are aspirational targets.',
+    '<strong>Nivel de confianza:</strong> Las cifras del Ano 1 se modelan a partir de la economia unitaria con confianza MEDIA. Los Anos 2-3 asumen una penetracion exitosa del mercado y son objetivos aspiracionales.');
+}
+
+function updateEbitdaTab() {
+  const d = C.years;
+  // KPI cards
+  let k = '';
+  for (let y = 0; y < 3; y++) {
+    k += '<div class="kpi-card"><div class="kpi-label">'+L('Year '+(y+1)+' EBITDA','EBITDA Ano '+(y+1))+'</div>';
+    k += '<div class="kpi-value positive">'+fmtK(d[y].ebitda)+'</div>';
+    k += '<div class="kpi-sub">'+fmtPct(d[y].ebitdaMargin)+' '+L('margin','margen')+'</div></div>';
+  }
+  k += '<div class="kpi-card"><div class="kpi-label">'+L('EBITDA CAGR','TCAC EBITDA')+'</div>';
+  k += '<div class="kpi-value positive">~'+fmtPct(C.ebitdaCagr,0)+'</div>';
+  k += '<div class="kpi-sub">'+L('3-year compound growth','Crecimiento compuesto 3 anos')+'</div></div>';
+  $('ebitda-kpi-row').innerHTML = k;
+
+  // Margin table
+  let m = '<table class="bp-table"><thead><tr><th>'+L('Metric','Metrica')+'</th><th class="money">'+L('Year 1','Ano 1')+'</th><th class="money">'+L('Year 2','Ano 2')+'</th><th class="money">'+L('Year 3','Ano 3')+'</th></tr></thead><tbody>';
+  m += '<tr><td>'+L('Blended Gross Margin (% of GMV)','Margen Bruto Combinado (% del GMV)')+'</td>'+d.map(y=>'<td class="money">'+fmtPct(y.blendedGMPct)+'</td>').join('')+'</tr>';
+  m += '<tr><td>'+L('Net Revenue Margin (after agents, % of gross revenue)','Margen de Ingreso Neto (despues de agentes, % del ingreso bruto)')+'</td>'+d.map(y=>'<td class="money">'+fmtPct(y.netRevMargin)+'</td>').join('')+'</tr>';
+  m += '<tr><td><strong>'+L('EBITDA Margin (% of gross revenue)','Margen EBITDA (% del ingreso bruto)')+'</strong></td>'+d.map(y=>'<td class="money"><strong>'+fmtPct(y.ebitdaMargin)+'</strong></td>').join('')+'</tr>';
+  m += '<tr><td>'+L('Net Income Margin (% of gross revenue)','Margen de Ingreso Neto (% del ingreso bruto)')+'</td>'+d.map(y=>'<td class="money">'+fmtPct(y.netIncomeMargin)+'</td>').join('')+'</tr>';
+  m += '<tr><td>'+L('Operating Leverage Ratio','Ratio de Apalancamiento Operativo')+'</td>'+d.map(y=>'<td class="money">'+y.opLeverage.toFixed(1)+'x</td>').join('')+'</tr>';
+  m += '</tbody></table>';
+  $('margin-table-container').innerHTML = m;
+
+  // Benchmark table
+  let b = '<table class="bp-table"><thead><tr><th>'+L('Company/Segment','Empresa/Segmento')+'</th><th class="money">'+L('EBITDA Margin','Margen EBITDA')+'</th><th>'+L('Notes','Notas')+'</th></tr></thead><tbody>';
+  b += '<tr><td><strong>Booking Holdings</strong></td><td class="money">35-40%</td><td>'+L('Mature, at scale. Revenue = commissions on bookings.','Maduro, a escala. Ingreso = comisiones en reservas.')+'</td></tr>';
+  b += '<tr><td><strong>Expedia Group</strong></td><td class="money">18-25%</td><td>'+L('Higher marketing spend, brand-heavy model.','Mayor gasto en marketing, modelo dependiente de marca.')+'</td></tr>';
+  b += '<tr><td><strong>Hotelbeds (private)</strong></td><td class="money">20-30%</td><td>'+L('B2B bed bank, closest comparable to Ergos.','Banco de camas B2B, comparable mas cercano a Ergos.')+'</td></tr>';
+  b += '<tr><td><strong>Despegar (LATAM OTA)</strong></td><td class="money">5-12%</td><td>'+L('B2C with high marketing costs in LATAM.','B2C con altos costos de marketing en LATAM.')+'</td></tr>';
+  b += '<tr><td><strong style="color:var(--teal)">Ergos Year 3 ('+L('projected','proyectado')+')</strong></td><td class="money"><strong style="color:var(--teal)">'+fmtPct(d[2].ebitdaMargin)+'</strong></td><td>'+L('Asset-light, no marketing to consumers, variable channel cost.','Activos ligeros, sin marketing al consumidor, costo de canal variable.')+'</td></tr>';
+  b += '</tbody></table>';
+  $('benchmark-table-container').innerHTML = b;
+}
+
+function updateCashflowTab() {
+  const d = C.years;
+  // Cash flow table
+  let t = '<table class="bp-table"><thead><tr><th style="width:40%">'+L('Line Item','Concepto')+'</th><th class="money">'+L('Year 1','Ano 1')+'</th><th class="money">'+L('Year 2','Ano 2')+'</th><th class="money">'+L('Year 3','Ano 3')+'</th></tr></thead><tbody>';
+  t += '<tr class="row-subtotal"><td><strong>EBITDA</strong></td>'+d.map(y=>'<td class="money"><strong>'+fmt(y.ebitda)+'</strong></td>').join('')+'</tr>';
+  t += '<tr><td>'+L('Working Capital Changes','Cambios en Capital de Trabajo')+'</td>'+d.map(y=>'<td class="money">'+fmtNeg(-y.wc)+'</td>').join('')+'</tr>';
+  t += '<tr><td style="padding-left:24px;color:var(--text-muted);font-size:12px">'+L('(Agencies typically pay net-30; suppliers require faster payment)','(Agencias tipicamente pagan a 30 dias; proveedores requieren pago mas rapido)')+'</td><td></td><td></td><td></td></tr>';
+  t += '<tr><td>'+L('Taxes Paid','Impuestos Pagados')+'</td>'+d.map(y=>'<td class="money">'+fmtNeg(-y.taxes)+'</td>').join('')+'</tr>';
+  t += '<tr><td>'+L('CapEx (equipment, software licenses)','CapEx (equipo, licencias de software)')+'</td>'+d.map(y=>'<td class="money">'+fmtNeg(-y.capex)+'</td>').join('')+'</tr>';
+  t += '<tr class="row-total"><td><strong>'+L('Free Cash Flow','Flujo de Caja Libre')+'</strong></td>'+d.map(y=>'<td class="money"><strong style="color:var(--'+(y.fcf>=0?'green':'red')+')">'+fmt(y.fcf)+'</strong></td>').join('')+'</tr>';
+  t += '<tr><td>'+L('Cumulative Cash Position','Posicion de Caja Acumulada')+'</td>'+d.map(y=>'<td class="money">'+fmt(y.cumulativeCash)+'</td>').join('')+'</tr>';
+  t += '</tbody></table>';
+  $('cashflow-table-container').innerHTML = t;
+
+  // Breakeven
+  const bpm = C.years[0].monthlyBookingsPerAgency;
+  let be = '<table class="bp-table"><thead><tr><th>'+L('Metric','Metrica')+'</th><th class="money">'+L('Value','Valor')+'</th></tr></thead><tbody>';
+  be += '<tr><td>'+L('Monthly Fixed Costs (Year 1 avg)','Costos Fijos Mensuales (promedio Ano 1)')+'</td><td class="money">'+fmt(C.monthlyFixed)+'</td></tr>';
+  be += '<tr><td>'+L('Gross Revenue per Booking (blended)','Ingreso Bruto por Reserva (combinado)')+'</td><td class="money">$'+C.grossRevPB.toFixed(2)+'</td></tr>';
+  be += '<tr><td>'+L('Net Revenue per Booking (after agents)','Ingreso Neto por Reserva (despues de agentes)')+'</td><td class="money">$'+C.netRevPB.toFixed(2)+'</td></tr>';
+  be += '<tr class="row-total"><td><strong>'+L('Monthly Breakeven Bookings','Reservas Mensuales para Punto de Equilibrio')+'</strong></td><td class="money"><strong>~'+fmtN(C.breakevenBookings)+'</strong></td></tr>';
+  be += '<tr><td>'+L('Equivalent to (agencies x bookings/mo)','Equivalente a (agencias x reservas/mes)')+'</td><td class="money">'+L('~'+C.breakevenAgencies+' agencies @ '+Math.round(bpm)+'/mo','~'+C.breakevenAgencies+' agencias @ '+Math.round(bpm)+'/mes')+'</td></tr>';
+  be += '</tbody></table>';
+  $('breakeven-table-container').innerHTML = be;
+
+  $('breakeven-callout').innerHTML = L(
+    '<strong>Breakeven is achieved extremely early</strong> — with only ~'+C.breakevenAgencies+' active agencies booking at the expected average rate. This reflects Ergos\'s lean cost structure: the founder + small team keeps fixed costs under $'+Math.round(C.monthlyFixed/1000)+'K/month in Year 1.',
+    '<strong>El punto de equilibrio se alcanza extremadamente temprano</strong> — con solo ~'+C.breakevenAgencies+' agencias activas reservando al ritmo promedio esperado. Esto refleja la estructura de costos eficiente de Ergos: el fundador + equipo pequeno mantiene los costos fijos por debajo de $'+Math.round(C.monthlyFixed/1000)+'K/mes en el Ano 1.');
+}
+
+function updateUnitEconomicsTab() {
+  const y0 = C.years[0];
+  // Blended per-booking table
+  let u = '<table class="bp-table"><thead><tr><th style="width:50%">'+L('Metric','Metrica')+'</th><th class="money">'+L('Value (Year 1 blended)','Valor (Ano 1 combinado)')+'</th></tr></thead><tbody>';
+  u += '<tr><td>'+L('Avg booking value (blended)','Valor promedio de reserva (combinado)')+'</td><td class="money">$'+y0.blendedAvgValue.toFixed(2)+'</td></tr>';
+  u += '<tr><td>'+L('Ergos Gross Margin per booking','Margen Bruto Ergos por reserva')+'</td><td class="money">$'+y0.blendedGrossRevPB.toFixed(2)+'</td></tr>';
+  u += '<tr><td>'+L('Agent Payout per booking','Pago al Agente por reserva')+'</td><td class="money">($'+y0.blendedAgentPB.toFixed(2)+')</td></tr>';
+  u += '<tr><td>'+L('Ergos OpEx per booking','Costos Ergos por reserva')+'</td><td class="money">($'+y0.blendedOpexPB.toFixed(2)+')</td></tr>';
+  u += '<tr class="row-total"><td><strong>'+L('Ergos EBITDA per booking','EBITDA Ergos por reserva')+'</strong></td><td class="money"><strong>$'+y0.blendedEbitdaPB.toFixed(2)+'</strong></td></tr>';
+  u += '<tr><td>'+L('EBITDA as % of booking value','EBITDA como % del valor de reserva')+'</td><td class="money">'+fmtPct(y0.blendedAvgValue>0?y0.blendedEbitdaPB/y0.blendedAvgValue:0)+'</td></tr>';
+  u += '</tbody></table>';
+  $('unit-econ-table-container').innerHTML = u;
+
+  // Per-stream breakdown
+  const bCard = $('unit-econ-breakdown-card');
+  if (C.streamCount > 1) {
+    bCard.style.display = '';
+    let s = '<table class="bp-table"><thead><tr><th>'+L('Stream','Producto')+'</th><th class="money">'+L('Avg Value','Valor Prom')+'</th><th class="money">'+L('Gross Margin','Margen Bruto')+'</th><th class="money">'+L('GM %','% MB')+'</th><th class="money">'+L('Vol/Agency/Mo','Vol/Agencia/Mes')+'</th></tr></thead><tbody>';
+    s += '<tr><td><strong>Hotels</strong></td><td class="money">$'+CONFIG.hotel.avgBookingValue[0]+'</td><td class="money">$'+y0.hotelGRPerBooking.toFixed(2)+'</td><td class="money">'+fmtPct(CONFIG.hotel.gmPct)+'</td><td class="money">'+CONFIG.hotel.bookingsPerAgency[0]+'</td></tr>';
+    if (C.flights) s += '<tr><td><strong>Flights</strong></td><td class="money">$'+CONFIG.flight.avgTicketPrice+'</td><td class="money">$'+y0.flightGRPerBooking.toFixed(2)+'</td><td class="money">'+fmtPct(y0.flightGRPerBooking/CONFIG.flight.avgTicketPrice)+'</td><td class="money">'+Math.round(y0.flightBPM)+'</td></tr>';
+    if (C.transfers) {const ts=CONFIG.transfer.scenarios[$('transfer-scenario').value]; s += '<tr><td><strong>Transfers</strong></td><td class="money">$'+ts.avgPrice+'</td><td class="money">$'+y0.transferGRPerBooking.toFixed(2)+'</td><td class="money">'+fmtPct(CONFIG.transfer.gmPct)+'</td><td class="money">'+Math.round(y0.transferBPM)+'</td></tr>';}
+    s += '</tbody></table>';
+    $('unit-econ-breakdown-container').innerHTML = s;
+  } else {
+    bCard.style.display = 'none';
+  }
+
+  // LTV table
+  let lt = '<table class="bp-table"><thead><tr><th style="width:50%">'+L('Metric','Metrica')+'</th><th class="money">'+L('Value','Valor')+'</th></tr></thead><tbody>';
+  lt += '<tr><td>'+L('Ergos net revenue per booking','Ingreso neto Ergos por reserva')+'</td><td class="money">$'+y0.blendedNetRevPB.toFixed(2)+'</td></tr>';
+  lt += '<tr><td>'+L('Avg bookings per agency/month (all streams)','Reservas promedio por agencia/mes (todos los productos)')+'</td><td class="money">'+Math.round(y0.monthlyBookingsPerAgency)+'</td></tr>';
+  lt += '<tr><td>'+L('Monthly net revenue per agency','Ingreso neto mensual por agencia')+'</td><td class="money">$'+C.monthlyNetRevPerAgency.toFixed(2)+'</td></tr>';
+  lt += '<tr><td>'+L('Expected agency lifespan','Vida esperada de la agencia')+'</td><td class="money">'+L('24+ months','24+ meses')+'</td></tr>';
+  lt += '<tr class="row-total"><td><strong>'+L('LTV per agency (24 months)','LTV por agencia (24 meses)')+'</strong></td><td class="money"><strong>'+fmt(C.ltv)+'</strong></td></tr>';
+  lt += '</tbody></table>';
+  $('ltv-table-container').innerHTML = lt;
+
+  // KPI cards
+  let kp = '';
+  kp += '<div class="kpi-card"><div class="kpi-label">LTV / CAC</div><div class="kpi-value positive">'+Math.round(C.ltvCac)+'x</div><div class="kpi-sub">'+L('Target: > 3x','Objetivo: > 3x')+'</div></div>';
+  kp += '<div class="kpi-card"><div class="kpi-label">'+L('CAC Payback','Recuperacion del CAC')+'</div><div class="kpi-value positive">&lt;'+C.cacPaybackDays+' <span style="font-size:16px">'+L('days','dias')+'</span></div><div class="kpi-sub">'+L('Target: < 12 months','Objetivo: < 12 meses')+'</div></div>';
+  kp += '<div class="kpi-card"><div class="kpi-label">'+L('Monthly Churn (est.)','Abandono Mensual (est.)')+'</div><div class="kpi-value">3-5%</div><div class="kpi-sub"><span class="conf-tag conf-low">LOW CONFIDENCE</span></div></div>';
+  kp += '<div class="kpi-card"><div class="kpi-label">'+L('Gross Margin/Booking','Margen Bruto/Reserva')+'</div><div class="kpi-value">$'+y0.blendedGrossRevPB.toFixed(2)+'</div><div class="kpi-sub">'+fmtPct(y0.blendedGMPct)+' '+L('of booking value','del valor de reserva')+'</div></div>';
+  $('unit-econ-kpi-row').innerHTML = kp;
+
+  $('unit-econ-callout').innerHTML = L(
+    '<strong>The unit economics are exceptionally strong.</strong> A '+Math.round(C.ltvCac)+'x LTV/CAC ratio with sub-'+C.cacPaybackDays+'-day payback means Ergos can grow aggressively without burning cash. The key risk is churn — if agencies stop booking, LTV drops.',
+    '<strong>La economia unitaria es excepcionalmente fuerte.</strong> Un ratio LTV/CAC de '+Math.round(C.ltvCac)+'x con recuperacion en menos de '+C.cacPaybackDays+' dias significa que Ergos puede crecer agresivamente sin quemar efectivo. El riesgo clave es el abandono — si las agencias dejan de reservar, el LTV cae.');
+}
+
+function updateFundingTab() {
+  let f = '';
+  // Scenario A
+  f += '<h3>'+L('Scenario A: Equity Investment (Growth Capital)','Escenario A: Inversion de Capital (Capital de Crecimiento)')+'</h3>';
+  f += '<table class="bp-table"><thead><tr><th>'+L('Metric','Metrica')+'</th><th class="money">'+L('Value','Valor')+'</th></tr></thead><tbody>';
+  f += '<tr><td>'+L('Valuation method','Metodo de valoracion')+'</td><td>'+L('Revenue multiple (SaaS/marketplace comparable)','Multiplo de ingresos (comparable SaaS/marketplace)')+'</td></tr>';
+  f += '<tr><td>'+L('Year 2 Gross Revenue','Ingreso Bruto Ano 2')+'</td><td class="money">'+fmtK(C.scenA_rev)+'</td></tr>';
+  f += '<tr><td>'+L('Applicable multiple range','Rango de multiplos aplicables')+'</td><td class="money">4-8x</td></tr>';
+  f += '<tr class="row-total"><td><strong>'+L('Implied Valuation Range','Rango de Valoracion Implicita')+'</strong></td><td class="money"><strong>'+fmtK(C.scenA_valLow)+' - '+fmtK(C.scenA_valHigh)+'</strong></td></tr>';
+  f += '<tr><td>'+L('Typical equity ask','Solicitud tipica de capital')+'</td><td class="money">$500K - $1.5M</td></tr>';
+  f += '<tr><td>'+L('Use of funds','Uso de fondos')+'</td><td>'+L('Accelerate agency acquisition, hire engineering, expand GDS integrations','Acelerar adquisicion de agencias, contratar ingenieria, expandir integraciones GDS')+'</td></tr>';
+  f += '</tbody></table>';
+  // Scenario B
+  f += '<h3>'+L('Scenario B: Acquisition (Strategic Buyer)','Escenario B: Adquisicion (Comprador Estrategico)')+'</h3>';
+  f += '<table class="bp-table"><thead><tr><th>'+L('Metric','Metrica')+'</th><th class="money">'+L('Value','Valor')+'</th></tr></thead><tbody>';
+  f += '<tr><td>'+L('Valuation method','Metodo de valoracion')+'</td><td>'+L('EBITDA multiple','Multiplo de EBITDA')+'</td></tr>';
+  f += '<tr><td>'+L('Year 3 EBITDA','EBITDA Ano 3')+'</td><td class="money">'+fmtK(C.scenB_ebitda)+'</td></tr>';
+  f += '<tr><td>'+L('Travel-tech EBITDA multiple range','Rango de multiplos EBITDA travel-tech')+'</td><td class="money">10-15x</td></tr>';
+  f += '<tr class="row-total"><td><strong>'+L('Implied Acquisition Price','Precio de Adquisicion Implicito')+'</strong></td><td class="money"><strong>'+fmtK(C.scenB_acqLow)+' - '+fmtK(C.scenB_acqHigh)+'</strong></td></tr>';
+  f += '<tr><td>'+L('Strategic buyers','Compradores estrategicos')+'</td><td>'+L('Hotelbeds, Webjet, Flight Centre, OTAs expanding into LATAM B2B','Hotelbeds, Webjet, Flight Centre, OTAs expandiendose al B2B en LATAM')+'</td></tr>';
+  f += '</tbody></table>';
+  // Scenario C
+  f += '<h3>'+L('Scenario C: Debt Financing (Expansion Loan)','Escenario C: Financiamiento por Deuda (Prestamo de Expansion)')+'</h3>';
+  f += '<table class="bp-table"><thead><tr><th>'+L('Metric','Metrica')+'</th><th class="money">'+L('Value','Valor')+'</th></tr></thead><tbody>';
+  f += '<tr><td>'+L('Year 2 EBITDA','EBITDA Ano 2')+'</td><td class="money">'+fmtK(C.scenC_ebitda)+'</td></tr>';
+  f += '<tr><td>'+L('Debt service coverage ratio (DSCR) target','Ratio de cobertura de servicio de deuda (DSCR) objetivo')+'</td><td class="money">&gt; 1.5x</td></tr>';
+  f += '<tr><td>'+L('Max annual debt service (@1.5x DSCR)','Servicio de deuda anual maximo (@1.5x DSCR)')+'</td><td class="money">'+fmtK(C.scenC_maxDS)+'</td></tr>';
+  f += '<tr class="row-total"><td><strong>'+L('Supportable Loan Amount (5yr @ 8%)','Monto de Prestamo Soportable (5 anos @ 8%)')+'</strong></td><td class="money"><strong>~'+fmtK(C.scenC_loan)+'</strong></td></tr>';
+  f += '<tr><td>'+L('Collateral','Garantia')+'</td><td>'+L('Recurring revenue contracts, platform IP, agency relationships','Contratos de ingresos recurrentes, IP de la plataforma, relaciones con agencias')+'</td></tr>';
+  f += '</tbody></table>';
+  $('funding-scenarios-container').innerHTML = f;
+}
+
+/* ═══════════════════════════════════════════════════
+   CHARTS
+   ═══════════════════════════════════════════════════ */
+let pnlChart = null;
+let ebitdaChart = null;
+
+function renderPnlChart() {
+  const ctx = $('chart-pnl');
+  if (!ctx || !ctx.getContext) return;
+  if (pnlChart) pnlChart.destroy();
+  const isEN = !document.body.classList.contains('lang-es');
+  const d = C.years;
+  pnlChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: [isEN?'Year 1':'Ano 1', isEN?'Year 2':'Ano 2', isEN?'Year 3':'Ano 3'],
+      datasets: [
+        { label: isEN?'Gross Revenue':'Ingreso Bruto', data: d.map(y=>y.totalGrossRev), backgroundColor: '#0fa89b', borderRadius: 6 },
+        { label: isEN?'Agent Payouts':'Pagos a Agentes', data: d.map(y=>y.agentPayouts), backgroundColor: '#e67e00', borderRadius: 6 },
+        { label: isEN?'Operating Expenses':'Gastos Operativos', data: d.map(y=>y.totalOpex), backgroundColor: '#6a1b9a', borderRadius: 6 },
+        { label: 'EBITDA', data: d.map(y=>y.ebitda), backgroundColor: '#1b8a42', borderRadius: 6 }
+      ]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { position: 'bottom', labels: { padding: 16, font: { family: "'DM Sans', sans-serif", size: 12 } } },
+        tooltip: { callbacks: { label: c => c.dataset.label + ': $' + Math.round(c.raw).toLocaleString() } }
+      },
+      scales: {
+        y: { beginAtZero: true, ticks: { callback: v => '$' + (v/1e6).toFixed(1) + 'M' } },
+        x: { grid: { display: false } }
+      }
+    }
+  });
+}
+
+function renderEbitdaChart() {
+  const ctx = $('chart-ebitda');
+  if (!ctx || !ctx.getContext) return;
+  if (ebitdaChart) ebitdaChart.destroy();
+  const isEN = !document.body.classList.contains('lang-es');
+  const months = [];
+  for (let i = 1; i <= 36; i++) months.push((isEN ? 'Mo ' : 'Mes ') + i);
+
+  const flights = C.flights;
+  const transfers = C.transfers;
+  const fVolRatio = CONFIG.flight.scenarios[$('flight-scenario').value].volumeRatio;
+  const tScen = CONFIG.transfer.scenarios[$('transfer-scenario').value];
+  const flightGMPB = CONFIG.flight.feePerSegment + CONFIG.flight.avgTicketPrice * CONFIG.flight.marginPct;
+  const extraStreams = (flights?1:0) + (transfers?1:0);
+
+  const monthlyEbitda = [];
+  const monthlyRevenue = [];
+
+  for (let m = 1; m <= 36; m++) {
+    let y, agencies, hBPM, hABV, agentPct;
+    if (m <= 12) { y=0; agencies = 60 + m*3.3; hBPM=CONFIG.hotel.bookingsPerAgency[0]; hABV=CONFIG.hotel.avgBookingValue[0]; agentPct=CONFIG.agentShare[0]; }
+    else if (m <= 24) { y=1; agencies = 100 + (m-12)*12.5; hBPM=CONFIG.hotel.bookingsPerAgency[1]; hABV=CONFIG.hotel.avgBookingValue[1]; agentPct=CONFIG.agentShare[1]; }
+    else { y=2; agencies = 250 + (m-24)*20.8; hBPM=CONFIG.hotel.bookingsPerAgency[2]; hABV=CONFIG.hotel.avgBookingValue[2]; agentPct=CONFIG.agentShare[2]; }
+
+    const hotelGR = agencies * hBPM * hABV * CONFIG.hotel.gmPct;
+    const flightGR = flights ? agencies * hBPM * fVolRatio * flightGMPB : 0;
+    const transferGR = transfers ? agencies * hBPM * tScen.attachRate * tScen.avgPrice * CONFIG.transfer.gmPct : 0;
+    const totalGR = hotelGR + flightGR + transferGR;
+
+    const hotelGMV = agencies * hBPM * hABV;
+    const flightGMV = flights ? agencies * hBPM * fVolRatio * CONFIG.flight.avgTicketPrice : 0;
+    const transferGMV = transfers ? agencies * hBPM * tScen.attachRate * tScen.avgPrice : 0;
+    const totalGMV = hotelGMV + flightGMV + transferGMV;
+
+    const agentPay = totalGR * agentPct;
+    const team = CONFIG.baseTeam[y] + Math.ceil(extraStreams * CONFIG.extraHeadPerStream[y]);
+    const fixed = (team * CONFIG.expenses.baseSalaryPerPerson[y] + CONFIG.expenses.cloudBase[y] + extraStreams*CONFIG.expenses.cloudPerStream[y] + CONFIG.expenses.salesMarketing[y] + CONFIG.expenses.supportOps[y] + CONFIG.expenses.genAdmin[y]) / 12;
+    const payProc = totalGMV * CONFIG.expenses.paymentPctOfGMV;
+    const ebitda = totalGR - agentPay - fixed - payProc;
+
+    monthlyEbitda.push(Math.max(0, ebitda));
+    monthlyRevenue.push(totalGR);
+  }
+
+  ebitdaChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: months,
+      datasets: [
+        { label: isEN?'Monthly Gross Revenue':'Ingreso Bruto Mensual', data: monthlyRevenue, borderColor: '#0fa89b', backgroundColor: 'rgba(15,168,155,0.08)', fill: true, tension: 0.3, pointRadius: 0, borderWidth: 2 },
+        { label: isEN?'Monthly EBITDA':'EBITDA Mensual', data: monthlyEbitda, borderColor: '#1b8a42', backgroundColor: 'rgba(27,138,66,0.08)', fill: true, tension: 0.3, pointRadius: 0, borderWidth: 2 }
+      ]
+    },
+    options: {
+      responsive: true,
+      interaction: { intersect: false, mode: 'index' },
+      plugins: {
+        legend: { position: 'bottom', labels: { padding: 16, font: { family: "'DM Sans', sans-serif", size: 12 } } },
+        tooltip: { callbacks: { label: c => c.dataset.label + ': $' + Math.round(c.raw).toLocaleString() } }
+      },
+      scales: {
+        y: { beginAtZero: true, ticks: { callback: v => '$' + (v/1000).toFixed(0) + 'K' } },
+        x: { grid: { display: false }, ticks: { maxTicksLimit: 12 } }
+      }
+    }
+  });
+}
+
+/* ═══════════════════════════════════════════════════
+   LANGUAGE TOGGLE
+   ═══════════════════════════════════════════════════ */
+function setLang(lang) {
+  document.body.classList.toggle('lang-es', lang === 'es');
+  document.querySelectorAll('.lang-btn').forEach(b => {
+    b.classList.toggle('active', b.textContent.trim() === lang.toUpperCase());
+  });
+  recalc();
+}
+
+/* ═══════════════════════════════════════════════════
+   TAB NAVIGATION
+   ═══════════════════════════════════════════════════ */
+function showTab(id, btn) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('sec-' + id).classList.add('active');
+  btn.classList.add('active');
+  if (id === 'pnl') renderPnlChart();
+  if (id === 'ebitda') renderEbitdaChart();
+  if (id === 'commission') cvRecalc();
+}
+
+/* ═══════════════════════════════════════════════════
+   COMMISSION VALIDATOR (Tab 5)
+   ═══════════════════════════════════════════════════ */
+var cvProduct = 'hotel';
+var cvBenchmarkChart = null;
+
+const CV_DEFAULTS = {
+  agentShare: 20, agencyRebate: 0,
+  baseCommission: 12, priceAdjustment: 1.00, supplierNet: 139,
+  ticketPrice: 350, feePerSegment: 10, flightMarginPct: 2.9,
+  transferPrice: 45, transferGmPct: 8
+};
+
+const CV_BENCHMARKS = {
+  hotel: [
+    { name: 'WebBeds', gm: 6.5 },
+    { name: 'Hotelbeds', gm: 8.4 },
+    { name: 'Legacy Wholesalers', gm: 14 },
+    { name: 'B2C OTAs', gm: 20 }
+  ],
+  flight: [
+    { name: 'Amadeus (GDS fee)', gm: 1.5 },
+    { name: 'Kiwi.com', gm: 5 },
+    { name: 'CheapOair', gm: 7 },
+    { name: 'Expedia Flights', gm: 10 }
+  ],
+  transfer: [
+    { name: 'GetTransfer', gm: 5 },
+    { name: 'Mozio / HolidayTaxis', gm: 8 },
+    { name: 'Viator (activities)', gm: 15 },
+    { name: 'B2C OTAs (ancillary)', gm: 20 }
+  ]
+};
+
+const CV_DZ_AGENTS = [15, 20, 25, 30, 35, 40];
+const CV_DZ_REBATES = [0, 1, 2, 3, 4, 5];
+
+function cvF(v, d) { return v.toFixed(d === undefined ? 2 : d); }
+function cvUSD(v) { return '$' + v.toFixed(2); }
+
+function cvFill(el) {
+  var pct = (el.value - el.min) / (el.max - el.min) * 100;
+  el.style.background = 'linear-gradient(to right, var(--teal) ' + pct + '%, var(--border-light) ' + pct + '%)';
+}
+
+function cvSetProduct(type, btn) {
+  cvProduct = type;
+  document.querySelectorAll('.cv-product-tab').forEach(function(b) { b.classList.remove('active'); });
+  if (btn) btn.classList.add('active');
+  document.querySelectorAll('.cv-product-params').forEach(function(p) { p.style.display = 'none'; });
+  $('cv-params-' + type).style.display = '';
+  if (cvBenchmarkChart) { cvBenchmarkChart.destroy(); cvBenchmarkChart = null; }
+  cvRecalc();
+}
+
+// Compute per-booking for any product given agent share and rebate
+function cvComputeProduct(agentPct, rebatePct) {
+  var sellPrice, grossMargin, supplierCost;
+  if (cvProduct === 'hotel') {
+    var bc = parseFloat($('cv-baseCommission').value);
+    var pa = parseFloat($('cv-priceAdjustment').value);
+    var sn = parseFloat($('cv-supplierNet').value);
+    supplierCost = sn * pa;
+    sellPrice = supplierCost * (1 + bc / 100);
+    grossMargin = sellPrice - supplierCost;
+  } else if (cvProduct === 'flight') {
+    var tp = parseFloat($('cv-ticketPrice').value);
+    var fee = parseFloat($('cv-feePerSegment').value);
+    var mPct = parseFloat($('cv-flightMarginPct').value);
+    supplierCost = tp;
+    grossMargin = fee + tp * (mPct / 100);
+    sellPrice = tp + grossMargin; // agency pays ticket + Ergos margin
+  } else { // transfer
+    sellPrice = parseFloat($('cv-transferPrice').value);
+    var gmPct = parseFloat($('cv-transferGmPct').value);
+    grossMargin = sellPrice * (gmPct / 100);
+    supplierCost = sellPrice - grossMargin;
+  }
+  var grossMarginPct = sellPrice > 0 ? (grossMargin / sellPrice) * 100 : 0;
+  var agentPayout = grossMargin * (agentPct / 100);
+  var rebateAmount = sellPrice * (rebatePct / 100);
+  var netMargin = grossMargin - agentPayout - rebateAmount;
+  var netMarginPct = sellPrice > 0 ? (netMargin / sellPrice) * 100 : 0;
+  return { supplierCost: supplierCost, sellPrice: sellPrice, grossMargin: grossMargin, grossMarginPct: grossMarginPct, agentPayout: agentPayout, rebateAmount: rebateAmount, netMargin: netMargin, netMarginPct: netMarginPct };
+}
+
+function cvRecalc() {
+  var as_ = parseFloat($('cv-agentShare').value);
+  var ar = parseFloat($('cv-agencyRebate').value);
+
+  // Update shared displays
+  $('cv-val-agentShare').textContent = cvF(as_, 0) + '%';
+  $('cv-val-agencyRebate').textContent = cvF(ar, 1) + '%';
+
+  // Update product-specific displays
+  if (cvProduct === 'hotel') {
+    $('cv-val-baseCommission').textContent = cvF(parseFloat($('cv-baseCommission').value), 1) + '%';
+    $('cv-val-priceAdjustment').textContent = cvF(parseFloat($('cv-priceAdjustment').value), 2) + 'x';
+    $('cv-val-supplierNet').textContent = '$' + cvF(parseFloat($('cv-supplierNet').value), 0);
+  } else if (cvProduct === 'flight') {
+    $('cv-val-ticketPrice').textContent = '$' + cvF(parseFloat($('cv-ticketPrice').value), 0);
+    $('cv-val-feePerSegment').textContent = '$' + cvF(parseFloat($('cv-feePerSegment').value), 0);
+    $('cv-val-flightMarginPct').textContent = cvF(parseFloat($('cv-flightMarginPct').value), 1) + '%';
+  } else {
+    $('cv-val-transferPrice').textContent = '$' + cvF(parseFloat($('cv-transferPrice').value), 0);
+    $('cv-val-transferGmPct').textContent = cvF(parseFloat($('cv-transferGmPct').value), 1) + '%';
+  }
+
+  document.querySelectorAll('.cv-inputs input[type="range"]').forEach(cvFill);
+
+  var r = cvComputeProduct(as_, ar);
+
+  // KPI Cards
+  $('cv-kpi-sellPrice').textContent = cvUSD(r.sellPrice);
+  $('cv-kpi-sellPrice-sub').textContent = cvProduct === 'flight' ? 'ticket + margin' : '';
+  $('cv-kpi-grossMargin').textContent = cvUSD(r.grossMargin);
+  $('cv-kpi-grossMargin-sub').textContent = cvF(r.grossMarginPct, 1) + '% of sell';
+  $('cv-kpi-agentPayout').textContent = cvUSD(r.agentPayout);
+  $('cv-kpi-agentPayout-sub').textContent = cvF(r.sellPrice > 0 ? (r.agentPayout / r.sellPrice) * 100 : 0, 1) + '% of sell';
+  $('cv-kpi-netMargin').textContent = cvUSD(r.netMargin);
+  $('cv-kpi-netMargin-sub').textContent = cvF(r.netMarginPct, 1) + '% of sell';
+
+  var card = $('cv-kpi-netMargin-card');
+  var val = $('cv-kpi-netMargin');
+  if (r.netMarginPct >= 10) {
+    card.style.borderColor = 'var(--green)'; card.style.borderWidth = '1px 1px 1px 4px'; val.style.color = 'var(--green)';
+  } else if (r.netMarginPct >= 7) {
+    card.style.borderColor = 'var(--orange)'; card.style.borderWidth = '1px 1px 1px 4px'; val.style.color = 'var(--orange)';
+  } else {
+    card.style.borderColor = 'var(--red)'; card.style.borderWidth = '1px 1px 1px 4px'; val.style.color = 'var(--red)';
+  }
+
+  // Status callout
+  var co = $('cv-margin-callout');
+  if (r.netMarginPct >= 10) {
+    co.className = 'callout callout-success';
+    $('cv-callout-en').innerHTML = '<strong>Healthy margin.</strong> Net margin of ' + cvF(r.netMarginPct, 1) + '% is above the 10% target.';
+    $('cv-callout-es').innerHTML = '<strong>Margen saludable.</strong> El margen neto de ' + cvF(r.netMarginPct, 1) + '% esta por encima del objetivo del 10%.';
+  } else if (r.netMarginPct >= 7) {
+    co.className = 'callout callout-warning';
+    $('cv-callout-en').innerHTML = '<strong>Caution.</strong> Net margin of ' + cvF(r.netMarginPct, 1) + '% is between the 7% floor and 10% target. Monitor closely.';
+    $('cv-callout-es').innerHTML = '<strong>Precaucion.</strong> El margen neto de ' + cvF(r.netMarginPct, 1) + '% esta entre el piso de 7% y el objetivo de 10%. Monitorear de cerca.';
+  } else {
+    co.className = 'callout callout-danger';
+    $('cv-callout-en').innerHTML = '<strong>DANGER ZONE.</strong> Net margin of ' + cvF(r.netMarginPct, 1) + '% breaches the 7% floor. Reduce agent share, rebate, or adjust product parameters.';
+    $('cv-callout-es').innerHTML = '<strong>ZONA DE PELIGRO.</strong> El margen neto de ' + cvF(r.netMarginPct, 1) + '% incumple el piso de 7%. Reduzca la participacion del agente, el descuento, o ajuste los parametros del producto.';
+  }
+
+  // Waterfall Table — product-specific rows
+  var rows = [];
+  if (cvProduct === 'hotel') {
+    var sn = parseFloat($('cv-supplierNet').value);
+    var pa = parseFloat($('cv-priceAdjustment').value);
+    var adj = sn * pa;
+    var paAmt = adj - sn;
+    var comm = r.sellPrice - adj;
+    rows = [
+      ['Supplier Net Rate', 'Tarifa Neta del Proveedor', sn, (sn/r.sellPrice)*100, ''],
+      ['Price Adjustment', 'Ajuste de Precio', paAmt, (paAmt/r.sellPrice)*100, ''],
+      ['Adjusted Cost', 'Costo Ajustado', adj, (adj/r.sellPrice)*100, 'row-subtotal'],
+      ['Base Commission (markup)', 'Comision Base (margen)', comm, (comm/r.sellPrice)*100, ''],
+      ['Sell Price', 'Precio de Venta', r.sellPrice, 100, 'row-total'],
+    ];
+  } else if (cvProduct === 'flight') {
+    var tp = parseFloat($('cv-ticketPrice').value);
+    var fee = parseFloat($('cv-feePerSegment').value);
+    var mPct = parseFloat($('cv-flightMarginPct').value);
+    var ticketMargin = tp * (mPct / 100);
+    rows = [
+      ['Ticket Price (supplier cost)', 'Precio del Boleto (costo proveedor)', tp, (tp/r.sellPrice)*100, ''],
+      ['Fee Per Segment', 'Tarifa por Segmento', fee, (fee/r.sellPrice)*100, ''],
+      ['Margin on Ticket (' + cvF(mPct,1) + '%)', 'Margen sobre Boleto (' + cvF(mPct,1) + '%)', ticketMargin, (ticketMargin/r.sellPrice)*100, ''],
+      ['Sell Price (ticket + margin)', 'Precio de Venta (boleto + margen)', r.sellPrice, 100, 'row-total'],
+    ];
+  } else {
+    var sp = parseFloat($('cv-transferPrice').value);
+    rows = [
+      ['Supplier Cost', 'Costo del Proveedor', r.supplierCost, (r.supplierCost/r.sellPrice)*100, ''],
+      ['Ergos Margin', 'Margen Ergos', r.grossMargin, r.grossMarginPct, ''],
+      ['Sell Price', 'Precio de Venta', sp, 100, 'row-total'],
+    ];
+  }
+  // Common deduction rows
+  rows.push(['Gross Margin', 'Margen Bruto', r.grossMargin, r.grossMarginPct, 'row-subtotal']);
+  rows.push(['Agent Payout', 'Pago al Agente', -r.agentPayout, -(r.agentPayout/r.sellPrice)*100, '']);
+  rows.push(['Agency Rebate', 'Descuento de Agencia', -r.rebateAmount, -(r.rebateAmount/r.sellPrice)*100, '']);
+  rows.push(['Net Margin (Ergos keeps)', 'Margen Neto (Ergos retiene)', r.netMargin, r.netMarginPct, 'row-total']);
+
+  var tb = '';
+  rows.forEach(function(row) {
+    var s = row[2] < 0 ? '-' : '';
+    tb += '<tr class="' + row[4] + '"><td><span lang-content="en">' + row[0] + '</span><span lang-content="es">' + row[1] + '</span></td>' +
+      '<td class="money">' + s + cvUSD(Math.abs(row[2])) + '</td><td class="pct">' + s + cvF(Math.abs(row[3]), 1) + '%</td></tr>';
+  });
+  $('cv-waterfall-body').innerHTML = tb;
+
+  // Benchmark Chart
+  var benchmarks = CV_BENCHMARKS[cvProduct];
+  var labels = benchmarks.map(function(b) { return b.name; }).concat(['Ergos (current)']);
+  var data = benchmarks.map(function(b) { return b.gm; }).concat([parseFloat(r.grossMarginPct.toFixed(1))]);
+  var colors = benchmarks.map(function() { return 'rgba(30,30,78,0.6)'; }).concat(['rgba(15,168,155,0.9)']);
+  var borders = benchmarks.map(function() { return 'rgba(30,30,78,0.8)'; }).concat(['rgba(13,138,127,1)']);
+
+  if (!cvBenchmarkChart) {
+    var ctx = $('cv-benchmarkChart').getContext('2d');
+    cvBenchmarkChart = new Chart(ctx, {
+      type: 'bar',
+      data: { labels: labels, datasets: [{ data: data, backgroundColor: colors, borderColor: borders, borderWidth: 1, borderRadius: 4, barThickness: 28 }] },
+      options: {
+        indexAxis: 'y', responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { display: false }, tooltip: { callbacks: { label: function(c) { return c.raw.toFixed(1) + '%'; } } } },
+        scales: {
+          x: { beginAtZero: true, max: 30, ticks: { callback: function(v) { return v + '%'; }, font: { family: 'DM Sans', size: 11 } }, grid: { color: 'rgba(0,0,0,0.06)' } },
+          y: { ticks: { font: { family: 'DM Sans', size: 12, weight: '600' } }, grid: { display: false } }
+        }
+      }
+    });
+  } else {
+    cvBenchmarkChart.data.labels = labels;
+    cvBenchmarkChart.data.datasets[0].data = data;
+    cvBenchmarkChart.data.datasets[0].backgroundColor = colors;
+    cvBenchmarkChart.data.datasets[0].borderColor = borders;
+    cvBenchmarkChart.update();
+  }
+
+  // Price Impact
+  var premUsd = r.sellPrice - r.supplierCost;
+  var premPct = r.supplierCost > 0 ? (premUsd / r.supplierCost) * 100 : 0;
+  $('cv-pi-premium-usd').textContent = cvUSD(premUsd);
+  $('cv-pi-premium-pct').textContent = cvF(premPct, 1) + '%';
+  var posEn, posEs;
+  if (premPct <= 5) { posEn = 'very competitive (minimal markup)'; posEs = 'muy competitivo (margen minimo)'; }
+  else if (premPct <= 12) { posEn = 'competitive (moderate markup)'; posEs = 'competitivo (margen moderado)'; }
+  else if (premPct <= 25) { posEn = 'standard (typical B2B markup)'; posEs = 'estandar (margen B2B tipico)'; }
+  else { posEn = 'premium (high markup)'; posEs = 'premium (margen alto)'; }
+  var prodEn = cvProduct === 'hotel' ? 'guest' : cvProduct === 'flight' ? 'traveler' : 'passenger';
+  var prodEs = cvProduct === 'hotel' ? 'huesped' : cvProduct === 'flight' ? 'viajero' : 'pasajero';
+  $('cv-pi-text-en').innerHTML = 'The ' + prodEn + ' pays <strong>' + cvUSD(premUsd) + '</strong> more than the base cost (' + cvF(premPct, 1) + '% markup). Positioning: <strong>' + posEn + '</strong>.';
+  $('cv-pi-text-es').innerHTML = 'El ' + prodEs + ' paga <strong>' + cvUSD(premUsd) + '</strong> mas que el costo base (' + cvF(premPct, 1) + '% de margen). Posicionamiento: <strong>' + posEs + '</strong>.';
+
+  // Danger Zone Matrix — uses current product params with varying agent/rebate
+  var savedAs = as_, savedAr = ar;
+  var html = '<thead><tr><th><span lang-content="en">Rebate \\ Agent</span><span lang-content="es">Desc. \\ Agente</span></th>';
+  CV_DZ_AGENTS.forEach(function(a) { html += '<th>' + a + '%</th>'; });
+  html += '</tr></thead><tbody>';
+  CV_DZ_REBATES.forEach(function(reb) {
+    html += '<tr><td>' + cvF(reb, 0) + '%</td>';
+    CV_DZ_AGENTS.forEach(function(ag) {
+      var rr = cvComputeProduct(ag, reb);
+      var nm = rr.netMarginPct;
+      var cls = nm >= 10 ? 'dz-green' : nm >= 7 ? 'dz-amber' : 'dz-red';
+      if (ag === Math.round(savedAs) && Math.abs(reb - savedAr) < 0.01) cls += ' dz-current';
+      html += '<td class="' + cls + '">' + cvF(nm, 1) + '%</td>';
+    });
+    html += '</tr>';
+  });
+  html += '</tbody>';
+  $('cv-dz-table').innerHTML = html;
+
+  // Re-apply lang visibility for dynamically generated content
+  var isEs = document.body.classList.contains('lang-es');
+  document.querySelectorAll('#sec-commission [lang-content]').forEach(function(el) {
+    var lc = el.getAttribute('lang-content');
+    var tag = el.tagName;
+    if (lc === (isEs ? 'es' : 'en')) {
+      el.style.display = (tag === 'TD' || tag === 'TH') ? 'table-cell' : (tag === 'DIV' || tag === 'P') ? 'block' : 'inline';
+    } else {
+      el.style.display = 'none';
+    }
+  });
+}
+
+function cvReset() {
+  $('cv-agentShare').value = CV_DEFAULTS.agentShare;
+  $('cv-agencyRebate').value = CV_DEFAULTS.agencyRebate;
+  $('cv-baseCommission').value = CV_DEFAULTS.baseCommission;
+  $('cv-priceAdjustment').value = CV_DEFAULTS.priceAdjustment;
+  $('cv-supplierNet').value = CV_DEFAULTS.supplierNet;
+  $('cv-ticketPrice').value = CV_DEFAULTS.ticketPrice;
+  $('cv-feePerSegment').value = CV_DEFAULTS.feePerSegment;
+  $('cv-flightMarginPct').value = CV_DEFAULTS.flightMarginPct;
+  $('cv-transferPrice').value = CV_DEFAULTS.transferPrice;
+  $('cv-transferGmPct').value = CV_DEFAULTS.transferGmPct;
+  cvRecalc();
+}
+
+/* ═══════════════════════════════════════════════════
+   INIT
+   ═══════════════════════════════════════════════════ */
+recalc();
+</script>
+</body>
+</html>

@@ -1,0 +1,2504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ergos Continental — Commission & Operational Model</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+:root {
+  --navy: #0f0f3d; --navy-mid: #1a1a4e; --navy-light: #2e2e6e;
+  --teal: #0fa89b; --teal-bright: #11c4b5; --teal-dark: #0d8a7f;
+  --cream: #fdf6ec; --cream-dark: #f0e0c8;
+  --red: #d32f2f; --red-light: #ffebee;
+  --green: #1b8a42; --green-light: #e8f5e9;
+  --orange: #e67e00; --orange-light: #fff3e0;
+  --blue: #1565c0; --blue-light: #e3f2fd;
+  --purple: #6a1b9a; --purple-light: #f3e5f5;
+  --text-primary: #1a1a2e; --text-secondary: #3d3d5c;
+  --text-muted: #5c5c7a; --text-light: #7a7a96;
+  --border: #d0d0e0; --border-light: #e8e8f0;
+  --bg-white: #ffffff; --bg-gray: #f5f5fa;
+  --shadow-sm: 0 1px 4px rgba(15,15,61,0.06);
+  --shadow: 0 2px 12px rgba(15,15,61,0.08);
+  --shadow-lg: 0 8px 32px rgba(15,15,61,0.12);
+  --radius: 10px; --radius-lg: 14px;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'DM Sans', sans-serif; background: var(--bg-gray);
+  color: var(--text-primary); min-height: 100vh; line-height: 1.6; font-size: 15px;
+}
+.app-header {
+  background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 100%);
+  color: white; padding: 18px 32px; display: flex; align-items: center;
+  justify-content: space-between; position: sticky; top: 0; z-index: 200;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.2);
+}
+.app-header h1 { font-family: 'DM Serif Display', serif; font-size: 22px; font-weight: 400; letter-spacing: 0.3px; }
+.app-header .subtitle { font-size: 12px; opacity: 0.8; margin-top: 2px; font-weight: 500; }
+.header-right { display: flex; align-items: center; gap: 16px; }
+.lang-btns { display: flex; gap: 4px; }
+.lang-btn {
+  padding: 5px 11px; border-radius: 14px; border: 1.5px solid rgba(255,255,255,0.35);
+  background: transparent; color: rgba(255,255,255,0.9); font-family: 'DM Sans', sans-serif;
+  font-size: 11px; font-weight: 700; cursor: pointer; transition: all 0.2s; letter-spacing: 0.3px;
+}
+.lang-btn:hover { background: rgba(255,255,255,0.12); color: #fff; }
+.lang-btn.active { background: #fff; color: var(--navy); border-color: #fff; }
+.nav-tabs {
+  background: var(--bg-white); border-bottom: 2px solid var(--border); display: flex;
+  padding: 0 32px; position: sticky; top: 62px; z-index: 190; overflow-x: auto;
+}
+.nav-tab {
+  padding: 14px 22px; font-size: 13px; font-weight: 600; color: var(--text-muted);
+  cursor: pointer; border-bottom: 3px solid transparent; margin-bottom: -2px;
+  white-space: nowrap; transition: all 0.2s; background: none;
+  border-top: none; border-left: none; border-right: none; font-family: 'DM Sans', sans-serif;
+}
+.nav-tab:hover { color: var(--text-primary); background: var(--bg-gray); }
+.nav-tab.active { color: var(--teal-dark); border-bottom-color: var(--teal); }
+.nav-tab .tab-num {
+  display: inline-block; width: 22px; height: 22px; line-height: 22px; text-align: center;
+  border-radius: 50%; background: var(--border-light); color: var(--text-muted);
+  font-size: 11px; font-weight: 700; margin-right: 6px;
+}
+.nav-tab.active .tab-num { background: var(--teal); color: #fff; }
+.section { display: none; padding: 32px; max-width: 1300px; margin: 0 auto; }
+.section.active { display: block; }
+.bp-card {
+  background: var(--bg-white); border-radius: var(--radius-lg); padding: 28px 32px;
+  margin-bottom: 24px; box-shadow: var(--shadow); border: 1px solid var(--border-light);
+}
+.bp-card h2 {
+  font-family: 'DM Serif Display', serif; font-size: 24px; color: var(--navy);
+  margin-bottom: 16px; padding-bottom: 12px; border-bottom: 2px solid var(--border-light);
+}
+.bp-card h3 { font-size: 17px; font-weight: 700; color: var(--navy-mid); margin: 20px 0 10px; }
+.bp-card h4 { font-size: 15px; font-weight: 700; color: var(--text-primary); margin: 16px 0 8px; }
+.bp-card p { color: var(--text-secondary); margin-bottom: 12px; line-height: 1.7; }
+.bp-card strong { color: var(--text-primary); }
+.bp-card ul, .bp-card ol { margin: 8px 0 14px 20px; color: var(--text-secondary); }
+.bp-card li { margin-bottom: 6px; line-height: 1.6; }
+.callout {
+  padding: 16px 20px; border-radius: var(--radius); margin: 14px 0;
+  border-left: 4px solid; font-size: 14px; line-height: 1.6;
+}
+.callout-warning { background: var(--orange-light); border-color: var(--orange); color: #5d3a00; }
+.callout-info { background: var(--blue-light); border-color: var(--blue); color: #0d3b73; }
+.callout-success { background: var(--green-light); border-color: var(--green); color: #0d4a1f; }
+.callout-danger { background: var(--red-light); border-color: var(--red); color: #7a1a1a; }
+.callout-purple { background: var(--purple-light); border-color: var(--purple); color: #3a0d54; }
+.callout-teal { background: #e0f7f5; border-color: var(--teal); color: #064d46; }
+.bp-table {
+  width: 100%; border-collapse: collapse; font-size: 13px; margin: 12px 0 16px;
+}
+.bp-table th {
+  text-align: left; padding: 10px 14px; background: var(--navy); color: #fff;
+  font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: 0.4px;
+}
+.bp-table th:first-child { border-radius: 6px 0 0 0; }
+.bp-table th:last-child { border-radius: 0 6px 0 0; }
+.bp-table td {
+  padding: 10px 14px; border-bottom: 1px solid var(--border-light);
+  color: var(--text-secondary); vertical-align: top;
+}
+.bp-table th.money, .bp-table td.money,
+.bp-table th.pct, .bp-table td.pct,
+.bp-table th.num, .bp-table td.num { text-align: right; font-variant-numeric: tabular-nums; }
+.data-table th.money, .data-table td.money,
+.data-table th.pct, .data-table td.pct,
+.data-table th.num, .data-table td.num { font-variant-numeric: tabular-nums; }
+.bp-table tr:hover td { background: var(--bg-gray); }
+.bp-table td strong { color: var(--text-primary); }
+.kpi-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 24px; }
+.kpi-card {
+  background: var(--bg-white); border-radius: var(--radius); padding: 18px 20px;
+  box-shadow: var(--shadow-sm); border: 1px solid var(--border-light);
+}
+.kpi-card .kpi-label {
+  font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px;
+  color: var(--text-muted); font-weight: 600; margin-bottom: 6px;
+}
+.kpi-card .kpi-value {
+  font-family: 'DM Serif Display', serif; font-size: 28px; color: var(--navy); line-height: 1.1;
+}
+.kpi-card .kpi-sub { font-size: 12px; color: var(--text-muted); margin-top: 4px; font-weight: 500; }
+.kpi-value.positive { color: var(--green) !important; }
+.kpi-value.negative { color: var(--red) !important; }
+.calc-layout {
+  display: grid; grid-template-columns: 380px 1fr; gap: 0;
+  background: var(--bg-white); border-radius: var(--radius-lg);
+  box-shadow: var(--shadow); overflow: hidden; border: 1px solid var(--border-light);
+}
+.calc-inputs {
+  background: var(--bg-white); border-right: 2px solid var(--border); padding: 24px;
+  overflow-y: auto; max-height: calc(100vh - 120px); position: sticky; top: 120px;
+}
+.calc-outputs { padding: 28px 32px; background: var(--bg-gray); overflow-y: auto; }
+.input-section { margin-bottom: 22px; }
+.input-section-title {
+  font-size: 11px; text-transform: uppercase; letter-spacing: 1.2px;
+  color: var(--text-muted); font-weight: 700; margin-bottom: 14px;
+  padding-bottom: 6px; border-bottom: 2px solid var(--border-light);
+}
+.input-group { margin-bottom: 16px; }
+.input-label { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 3px; }
+.input-label-text { font-size: 13px; font-weight: 600; color: var(--text-primary); }
+.input-value-display {
+  font-size: 14px; font-weight: 700; color: var(--navy); min-width: 60px; text-align: right;
+}
+.input-hint { font-size: 11px; color: var(--text-muted); margin-bottom: 5px; line-height: 1.4; }
+input[type="range"] {
+  width: 100%; height: 6px; -webkit-appearance: none; appearance: none;
+  background: linear-gradient(to right, var(--teal) 0%, var(--border-light) 0%);
+  border-radius: 3px; outline: none; cursor: pointer;
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none; width: 20px; height: 20px; border-radius: 50%;
+  background: var(--teal); border: 3px solid #fff; box-shadow: 0 1px 6px rgba(0,0,0,0.25); cursor: pointer;
+}
+input[type="range"]::-moz-range-thumb {
+  width: 20px; height: 20px; border-radius: 50%; background: var(--teal);
+  border: 3px solid #fff; box-shadow: 0 1px 6px rgba(0,0,0,0.25); cursor: pointer;
+}
+.range-limits { display: flex; justify-content: space-between; font-size: 10px; color: var(--text-light); margin-top: 2px; }
+.preset-btns { display: flex; gap: 4px; margin-top: 6px; flex-wrap: wrap; }
+.preset-btn {
+  padding: 4px 10px; border-radius: 12px; border: 1px solid var(--border);
+  background: var(--bg-gray); color: var(--text-secondary); font-size: 11px;
+  font-weight: 600; cursor: pointer; transition: all 0.15s; font-family: 'DM Sans', sans-serif;
+}
+.preset-btn:hover { border-color: var(--teal); color: var(--teal-dark); }
+.preset-btn.active { background: var(--teal); color: #fff; border-color: var(--teal); }
+.chart-row { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom: 24px; }
+.chart-card {
+  background: var(--bg-white); border-radius: var(--radius); padding: 20px;
+  box-shadow: var(--shadow-sm); border: 1px solid var(--border-light);
+}
+.chart-card.full { grid-column: 1 / -1; }
+.chart-card h3 { font-size: 14px; font-weight: 700; color: var(--navy-mid); margin-bottom: 14px; }
+.data-card {
+  background: var(--bg-white); border-radius: var(--radius); padding: 20px;
+  box-shadow: var(--shadow-sm); border: 1px solid var(--border-light); margin-bottom: 20px; overflow-x: auto;
+}
+.data-card h3 { font-size: 14px; font-weight: 700; color: var(--navy-mid); margin-bottom: 14px; }
+.data-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.data-table th {
+  text-align: left; padding: 9px 12px; border-bottom: 2px solid var(--border);
+  font-weight: 700; color: var(--text-muted); font-size: 11px;
+  text-transform: uppercase; letter-spacing: 0.4px; white-space: nowrap;
+}
+.data-table td {
+  padding: 9px 12px; border-bottom: 1px solid var(--border-light);
+  white-space: nowrap; color: var(--text-secondary);
+}
+.data-table tr:hover td { background: var(--bg-gray); }
+.data-table tr.row-total td {
+  font-weight: 700; background: var(--cream); border-bottom: 2px solid var(--border); color: var(--text-primary);
+}
+.money { text-align: right; font-variant-numeric: tabular-nums; }
+.pct { text-align: right; }
+.toggle-group { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+.toggle-switch {
+  position: relative; width: 40px; height: 22px; background: var(--border);
+  border-radius: 11px; cursor: pointer; transition: background 0.2s;
+}
+.toggle-switch.on { background: var(--teal); }
+.toggle-switch::after {
+  content: ''; position: absolute; width: 18px; height: 18px; border-radius: 50%;
+  background: #fff; top: 2px; left: 2px; transition: left 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+.toggle-switch.on::after { left: 20px; }
+.toggle-label { font-size: 13px; font-weight: 600; color: var(--text-primary); }
+select {
+  width: 100%; padding: 8px 12px; border-radius: 8px; border: 1.5px solid var(--border);
+  font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600;
+  color: var(--text-primary); background: var(--bg-white); cursor: pointer; outline: none;
+}
+select:focus { border-color: var(--teal); }
+.scenario-presets { display: flex; gap: 6px; margin-bottom: 20px; flex-wrap: wrap; }
+.scenario-preset-btn {
+  padding: 7px 16px; border-radius: 20px; border: 1.5px solid var(--border);
+  background: var(--bg-white); color: var(--text-secondary); font-family: 'DM Sans', sans-serif;
+  font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.2s;
+}
+.scenario-preset-btn:hover { border-color: var(--teal); color: var(--teal-dark); }
+.scenario-preset-btn.active { background: var(--teal); border-color: var(--teal); color: #fff; }
+.flow-chain {
+  display: flex; align-items: stretch; gap: 0; margin: 20px 0; flex-wrap: wrap; justify-content: center;
+}
+.flow-step {
+  padding: 16px 20px; min-width: 160px; text-align: center; border: 2px solid var(--border);
+  background: var(--bg-white); position: relative;
+}
+.flow-step:first-child { border-radius: 10px 0 0 10px; }
+.flow-step:last-child { border-radius: 0 10px 10px 0; background: var(--teal); border-color: var(--teal); color: #fff; }
+.flow-step:last-child .flow-step-label { color: rgba(255,255,255,0.8); }
+.flow-step:last-child .flow-step-value { color: #fff; }
+.flow-step-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-muted); font-weight: 700; margin-bottom: 4px; }
+.flow-step-value { font-family: 'DM Serif Display', serif; font-size: 18px; color: var(--navy); }
+.flow-step-detail { font-size: 11px; color: var(--text-light); margin-top: 2px; }
+.flow-arrow {
+  display: flex; align-items: center; justify-content: center; font-size: 20px;
+  color: var(--text-light); padding: 0 2px; background: var(--bg-gray);
+}
+.field-card {
+  background: var(--bg-white); border-radius: var(--radius); padding: 20px 24px;
+  margin-bottom: 16px; border: 1px solid var(--border-light); box-shadow: var(--shadow-sm);
+  border-left: 4px solid var(--teal);
+}
+.field-card h4 { font-size: 15px; font-weight: 700; color: var(--navy); margin-bottom: 8px; }
+.field-card .field-meta { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 8px; }
+.field-tag {
+  font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 10px;
+  letter-spacing: 0.3px;
+}
+.field-tag-default { background: var(--blue-light); color: var(--blue); }
+.field-tag-range { background: var(--purple-light); color: var(--purple); }
+.field-tag-location { background: var(--orange-light); color: var(--orange); }
+.field-card p { font-size: 13px; color: var(--text-secondary); line-height: 1.6; margin-bottom: 6px; }
+.field-card code {
+  background: var(--bg-gray); padding: 2px 6px; border-radius: 4px; font-size: 12px;
+  color: var(--navy-mid); font-weight: 600;
+}
+.field-card .formula-box {
+  background: var(--navy); color: #e0e0e0; padding: 10px 14px; border-radius: 6px;
+  font-family: monospace; font-size: 12px; margin: 8px 0; line-height: 1.5; overflow-x: auto;
+}
+.tier-card {
+  background: var(--bg-white); border-radius: var(--radius); padding: 18px 22px;
+  border: 1px solid var(--border-light); box-shadow: var(--shadow-sm); margin-bottom: 12px;
+}
+.tier-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+.tier-name { font-family: 'DM Serif Display', serif; font-size: 20px; color: var(--navy); }
+.tier-badge {
+  display: inline-block; padding: 3px 12px; border-radius: 12px; font-size: 11px;
+  font-weight: 700; letter-spacing: 0.5px;
+}
+.tier-starter { background: var(--green-light); color: var(--green); }
+.tier-growth { background: var(--blue-light); color: var(--blue); }
+.tier-elite { background: var(--orange-light); color: var(--orange); }
+.tier-strategic { background: var(--purple-light); color: var(--purple); }
+.tier-card .tier-details { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.tier-detail-item .tier-detail-label { font-size: 11px; text-transform: uppercase; color: var(--text-muted); font-weight: 600; }
+.tier-detail-item .tier-detail-value { font-size: 18px; font-weight: 700; color: var(--navy); }
+.edge-case-card {
+  background: var(--bg-white); border-radius: var(--radius); padding: 22px 26px;
+  margin-bottom: 16px; border: 1px solid var(--border-light); box-shadow: var(--shadow-sm);
+}
+.edge-case-card h4 { font-size: 16px; font-weight: 700; color: var(--navy); margin-bottom: 10px; }
+.edge-case-card .example-box {
+  background: var(--bg-gray); border-radius: 8px; padding: 14px 18px; margin: 10px 0;
+  font-family: monospace; font-size: 12px; line-height: 1.6; color: var(--text-secondary); overflow-x: auto;
+}
+.conf-tag { display: inline-block; font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 4px; vertical-align: middle; }
+.conf-high { background: #c8e6c9; color: #1b5e20; }
+.conf-medium { background: #fff9c4; color: #6d5e00; }
+.conf-low { background: #ffcdd2; color: #b71c1c; }
+.conf-unknown { background: #e0e0e0; color: #424242; }
+[lang-content="es"] { display: none; }
+body.lang-es [lang-content="en"] { display: none; }
+body.lang-es [lang-content="es"] { display: inline; }
+body.lang-es .bp-card [lang-content="es"],
+body.lang-es .callout [lang-content="es"],
+body.lang-es .data-card [lang-content="es"],
+body.lang-es .chart-card [lang-content="es"],
+body.lang-es .field-card [lang-content="es"],
+body.lang-es .edge-case-card [lang-content="es"],
+body.lang-es .tier-card [lang-content="es"],
+body.lang-es .kpi-card [lang-content="es"] { display: block; }
+body.lang-es span[lang-content="es"] { display: inline; }
+@media (max-width: 1200px) {
+  .calc-layout { grid-template-columns: 1fr; }
+  .calc-inputs { position: static; max-height: none; border-right: none; border-bottom: 2px solid var(--border); }
+  .kpi-row { grid-template-columns: repeat(2, 1fr); }
+  .chart-row { grid-template-columns: 1fr; }
+  .flow-chain { flex-direction: column; align-items: center; }
+  .flow-step { border-radius: 10px !important; min-width: 200px; }
+  .flow-arrow { transform: rotate(90deg); padding: 4px 0; }
+}
+@media (max-width: 768px) {
+  .app-header { flex-direction: column; gap: 10px; padding: 14px 16px; }
+  .nav-tabs { padding: 0 12px; }
+  .section { padding: 16px; }
+  .kpi-row { grid-template-columns: 1fr; }
+  .bp-card { padding: 20px; }
+  .tier-card .tier-details { grid-template-columns: 1fr; }
+}
+@media print {
+  .app-header { position: static; }
+  .nav-tabs { display: none; }
+  .section { display: block !important; padding: 20px 0; page-break-inside: avoid; }
+  .calc-layout { grid-template-columns: 1fr; }
+  .calc-inputs { position: static; max-height: none; }
+  body { font-size: 12px; }
+}
+</style>
+</head>
+<body>
+<!-- HEADER -->
+<header class="app-header">
+  <div>
+    <h1><span lang-content="en">Ergos Continental</span><span lang-content="es">Ergos Continental</span></h1>
+    <div class="subtitle"><span lang-content="en">Commission & Operational Model -- v1.0</span><span lang-content="es">Modelo de Comisiones y Operaciones -- v1.0</span></div>
+  </div>
+  <div class="header-right">
+    <div class="lang-btns">
+      <button class="lang-btn active" onclick="setLang('en')">EN</button>
+      <button class="lang-btn" onclick="setLang('es')">ES</button>
+    </div>
+  </div>
+</header>
+
+<!-- NAVIGATION -->
+<nav class="nav-tabs" id="navTabs">
+  <button class="nav-tab active" onclick="showTab('executive',this)"><span class="tab-num">1</span><span lang-content="en">Executive Summary</span><span lang-content="es">Resumen Ejecutivo</span></button>
+  <button class="nav-tab" onclick="showTab('moneyflow',this)"><span class="tab-num">2</span><span lang-content="en">Money Flow</span><span lang-content="es">Flujo de Dinero</span></button>
+  <button class="nav-tab" onclick="showTab('incentives',this)"><span class="tab-num">3</span><span lang-content="en">Agent Incentives</span><span lang-content="es">Incentivos de Agentes</span></button>
+  <button class="nav-tab" onclick="showTab('melia',this)"><span class="tab-num">4</span><span lang-content="en">Melia Scenarios</span><span lang-content="es">Escenarios Melia</span></button>
+  <button class="nav-tab" onclick="showTab('calculator',this)"><span class="tab-num">5</span><span lang-content="en">Commission Calculator</span><span lang-content="es">Calculadora de Comisiones</span></button>
+  <button class="nav-tab" onclick="showTab('projections',this)"><span class="tab-num">6</span><span lang-content="en">Revenue Projections</span><span lang-content="es">Proyecciones de Ingresos</span></button>
+  <button class="nav-tab" onclick="showTab('edgecases',this)"><span class="tab-num">7</span><span lang-content="en">Edge Cases</span><span lang-content="es">Casos Especiales</span></button>
+  <button class="nav-tab" onclick="showTab('reference',this)"><span class="tab-num">8</span><span lang-content="en">Field Reference</span><span lang-content="es">Referencia de Campos</span></button>
+</nav>
+
+<!-- ============ TAB 1: EXECUTIVE SUMMARY ============ -->
+<div class="section active" id="sec-executive">
+
+  <div class="callout callout-teal" style="margin-bottom:24px;">
+    <strong><span lang-content="en">Core Design Principle:</span><span lang-content="es">Principio de Diseno Fundamental:</span></strong>
+    <span lang-content="en">Ergos's margin is earned first, before any agent share is calculated. Agents earn a fraction of Ergos's margin -- not a separate layer on top of it. This is the same structure used by insurance MGAs, SaaS channel partner programs, and hotel consolidator networks.</span>
+    <span lang-content="es">El margen de Ergos se genera primero, antes de calcular cualquier participacion del agente. Los agentes ganan una fraccion del margen de Ergos, no una capa separada por encima. Esta es la misma estructura utilizada por las MGAs de seguros, programas de socios de canal SaaS y redes consolidadoras hoteleras.</span>
+  </div>
+
+  <div class="kpi-row">
+    <div class="kpi-card">
+      <div class="kpi-label"><span lang-content="en">Min Floor (at avg GM)</span><span lang-content="es">Piso Minimo (al MB prom.)</span></div>
+      <div class="kpi-value">4.0%</div>
+      <div class="kpi-sub"><span lang-content="en">Scales with gross margin level</span><span lang-content="es">Escala con el nivel de margen bruto</span></div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label"><span lang-content="en">Max Agent Share</span><span lang-content="es">Participacion Maxima del Agente</span></div>
+      <div class="kpi-value">32%</div>
+      <div class="kpi-sub"><span lang-content="en">Of Ergos gross margin</span><span lang-content="es">Del margen bruto de Ergos</span></div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label"><span lang-content="en">Avg Gross Margin</span><span lang-content="es">Margen Bruto Promedio</span></div>
+      <div class="kpi-value">7-8%</div>
+      <div class="kpi-sub"><span lang-content="en">Of sell price (colleague-confirmed)</span><span lang-content="es">Del precio de venta (confirmado por colega)</span></div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label"><span lang-content="en">Agent Tiers</span><span lang-content="es">Niveles de Agentes</span></div>
+      <div class="kpi-value">4</div>
+      <div class="kpi-sub"><span lang-content="en">Starter / Growth / Elite / Strategic</span><span lang-content="es">Inicial / Crecimiento / Elite / Estrategico</span></div>
+    </div>
+  </div>
+
+  <div class="bp-card">
+    <h2><span lang-content="en">Key Financial Guarantees</span><span lang-content="es">Garantias Financieras Clave</span></h2>
+    <ul>
+      <li><span lang-content="en">Ergos retains a <strong>minimum ~5% net margin</strong> on every booking regardless of agent tier (at average 7-8% gross margin)</span><span lang-content="es">Ergos retiene un <strong>margen neto minimo de ~5%</strong> en cada reserva independientemente del nivel del agente (al 7-8% de margen bruto promedio)</span></li>
+      <li><span lang-content="en">No agent commission can exceed <strong>32% of Ergos's gross margin</strong> on any booking</span><span lang-content="es">Ninguna comision de agente puede exceder el <strong>32% del margen bruto de Ergos</strong> en ninguna reserva</span></li>
+      <li><span lang-content="en">Agent commissions are subject to a hard floor: Ergos must net at least <strong>4.0 percentage points</strong> at 7-8% gross margin after all agent payouts (floor scales with gross margin level)</span><span lang-content="es">Las comisiones de agentes estan sujetas a un piso rigido: Ergos debe obtener al menos <strong>4.0 puntos porcentuales</strong> al 7-8% de margen bruto despues de todos los pagos a agentes (el piso escala con el nivel de margen bruto)</span></li>
+      <li><span lang-content="en">Negotiated Discount (<code>priceAdjustment</code>) fields are <strong>pre-margin adjustments</strong> -- they affect the net cost basis, not the selling price directly</span><span lang-content="es">Los campos de Descuento Negociado (<code>priceAdjustment</code>) son <strong>ajustes pre-margen</strong> -- afectan la base de costo neto, no el precio de venta directamente</span></li>
+      <li><span lang-content="en">Ergos must retain at least <strong>50% of its gross margin</strong> on every booking (secondary guardrail)</span><span lang-content="es">Ergos debe retener al menos el <strong>50% de su margen bruto</strong> en cada reserva (barrera de seguridad secundaria)</span></li>
+    </ul>
+  </div>
+
+  <div class="bp-card">
+    <h2><span lang-content="en">Floor Rationale — Derived from Real-World Gross Margins</span><span lang-content="es">Justificacion del Piso — Derivado de Margenes Brutos Reales</span></h2>
+    <p><span lang-content="en">The floor system works <strong>backwards from gross margin reality</strong>. Our colleague confirmed the real-world gross profit (utilidad bruta) as a percentage of the sell price: <strong>3% min</strong> (wholesale deals), <strong>7-8% average</strong>, <strong>15% max</strong>. At 5% gross margin, the operational cost to attain it is ~2% of sell price (low salaries + sales commission spikes), leaving ~3% net. These are the anchor points that drive the entire model.</span><span lang-content="es">El sistema de pisos funciona <strong>hacia atras desde la realidad del margen bruto</strong>. Nuestro colega confirmo la utilidad bruta real como porcentaje del precio de venta: <strong>3% minimo</strong> (operaciones mayoristas), <strong>7-8% promedio</strong>, <strong>15% maximo</strong>. Al 5% de margen bruto, el costo operacional para lograrlo es ~2% del precio de venta (salarios bajos + picos de comision de ventas), dejando ~3% neto. Estos son los puntos de anclaje que impulsan todo el modelo.</span></p>
+
+    <h3><span lang-content="en">Real-World Gross Margin Economics</span><span lang-content="es">Economia Real del Margen Bruto</span></h3>
+    <table class="bp-table">
+      <thead>
+        <tr>
+          <th class="pct"><span lang-content="en">Gross Margin (% of sell)</span><span lang-content="es">Margen Bruto (% de venta)</span></th>
+          <th class="pct"><span lang-content="en">Cost (agent+ops, % of sell)</span><span lang-content="es">Costo (agente+ops, % de venta)</span></th>
+          <th class="pct"><span lang-content="en">Ergos Net (% of sell)</span><span lang-content="es">Neto Ergos (% de venta)</span></th>
+          <th class="pct"><span lang-content="en">Retention (% of gross)</span><span lang-content="es">Retencion (% del bruto)</span></th>
+          <th><span lang-content="en">Context</span><span lang-content="es">Contexto</span></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="pct"><strong>3%</strong></td>
+          <td class="pct">~1.5%</td>
+          <td class="pct">~1.5%</td>
+          <td class="pct">50%</td>
+          <td><span lang-content="en">Wholesale survival minimum</span><span lang-content="es">Minimo de supervivencia mayorista</span></td>
+        </tr>
+        <tr>
+          <td class="pct"><strong>5%</strong></td>
+          <td class="pct">~2.0%</td>
+          <td class="pct">~3.0%</td>
+          <td class="pct">60%</td>
+          <td><span lang-content="en">Wholesale standard</span><span lang-content="es">Mayorista estandar</span></td>
+        </tr>
+        <tr style="background: var(--green-light);">
+          <td class="pct"><strong>7-8%</strong></td>
+          <td class="pct">~2.0%</td>
+          <td class="pct">~5-6%</td>
+          <td class="pct">70-75%</td>
+          <td><strong><span lang-content="en">Average operating point</span><span lang-content="es">Punto operativo promedio</span></strong></td>
+        </tr>
+        <tr>
+          <td class="pct"><strong>15%</strong></td>
+          <td class="pct">~3-4%</td>
+          <td class="pct">~11-12%</td>
+          <td class="pct">75-80%</td>
+          <td><span lang-content="en">Max operating point</span><span lang-content="es">Punto operativo maximo</span></td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="callout callout-teal" style="margin-top: 12px;">
+      <span lang-content="en"><strong>Key insight:</strong> Gross margin % is the PRIMARY metric. The <code>baseCommission</code> (Ergos Markup) is simply the technical parameter needed to <em>achieve</em> a given gross margin level. For example, to achieve 7.5% gross margin, you need ~8% markup on cost basis. The gross margin is the reality; the markup is the lever.</span>
+      <span lang-content="es"><strong>Perspectiva clave:</strong> El % de margen bruto es la metrica PRIMARIA. El <code>baseCommission</code> (Margen Ergos) es simplemente el parametro tecnico necesario para <em>lograr</em> un nivel dado de margen bruto. Por ejemplo, para lograr 7.5% de margen bruto, se necesita ~8% de margen sobre la base de costo. El margen bruto es la realidad; el markup es la palanca.</span>
+    </div>
+
+    <h3><span lang-content="en">Industry Benchmark</span><span lang-content="es">Referencia de la Industria</span></h3>
+    <table class="bp-table">
+      <thead>
+        <tr>
+          <th><span lang-content="en">Company</span><span lang-content="es">Empresa</span></th>
+          <th class="pct"><span lang-content="en">Gross Take Rate</span><span lang-content="es">Tasa Bruta</span></th>
+          <th class="pct"><span lang-content="en">EBITDA Margin</span><span lang-content="es">Margen EBITDA</span></th>
+          <th class="pct"><span lang-content="en">Net % of TTV</span><span lang-content="es">Neto % de TTV</span></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Hotelbeds (HBX)</strong></td>
+          <td class="pct">8.4-9.4%</td>
+          <td class="pct">50-60%</td>
+          <td class="pct">4.2-5.6%</td>
+        </tr>
+        <tr>
+          <td><strong>WebBeds (WJL)</strong></td>
+          <td class="pct">6.5%</td>
+          <td class="pct">49-52%</td>
+          <td class="pct">3.2-3.4%</td>
+        </tr>
+      </tbody>
+    </table>
+    <p><span lang-content="en">Both retain approximately <strong>50% of gross revenue</strong> as net after all operating costs. This is the structural reality of B2B hotel intermediary economics.</span><span lang-content="es">Ambos retienen aproximadamente el <strong>50% de los ingresos brutos</strong> como neto despues de todos los costos operativos. Esta es la realidad estructural de la economia de intermediarios hoteleros B2B.</span></p>
+
+    <h3><span lang-content="en">Derivation at Average Gross Margin (7-8%)</span><span lang-content="es">Derivacion al Margen Bruto Promedio (7-8%)</span></h3>
+    <div class="example-box" style="background: var(--bg-gray); border-radius: 8px; padding: 16px 20px; font-family: monospace; font-size: 13px; line-height: 1.8; color: var(--text-secondary);">
+      <span lang-content="en">
+Average gross margin (colleague confirmed):   7-8% of sell price<br>
+Markup needed to achieve 7.5% GM:            ~8% on cost basis<br>
+<br>
+Real-world cost structure (colleague confirmed):<br>
+  Agent + sales commission:               ~1.0-1.5% of sell price<br>
+  Ops overhead (support, tech, G&amp;A):      ~0.5-1.0% of sell price<br>
+  Total operational cost:                 ~1.5-2.0% of sell price<br>
+-----------------------------------------------------<br>
+<strong>Minimum viable floor at 7-8% GM:          ~3.5-4.5% of sell price</strong><br>
+<br>
+4.0% = practical floor at average operating point<br>
+At 5% GM, cost is ~2% → leaves ~3% net (colleague confirmed)<br>
+At 7-8% GM, retention naturally sits at 70-75%
+      </span>
+      <span lang-content="es">
+Margen bruto promedio (confirmado por colega): 7-8% del precio de venta<br>
+Markup necesario para lograr 7.5% MB:         ~8% sobre base de costo<br>
+<br>
+Estructura de costos real (confirmada por colega):<br>
+  Agente + comision de ventas:            ~1.0-1.5% del precio de venta<br>
+  Gastos operacionales (soporte, tech):   ~0.5-1.0% del precio de venta<br>
+  Costo operacional total:               ~1.5-2.0% del precio de venta<br>
+-----------------------------------------------------<br>
+<strong>Piso minimo viable al 7-8% MB:            ~3.5-4.5% del precio de venta</strong><br>
+<br>
+4.0% = piso practico al punto operativo promedio<br>
+Al 5% MB, costo es ~2% → deja ~3% neto (confirmado por colega)<br>
+Al 7-8% MB, la retencion naturalmente se situa en 70-75%
+      </span>
+    </div>
+
+    <h3><span lang-content="en">Scaled Floor by Gross Margin Level</span><span lang-content="es">Piso Escalonado por Nivel de Margen Bruto</span></h3>
+    <p><span lang-content="en">The floor scales with gross margin level. Anchored to colleague-confirmed data: at 3% gross margin (wholesale), Ergos keeps 1.5% (survival minimum). At 7-8% (average), Ergos keeps 4.0%. At 15% (max), Ergos keeps 7.0%. The <code>baseCommission</code> (markup) column shows the approximate markup on cost basis needed to achieve each gross margin level.</span><span lang-content="es">El piso escala con el nivel de margen bruto. Anclado a datos confirmados por el colega: al 3% de margen bruto (mayorista), Ergos retiene 1.5% (minimo de supervivencia). Al 7-8% (promedio), Ergos retiene 4.0%. Al 15% (maximo), Ergos retiene 7.0%. La columna <code>baseCommission</code> (markup) muestra el margen aproximado sobre la base de costo necesario para lograr cada nivel de margen bruto.</span></p>
+    <table class="bp-table">
+      <thead>
+        <tr>
+          <th class="pct"><span lang-content="en">Gross Margin (% of sell)</span><span lang-content="es">Margen Bruto (% de venta)</span></th>
+          <th class="pct"><span lang-content="en">Approx. Markup</span><span lang-content="es">Markup Aprox.</span> (<code>baseCommission</code>)</th>
+          <th class="pct"><span lang-content="en">Floor (% of sell)</span><span lang-content="es">Piso (% de venta)</span></th>
+          <th><span lang-content="en">Notes</span><span lang-content="es">Notas</span></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="pct">~3%</td>
+          <td class="pct">~3%</td>
+          <td class="pct">1.5%</td>
+          <td><span lang-content="en">Wholesale survival minimum</span><span lang-content="es">Minimo de supervivencia mayorista</span></td>
+        </tr>
+        <tr>
+          <td class="pct">~5%</td>
+          <td class="pct">~5%</td>
+          <td class="pct">2.5%</td>
+          <td><span lang-content="en">Wholesale standard</span><span lang-content="es">Mayorista estandar</span></td>
+        </tr>
+        <tr style="background: var(--green-light);">
+          <td class="pct"><strong>7-8%</strong></td>
+          <td class="pct"><strong>~8%</strong></td>
+          <td class="pct"><strong>4.0%</strong></td>
+          <td><strong><span lang-content="en">Average operating point (colleague-confirmed)</span><span lang-content="es">Punto operativo promedio (confirmado por colega)</span></strong></td>
+        </tr>
+        <tr>
+          <td class="pct">~11%</td>
+          <td class="pct">~12%</td>
+          <td class="pct">5.5%</td>
+          <td><span lang-content="en">Higher margin hotels</span><span lang-content="es">Hoteles de mayor margen</span></td>
+        </tr>
+        <tr>
+          <td class="pct"><strong>15%</strong></td>
+          <td class="pct">~18%</td>
+          <td class="pct">7.0%</td>
+          <td><span lang-content="en">Max operating point</span><span lang-content="es">Punto operativo maximo</span></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="callout callout-info">
+      <span lang-content="en"><strong>Two guardrails work together:</strong> (1) The floor as % of sell price (scaled by gross margin level), and (2) Ergos must retain &ge; 50% of gross margin on every booking. If either check fails, the configuration should not be saved without admin override.</span>
+      <span lang-content="es"><strong>Dos barreras trabajan juntas:</strong> (1) El piso como % del precio de venta (escalado por nivel de margen bruto), y (2) Ergos debe retener &ge; 50% del margen bruto en cada reserva. Si alguna verificacion falla, la configuracion no deberia guardarse sin autorizacion del administrador.</span>
+    </div>
+
+    <div class="callout callout-warning">
+      <span lang-content="en"><strong>Important distinction:</strong> The <code>operationalExpense</code> field (5-8%) only covers the <em>incremental</em> variable cost of managing one agent's portfolio (support, account management, marketing). The floor must absorb everything else: payment processing (~1-1.5%), technology infrastructure, G&amp;A, and profit. These are different mechanisms doing different jobs.</span>
+      <span lang-content="es"><strong>Distincion importante:</strong> El campo <code>operationalExpense</code> (5-8%) solo cubre el costo variable <em>incremental</em> de gestionar el portafolio de un agente (soporte, gestion de cuentas, marketing). El piso debe absorber todo lo demas: procesamiento de pagos (~1-1.5%), infraestructura tecnologica, G&amp;A, y ganancia. Estos son mecanismos diferentes que hacen trabajos diferentes.</span>
+    </div>
+  </div>
+
+  <div class="bp-card">
+    <h2><span lang-content="en">Negotiated Hotel Chain Discounts</span><span lang-content="es">Descuentos Negociados por Cadena Hotelera</span></h2>
+    <p><span lang-content="en">These are pre-negotiated cost reductions applied as <code>priceAdjustment</code> before Ergos adds its markup. They reduce the cost basis, making Ergos prices more competitive while preserving margin percentages.</span><span lang-content="es">Estas son reducciones de costo pre-negociadas aplicadas como <code>priceAdjustment</code> antes de que Ergos agregue su margen. Reducen la base de costo, haciendo los precios de Ergos mas competitivos mientras preservan los porcentajes de margen.</span></p>
+    <table class="bp-table">
+      <thead>
+        <tr>
+          <th><span lang-content="en">Hotel Chain</span><span lang-content="es">Cadena Hotelera</span></th>
+          <th class="pct"><span lang-content="en">Discount</span><span lang-content="es">Descuento</span></th>
+          <th class="num"><code>priceAdjustment</code></th>
+          <th><span lang-content="en">Contract Status</span><span lang-content="es">Estado del Contrato</span></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Domina</strong></td>
+          <td class="pct">-20%</td>
+          <td class="num"><strong>0.80</strong></td>
+          <td><span class="conf-tag conf-high"><span lang-content="en">SIGNED</span><span lang-content="es">FIRMADO</span></span> <span lang-content="en">See annex</span><span lang-content="es">Ver anexo</span></td>
+        </tr>
+        <tr>
+          <td><strong>Melia</strong></td>
+          <td class="pct">-15%</td>
+          <td class="num"><strong>0.85</strong></td>
+          <td><span class="conf-tag conf-medium"><span lang-content="en">PENDING</span><span lang-content="es">PENDIENTE</span></span> <span lang-content="en">Awaiting contract annex signature</span><span lang-content="es">Esperando firma del anexo al contrato</span></td>
+        </tr>
+        <tr>
+          <td><strong>Iberostar</strong></td>
+          <td class="pct">-18%</td>
+          <td class="num"><strong>0.82</strong></td>
+          <td><span class="conf-tag conf-medium"><span lang-content="en">PENDING</span><span lang-content="es">PENDIENTE</span></span> <span lang-content="en">Awaiting contract annex signature</span><span lang-content="es">Esperando firma del anexo al contrato</span></td>
+        </tr>
+        <tr>
+          <td><strong>HTL Gaviota</strong></td>
+          <td class="pct">-20%</td>
+          <td class="num"><strong>0.80</strong></td>
+          <td><span class="conf-tag conf-high"><span lang-content="en">SIGNED</span><span lang-content="es">FIRMADO</span></span> <span lang-content="en">See annex</span><span lang-content="es">Ver anexo</span></td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="callout callout-warning">
+      <span lang-content="en"><strong>Margin protection rule:</strong> Hotels with priceAdjustment &le; 0.85 should target a gross margin of ~11%+ (markup &ge; 12%) to protect the floor when Agency Rebates are also applied. See Edge Case #1.</span>
+      <span lang-content="es"><strong>Regla de proteccion de margen:</strong> Los hoteles con priceAdjustment &le; 0.85 deben apuntar a un margen bruto de ~11%+ (markup &ge; 12%) para proteger el piso cuando tambien se aplican Rebajas de Agencia. Ver Caso Especial #1.</span>
+    </div>
+  </div>
+
+  <div class="bp-card">
+    <h2><span lang-content="en">Industry Parallels</span><span lang-content="es">Paralelos de la Industria</span></h2>
+    <table class="bp-table">
+      <thead>
+        <tr>
+          <th><span lang-content="en">Model</span><span lang-content="es">Modelo</span></th>
+          <th><span lang-content="en">How It Works</span><span lang-content="es">Como Funciona</span></th>
+          <th><span lang-content="en">Ergos Parallel</span><span lang-content="es">Paralelo con Ergos</span></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong><span lang-content="en">Insurance MGA</span><span lang-content="es">MGA de Seguros</span></strong></td>
+          <td><span lang-content="en">Insurer sets premium; MGA earns override; sub-agent earns portion of MGA override</span><span lang-content="es">La aseguradora fija la prima; la MGA gana una comision; el sub-agente gana una porcion de la comision de la MGA</span></td>
+          <td><span lang-content="en">Supplier sets net rate; Ergos marks up; agent earns share of Ergos margin</span><span lang-content="es">El proveedor fija la tarifa neta; Ergos agrega margen; el agente gana parte del margen de Ergos</span></td>
+        </tr>
+        <tr>
+          <td><strong>HubSpot</strong></td>
+          <td><span lang-content="en">HubSpot sets SaaS price; Partner earns 20-30% of first-year revenue</span><span lang-content="es">HubSpot fija el precio SaaS; el socio gana 20-30% de los ingresos del primer ano</span></td>
+          <td><span lang-content="en">Tiered earning percentages (10-32%) based on portfolio size</span><span lang-content="es">Porcentajes de ganancia escalonados (10-32%) basados en el tamano del portafolio</span></td>
+        </tr>
+        <tr>
+          <td><strong>Expedia TAAP</strong></td>
+          <td><span lang-content="en">Expedia sets rate; Agency earns 8-10% commission on bookings</span><span lang-content="es">Expedia fija la tarifa; la agencia gana 8-10% de comision en reservas</span></td>
+          <td><span lang-content="en">Ergos is the OTA; agency is the downstream seller with its own markup</span><span lang-content="es">Ergos es la OTA; la agencia es el vendedor con su propio margen</span></td>
+        </tr>
+        <tr>
+          <td><strong>Booking.com</strong></td>
+          <td><span lang-content="en">Affiliate program with one-time bonus + trailing commission per booking</span><span lang-content="es">Programa de afiliados con bono unico + comision residual por reserva</span></td>
+          <td><span lang-content="en">Onboarding bonus + residual Agent Share mirrors this exactly</span><span lang-content="es">Bono de incorporacion + Participacion del Agente residual refleja esto exactamente</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+<!-- ============ TAB 2: MONEY FLOW ============ -->
+<div class="section" id="sec-moneyflow">
+
+  <div class="bp-card">
+    <h2><span lang-content="en">The Four-Layer Pricing Chain</span><span lang-content="es">La Cadena de Precios de Cuatro Capas</span></h2>
+    <p><span lang-content="en">Every hotel booking flows through four distinct pricing layers. Understanding this chain is essential to configuring commissions correctly.</span><span lang-content="es">Cada reserva de hotel pasa por cuatro capas de precios distintas. Comprender esta cadena es esencial para configurar las comisiones correctamente.</span></p>
+
+    <div class="flow-chain">
+      <div class="flow-step">
+        <div class="flow-step-label"><span lang-content="en">Layer 0</span><span lang-content="es">Capa 0</span></div>
+        <div class="flow-step-value"><span lang-content="en">Supplier Net</span><span lang-content="es">Neto del Proveedor</span></div>
+        <div class="flow-step-detail"><span lang-content="en">GDS vendor cost</span><span lang-content="es">Costo del proveedor GDS</span></div>
+      </div>
+      <div class="flow-arrow">&#8594;</div>
+      <div class="flow-step">
+        <div class="flow-step-label"><span lang-content="en">Layer 1</span><span lang-content="es">Capa 1</span></div>
+        <div class="flow-step-value"><span lang-content="en">Cost Basis</span><span lang-content="es">Base de Costo</span></div>
+        <div class="flow-step-detail"><span lang-content="en">x Negotiated Discount</span><span lang-content="es">x Descuento Negociado</span></div>
+      </div>
+      <div class="flow-arrow">&#8594;</div>
+      <div class="flow-step">
+        <div class="flow-step-label"><span lang-content="en">Layer 2</span><span lang-content="es">Capa 2</span></div>
+        <div class="flow-step-value"><span lang-content="en">Ergos Sell</span><span lang-content="es">Venta Ergos</span></div>
+        <div class="flow-step-detail"><span lang-content="en">x (1 + Ergos Markup)</span><span lang-content="es">x (1 + Margen Ergos)</span></div>
+      </div>
+      <div class="flow-arrow">&#8594;</div>
+      <div class="flow-step">
+        <div class="flow-step-label"><span lang-content="en">Layer 3</span><span lang-content="es">Capa 3</span></div>
+        <div class="flow-step-value"><span lang-content="en">Agency Sell</span><span lang-content="es">Venta Agencia</span></div>
+        <div class="flow-step-detail"><span lang-content="en">Agency controls</span><span lang-content="es">La agencia controla</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Field: baseCommission -->
+  <div class="field-card">
+    <h4><span lang-content="en">Ergos Markup</span><span lang-content="es">Margen Ergos</span> <code>baseCommission</code></h4>
+    <div class="field-meta">
+      <span class="field-tag field-tag-location"><span lang-content="en">Hotel Level</span><span lang-content="es">Nivel Hotel</span></span>
+      <span class="field-tag field-tag-default"><span lang-content="en">Default: 8%</span><span lang-content="es">Predeterminado: 8%</span></span>
+      <span class="field-tag field-tag-range"><span lang-content="en">Range: 3-15%</span><span lang-content="es">Rango: 3-15%</span></span>
+    </div>
+    <p><span lang-content="en">The percentage markup Ergos adds to the supplier net price (post-adjustment) to arrive at the selling price shown to the travel agency. This is the technical lever that produces the desired gross margin. For example, an 8% markup produces a ~7.5% gross margin as % of sell price.</span><span lang-content="es">El porcentaje de markup que Ergos agrega al precio neto del proveedor (post-ajuste) para llegar al precio de venta mostrado a la agencia de viajes. Esta es la palanca tecnica que produce el margen bruto deseado. Por ejemplo, un markup del 8% produce un margen bruto de ~7.5% como % del precio de venta.</span></p>
+    <div class="formula-box">ergosSellPrice = supplierNetPrice x priceAdjustment x (1 + baseCommission)</div>
+  </div>
+
+  <!-- Field: priceAdjustment -->
+  <div class="field-card">
+    <h4><span lang-content="en">Negotiated Discount</span><span lang-content="es">Descuento Negociado</span> <code>priceAdjustment</code></h4>
+    <div class="field-meta">
+      <span class="field-tag field-tag-location"><span lang-content="en">Hotel Level</span><span lang-content="es">Nivel Hotel</span></span>
+      <span class="field-tag field-tag-default"><span lang-content="en">Default: 1.00</span><span lang-content="es">Predeterminado: 1.00</span></span>
+      <span class="field-tag field-tag-range"><span lang-content="en">Range: 0.50-1.50</span><span lang-content="es">Rango: 0.50-1.50</span></span>
+    </div>
+    <p><span lang-content="en">A multiplier applied to the supplier's net price BEFORE Ergos adds its margin. It represents pre-negotiated cost reductions for specific hotel chains. This is a COST-SIDE field, not a SELL-SIDE field. Current negotiated values: Domina = 0.80 (-20%), Gaviota = 0.80 (-20%), Iberostar = 0.82 (-18%), Melia = 0.85 (-15%).</span><span lang-content="es">Un multiplicador aplicado al precio neto del proveedor ANTES de que Ergos agregue su margen. Representa reducciones de costo pre-negociadas para cadenas hoteleras especificas. Este es un campo del LADO DEL COSTO, no del lado de la venta. Valores negociados actuales: Domina = 0.80 (-20%), Gaviota = 0.80 (-20%), Iberostar = 0.82 (-18%), Melia = 0.85 (-15%).</span></p>
+    <div class="formula-box">adjustedCostBasis = supplierNetPrice x priceAdjustment</div>
+    <div class="callout callout-info" style="margin-top:12px">
+      <span lang-content="en"><strong>Key insight:</strong> priceAdjustment creates Ergos's competitive advantage at specific hotel chains. The selling price goes DOWN, making Ergos more attractive to agencies -- but Ergos's margin PERCENTAGE stays the same because baseCommission is applied to the already-reduced cost basis.</span>
+      <span lang-content="es"><strong>Perspectiva clave:</strong> priceAdjustment crea la ventaja competitiva de Ergos en cadenas hoteleras especificas. El precio de venta BAJA, haciendo a Ergos mas atractivo para las agencias -- pero el PORCENTAJE de margen de Ergos se mantiene igual porque baseCommission se aplica a la base de costo ya reducida.</span>
+    </div>
+  </div>
+
+  <!-- Field: earningPercentage -->
+  <div class="field-card">
+    <h4><span lang-content="en">Agent Share</span><span lang-content="es">Participacion del Agente</span> <code>earningPercentage</code></h4>
+    <div class="field-meta">
+      <span class="field-tag field-tag-location"><span lang-content="en">Sales Agent Level</span><span lang-content="es">Nivel Agente de Ventas</span></span>
+      <span class="field-tag field-tag-default"><span lang-content="en">Default: per tier</span><span lang-content="es">Predeterminado: por nivel</span></span>
+      <span class="field-tag field-tag-range"><span lang-content="en">Range: 10-32%</span><span lang-content="es">Rango: 10-32%</span></span>
+    </div>
+    <p><span lang-content="en">The percentage of Ergos's gross margin on any booking that the agent earns as their ongoing residual commission. The agent keeps earning it for as long as the agency keeps booking.</span><span lang-content="es">El porcentaje del margen bruto de Ergos en cualquier reserva que el agente gana como su comision residual continua. El agente sigue ganandola mientras la agencia siga reservando.</span></p>
+    <div class="formula-box">agentEarning = ergosGrossMargin x (agentShare / 100)</div>
+    <div class="callout callout-info" style="margin-top:12px">
+      <span lang-content="en"><strong>One formula:</strong> The agent share is either the tier default (<code>earningPercentage</code>) or the hotel-specific override (<code>SalesAgentCommission.commissionPercentage</code>) -- whichever applies. There is only one earning calculation per booking.</span>
+      <span lang-content="es"><strong>Una sola formula:</strong> La participacion del agente es el valor por defecto del nivel (<code>earningPercentage</code>) o la sobrecomision especifica del hotel (<code>SalesAgentCommission.commissionPercentage</code>) -- el que aplique. Solo hay un calculo de ganancia por reserva.</span>
+    </div>
+  </div>
+
+  <!-- Field: operationalExpense -->
+  <div class="field-card">
+    <h4><span lang-content="en">Ops Cost</span><span lang-content="es">Costo Operacional</span> <code>operationalExpense</code></h4>
+    <div class="field-meta">
+      <span class="field-tag field-tag-location"><span lang-content="en">Sales Agent Level</span><span lang-content="es">Nivel Agente de Ventas</span></span>
+      <span class="field-tag field-tag-default"><span lang-content="en">Default: 8%</span><span lang-content="es">Predeterminado: 8%</span></span>
+      <span class="field-tag field-tag-range"><span lang-content="en">Range: 5-8%</span><span lang-content="es">Rango: 5-8%</span></span>
+    </div>
+    <p><span lang-content="en">A percentage of Ergos's gross margin reserved to cover direct operational costs -- support overhead, account management, system costs, and marketing spend. Deducted before calculating Ergos's net profit.</span><span lang-content="es">Un porcentaje del margen bruto de Ergos reservado para cubrir costos operacionales directos -- soporte, gestion de cuentas, costos de sistema y gasto de marketing. Se deduce antes de calcular la ganancia neta de Ergos.</span></p>
+    <div class="formula-box">ergosNetMargin = ergosGrossMargin - agentEarning - (ergosGrossMargin x operationalExpense/100)</div>
+  </div>
+
+  <!-- Field: agent commissionPercentage -->
+  <div class="field-card">
+    <h4><span lang-content="en">Hotel-Specific Override</span><span lang-content="es">Sobrecomision por Hotel</span> <code>SalesAgentCommission.commissionPercentage</code></h4>
+    <div class="field-meta">
+      <span class="field-tag field-tag-location">SalesAgentCommission</span>
+      <span class="field-tag field-tag-default"><span lang-content="en">Optional override</span><span lang-content="es">Sobreescritura opcional</span></span>
+    </div>
+    <p><span lang-content="en">When set, this <strong>replaces the Agent Share</strong> for that specific hotel. The earning formula stays the same — only the percentage input changes. Used for special partnership arrangements.</span><span lang-content="es">Cuando se establece, <strong>reemplaza la Participacion del Agente</strong> para ese hotel especifico. La formula de ganancia se mantiene igual — solo cambia el porcentaje de entrada. Se usa para acuerdos de asociacion especiales.</span></p>
+  </div>
+
+  <!-- Field: agency commissionPercentage -->
+  <div class="field-card">
+    <h4><span lang-content="en">Agency Rebate</span><span lang-content="es">Rebaja de Agencia</span> <code>TravelAgencyCommission.commissionPercentage</code></h4>
+    <div class="field-meta">
+      <span class="field-tag field-tag-location">TravelAgencyCommission</span>
+      <span class="field-tag field-tag-default"><span lang-content="en">Default: 0% (no rebate)</span><span lang-content="es">Predeterminado: 0% (sin rebaja)</span></span>
+      <span class="field-tag field-tag-range"><span lang-content="en">Range: 0-15%</span><span lang-content="es">Rango: 0-15%</span></span>
+    </div>
+    <p><span lang-content="en">A rebate OFF the Ergos sell price given to the travel agency on specific hotels. Reduces the effective price the agency pays, compressing Ergos's gross margin.</span><span lang-content="es">Una rebaja del precio de venta de Ergos otorgada a la agencia de viajes en hoteles especificos. Reduce el precio efectivo que paga la agencia, comprimiendo el margen bruto de Ergos.</span></p>
+    <div class="formula-box">agencyEffectivePrice = ergosSellPrice x (1 - agencyCommissionPct/100)</div>
+  </div>
+
+  <!-- Field: paymentInfo.baseCommission -->
+  <div class="field-card">
+    <h4><span lang-content="en">Vendor Commission</span><span lang-content="es">Comision del Proveedor</span> <code>paymentInfo.baseCommission</code></h4>
+    <div class="field-meta">
+      <span class="field-tag field-tag-location"><span lang-content="en">Booking Level</span><span lang-content="es">Nivel Reserva</span></span>
+      <span class="field-tag field-tag-default"><span lang-content="en">Vendor-reported</span><span lang-content="es">Reportado por proveedor</span></span>
+    </div>
+    <p><span lang-content="en">The vendor-reported commission amount in absolute currency, as reported by the GDS at booking confirmation. This is an INFORMATIONAL field for commission-based vendors. For net-rate vendors, this will be 0 or null.</span><span lang-content="es">El monto de comision reportado por el proveedor en moneda absoluta, segun lo reportado por el GDS en la confirmacion de la reserva. Este es un campo INFORMATIVO para proveedores basados en comisiones. Para proveedores de tarifa neta, sera 0 o nulo.</span></p>
+  </div>
+</div>
+<!-- ============ TAB 3: AGENT INCENTIVES ============ -->
+<div class="section" id="sec-incentives">
+
+  <div class="bp-card">
+    <h2><span lang-content="en">Agent Tier Structure</span><span lang-content="es">Estructura de Niveles de Agentes</span></h2>
+    <p><span lang-content="en">Agents have two distinct income streams that reward two distinct behaviors: <strong>Recruitment Bonus</strong> (one-time, for expanding the network) and <strong>Residual Commission</strong> (ongoing, for keeping agencies engaged and booking).</span><span lang-content="es">Los agentes tienen dos flujos de ingresos distintos que recompensan dos comportamientos distintos: <strong>Bono de Reclutamiento</strong> (unico, por expandir la red) y <strong>Comision Residual</strong> (continua, por mantener a las agencias activas y reservando).</span></p>
+  </div>
+
+  <!-- Tier Cards -->
+  <div class="tier-card">
+    <div class="tier-card-header">
+      <div class="tier-name">Starter</div>
+      <span class="tier-badge tier-starter"><span lang-content="en">1-4 Active Agencies</span><span lang-content="es">1-4 Agencias Activas</span></span>
+    </div>
+    <div class="tier-details">
+      <div class="tier-detail-item">
+        <div class="tier-detail-label"><span lang-content="en">Agent Share</span><span lang-content="es">Participacion</span></div>
+        <div class="tier-detail-value">10-14%</div>
+      </div>
+      <div class="tier-detail-item">
+        <div class="tier-detail-label"><span lang-content="en">Onboarding Bonus</span><span lang-content="es">Bono de Incorporacion</span></div>
+        <div class="tier-detail-value">$25-50</div>
+      </div>
+      <div class="tier-detail-item">
+        <div class="tier-detail-label"><span lang-content="en">Ops Cost</span><span lang-content="es">Costo Ops</span></div>
+        <div class="tier-detail-value">8%</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tier-card">
+    <div class="tier-card-header">
+      <div class="tier-name">Growth</div>
+      <span class="tier-badge tier-growth"><span lang-content="en">5-14 Active Agencies</span><span lang-content="es">5-14 Agencias Activas</span></span>
+    </div>
+    <div class="tier-details">
+      <div class="tier-detail-item">
+        <div class="tier-detail-label"><span lang-content="en">Agent Share</span><span lang-content="es">Participacion</span></div>
+        <div class="tier-detail-value">15-20%</div>
+      </div>
+      <div class="tier-detail-item">
+        <div class="tier-detail-label"><span lang-content="en">Onboarding Bonus</span><span lang-content="es">Bono de Incorporacion</span></div>
+        <div class="tier-detail-value">$50-75</div>
+      </div>
+      <div class="tier-detail-item">
+        <div class="tier-detail-label"><span lang-content="en">Ops Cost</span><span lang-content="es">Costo Ops</span></div>
+        <div class="tier-detail-value">7%</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tier-card">
+    <div class="tier-card-header">
+      <div class="tier-name">Elite</div>
+      <span class="tier-badge tier-elite"><span lang-content="en">15-29 Active Agencies</span><span lang-content="es">15-29 Agencias Activas</span></span>
+    </div>
+    <div class="tier-details">
+      <div class="tier-detail-item">
+        <div class="tier-detail-label"><span lang-content="en">Agent Share</span><span lang-content="es">Participacion</span></div>
+        <div class="tier-detail-value">21-26%</div>
+      </div>
+      <div class="tier-detail-item">
+        <div class="tier-detail-label"><span lang-content="en">Onboarding Bonus</span><span lang-content="es">Bono de Incorporacion</span></div>
+        <div class="tier-detail-value">$75-100</div>
+      </div>
+      <div class="tier-detail-item">
+        <div class="tier-detail-label"><span lang-content="en">Ops Cost</span><span lang-content="es">Costo Ops</span></div>
+        <div class="tier-detail-value">6%</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tier-card">
+    <div class="tier-card-header">
+      <div class="tier-name">Strategic</div>
+      <span class="tier-badge tier-strategic"><span lang-content="en">30+ Active Agencies</span><span lang-content="es">30+ Agencias Activas</span></span>
+    </div>
+    <div class="tier-details">
+      <div class="tier-detail-item">
+        <div class="tier-detail-label"><span lang-content="en">Agent Share</span><span lang-content="es">Participacion</span></div>
+        <div class="tier-detail-value">27-32%</div>
+      </div>
+      <div class="tier-detail-item">
+        <div class="tier-detail-label"><span lang-content="en">Onboarding Bonus</span><span lang-content="es">Bono de Incorporacion</span></div>
+        <div class="tier-detail-value">$100-150</div>
+      </div>
+      <div class="tier-detail-item">
+        <div class="tier-detail-label"><span lang-content="en">Ops Cost</span><span lang-content="es">Costo Ops</span></div>
+        <div class="tier-detail-value">5%</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Income Streams -->
+  <div class="bp-card">
+    <h2><span lang-content="en">Income Streams</span><span lang-content="es">Flujos de Ingreso</span></h2>
+    <table class="bp-table">
+      <thead>
+        <tr>
+          <th><span lang-content="en">Stream</span><span lang-content="es">Flujo</span></th>
+          <th><span lang-content="en">Field</span><span lang-content="es">Campo</span></th>
+          <th><span lang-content="en">Description</span><span lang-content="es">Descripcion</span></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong><span lang-content="en">Recruitment Bonus</span><span lang-content="es">Bono de Reclutamiento</span></strong></td>
+          <td><code>onboardingBonusPerAgency</code></td>
+          <td><span lang-content="en">Fixed $ paid once, upon agency's first completed booking</span><span lang-content="es">Monto fijo pagado una vez, al completar la primera reserva de la agencia</span></td>
+        </tr>
+        <tr>
+          <td><strong><span lang-content="en">Residual Commission</span><span lang-content="es">Comision Residual</span></strong></td>
+          <td><code>earningPercentage</code> (<span lang-content="en">Agent Share</span><span lang-content="es">Participacion del Agente</span>)</td>
+          <td><span lang-content="en">% of gross margin per booking, ongoing, from all active agencies</span><span lang-content="es">% del margen bruto por reserva, continuo, de todas las agencias activas</span></td>
+        </tr>
+        <tr>
+          <td><strong><span lang-content="en">Hotel Uplift</span><span lang-content="es">Incremento por Hotel</span></strong></td>
+          <td><code>SalesAgentCommission.commissionPercentage</code> (<span lang-content="en">Hotel-Specific Override</span><span lang-content="es">Sobrecomision por Hotel</span>)</td>
+          <td><span lang-content="en">Override for specific hotels, replaces Agent Share for that property</span><span lang-content="es">Sobreescritura para hoteles especificos, reemplaza la Participacion del Agente para esa propiedad</span></td>
+        </tr>
+        <tr>
+          <td><strong><span lang-content="en">Ops Allocation</span><span lang-content="es">Asignacion Operacional</span></strong></td>
+          <td><code>operationalExpense</code> (<span lang-content="en">Ops Cost</span><span lang-content="es">Costo Operacional</span>)</td>
+          <td><span lang-content="en">Internal allocation, not paid to agent -- reduces Ergos's reported net</span><span lang-content="es">Asignacion interna, no se paga al agente -- reduce el neto reportado de Ergos</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Dormant Agency Timeline -->
+  <div class="bp-card">
+    <h2><span lang-content="en">Dormant Agency Escalation</span><span lang-content="es">Escalacion de Agencia Inactiva</span></h2>
+    <table class="bp-table">
+      <thead>
+        <tr>
+          <th class="num"><span lang-content="en">Days Inactive</span><span lang-content="es">Dias Inactivos</span></th>
+          <th><span lang-content="en">Action</span><span lang-content="es">Accion</span></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="num"><strong>30</strong></td>
+          <td><span lang-content="en">Agency counted as 0 toward tier. System sends re-engagement email.</span><span lang-content="es">La agencia cuenta como 0 para el nivel. El sistema envia correo de re-engagement.</span></td>
+        </tr>
+        <tr>
+          <td class="num"><strong>60</strong></td>
+          <td><span lang-content="en">Agent earns 0 residual on that agency. Agent notified of dormancy.</span><span lang-content="es">El agente gana 0 residual en esa agencia. El agente es notificado de la inactividad.</span></td>
+        </tr>
+        <tr>
+          <td class="num"><strong>90</strong></td>
+          <td><span lang-content="en">Agency status flagged as "at-risk". Agent receives task: "Re-engage or lose residual".</span><span lang-content="es">Estado de la agencia marcado como "en riesgo". El agente recibe tarea: "Re-enganchar o perder residual".</span></td>
+        </tr>
+        <tr>
+          <td class="num"><strong>120</strong></td>
+          <td><span lang-content="en">Agency de-listed from active portfolio. Agent loses onboarding bonus clawback window.</span><span lang-content="es">La agencia se elimina del portafolio activo. El agente pierde la ventana de devolucion del bono de incorporacion.</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Volume Multiplier -->
+  <div class="bp-card">
+    <h2><span lang-content="en">Volume Multiplier</span><span lang-content="es">Multiplicador de Volumen</span></h2>
+    <p><span lang-content="en">Monthly performance multiplier on residual commissions to incentivize volume beyond baseline behavior. Applied as a bonus true-up at month end.</span><span lang-content="es">Multiplicador de rendimiento mensual en comisiones residuales para incentivar volumen mas alla del comportamiento base. Se aplica como ajuste de bonificacion al final del mes.</span></p>
+    <table class="bp-table">
+      <thead>
+        <tr>
+          <th class="num"><span lang-content="en">Monthly Bookings (Portfolio)</span><span lang-content="es">Reservas Mensuales (Portafolio)</span></th>
+          <th class="num"><span lang-content="en">Multiplier</span><span lang-content="es">Multiplicador</span></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td class="num">&lt; 50</td><td class="num">1.0x (<span lang-content="en">baseline</span><span lang-content="es">base</span>)</td></tr>
+        <tr><td class="num">50 - 199</td><td class="num">1.1x (+10%)</td></tr>
+        <tr><td class="num">200 - 499</td><td class="num">1.2x (+20%)</td></tr>
+        <tr><td class="num">500 - 999</td><td class="num">1.3x (+30%)</td></tr>
+        <tr><td class="num">1,000+</td><td class="num">1.5x (+50%)</td></tr>
+      </tbody>
+    </table>
+    <div class="callout callout-warning">
+      <span lang-content="en"><strong>Hard cap still applies:</strong> Even with multiplier, if the effective earning percentage would breach the Ergos scaled floor, the cap is applied and the agent is informed of the cap and the reason.</span>
+      <span lang-content="es"><strong>El tope rigido aun aplica:</strong> Incluso con el multiplicador, si el porcentaje de ganancia efectivo violara el piso escalonado de Ergos, se aplica el tope y se informa al agente del tope y la razon.</span>
+    </div>
+  </div>
+
+  <!-- Industry Parallels -->
+  <div class="callout callout-purple">
+    <strong><span lang-content="en">Industry Parallel -- Insurance MGA Trail Commissions:</span><span lang-content="es">Paralelo de la Industria -- Comisiones de Seguimiento MGA de Seguros:</span></strong><br>
+    <span lang-content="en">Insurer pays MGA 25-30% override on all policies. MGA keeps 15-20% for operations. Sub-agent earns 8-12% trailing commission. Sub-agent commission is capped so MGA never pays out more than they earn. Ergos mirrors this structure exactly.</span>
+    <span lang-content="es">La aseguradora paga a la MGA 25-30% de sobrecomision en todas las polizas. La MGA retiene 15-20% para operaciones. El sub-agente gana 8-12% de comision de seguimiento. La comision del sub-agente esta limitada para que la MGA nunca pague mas de lo que gana. Ergos refleja esta estructura exactamente.</span>
+  </div>
+</div>
+<!-- ============ TAB 4: MELIA SCENARIOS ============ -->
+<div class="section" id="sec-melia">
+
+  <div class="bp-card" style="border-left: 4px solid var(--orange);">
+    <h2><span lang-content="en">Worked Example: Melia Hotel &mdash; All Scenarios</span><span lang-content="es">Ejemplo Practico: Hotel Melia &mdash; Todos los Escenarios</span></h2>
+
+    <div style="margin-bottom: 20px;">
+      <h3 style="margin-bottom: 12px;"><span lang-content="en">Fixed Constants (same for all scenarios below)</span><span lang-content="es">Constantes Fijas (iguales para todos los escenarios)</span></h3>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px;">
+        <div style="background: var(--bg-gray); border-radius: 8px; padding: 12px 16px;">
+          <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); margin-bottom: 4px;"><span lang-content="en">Vendor Net Price</span><span lang-content="es">Precio Neto Proveedor</span></div>
+          <div style="font-size: 20px; font-weight: 700; color: var(--text-primary);">$200.00<span style="font-size: 12px; font-weight: 400; color: var(--text-muted);">/night</span></div>
+        </div>
+        <div style="background: var(--bg-gray); border-radius: 8px; padding: 12px 16px;">
+          <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); margin-bottom: 4px;"><code style="font-size: 11px;">priceAdjustment</code></div>
+          <div style="font-size: 20px; font-weight: 700; color: var(--text-primary);">0.85 <span style="font-size: 12px; font-weight: 400; color: var(--text-muted);">Melia -15%</span></div>
+        </div>
+        <div style="background: var(--bg-gray); border-radius: 8px; padding: 12px 16px;">
+          <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); margin-bottom: 4px;"><span lang-content="en">Adjusted Cost Basis</span><span lang-content="es">Base de Costo Ajustada</span></div>
+          <div style="font-size: 20px; font-weight: 700; color: var(--text-primary);">$170.00</div>
+          <div style="font-size: 11px; color: var(--text-muted);">$200 &times; 0.85</div>
+        </div>
+        <div style="background: var(--bg-gray); border-radius: 8px; padding: 12px 16px;">
+          <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); margin-bottom: 4px;"><span lang-content="en">Melia Rack Rate</span><span lang-content="es">Tarifa Publica Melia</span></div>
+          <div style="font-size: 20px; font-weight: 700; color: var(--text-primary);">$226.00</div>
+          <div style="font-size: 11px; color: var(--text-muted);"><span lang-content="en">consumer price on Melia.com</span><span lang-content="es">precio al consumidor en Melia.com</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Primary Analysis: Gross Margin Levels ── -->
+    <h3 style="margin-top: 24px;"><span lang-content="en">Gross Margin Levels &mdash; What the Numbers Look Like at Each Level</span><span lang-content="es">Niveles de Margen Bruto &mdash; Como Lucen los Numeros en Cada Nivel</span></h3>
+    <p style="font-size: 13px; color: var(--text-muted);"><span lang-content="en">Starting from the gross margin % (the real-world reality confirmed by our colleague), we derive the markup (<code>baseCommission</code>) needed to achieve it. Cost basis = $170.00.</span><span lang-content="es">Partiendo del % de margen bruto (la realidad del mundo real confirmada por nuestro colega), derivamos el markup (<code>baseCommission</code>) necesario para lograrlo. Base de costo = $170.00.</span></p>
+    <table class="bp-table">
+      <thead>
+        <tr>
+          <th class="pct"><span lang-content="en">Gross Margin %</span><span lang-content="es">% Margen Bruto</span></th>
+          <th class="pct"><span lang-content="en">Markup Needed</span><span lang-content="es">Markup Necesario</span> (<code>baseCommission</code>)</th>
+          <th class="money"><span lang-content="en">Sell Price</span><span lang-content="es">Precio Venta</span></th>
+          <th class="money"><span lang-content="en">Gross Margin $</span><span lang-content="es">Margen Bruto $</span></th>
+          <th class="pct"><span lang-content="en">Agency Saves vs Rack</span><span lang-content="es">Agencia Ahorra vs Publica</span></th>
+          <th><span lang-content="en">Context</span><span lang-content="es">Contexto</span></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="pct"><strong>3%</strong></td>
+          <td class="pct">~3.1%</td>
+          <td class="money">$175.26</td>
+          <td class="money">$5.26</td>
+          <td class="pct">22.4%</td>
+          <td><span lang-content="en">Wholesale minimum</span><span lang-content="es">Minimo mayorista</span></td>
+        </tr>
+        <tr>
+          <td class="pct"><strong>5%</strong></td>
+          <td class="pct">~5.3%</td>
+          <td class="money">$178.95</td>
+          <td class="money">$8.95</td>
+          <td class="pct">20.8%</td>
+          <td><span lang-content="en">Wholesale standard (cost ~2% of sell)</span><span lang-content="es">Mayorista estandar (costo ~2% de venta)</span></td>
+        </tr>
+        <tr style="background: var(--green-light);">
+          <td class="pct"><strong>7.5%</strong></td>
+          <td class="pct"><strong>~8.1%</strong></td>
+          <td class="money"><strong>$183.78</strong></td>
+          <td class="money"><strong>$13.78</strong></td>
+          <td class="pct"><strong>18.7%</strong></td>
+          <td><strong><span lang-content="en">Average operating point</span><span lang-content="es">Punto operativo promedio</span></strong></td>
+        </tr>
+        <tr>
+          <td class="pct"><strong>15%</strong></td>
+          <td class="pct">~17.6%</td>
+          <td class="money">$200.00</td>
+          <td class="money">$30.00</td>
+          <td class="pct">11.5%</td>
+          <td><span lang-content="en">Max operating point</span><span lang-content="es">Punto operativo maximo</span></td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="callout callout-teal" style="margin-top: 8px; font-size: 13px;">
+      <span lang-content="en"><strong>Reading this table:</strong> At 7.5% gross margin (the average), Ergos needs a ~8% markup on the $170 cost basis to produce $13.78 gross margin per night. The agency still saves 18.7% vs the $226 rack rate. At the wholesale minimum (3% GM), the margin is only $5.26 but the agency saves 22.4% — extremely competitive pricing. At the max (15% GM), the $30 margin is robust but the agency saves less (11.5%).</span>
+      <span lang-content="es"><strong>Lectura de esta tabla:</strong> Al 7.5% de margen bruto (el promedio), Ergos necesita un markup de ~8% sobre la base de costo de $170 para producir $13.78 de margen bruto por noche. La agencia aun ahorra 18.7% vs la tarifa publica de $226. En el minimo mayorista (3% MB), el margen es solo $5.26 pero la agencia ahorra 22.4% — precios extremadamente competitivos. En el maximo (15% MB), el margen de $30 es robusto pero la agencia ahorra menos (11.5%).</span>
+    </div>
+
+    <!-- ── Understanding the Safety & Risk Level Columns ── -->
+    <div class="callout callout-info" style="margin-top: 20px; margin-bottom: 4px;">
+      <h3 style="margin: 0 0 12px 0; font-size: 15px;"><span lang-content="en">Understanding the Safety &amp; Risk Level Columns</span><span lang-content="es">Entendiendo las Columnas de Seguridad y Nivel de Riesgo</span></h3>
+
+      <p style="margin: 0 0 12px 0; font-size: 13px; line-height: 1.6;">
+        <span lang-content="en">Every scenario table below includes a <strong>Safety</strong> column that shows whether a given configuration passes Ergos's <strong>dual safety guardrail</strong> system. The system runs two independent checks on every booking, and <em>both</em> must pass for the configuration to be considered safe:</span>
+        <span lang-content="es">Cada tabla de escenarios incluye una columna de <strong>Seguridad</strong> que muestra si una configuracion dada pasa el sistema de <strong>doble salvaguarda</strong> de Ergos. El sistema ejecuta dos verificaciones independientes en cada reserva, y <em>ambas</em> deben pasar para que la configuracion se considere segura:</span>
+      </p>
+
+      <table class="bp-table" style="margin-bottom: 14px; font-size: 13px;">
+        <thead>
+          <tr>
+            <th style="width: 30%;"><span lang-content="en">Check</span><span lang-content="es">Verificacion</span></th>
+            <th><span lang-content="en">What It Measures</span><span lang-content="es">Que Mide</span></th>
+            <th style="width: 20%;"><span lang-content="en">Threshold</span><span lang-content="es">Umbral</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong><span lang-content="en">Scaled Floor %</span><span lang-content="es">Piso Escalonado %</span></strong></td>
+            <td>
+              <span lang-content="en">Ergos Net as a percentage of the agency&rsquo;s effective price (what the agency actually pays). The floor scales with gross margin level: higher GM = higher floor. At 3% GM the floor is <strong>1.5%</strong>; at 7-8% GM it's <strong>4.0%</strong>; at ~11% GM it's <strong>5.5%</strong>; at 15% GM it's <strong>7.0%</strong>. This ensures Ergos keeps a minimum slice of revenue proportional to its gross margin.</span>
+              <span lang-content="es">El Neto de Ergos como porcentaje del precio efectivo de la agencia (lo que la agencia realmente paga). El piso escala con el nivel de margen bruto: mayor MB = mayor piso. Al 3% MB el piso es <strong>1.5%</strong>; al 7-8% MB es <strong>4.0%</strong>; al ~11% MB es <strong>5.5%</strong>; al 15% MB es <strong>7.0%</strong>. Esto asegura que Ergos mantenga una porcion minima de ingresos proporcional a su margen bruto.</span>
+            </td>
+            <td><span lang-content="en">Varies by GM level (e.g. 4.0% at 7-8% GM)</span><span lang-content="es">Varia por nivel MB (ej. 4.0% al 7-8% MB)</span></td>
+          </tr>
+          <tr>
+            <td><strong><span lang-content="en">Gross Retention %</span><span lang-content="es">Retencion Bruta %</span></strong></td>
+            <td>
+              <span lang-content="en">Ergos Net as a percentage of the gross margin (before splitting with agent &amp; ops). This prevents configurations where agent share + ops consume an excessive portion of the margin. Regardless of how much margin exists, Ergos must keep at least half.</span>
+              <span lang-content="es">El Neto de Ergos como porcentaje del margen bruto (antes de dividir con agente y ops). Esto previene configuraciones donde la participacion del agente + ops consumen una porcion excesiva del margen. Independientemente de cuanto margen exista, Ergos debe retener al menos la mitad.</span>
+            </td>
+            <td><strong>&ge; 50%</strong></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p style="margin: 0 0 10px 0; font-size: 13px; line-height: 1.6;">
+        <span lang-content="en">The <strong>Safety</strong> column values:</span>
+        <span lang-content="es">Los valores de la columna <strong>Seguridad</strong>:</span>
+      </p>
+      <table class="bp-table" style="margin-bottom: 14px; font-size: 13px;">
+        <thead>
+          <tr>
+            <th style="width: 15%;"><span lang-content="en">Tag</span><span lang-content="es">Etiqueta</span></th>
+            <th><span lang-content="en">Meaning</span><span lang-content="es">Significado</span></th>
+            <th style="width: 35%;"><span lang-content="en">System Behavior</span><span lang-content="es">Comportamiento del Sistema</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="conf-tag conf-high">PASS</span></td>
+            <td>
+              <span lang-content="en">Both checks pass. Ergos Net % is above the scaled floor <strong>and</strong> gross retention is &ge; 50%. This is a healthy, sustainable configuration.</span>
+              <span lang-content="es">Ambas verificaciones pasan. El Neto Ergos % esta por encima del piso escalonado <strong>y</strong> la retencion bruta es &ge; 50%. Es una configuracion saludable y sostenible.</span>
+            </td>
+            <td><span lang-content="en">Booking proceeds normally. No alerts.</span><span lang-content="es">La reserva procede normalmente. Sin alertas.</span></td>
+          </tr>
+          <tr>
+            <td><span class="conf-tag conf-medium">WARN</span></td>
+            <td>
+              <span lang-content="en">One check fails (usually the scaled floor) while the other passes. The margin is thin but not unsustainable &mdash; typically the Ergos Net % dips just below the floor but gross retention remains above 50%.</span>
+              <span lang-content="es">Una verificacion falla (usualmente el piso escalonado) mientras la otra pasa. El margen es delgado pero no insostenible &mdash; tipicamente el Neto Ergos % cae justo por debajo del piso pero la retencion bruta se mantiene por encima del 50%.</span>
+            </td>
+            <td><span lang-content="en">Booking proceeds, but the system logs a margin warning. Admins should review whether to raise the gross margin (via <code>baseCommission</code>) or cap the agent share for this hotel/tier.</span><span lang-content="es">La reserva procede, pero el sistema registra una advertencia de margen. Los administradores deben revisar si subir el margen bruto (via <code>baseCommission</code>) o limitar la participacion del agente para este hotel/nivel.</span></td>
+          </tr>
+          <tr>
+            <td><span class="conf-tag conf-low">FAIL</span></td>
+            <td>
+              <span lang-content="en">Both checks fail, or the scaled floor is breached by a large margin. The configuration is unsustainable &mdash; Ergos would lose money or retain dangerously little on every booking.</span>
+              <span lang-content="es">Ambas verificaciones fallan, o el piso escalonado se viola por un margen grande. La configuracion es insostenible &mdash; Ergos perderia dinero o retendria peligrosamente poco en cada reserva.</span>
+            </td>
+            <td><span lang-content="en">The system should <strong>block</strong> this configuration. The admin must raise the gross margin (via <code>baseCommission</code>), reduce the agency rebate, or lower the agent share before bookings can proceed.</span><span lang-content="es">El sistema deberia <strong>bloquear</strong> esta configuracion. El administrador debe subir el margen bruto (via <code>baseCommission</code>), reducir la rebaja de agencia, o bajar la participacion del agente antes de que las reservas puedan proceder.</span></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p style="margin: 0 0 10px 0; font-size: 13px; line-height: 1.6;">
+        <span lang-content="en">The <strong>Quick Reference</strong> table at the bottom of this tab also includes a <strong>Risk Level</strong> column. This rates how aggressively each lever (price adjustment, agent share, agency rebate, baseCommission) compresses or expands Ergos's margin:</span>
+        <span lang-content="es">La tabla de <strong>Referencia Rapida</strong> al final de esta pestana tambien incluye una columna de <strong>Nivel de Riesgo</strong>. Esto clasifica cuan agresivamente cada palanca (ajuste de precio, participacion del agente, rebaja de agencia, baseCommission) comprime o expande el margen de Ergos:</span>
+      </p>
+      <table class="bp-table" style="font-size: 13px;">
+        <thead>
+          <tr>
+            <th style="width: 18%;"><span lang-content="en">Risk Tag</span><span lang-content="es">Etiqueta de Riesgo</span></th>
+            <th><span lang-content="en">What It Means</span><span lang-content="es">Que Significa</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="conf-tag conf-medium">LOW-MED</span></td>
+            <td><span lang-content="en">The lever reduces total dollar margin but preserves the <em>percentage</em> structure. Example: a negotiated hotel discount (<code>priceAdjustment</code>) shrinks the cost basis, so all dollar amounts drop, but the percentage splits remain the same. Manageable with volume.</span><span lang-content="es">La palanca reduce el margen total en dolares pero preserva la estructura de <em>porcentajes</em>. Ejemplo: un descuento negociado del hotel (<code>priceAdjustment</code>) reduce la base de costo, asi que todos los montos en dolares bajan, pero las divisiones porcentuales se mantienen iguales. Manejable con volumen.</span></td>
+          </tr>
+          <tr>
+            <td><span class="conf-tag conf-medium">MEDIUM</span></td>
+            <td><span lang-content="en">The lever transfers a larger share of the gross margin to the agent. The impact is proportional &mdash; moving from 12% to 24% agent share costs ~$1.65/night in the Melia example at 7.5% GM. Sustainable if offset by volume from higher-tier agents.</span><span lang-content="es">La palanca transfiere una mayor parte del margen bruto al agente. El impacto es proporcional &mdash; pasar del 12% al 24% de participacion del agente cuesta ~$1.65/noche en el ejemplo de Melia al 7.5% MB. Sostenible si se compensa con volumen de agentes de niveles superiores.</span></td>
+          </tr>
+          <tr>
+            <td><span class="conf-tag conf-low">HIGH</span></td>
+            <td><span lang-content="en"><strong>Most dangerous.</strong> Agency rebates compress the gross margin itself (not just how it's split), because the rebate reduces what the agency pays. A 4% rebate on Melia at 7.5% GM wipes out $7.35/night &mdash; more destructive than any other single lever. Can easily push a configuration from PASS to FAIL.</span><span lang-content="es"><strong>Mas peligroso.</strong> Las rebajas de agencia comprimen el margen bruto en si (no solo como se divide), porque la rebaja reduce lo que paga la agencia. Una rebaja del 4% en Melia al 7.5% MB elimina $7.35/noche &mdash; mas destructivo que cualquier otra palanca individual. Puede facilmente empujar una configuracion de PASA a FALLA.</span></td>
+          </tr>
+          <tr>
+            <td><span class="conf-tag conf-high">FIX</span></td>
+            <td><span lang-content="en"><strong>Margin recovery lever.</strong> Raising the gross margin (via <code>baseCommission</code>) counteracts compression from discounts and rebates. This is the primary tool for restoring safety on high-risk configurations. Raising GM from 7.5% to ~11% (markup 8%&rarr;12%) adds $6.62/night in the Melia example.</span><span lang-content="es"><strong>Palanca de recuperacion de margen.</strong> Subir el margen bruto (via <code>baseCommission</code>) contrarresta la compresion de descuentos y rebajas. Es la herramienta principal para restaurar la seguridad en configuraciones de alto riesgo. Subir el MB de 7.5% a ~11% (markup 8%&rarr;12%) agrega $6.62/noche en el ejemplo de Melia.</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- ── Scenario 1: By Tier at Average Gross Margin ── -->
+    <h3 style="margin-top: 24px;"><span lang-content="en">Scenario 1: Impact of Agent Tier at 7.5% Gross Margin</span><span lang-content="es">Escenario 1: Impacto del Nivel del Agente al 7.5% de Margen Bruto</span></h3>
+    <p style="font-size: 13px; color: var(--text-muted);"><span lang-content="en">At the average operating point (7.5% GM, sell price $183.78, gross margin $13.78). No agency rebate, no hotel-specific override. Only the tier-default Agent Share and Ops Cost vary.</span><span lang-content="es">En el punto operativo promedio (7.5% MB, precio de venta $183.78, margen bruto $13.78). Sin rebaja de agencia, sin sobrecomision por hotel. Solo varian la Participacion del Agente y el Costo Operacional por defecto del nivel.</span></p>
+    <table class="bp-table">
+      <thead>
+        <tr>
+          <th><span lang-content="en">Tier</span><span lang-content="es">Nivel</span></th>
+          <th class="pct"><span lang-content="en">Agent Share</span><span lang-content="es">Part. Agente</span></th>
+          <th class="pct"><span lang-content="en">Ops Cost</span><span lang-content="es">Costo Ops</span></th>
+          <th class="money"><span lang-content="en">Agent Earns</span><span lang-content="es">Agente Gana</span></th>
+          <th class="money"><span lang-content="en">Ops Alloc.</span><span lang-content="es">Asig. Ops</span></th>
+          <th class="money"><span lang-content="en">Ergos Net</span><span lang-content="es">Neto Ergos</span></th>
+          <th class="pct"><span lang-content="en">Ergos Net %</span><span lang-content="es">Neto Ergos %</span></th>
+          <th class="pct"><span lang-content="en">Retention</span><span lang-content="es">Retencion</span></th>
+          <th><span lang-content="en">Safety</span><span lang-content="es">Seguridad</span></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Starter</strong></td>
+          <td class="pct">12%</td>
+          <td class="pct">8%</td>
+          <td class="money">$1.65</td>
+          <td class="money">$1.10</td>
+          <td class="money"><strong>$11.03</strong></td>
+          <td class="pct">6.0%</td>
+          <td class="pct">80.0%</td>
+          <td><span class="conf-tag conf-high">PASS</span></td>
+        </tr>
+        <tr>
+          <td><strong>Growth</strong></td>
+          <td class="pct">18%</td>
+          <td class="pct">7%</td>
+          <td class="money">$2.48</td>
+          <td class="money">$0.96</td>
+          <td class="money"><strong>$10.34</strong></td>
+          <td class="pct">5.6%</td>
+          <td class="pct">75.0%</td>
+          <td><span class="conf-tag conf-high">PASS</span></td>
+        </tr>
+        <tr>
+          <td><strong>Elite</strong></td>
+          <td class="pct">24%</td>
+          <td class="pct">6%</td>
+          <td class="money">$3.31</td>
+          <td class="money">$0.83</td>
+          <td class="money"><strong>$9.64</strong></td>
+          <td class="pct">5.2%</td>
+          <td class="pct">70.0%</td>
+          <td><span class="conf-tag conf-high">PASS</span></td>
+        </tr>
+        <tr>
+          <td><strong>Strategic</strong></td>
+          <td class="pct">32%</td>
+          <td class="pct">5%</td>
+          <td class="money">$4.41</td>
+          <td class="money">$0.69</td>
+          <td class="money"><strong>$8.68</strong></td>
+          <td class="pct">4.7%</td>
+          <td class="pct">63.0%</td>
+          <td><span class="conf-tag conf-high">PASS</span></td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="callout callout-warning" style="margin-top: 8px; font-size: 13px;">
+      <span lang-content="en"><strong>Observation:</strong> All four tiers comfortably pass both the 4.0% scaled floor (at 7.5% GM) and the 50% gross retention check. Even the Strategic tier retains 63% of gross margin and nets 4.7% of sell price. The tier structure is well-calibrated for the average gross margin level.</span>
+      <span lang-content="es"><strong>Observacion:</strong> Los cuatro niveles pasan comodamente tanto el piso escalonado de 4.0% (al 7.5% MB) como la verificacion de retencion del 50% del margen bruto. Incluso el nivel Strategic retiene el 63% del margen bruto y obtiene 4.7% neto del precio de venta. La estructura de niveles esta bien calibrada para el nivel de margen bruto promedio.</span>
+    </div>
+
+    <!-- ── Scenario 2: With Agency Rebate ── -->
+    <h3 style="margin-top: 28px;"><span lang-content="en">Scenario 2: Adding an Agency Rebate (at 7.5% Gross Margin)</span><span lang-content="es">Escenario 2: Agregando una Rebaja de Agencia (al 7.5% de Margen Bruto)</span></h3>
+    <p style="font-size: 13px; color: var(--text-muted);"><span lang-content="en">Growth tier agent (18% share, 7% ops) at 7.5% GM (sell price $183.78). Varying the agency rebate from 0% to 8%. Rebate reduces the effective price the agency pays, compressing Ergos's gross margin.</span><span lang-content="es">Agente nivel Growth (18% participacion, 7% ops) al 7.5% MB (precio venta $183.78). Variando la rebaja de agencia de 0% a 8%. La rebaja reduce el precio efectivo que paga la agencia, comprimiendo el margen bruto de Ergos.</span></p>
+    <table class="bp-table">
+      <thead>
+        <tr>
+          <th class="pct"><span lang-content="en">Agency Rebate</span><span lang-content="es">Rebaja Agencia</span></th>
+          <th class="money"><span lang-content="en">Agency Pays</span><span lang-content="es">Agencia Paga</span></th>
+          <th class="money"><span lang-content="en">Rebate Amt</span><span lang-content="es">Monto Rebaja</span></th>
+          <th class="money"><span lang-content="en">Gross Margin</span><span lang-content="es">Margen Bruto</span></th>
+          <th class="money"><span lang-content="en">Agent Earns</span><span lang-content="es">Agente Gana</span></th>
+          <th class="money"><span lang-content="en">Ergos Net</span><span lang-content="es">Neto Ergos</span></th>
+          <th class="pct"><span lang-content="en">Ergos Net %</span><span lang-content="es">Neto Ergos %</span></th>
+          <th><span lang-content="en">Safety</span><span lang-content="es">Seguridad</span></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="pct">0%</td>
+          <td class="money">$183.78</td>
+          <td class="money">$0.00</td>
+          <td class="money">$13.78</td>
+          <td class="money">$2.48</td>
+          <td class="money"><strong>$10.34</strong></td>
+          <td class="pct">5.6%</td>
+          <td><span class="conf-tag conf-high">PASS</span></td>
+        </tr>
+        <tr>
+          <td class="pct">2%</td>
+          <td class="money">$180.10</td>
+          <td class="money">$3.68</td>
+          <td class="money">$10.10</td>
+          <td class="money">$1.82</td>
+          <td class="money"><strong>$7.57</strong></td>
+          <td class="pct">4.2%</td>
+          <td><span class="conf-tag conf-high">PASS</span></td>
+        </tr>
+        <tr>
+          <td class="pct">4%</td>
+          <td class="money">$176.43</td>
+          <td class="money">$7.35</td>
+          <td class="money">$6.43</td>
+          <td class="money">$1.16</td>
+          <td class="money"><strong>$4.82</strong></td>
+          <td class="pct">2.7%</td>
+          <td><span class="conf-tag conf-low">FAIL</span></td>
+        </tr>
+        <tr>
+          <td class="pct">6%</td>
+          <td class="money">$172.75</td>
+          <td class="money">$11.03</td>
+          <td class="money">$2.75</td>
+          <td class="money">$0.50</td>
+          <td class="money"><strong>$2.06</strong></td>
+          <td class="pct">1.2%</td>
+          <td><span class="conf-tag conf-low">FAIL</span></td>
+        </tr>
+        <tr>
+          <td class="pct">8%</td>
+          <td class="money">$169.08</td>
+          <td class="money">$14.70</td>
+          <td class="money">-$0.92</td>
+          <td class="money">$0.00</td>
+          <td class="money"><strong style="color:var(--red)">-$0.92</strong></td>
+          <td class="pct">-0.5%</td>
+          <td><span class="conf-tag conf-low">FAIL</span></td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="callout callout-danger" style="margin-top: 8px; font-size: 13px;">
+      <span lang-content="en"><strong>Key takeaway:</strong> Agency rebates are the most dangerous lever. At 7.5% gross margin with Melia's discount, even a 4% rebate destroys the safety floor, and an 8% rebate produces a loss. <strong>Rule of thumb:</strong> if <code>priceAdjustment &le; 0.85</code>, agency rebates should be capped at 2% or gross margin must be raised to ~11%+ (markup 12%+).</span>
+      <span lang-content="es"><strong>Conclusion clave:</strong> Las rebajas de agencia son la palanca mas peligrosa. Al 7.5% de margen bruto con el descuento de Melia, incluso una rebaja del 4% destruye el piso de seguridad, y un 8% de rebaja produce una perdida. <strong>Regla general:</strong> si <code>priceAdjustment &le; 0.85</code>, las rebajas de agencia deben limitarse al 2% o el margen bruto debe subirse a ~11%+ (markup 12%+).</span>
+    </div>
+
+    <!-- ── Scenario 3: Hotel-Specific Override ── -->
+    <h3 style="margin-top: 28px;"><span lang-content="en">Scenario 3: Hotel-Specific Override (at 7.5% Gross Margin)</span><span lang-content="es">Escenario 3: Sobrecomision por Hotel (al 7.5% de Margen Bruto)</span></h3>
+    <p style="font-size: 13px; color: var(--text-muted);"><span lang-content="en">Starter tier (default 12% share, 8% ops) at 7.5% GM (sell price $183.78, gross $13.78), no agency rebate. Overriding the Agent Share to a higher hotel-specific percentage.</span><span lang-content="es">Nivel Starter (12% participacion por defecto, 8% ops) al 7.5% MB (precio venta $183.78, bruto $13.78), sin rebaja de agencia. Sobreescribiendo la Participacion del Agente a un porcentaje mas alto especifico del hotel.</span></p>
+    <table class="bp-table">
+      <thead>
+        <tr>
+          <th class="pct"><span lang-content="en">Override %</span><span lang-content="es">Sobrecomision %</span></th>
+          <th class="pct"><span lang-content="en">Effective Share</span><span lang-content="es">Part. Efectiva</span></th>
+          <th class="money"><span lang-content="en">Agent Earns</span><span lang-content="es">Agente Gana</span></th>
+          <th class="money"><span lang-content="en">Ops Alloc.</span><span lang-content="es">Asig. Ops</span></th>
+          <th class="money"><span lang-content="en">Ergos Net</span><span lang-content="es">Neto Ergos</span></th>
+          <th class="pct"><span lang-content="en">Ergos Net %</span><span lang-content="es">Neto Ergos %</span></th>
+          <th class="pct"><span lang-content="en">Retention</span><span lang-content="es">Retencion</span></th>
+          <th><span lang-content="en">Safety</span><span lang-content="es">Seguridad</span></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr style="background: var(--bg-gray);">
+          <td class="pct"><em><span lang-content="en">none</span><span lang-content="es">ninguno</span></em></td>
+          <td class="pct">12%</td>
+          <td class="money">$1.65</td>
+          <td class="money">$1.10</td>
+          <td class="money"><strong>$11.03</strong></td>
+          <td class="pct">6.0%</td>
+          <td class="pct">80.0%</td>
+          <td><span class="conf-tag conf-high">PASS</span></td>
+        </tr>
+        <tr>
+          <td class="pct">25%</td>
+          <td class="pct">25%</td>
+          <td class="money">$3.45</td>
+          <td class="money">$1.10</td>
+          <td class="money"><strong>$9.23</strong></td>
+          <td class="pct">5.0%</td>
+          <td class="pct">67.0%</td>
+          <td><span class="conf-tag conf-high">PASS</span></td>
+        </tr>
+        <tr>
+          <td class="pct">35%</td>
+          <td class="pct">35%</td>
+          <td class="money">$4.82</td>
+          <td class="money">$1.10</td>
+          <td class="money"><strong>$7.86</strong></td>
+          <td class="pct">4.3%</td>
+          <td class="pct">57.0%</td>
+          <td><span class="conf-tag conf-high">PASS</span></td>
+        </tr>
+        <tr>
+          <td class="pct">45%</td>
+          <td class="pct">45%</td>
+          <td class="money">$6.20</td>
+          <td class="money">$1.10</td>
+          <td class="money"><strong>$6.48</strong></td>
+          <td class="pct">3.5%</td>
+          <td class="pct">47.0%</td>
+          <td><span class="conf-tag conf-low">FAIL</span></td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="callout callout-info" style="margin-top: 8px; font-size: 13px;">
+      <span lang-content="en"><strong>Note:</strong> The override replaces the tier-default Agent Share but <code>operationalExpense</code> stays at the tier default (8%). At 45% override, Ergos fails both checks: below the 4.0% floor <em>and</em> below 50% gross retention. The system should block this configuration.</span>
+      <span lang-content="es"><strong>Nota:</strong> La sobrecomision reemplaza la Participacion del Agente por defecto del nivel pero <code>operationalExpense</code> se mantiene en el valor del nivel (8%). Al 45% de sobrecomision, Ergos falla ambas verificaciones: por debajo del piso de 4.0% <em>y</em> por debajo del 50% de retencion bruta. El sistema deberia bloquear esta configuracion.</span>
+    </div>
+
+    <!-- ── Scenario 4: Worst Case — Rebate + High Tier ── -->
+    <h3 style="margin-top: 28px;"><span lang-content="en">Scenario 4: Worst Case &mdash; Rebate + High Tier at 7.5% GM</span><span lang-content="es">Escenario 4: Peor Caso &mdash; Rebaja + Nivel Alto al 7.5% MB</span></h3>
+    <p style="font-size: 13px; color: var(--text-muted);"><span lang-content="en">Elite agent (24% share, 6% ops) <strong>plus</strong> a 4% agency rebate on Melia at 7.5% gross margin. This is the realistic worst-case for a high-performing agent at a discounted chain.</span><span lang-content="es">Agente Elite (24% participacion, 6% ops) <strong>mas</strong> una rebaja del 4% de agencia en Melia al 7.5% de margen bruto. Este es el peor caso realista para un agente de alto rendimiento en una cadena con descuento.</span></p>
+    <div class="example-box" style="background: var(--bg-gray); border-radius: 8px; padding: 16px 20px; font-family: monospace; font-size: 13px; line-height: 1.7; color: var(--text-secondary);">
+      <span lang-content="en">
+ergosSellPrice (7.5% GM):  $183.78<br>
+agencyRebate:              4%<br>
+agencyEffectivePrice:      $183.78 x 0.96 = <strong>$176.43</strong><br>
+grossMargin:               $176.43 - $170.00 = <strong>$6.43</strong><br>
+<br>
+agentEarning (24%):        $6.43 x 0.24 = <strong>$1.54</strong><br>
+opsAllocation (6%):        $6.43 x 0.06 = <strong>$0.39</strong><br>
+ergosNet:                  $6.43 - $1.54 - $0.39 = <strong style="color: #c62828;">$4.50</strong><br>
+ergosNet as % of sell:     4.50 / 176.43 = <strong style="color: #c62828;">2.6%</strong>   &lt; 4.0% floor <span style="color: #c62828;">FAIL</span><br>
+grossRetention:            4.50 / 6.43 = <strong>70.0%</strong>       &ge; 50%       <span style="color: #1b8a42;">PASS</span>
+      </span>
+      <span lang-content="es">
+Precio venta Ergos (7.5% MB): $183.78<br>
+Rebaja agencia:            4%<br>
+Precio efectivo agencia:   $183.78 x 0.96 = <strong>$176.43</strong><br>
+Margen bruto:              $176.43 - $170.00 = <strong>$6.43</strong><br>
+<br>
+Ganancia agente (24%):     $6.43 x 0.24 = <strong>$1.54</strong><br>
+Asignacion ops (6%):       $6.43 x 0.06 = <strong>$0.39</strong><br>
+Neto Ergos:                $6.43 - $1.54 - $0.39 = <strong style="color: #c62828;">$4.50</strong><br>
+Neto Ergos como % venta:   4.50 / 176.43 = <strong style="color: #c62828;">2.6%</strong>   &lt; piso 4.0% <span style="color: #c62828;">FALLA</span><br>
+Retencion bruta:           4.50 / 6.43 = <strong>70.0%</strong>       &ge; 50%       <span style="color: #1b8a42;">PASA</span>
+      </span>
+    </div>
+    <div class="callout callout-danger" style="margin-top: 8px; font-size: 13px;">
+      <span lang-content="en"><strong>This scenario FAILS.</strong> Even though Ergos retains 70% of gross margin, the net % of sell price (2.6%) is dangerously below the 4.0% floor. The fix: raise the gross margin to ~11% (markup ~12%) for Melia. At ~11% GM, ergosSellPrice becomes $190.40, grossMargin at 4% rebate becomes $12.78, and Ergos net would be $8.94 (4.9% of sell) &mdash; passing the floor check.</span>
+      <span lang-content="es"><strong>Este escenario FALLA.</strong> Aunque Ergos retiene el 70% del margen bruto, el neto como % del precio de venta (2.6%) esta peligrosamente por debajo del piso del 4.0%. La solucion: subir el margen bruto a ~11% (markup ~12%) para Melia. Al ~11% MB, el precio de venta Ergos seria $190.40, el margen bruto con 4% de rebaja seria $12.78, y el neto de Ergos seria $8.94 (4.9% de venta) &mdash; pasando la verificacion del piso.</span>
+    </div>
+
+    <!-- ── Scenario 5: Raising Gross Margin to ~11% ── -->
+    <h3 style="margin-top: 28px;"><span lang-content="en">Scenario 5: The Fix &mdash; Raising Gross Margin to ~11% (markup 12%)</span><span lang-content="es">Escenario 5: La Solucion &mdash; Subiendo Margen Bruto a ~11% (markup 12%)</span></h3>
+    <p style="font-size: 13px; color: var(--text-muted);"><span lang-content="en">Same Melia -15% discount, but raising gross margin from 7.5% to ~10.7% (markup from ~8% to 12%). Comparing all tiers at 0% rebate, then the worst case (Elite + 4% rebate).</span><span lang-content="es">Mismo descuento Melia -15%, pero subiendo el margen bruto del 7.5% a ~10.7% (markup del ~8% al 12%). Comparando todos los niveles sin rebaja, luego el peor caso (Elite + 4% rebaja).</span></p>
+    <div class="callout callout-info" style="margin-bottom: 12px; font-size: 13px;">
+      <span lang-content="en"><strong>Raised GM numbers:</strong> adjustedCostBasis = $170.00 &bull; ergosSellPrice = $170.00 x 1.12 = <strong>$190.40</strong> &bull; grossMargin = <strong>$20.40</strong> (10.7% of sell price) &bull; Agency still saves ~16% vs Melia rack rate ($226)</span>
+      <span lang-content="es"><strong>Numeros con MB elevado:</strong> Base de costo = $170.00 &bull; Precio venta Ergos = $170.00 x 1.12 = <strong>$190.40</strong> &bull; Margen bruto = <strong>$20.40</strong> (10.7% del precio de venta) &bull; La agencia aun ahorra ~16% vs tarifa publica Melia ($226)</span>
+    </div>
+    <table class="bp-table">
+      <thead>
+        <tr>
+          <th><span lang-content="en">Configuration</span><span lang-content="es">Configuracion</span></th>
+          <th class="pct"><span lang-content="en">Agent Share</span><span lang-content="es">Part. Agente</span></th>
+          <th class="pct"><span lang-content="en">Rebate</span><span lang-content="es">Rebaja</span></th>
+          <th class="money"><span lang-content="en">Agency Pays</span><span lang-content="es">Agencia Paga</span></th>
+          <th class="money"><span lang-content="en">Gross Margin</span><span lang-content="es">Margen Bruto</span></th>
+          <th class="money"><span lang-content="en">Agent Earns</span><span lang-content="es">Agente Gana</span></th>
+          <th class="money"><span lang-content="en">Ergos Net</span><span lang-content="es">Neto Ergos</span></th>
+          <th class="pct"><span lang-content="en">Ergos Net %</span><span lang-content="es">Neto Ergos %</span></th>
+          <th><span lang-content="en">Safety</span><span lang-content="es">Seguridad</span></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Starter, 0% rebate</td>
+          <td class="pct">12%</td>
+          <td class="pct">0%</td>
+          <td class="money">$190.40</td>
+          <td class="money">$20.40</td>
+          <td class="money">$2.45</td>
+          <td class="money"><strong>$16.32</strong></td>
+          <td class="pct">8.6%</td>
+          <td><span class="conf-tag conf-high">PASS</span></td>
+        </tr>
+        <tr>
+          <td>Elite, 0% rebate</td>
+          <td class="pct">24%</td>
+          <td class="pct">0%</td>
+          <td class="money">$190.40</td>
+          <td class="money">$20.40</td>
+          <td class="money">$4.90</td>
+          <td class="money"><strong>$14.28</strong></td>
+          <td class="pct">7.5%</td>
+          <td><span class="conf-tag conf-high">PASS</span></td>
+        </tr>
+        <tr>
+          <td>Strategic, 0% rebate</td>
+          <td class="pct">32%</td>
+          <td class="pct">0%</td>
+          <td class="money">$190.40</td>
+          <td class="money">$20.40</td>
+          <td class="money">$6.53</td>
+          <td class="money"><strong>$12.85</strong></td>
+          <td class="pct">6.7%</td>
+          <td><span class="conf-tag conf-high">PASS</span></td>
+        </tr>
+        <tr style="background: #fff3e0;">
+          <td><strong>Elite, 4% rebate</strong></td>
+          <td class="pct">24%</td>
+          <td class="pct">4%</td>
+          <td class="money">$182.78</td>
+          <td class="money">$12.78</td>
+          <td class="money">$3.07</td>
+          <td class="money"><strong>$8.94</strong></td>
+          <td class="pct">4.9%</td>
+          <td><span class="conf-tag conf-medium">WARN</span></td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="callout callout-success" style="margin-top: 8px; font-size: 13px;">
+      <span lang-content="en"><strong>Result:</strong> At ~11% GM (12% markup), even the worst-case (Elite + 4% rebate) clears 50% gross retention and stays at 4.9% net &mdash; just below the 5.5% floor at this GM level but viable as a WARN. The agency still saves ~16% vs rack rate. <strong>Recommendation: raise gross margin to ~11% (markup 12%) for all hotels with <code>priceAdjustment &le; 0.85</code>.</strong></span>
+      <span lang-content="es"><strong>Resultado:</strong> Al ~11% MB (12% markup), incluso el peor caso (Elite + 4% rebaja) supera el 50% de retencion bruta y se mantiene en 4.9% neto &mdash; justo por debajo del piso de 5.5% a este nivel de MB pero viable como ADVERTENCIA. La agencia aun ahorra ~16% vs tarifa publica. <strong>Recomendacion: subir margen bruto a ~11% (markup 12%) para todos los hoteles con <code>priceAdjustment &le; 0.85</code>.</strong></span>
+    </div>
+
+    <!-- ── Summary Cheat Sheet ── -->
+    <h3 style="margin-top: 28px;"><span lang-content="en">Quick Reference: What Compresses Margin and How Much</span><span lang-content="es">Referencia Rapida: Que Comprime el Margen y Cuanto</span></h3>
+    <table class="bp-table">
+      <thead>
+        <tr>
+          <th><span lang-content="en">Lever</span><span lang-content="es">Palanca</span></th>
+          <th><span lang-content="en">Direction</span><span lang-content="es">Direccion</span></th>
+          <th class="money"><span lang-content="en">Impact on Ergos Net (per night)</span><span lang-content="es">Impacto en Neto Ergos (por noche)</span></th>
+          <th><span lang-content="en">Risk Level</span><span lang-content="es">Nivel de Riesgo</span></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>priceAdjustment</code> <span lang-content="en">from 1.00 to 0.85</span><span lang-content="es">de 1.00 a 0.85</span></td>
+          <td><span lang-content="en">Reduces cost basis</span><span lang-content="es">Reduce base de costo</span></td>
+          <td class="money"><span lang-content="en">-$1.80 (but margin % preserved)</span><span lang-content="es">-$1.80 (pero % de margen preservado)</span></td>
+          <td><span class="conf-tag conf-medium"><span lang-content="en">LOW-MED</span><span lang-content="es">BAJO-MED</span></span></td>
+        </tr>
+        <tr>
+          <td><span lang-content="en">Agent Share from 12% to 24%</span><span lang-content="es">Part. Agente de 12% a 24%</span></td>
+          <td><span lang-content="en">More to agent</span><span lang-content="es">Mas al agente</span></td>
+          <td class="money">-$1.65</td>
+          <td><span class="conf-tag conf-medium">MEDIUM</span></td>
+        </tr>
+        <tr>
+          <td><span lang-content="en">Agency Rebate +4%</span><span lang-content="es">Rebaja Agencia +4%</span></td>
+          <td><span lang-content="en">Compresses gross margin</span><span lang-content="es">Comprime margen bruto</span></td>
+          <td class="money">-$7.35</td>
+          <td><span class="conf-tag conf-low"><span lang-content="en">HIGH</span><span lang-content="es">ALTO</span></span></td>
+        </tr>
+        <tr>
+          <td><span lang-content="en">GM from 7.5% to ~11%</span><span lang-content="es">MB de 7.5% a ~11%</span> (<code>baseCommission</code> 8%&rarr;12%)</td>
+          <td><span lang-content="en">Widens gross margin</span><span lang-content="es">Amplia margen bruto</span></td>
+          <td class="money"><strong>+$6.62</strong></td>
+          <td><span class="conf-tag conf-high"><span lang-content="en">FIX</span><span lang-content="es">SOLUCION</span></span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+<!-- ============ TAB 5: COMMISSION CALCULATOR ============ -->
+<div class="section" id="sec-calculator">
+
+  <div class="scenario-presets">
+    <button class="scenario-preset-btn active" onclick="loadPreset('standard',this)"><span lang-content="en">Standard</span><span lang-content="es">Estandar</span></button>
+    <button class="scenario-preset-btn" onclick="loadPreset('melia',this)"><span lang-content="en">Melia (-15%)</span><span lang-content="es">Melia (-15%)</span></button>
+    <button class="scenario-preset-btn" onclick="loadPreset('iberostar',this)"><span lang-content="en">Iberostar (-18%)</span><span lang-content="es">Iberostar (-18%)</span></button>
+    <button class="scenario-preset-btn" onclick="loadPreset('domina',this)"><span lang-content="en">Domina (-20%)</span><span lang-content="es">Domina (-20%)</span></button>
+    <button class="scenario-preset-btn" onclick="loadPreset('gaviota',this)"><span lang-content="en">Gaviota (-20%)</span><span lang-content="es">Gaviota (-20%)</span></button>
+    <button class="scenario-preset-btn" onclick="loadPreset('newagency',this)"><span lang-content="en">New Agency</span><span lang-content="es">Agencia Nueva</span></button>
+    <button class="scenario-preset-btn" onclick="loadPreset('override',this)"><span lang-content="en">Hotel Override</span><span lang-content="es">Sobrecomision Hotel</span></button>
+  </div>
+
+  <div class="calc-layout">
+    <!-- LEFT: INPUTS -->
+    <div class="calc-inputs">
+
+      <div class="input-section">
+        <div class="input-section-title"><span lang-content="en">Booking Details</span><span lang-content="es">Detalles de la Reserva</span></div>
+        <div class="input-hint"><span lang-content="en">Market-determined values</span><span lang-content="es">Valores determinados por el mercado</span></div>
+
+        <div class="input-group">
+          <div class="input-label">
+            <span class="input-label-text"><span lang-content="en">Supplier Net Price / Night</span><span lang-content="es">Precio Neto Proveedor / Noche</span></span>
+            <span class="input-value-display" id="disp-netprice">$150</span>
+          </div>
+          <input type="range" id="inp-netprice" min="50" max="500" step="10" value="150" oninput="calc()">
+          <div class="range-limits"><span>$50</span><span>$500</span></div>
+        </div>
+
+        <div class="input-group">
+          <div class="input-label">
+            <span class="input-label-text"><span lang-content="en">Number of Nights</span><span lang-content="es">Numero de Noches</span></span>
+            <span class="input-value-display" id="disp-nights">3</span>
+          </div>
+          <input type="range" id="inp-nights" min="1" max="14" step="1" value="3" oninput="calc()">
+          <div class="range-limits"><span>1</span><span>14</span></div>
+        </div>
+      </div>
+
+      <div class="input-section">
+        <div class="input-section-title"><span lang-content="en">Ergos Platform Settings</span><span lang-content="es">Configuracion Plataforma Ergos</span></div>
+        <div class="input-hint"><span lang-content="en">Values configured by Ergos admin</span><span lang-content="es">Valores configurados por el admin de Ergos</span></div>
+
+        <div class="input-group">
+          <div class="input-label">
+            <span class="input-label-text"><span lang-content="en">Target Gross Margin</span><span lang-content="es">Margen Bruto Objetivo</span></span>
+            <span class="input-value-display" id="disp-gm">7.5%</span>
+          </div>
+          <input type="range" id="inp-gm" min="3" max="15" step="0.5" value="7.5" oninput="calc()">
+          <div class="range-limits"><span>3%</span><span>15%</span></div>
+          <div class="input-hint" style="margin-top:4px;font-size:0.82em;color:var(--text-muted);"><span lang-content="en">Derived markup: </span><span lang-content="es">Margen derivado: </span><span id="disp-derived-markup">~8.1%</span></div>
+        </div>
+
+        <div class="input-group">
+          <div class="input-label">
+            <span class="input-label-text"><span lang-content="en">Negotiated Discount</span><span lang-content="es">Descuento Negociado</span></span>
+            <span class="input-value-display" id="disp-priceadj">1.00</span>
+          </div>
+          <input type="range" id="inp-priceadj" min="0.50" max="1.50" step="0.01" value="1.00" oninput="calc()">
+          <div class="range-limits"><span>0.50</span><span>1.50</span></div>
+          <div class="preset-btns">
+            <button class="preset-btn active" onclick="setSlider('inp-priceadj',1.00,this)">Standard (1.00)</button>
+            <button class="preset-btn" onclick="setSlider('inp-priceadj',0.85,this)">Melia (0.85)</button>
+            <button class="preset-btn" onclick="setSlider('inp-priceadj',0.82,this)">Iberostar (0.82)</button>
+            <button class="preset-btn" onclick="setSlider('inp-priceadj',0.80,this)">Domina (0.80)</button>
+            <button class="preset-btn" onclick="setSlider('inp-priceadj',0.80,this)">Gaviota (0.80)</button>
+          </div>
+        </div>
+
+        <div class="input-group">
+          <div class="input-label">
+            <span class="input-label-text"><span lang-content="en">Agent Tier</span><span lang-content="es">Nivel del Agente</span></span>
+          </div>
+          <select id="inp-tier" onchange="tierChanged()">
+            <option value="starter">Starter (10-14% agent share)</option>
+            <option value="growth">Growth (15-20% agent share)</option>
+            <option value="elite">Elite (21-26% agent share)</option>
+            <option value="strategic">Strategic (27-32% agent share)</option>
+          </select>
+        </div>
+
+        <div class="input-group">
+          <div class="input-label">
+            <span class="input-label-text"><span lang-content="en">Agent Share</span><span lang-content="es">Participacion del Agente</span></span>
+            <span class="input-value-display" id="disp-earning">12%</span>
+          </div>
+          <input type="range" id="inp-earning" min="5" max="35" step="1" value="12" oninput="calc()">
+          <div class="range-limits"><span>5%</span><span>35%</span></div>
+        </div>
+
+        <div class="input-group">
+          <div class="input-label">
+            <span class="input-label-text"><span lang-content="en">Cost to Attain</span><span lang-content="es">Costo para Lograr</span></span>
+            <span class="input-value-display" id="disp-cost2attain">2.0%</span>
+          </div>
+          <input type="range" id="inp-cost2attain" min="0.5" max="8" step="0.1" value="2.0" oninput="calc()">
+          <div class="range-limits"><span>0.5%</span><span>8%</span></div>
+          <div class="input-hint" style="margin-top:4px;font-size:0.82em;color:var(--text-muted);"><span lang-content="en">Ergos employee costs as % of sell price (salaries + internal commissions, NOT agent commissions)</span><span lang-content="es">Costos de empleados Ergos como % del precio de venta (salarios + comisiones internas, NO comisiones de agentes)</span></div>
+        </div>
+
+        <div class="input-group">
+          <div class="toggle-group">
+            <div class="toggle-switch" id="toggle-override" onclick="toggleOverride()"></div>
+            <span class="toggle-label"><span lang-content="en">Hotel-Specific Override</span><span lang-content="es">Sobrecomision por Hotel</span></span>
+          </div>
+          <div id="override-slider" style="display:none;">
+            <div class="input-label">
+              <span class="input-label-text"><span lang-content="en">Override %</span><span lang-content="es">Sobrecomision %</span></span>
+              <span class="input-value-display" id="disp-override">25%</span>
+            </div>
+            <input type="range" id="inp-override" min="0" max="50" step="1" value="25" oninput="calc()">
+            <div class="range-limits"><span>0%</span><span>50%</span></div>
+          </div>
+        </div>
+
+        <div class="input-group">
+          <div class="input-label">
+            <span class="input-label-text"><span lang-content="en">Agency Rebate</span><span lang-content="es">Rebaja de Agencia</span></span>
+            <span class="input-value-display" id="disp-rebate">0.0%</span>
+          </div>
+          <input type="range" id="inp-rebate" min="0" max="15" step="0.5" value="0" oninput="calc()">
+          <div class="range-limits"><span>0%</span><span>15%</span></div>
+        </div>
+
+        <hr style="border: none; border-top: 2px solid var(--border-light); margin: 18px 0 14px;">
+        <div class="input-section-title" style="margin-top:0"><span lang-content="en">Portfolio Scale</span><span lang-content="es">Escala del Portafolio</span></div>
+
+        <div class="input-group">
+          <div class="input-label">
+            <span class="input-label-text"><span lang-content="en">Active Agencies</span><span lang-content="es">Agencias Activas</span></span>
+            <span class="input-value-display" id="disp-agencies">10</span>
+          </div>
+          <input type="range" id="inp-agencies" min="1" max="200" step="1" value="10" oninput="calc()">
+          <div class="range-limits"><span>1</span><span>200</span></div>
+        </div>
+        <div class="input-group">
+          <div class="input-label">
+            <span class="input-label-text"><span lang-content="en">Avg Bookings / Agency / Month</span><span lang-content="es">Reservas Promedio / Agencia / Mes</span></span>
+            <span class="input-value-display" id="disp-bookings">30</span>
+          </div>
+          <input type="range" id="inp-bookings" min="5" max="100" step="1" value="30" oninput="calc()">
+          <div class="range-limits"><span>5</span><span>100</span></div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- RIGHT: OUTPUTS -->
+    <div class="calc-outputs">
+
+      <!-- KPI Row -->
+      <div class="kpi-row" id="calc-kpis">
+        <div class="kpi-card">
+          <div class="kpi-label"><span lang-content="en">Agency Pays</span><span lang-content="es">La Agencia Paga</span></div>
+          <div class="kpi-value" id="kpi-agencypays">$0.00</div>
+          <div class="kpi-sub" id="kpi-agencypays-sub"></div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label"><span lang-content="en">Ergos Gross Margin</span><span lang-content="es">Margen Bruto Ergos</span></div>
+          <div class="kpi-value" id="kpi-grossmargin">$0.00</div>
+          <div class="kpi-sub" id="kpi-grossmargin-sub"></div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label"><span lang-content="en">Agent Earns</span><span lang-content="es">El Agente Gana</span></div>
+          <div class="kpi-value" id="kpi-agentearns">$0.00</div>
+          <div class="kpi-sub" id="kpi-agentearns-sub"></div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label"><span lang-content="en">Ergos Net</span><span lang-content="es">Neto Ergos</span></div>
+          <div class="kpi-value" id="kpi-ergosnet">$0.00</div>
+          <div class="kpi-sub" id="kpi-ergosnet-sub"></div>
+        </div>
+      </div>
+
+      <!-- Waterfall Chart -->
+      <div class="chart-row">
+        <div class="chart-card full">
+          <h3><span lang-content="en">Margin Waterfall Breakdown</span><span lang-content="es">Desglose en Cascada del Margen</span></h3>
+          <canvas id="chart-waterfall" height="220"></canvas>
+        </div>
+      </div>
+
+      <!-- Who Earns What Table -->
+      <div class="data-card">
+        <h3><span lang-content="en">Who Earns What</span><span lang-content="es">Quien Gana Que</span></h3>
+        <table class="data-table" id="table-earnings">
+          <thead>
+            <tr>
+              <th><span lang-content="en">Party</span><span lang-content="es">Parte</span></th>
+              <th class="money"><span lang-content="en">Amount</span><span lang-content="es">Monto</span></th>
+              <th class="pct"><span lang-content="en">% of Agency Price</span><span lang-content="es">% del Precio Agencia</span></th>
+            </tr>
+          </thead>
+          <tbody id="tbody-earnings"></tbody>
+        </table>
+      </div>
+
+      <!-- Safety Check -->
+      <div id="safety-check"></div>
+
+      <!-- Monthly/Annual Projections -->
+      <div class="data-card">
+        <h3><span lang-content="en">Monthly & Annual Projections</span><span lang-content="es">Proyecciones Mensuales y Anuales</span></h3>
+        <table class="data-table" id="table-projections">
+          <thead>
+            <tr>
+              <th><span lang-content="en">Period</span><span lang-content="es">Periodo</span></th>
+              <th class="money"><span lang-content="en">Total Bookings</span><span lang-content="es">Total Reservas</span></th>
+              <th class="money"><span lang-content="en">Agent Total Earning</span><span lang-content="es">Ganancia Total del Agente</span></th>
+              <th class="money"><span lang-content="en">Ergos Net Revenue</span><span lang-content="es">Ingreso Neto Ergos</span></th>
+            </tr>
+          </thead>
+          <tbody id="tbody-projections"></tbody>
+        </table>
+      </div>
+
+      <!-- Revenue Distribution Pie -->
+      <div class="chart-row">
+        <div class="chart-card full">
+          <h3><span lang-content="en">Revenue Distribution</span><span lang-content="es">Distribucion de Ingresos</span></h3>
+          <div style="max-width:400px; margin:0 auto;">
+            <canvas id="chart-pie" height="280"></canvas>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+<!-- ============ TAB 5: REVENUE PROJECTIONS ============ -->
+<div class="section" id="sec-projections">
+
+  <div class="bp-card">
+    <h2><span lang-content="en">Baseline Assumptions</span><span lang-content="es">Supuestos Base</span></h2>
+    <table class="bp-table">
+      <thead>
+        <tr>
+          <th><span lang-content="en">Metric</span><span lang-content="es">Metrica</span></th>
+          <th class="num"><span lang-content="en">Value</span><span lang-content="es">Valor</span></th>
+          <th><span lang-content="en">Confidence</span><span lang-content="es">Confianza</span></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td><span lang-content="en">Active agencies (Year 1 mid)</span><span lang-content="es">Agencias activas (mitad del Ano 1)</span></td><td class="num">80-120</td><td><span class="conf-tag conf-medium">MEDIUM</span></td></tr>
+        <tr><td><span lang-content="en">Avg bookings per active agency/month</span><span lang-content="es">Reservas promedio por agencia activa/mes</span></td><td class="num">30-40</td><td><span class="conf-tag conf-medium">MEDIUM-HIGH</span></td></tr>
+        <tr><td><span lang-content="en">Blended supplier net price/booking</span><span lang-content="es">Precio neto del proveedor combinado/reserva</span></td><td class="money">$120-180</td><td><span class="conf-tag conf-medium">MEDIUM</span></td></tr>
+        <tr><td><span lang-content="en">Blended Gross Margin (% of sell)</span><span lang-content="es">Margen Bruto combinado (% de venta)</span></td><td class="pct">~7%</td><td><span class="conf-tag conf-high">HIGH</span></td></tr>
+        <tr><td><span lang-content="en">Corresponding Ergos Markup</span><span lang-content="es">Markup Ergos correspondiente</span></td><td class="pct">~8%</td><td><span class="conf-tag conf-high">HIGH</span></td></tr>
+        <tr><td><span lang-content="en">Blended Negotiated Discount</span><span lang-content="es">Descuento Negociado combinado</span></td><td class="num">0.93</td><td><span class="conf-tag conf-low">LOW</span></td></tr>
+        <tr><td><span lang-content="en">Blended Agent Share</span><span lang-content="es">Participacion del Agente combinada</span></td><td class="pct">16%</td><td><span class="conf-tag conf-medium">MEDIUM</span></td></tr>
+        <tr><td><span lang-content="en">Blended Ops Cost</span><span lang-content="es">Costo Operacional combinado</span></td><td class="pct">7%</td><td><span class="conf-tag conf-medium">MEDIUM</span></td></tr>
+        <tr><td><span lang-content="en">Bookings with Hotel-Specific Override (%)</span><span lang-content="es">Reservas con Sobrecomision por Hotel (%)</span></td><td class="pct">15%</td><td><span class="conf-tag conf-low">LOW</span></td></tr>
+        <tr><td><span lang-content="en">Average Agency Rebate when applied</span><span lang-content="es">Rebaja de Agencia promedio cuando se aplica</span></td><td class="pct">3%</td><td><span class="conf-tag conf-low">LOW</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="bp-card" style="border-left: 4px solid var(--teal);">
+    <h2><span lang-content="en">Per-Booking Blended Economics</span><span lang-content="es">Economia Combinada por Reserva</span></h2>
+    <div class="example-box" style="background: var(--bg-gray); border-radius: 8px; padding: 16px 20px; font-family: monospace; font-size: 13px; line-height: 1.7; color: var(--text-secondary);">
+<span lang-content="en">
+Blended gross margin target:   ~7% of sell price (colleague-confirmed average)<br>
+Supplier net (blended):        $150.00<br>
+adjustedCostBasis:             $150.00 x 0.93 = $139.50<br>
+ergosSellPrice (~8% markup):   $139.50 x 1.08 = $150.66<br>
+agencyEffectivePrice (avg):    $150.66 x (1 - 0.0045) = $149.98<br>
+ergosGrossMargin:              $149.98 - $139.50 = <strong>$10.48</strong> (7.0% of sell)<br>
+agentEarning:                  $10.48 x 16%   = <strong>$1.68</strong><br>
+ergosOperationalCost:          $10.48 x 7%    = $0.73<br>
+ergosNetMargin per booking:    $10.48 - $1.68 - $0.73 = <strong>$8.07</strong> (5.4% of agency price)
+</span>
+<span lang-content="es">
+Margen bruto objetivo combinado: ~7% del precio de venta (promedio confirmado por colega)<br>
+Neto del proveedor (combinado): $150.00<br>
+Base de costo ajustada:         $150.00 x 0.93 = $139.50<br>
+Precio de venta Ergos (~8% markup): $139.50 x 1.08 = $150.66<br>
+Precio efectivo agencia (prom): $150.66 x (1 - 0.0045) = $149.98<br>
+Margen bruto Ergos:             $149.98 - $139.50 = <strong>$10.48</strong> (7.0% de venta)<br>
+Ganancia del agente:            $10.48 x 16%   = <strong>$1.68</strong><br>
+Costo operacional Ergos:        $10.48 x 7%    = $0.73<br>
+Margen neto Ergos por reserva:  $10.48 - $1.68 - $0.73 = <strong>$8.07</strong> (5.4% del precio agencia)
+</span>
+    </div>
+  </div>
+
+  <div class="bp-card">
+    <h2><span lang-content="en">Three-Scenario Annual Projections</span><span lang-content="es">Proyecciones Anuales de Tres Escenarios</span></h2>
+
+    <div class="callout callout-info" style="margin-bottom: 16px;">
+      <p style="margin: 0 0 10px 0; font-size: 13px; font-weight: 600;">
+        <span lang-content="en">How the numbers are calculated:</span>
+        <span lang-content="es">Como se calculan los numeros:</span>
+      </p>
+      <table class="bp-table" style="font-size: 13px; margin-bottom: 0;">
+        <thead>
+          <tr>
+            <th><span lang-content="en">Column</span><span lang-content="es">Columna</span></th>
+            <th><span lang-content="en">Formula</span><span lang-content="es">Formula</span></th>
+            <th><span lang-content="en">Base Scenario Example</span><span lang-content="es">Ejemplo Escenario Base</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Total Annual</strong></td>
+            <td><code><span lang-content="en">Active Agencies &times; Bookings/Agency/Mo &times; 12 months</span><span lang-content="es">Agencias Activas &times; Reservas/Agencia/Mes &times; 12 meses</span></code></td>
+            <td><span lang-content="en">100 &times; 32 &times; 12 = <strong>38,400 bookings</strong></span><span lang-content="es">100 &times; 32 &times; 12 = <strong>38.400 reservas</strong></span></td>
+          </tr>
+          <tr>
+            <td><strong><span lang-content="en">Annual Net Revenue</span><span lang-content="es">Ingreso Neto Anual</span></strong></td>
+            <td><code><span lang-content="en">Total Annual &times; Ergos Net/Booking</span><span lang-content="es">Total Anual &times; Neto Ergos/Reserva</span></code></td>
+            <td><span lang-content="en">38,400 &times; $8.07 = <strong>$310,000</strong></span><span lang-content="es">38,400 &times; $8.07 = <strong>$310,000</strong></span></td>
+          </tr>
+        </tbody>
+      </table>
+      <p style="margin: 10px 0 0 0; font-size: 12px; color: var(--text-muted);">
+        <span lang-content="en"><strong>Ergos Net/Booking</strong> comes from the Per-Booking Blended Economics above ($8.07 for Base). Conservative uses a lower net/booking ($7.00) to reflect a less favorable product mix, while Aggressive uses a higher one ($10.50) reflecting better negotiated rates and scale efficiencies.</span>
+        <span lang-content="es"><strong>Neto Ergos/Reserva</strong> proviene de la Economia Combinada por Reserva de arriba ($8.07 para Base). El Conservador usa un neto/reserva mas bajo ($7.00) para reflejar un mix de producto menos favorable, mientras el Agresivo usa uno mas alto ($10.50) reflejando mejores tarifas negociadas y eficiencias de escala.</span>
+      </p>
+    </div>
+
+    <table class="bp-table">
+      <thead>
+        <tr>
+          <th><span lang-content="en">Scenario</span><span lang-content="es">Escenario</span></th>
+          <th class="num"><span lang-content="en">Active Agencies</span><span lang-content="es">Agencias Activas</span></th>
+          <th class="num"><span lang-content="en">Bookings/Agency/Mo</span><span lang-content="es">Reservas/Agencia/Mes</span></th>
+          <th class="num"><span lang-content="en">Total Annual</span><span lang-content="es">Total Anual</span></th>
+          <th class="money"><span lang-content="en">Ergos Net/Booking</span><span lang-content="es">Neto Ergos/Reserva</span></th>
+          <th class="money"><span lang-content="en">Annual Net Revenue</span><span lang-content="es">Ingreso Neto Anual</span></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong><span lang-content="en">Conservative</span><span lang-content="es">Conservador</span></strong></td>
+          <td class="num">80</td><td class="num">25</td><td class="num">24,000</td><td class="money">$7.00</td>
+          <td class="money"><strong style="color:var(--green)">$168,000</strong></td>
+        </tr>
+        <tr>
+          <td><strong><span lang-content="en">Base</span><span lang-content="es">Base</span></strong></td>
+          <td class="num">100</td><td class="num">32</td><td class="num">38,400</td><td class="money">$8.07</td>
+          <td class="money"><strong style="color:var(--green)">$310,000</strong></td>
+        </tr>
+        <tr>
+          <td><strong><span lang-content="en">Aggressive</span><span lang-content="es">Agresivo</span></strong></td>
+          <td class="num">150</td><td class="num">40</td><td class="num">72,000</td><td class="money">$10.50</td>
+          <td class="money"><strong style="color:var(--green)">$756,000</strong></td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="callout callout-info">
+      <span lang-content="en">These figures are <strong>hotel commission net revenue only</strong>. They do not include ancillary products (transfers, insurance, activities) which are layered on top.</span>
+      <span lang-content="es">Estas cifras son <strong>solo ingresos netos de comisiones hoteleras</strong>. No incluyen productos complementarios (traslados, seguros, actividades) que se suman por encima.</span>
+    </div>
+  </div>
+
+  <div class="bp-card">
+    <h2><span lang-content="en">Agent Payout Pool</span><span lang-content="es">Fondo de Pago a Agentes</span></h2>
+    <p><span lang-content="en">At base scenario: 38,400 bookings x $1.68/booking = <strong>$64,500/year</strong> distributed across all active agents. This is Ergos's total channel cost for the direct B2B sales model.</span><span lang-content="es">En escenario base: 38,400 reservas x $1.68/reserva = <strong>$64,500/ano</strong> distribuidos entre todos los agentes activos. Este es el costo total de canal de Ergos para el modelo de ventas B2B directo.</span></p>
+    <div class="callout callout-success">
+      <span lang-content="en"><strong>Unit economics advantage:</strong> A single field sales rep at a traditional OTA costs $80-120K salary + benefits. The agent model achieves the same distribution for a variable cost that scales with revenue -- a fundamentally better unit economics profile.</span>
+      <span lang-content="es"><strong>Ventaja en economia unitaria:</strong> Un representante de ventas de campo en una OTA tradicional cuesta $80-120K de salario + beneficios. El modelo de agentes logra la misma distribucion con un costo variable que escala con los ingresos -- un perfil de economia unitaria fundamentalmente mejor.</span>
+    </div>
+  </div>
+
+  <!-- 3-Year Projection Chart -->
+  <div class="bp-card">
+    <h2><span lang-content="en">3-Year Revenue Projection</span><span lang-content="es">Proyeccion de Ingresos a 3 Anos</span></h2>
+    <canvas id="chart-projection" height="300"></canvas>
+  </div>
+</div>
+
+<!-- ============ TAB 6: EDGE CASES ============ -->
+<div class="section" id="sec-edgecases">
+
+  <div class="edge-case-card">
+    <h4><span lang-content="en">1. Hotel with Negotiated Discount + Agency Rebate</span><span lang-content="es">1. Hotel con Descuento Negociado + Rebaja de Agencia</span></h4>
+    <p><span lang-content="en">When a hotel has a Negotiated Discount AND the agency has a rebate, margins compress rapidly. Example: Domina hotel (Negotiated Discount = 0.80, i.e. -20%), agency has 5% rebate.</span><span lang-content="es">Cuando un hotel tiene un Descuento Negociado Y la agencia tiene rebaja, los margenes se comprimen rapidamente. Ejemplo: Hotel Domina (Descuento Negociado = 0.80, es decir -20%), la agencia tiene 5% de rebaja.</span></p>
+    <div class="example-box">
+Supplier net:           $500.00<br>
+adjustedCostBasis:      $500.00 x 0.80 = $400.00<br>
+ergosSellPrice (~8% markup): $400.00 x 1.08 = $432.00<br>
+agencyEffectivePrice:   $432.00 x 0.95 = $410.40<br>
+ergosGrossMargin:       $410.40 - $400.00 = $10.40  (2.5% of effective price)<br>
+<br>
+Safety check: 2.5% &lt; 4.0% floor (at ~7.5% GM) -- <strong style="color:var(--red)">WARNING</strong><br>
+Gross retention: $10.40 margin -- check secondary guardrail
+    </div>
+    <div class="callout callout-danger">
+      <span lang-content="en"><strong>Rule:</strong> Hotels with a Negotiated Discount &lt; 0.90 should target a gross margin of ~11%+ (markup >= 12%) to protect the floor when Agency Rebates are applied.</span>
+      <span lang-content="es"><strong>Regla:</strong> Los hoteles con Descuento Negociado &lt; 0.90 deben apuntar a un margen bruto de ~11%+ (markup >= 12%) para proteger el piso cuando se aplican Rebajas de Agencia.</span>
+    </div>
+  </div>
+
+  <div class="edge-case-card">
+    <h4><span lang-content="en">2. Vendor Commission Models (Net Rate vs Gross Commission)</span><span lang-content="es">2. Modelos de Comision del Proveedor (Tarifa Neta vs Comision Bruta)</span></h4>
+    <p><span lang-content="en">For GDS vendors reporting commission at booking confirmation, the Vendor Commission (<code>paymentInfo.baseCommission</code>) holds the vendor's commission payment in currency.</span><span lang-content="es">Para proveedores GDS que reportan comision en la confirmacion de reserva, la Comision del Proveedor (<code>paymentInfo.baseCommission</code>) contiene el pago de comision del proveedor en moneda.</span></p>
+    <div class="example-box">
+<strong><span lang-content="en">Net-rate vendor:</span><span lang-content="es">Proveedor de tarifa neta:</span></strong><br>
+  ergosGrossMargin = totalAmount - (supplierNetPrice x priceAdjustment)<br>
+  paymentInfo.baseCommission = 0 or null<br>
+<br>
+<strong><span lang-content="en">Commission-based vendor:</span><span lang-content="es">Proveedor basado en comisiones:</span></strong><br>
+  ergosGrossMargin = paymentInfo.baseCommission<br>
+  adjustedCostBasis = totalAmount - paymentInfo.baseCommission
+    </div>
+    <div class="callout callout-info">
+      <span lang-content="en">Each GDS vendor should have a <code>vendorCommissionModel: "net_rate" | "gross_commission"</code> flag. Restel/Hotelbeds = typically net-rate. Juniper/Dingus = validate with contracts.</span>
+      <span lang-content="es">Cada proveedor GDS debe tener un indicador <code>vendorCommissionModel: "net_rate" | "gross_commission"</code>. Restel/Hotelbeds = tipicamente tarifa neta. Juniper/Dingus = validar con contratos.</span>
+    </div>
+  </div>
+
+  <div class="edge-case-card">
+    <h4><span lang-content="en">3. Multi-Room Bookings</span><span lang-content="es">3. Reservas de Multiples Habitaciones</span></h4>
+    <p><span lang-content="en">Commission calculation applies PER ROOM, not on the aggregate. Each room in a multiRoomBookingId group is calculated independently.</span><span lang-content="es">El calculo de comision se aplica POR HABITACION, no en el agregado. Cada habitacion en un grupo multiRoomBookingId se calcula de forma independiente.</span></p>
+    <div class="callout callout-info">
+      <span lang-content="en"><strong>Why per-room?</strong> Different room types have different base rates. Agent earnings are summed at payout time. Ergos floor check runs per room (most conservative approach).</span>
+      <span lang-content="es"><strong>Por que por habitacion?</strong> Diferentes tipos de habitacion tienen diferentes tarifas base. Las ganancias del agente se suman al momento del pago. La verificacion del piso de Ergos se ejecuta por habitacion (enfoque mas conservador).</span>
+    </div>
+  </div>
+
+  <div class="edge-case-card">
+    <h4><span lang-content="en">4. Cancellations and Refunds</span><span lang-content="es">4. Cancelaciones y Reembolsos</span></h4>
+    <ul>
+      <li><span lang-content="en">If <code>paymentInfo.paymentStatus = "refunded"</code>: agent earns $0 on that booking</span><span lang-content="es">Si <code>paymentInfo.paymentStatus = "refunded"</code>: el agente gana $0 en esa reserva</span></li>
+      <li><span lang-content="en">If partial cancellation fee applies: agent earns their % of only the cancellation fee amount Ergos retains</span><span lang-content="es">Si aplica tarifa de cancelacion parcial: el agente gana su % solo del monto de la tarifa de cancelacion que Ergos retiene</span></li>
+      <li><span lang-content="en">Onboarding bonus clawback: if an agency's first booking is cancelled, the bonus is clawed back against next commission payment</span><span lang-content="es">Devolucion del bono de incorporacion: si la primera reserva de una agencia se cancela, el bono se descuenta del siguiente pago de comision</span></li>
+    </ul>
+  </div>
+
+  <div class="edge-case-card">
+    <h4><span lang-content="en">5. Agency Stops Booking</span><span lang-content="es">5. La Agencia Deja de Reservar</span></h4>
+    <ul>
+      <li><span lang-content="en">Agent loses residual commission for that agency going forward</span><span lang-content="es">El agente pierde la comision residual para esa agencia en adelante</span></li>
+      <li><span lang-content="en">Agent does NOT lose residuals already earned on prior bookings</span><span lang-content="es">El agente NO pierde los residuales ya ganados en reservas anteriores</span></li>
+      <li><span lang-content="en">If the agency re-activates, it re-enters the agent's active portfolio automatically</span><span lang-content="es">Si la agencia se reactiva, vuelve a entrar automaticamente al portafolio activo del agente</span></li>
+      <li><span lang-content="en">No second onboarding bonus is paid on re-activation</span><span lang-content="es">No se paga un segundo bono de incorporacion en la reactivacion</span></li>
+    </ul>
+  </div>
+</div>
+<!-- ============ TAB 7: FIELD REFERENCE ============ -->
+<div class="section" id="sec-reference">
+
+  <div class="bp-card">
+    <h2><span lang-content="en">Complete Field Definitions</span><span lang-content="es">Definiciones Completas de Campos</span></h2>
+    <table class="bp-table">
+      <thead>
+        <tr>
+          <th><span lang-content="en">Field</span><span lang-content="es">Campo</span></th>
+          <th><span lang-content="en">Friendly Name</span><span lang-content="es">Nombre Amigable</span></th>
+          <th><span lang-content="en">Location</span><span lang-content="es">Ubicacion</span></th>
+          <th><span lang-content="en">Definition</span><span lang-content="es">Definicion</span></th>
+          <th class="num"><span lang-content="en">Default</span><span lang-content="es">Predeterminado</span></th>
+          <th><span lang-content="en">Formula Role</span><span lang-content="es">Rol en Formula</span></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>baseCommission</code></td>
+          <td><span lang-content="en">Ergos Markup</span><span lang-content="es">Margen Ergos</span></td>
+          <td>Hotel</td>
+          <td><span lang-content="en">Ergos margin % added to cost basis</span><span lang-content="es">% de margen de Ergos agregado a la base de costo</span></td>
+          <td class="num">8%</td>
+          <td><span lang-content="en">Determines ergosSellPrice</span><span lang-content="es">Determina ergosSellPrice</span></td>
+        </tr>
+        <tr>
+          <td><code>priceAdjustment</code></td>
+          <td><span lang-content="en">Negotiated Discount</span><span lang-content="es">Descuento Negociado</span></td>
+          <td>Hotel</td>
+          <td><span lang-content="en">Cost basis multiplier (negotiated vendor reduction)</span><span lang-content="es">Multiplicador de base de costo (reduccion negociada del proveedor)</span></td>
+          <td class="num">1.00</td>
+          <td><span lang-content="en">Reduces Ergos cost on specific chains</span><span lang-content="es">Reduce el costo de Ergos en cadenas especificas</span></td>
+        </tr>
+        <tr>
+          <td><code>earningPercentage</code></td>
+          <td><span lang-content="en">Agent Share</span><span lang-content="es">Participacion del Agente</span></td>
+          <td>SalesAgent</td>
+          <td><span lang-content="en">Agent's % of Ergos gross margin, ongoing residual</span><span lang-content="es">% del agente del margen bruto de Ergos, residual continuo</span></td>
+          <td><span lang-content="en">Set at onboarding</span><span lang-content="es">Se fija al incorporar</span></td>
+          <td><span lang-content="en">Agent's base income per booking</span><span lang-content="es">Ingreso base del agente por reserva</span></td>
+        </tr>
+        <tr>
+          <td><code>operationalExpense</code></td>
+          <td><span lang-content="en">Ops Cost</span><span lang-content="es">Costo Operacional</span></td>
+          <td>SalesAgent</td>
+          <td><span lang-content="en">Ergos ops cost allocation as % of gross margin</span><span lang-content="es">Asignacion de costos operacionales de Ergos como % del margen bruto</span></td>
+          <td><span lang-content="en">Set at onboarding</span><span lang-content="es">Se fija al incorporar</span></td>
+          <td><span lang-content="en">Internal cost allocation, reduces Ergos net</span><span lang-content="es">Asignacion de costos interna, reduce el neto de Ergos</span></td>
+        </tr>
+        <tr>
+          <td><code>commissionPercentage</code></td>
+          <td><span lang-content="en">Hotel-Specific Override</span><span lang-content="es">Sobrecomision por Hotel</span></td>
+          <td>SalesAgentCommission</td>
+          <td><span lang-content="en">Hotel-specific agent commission override</span><span lang-content="es">Sobrecomision especifica del agente por hotel</span></td>
+          <td><span lang-content="en">No default (optional)</span><span lang-content="es">Sin predeterminado (opcional)</span></td>
+          <td><span lang-content="en">Overrides Agent Share for that hotel</span><span lang-content="es">Sobreescribe la Participacion del Agente para ese hotel</span></td>
+        </tr>
+        <tr>
+          <td><code>commissionPercentage</code></td>
+          <td><span lang-content="en">Agency Rebate</span><span lang-content="es">Rebaja de Agencia</span></td>
+          <td>TravelAgencyCommission</td>
+          <td><span lang-content="en">Hotel-specific agency rebate (% off Ergos sell price)</span><span lang-content="es">Rebaja especifica de agencia por hotel (% de descuento del precio de venta de Ergos)</span></td>
+          <td><span lang-content="en">No default (optional)</span><span lang-content="es">Sin predeterminado (opcional)</span></td>
+          <td><span lang-content="en">Reduces agency's effective price</span><span lang-content="es">Reduce el precio efectivo de la agencia</span></td>
+        </tr>
+        <tr>
+          <td><code>paymentInfo.baseCommission</code></td>
+          <td><span lang-content="en">Vendor Commission</span><span lang-content="es">Comision del Proveedor</span></td>
+          <td>Booking</td>
+          <td><span lang-content="en">Vendor-reported commission in currency</span><span lang-content="es">Comision reportada por el proveedor en moneda</span></td>
+          <td>0/null</td>
+          <td><span lang-content="en">Reference only; used for gross-commission vendors</span><span lang-content="es">Solo referencia; usado para proveedores de comision bruta</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="bp-card">
+    <h2><span lang-content="en">New Fields Needed</span><span lang-content="es">Nuevos Campos Necesarios</span></h2>
+    <table class="bp-table">
+      <thead>
+        <tr>
+          <th><span lang-content="en">Field</span><span lang-content="es">Campo</span></th>
+          <th><span lang-content="en">Location</span><span lang-content="es">Ubicacion</span></th>
+          <th><span lang-content="en">Type</span><span lang-content="es">Tipo</span></th>
+          <th><span lang-content="en">Purpose</span><span lang-content="es">Proposito</span></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>onboardingBonusPerAgency</code></td>
+          <td>SalesAgent</td>
+          <td>Number ($)</td>
+          <td><span lang-content="en">One-time recruitment bonus per agency's first booking</span><span lang-content="es">Bono de reclutamiento unico por la primera reserva de la agencia</span></td>
+        </tr>
+        <tr>
+          <td><code>tierName</code></td>
+          <td>SalesAgent</td>
+          <td>Enum</td>
+          <td><span lang-content="en">Cached tier label for display and audit</span><span lang-content="es">Etiqueta de nivel en cache para visualizacion y auditoria</span></td>
+        </tr>
+        <tr>
+          <td><code>commissionDetails</code></td>
+          <td>Booking paymentInfo</td>
+          <td>Sub-document</td>
+          <td><span lang-content="en">Full commission calculation audit trail per booking</span><span lang-content="es">Pista de auditoria completa del calculo de comisiones por reserva</span></td>
+        </tr>
+        <tr>
+          <td><code>vendorCommissionModel</code></td>
+          <td>Vendor config</td>
+          <td>Enum</td>
+          <td><span lang-content="en">Determines how to interpret paymentInfo.baseCommission</span><span lang-content="es">Determina como interpretar paymentInfo.baseCommission</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="bp-card">
+    <h2><span lang-content="en">Lookup Priority Flowchart</span><span lang-content="es">Diagrama de Prioridad de Busqueda</span></h2>
+    <div style="background: var(--bg-gray); border-radius: 8px; padding: 20px 24px; font-family: monospace; font-size: 13px; line-height: 1.8; color: var(--text-secondary);">
+<span lang-content="en">
+<strong>STEP 1 -- Determine agent earning rate:</strong><br>
+&nbsp;&nbsp;IF SalesAgentCommission exists for (agentId, hotelId):<br>
+&nbsp;&nbsp;&nbsp;&nbsp;agentRate = SalesAgentCommission.commissionPercentage / 100<br>
+&nbsp;&nbsp;ELSE:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;agentRate = SalesAgent.earningPercentage / 100<br>
+<br>
+<strong>STEP 2 -- Determine agency rebate:</strong><br>
+&nbsp;&nbsp;IF TravelAgencyCommission exists for (agencyId, hotelId):<br>
+&nbsp;&nbsp;&nbsp;&nbsp;agencyRebate = TravelAgencyCommission.commissionPercentage / 100<br>
+&nbsp;&nbsp;ELSE:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;agencyRebate = 0<br>
+<br>
+<strong>STEP 3 -- Load hotel configuration:</strong><br>
+&nbsp;&nbsp;baseCommission = Hotel.baseCommission / 100<br>
+&nbsp;&nbsp;priceAdjustment = Hotel.priceAdjustment (default 1.0)<br>
+<br>
+<strong>STEP 4 -- Run calculateBookingCommission(...)</strong><br>
+<br>
+<strong>STEP 5 -- Check safetyCheckPassed:</strong><br>
+&nbsp;&nbsp;IF false: log alert, flag for admin review, DO NOT block booking<br>
+<br>
+<strong>STEP 6 -- Store commissionDetails on booking record</strong>
+</span>
+<span lang-content="es">
+<strong>PASO 1 -- Determinar tasa de ganancia del agente:</strong><br>
+&nbsp;&nbsp;SI SalesAgentCommission existe para (agentId, hotelId):<br>
+&nbsp;&nbsp;&nbsp;&nbsp;agentRate = SalesAgentCommission.commissionPercentage / 100<br>
+&nbsp;&nbsp;SINO:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;agentRate = SalesAgent.earningPercentage / 100<br>
+<br>
+<strong>PASO 2 -- Determinar rebaja de agencia:</strong><br>
+&nbsp;&nbsp;SI TravelAgencyCommission existe para (agencyId, hotelId):<br>
+&nbsp;&nbsp;&nbsp;&nbsp;agencyRebate = TravelAgencyCommission.commissionPercentage / 100<br>
+&nbsp;&nbsp;SINO:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;agencyRebate = 0<br>
+<br>
+<strong>PASO 3 -- Cargar configuracion del hotel:</strong><br>
+&nbsp;&nbsp;baseCommission = Hotel.baseCommission / 100<br>
+&nbsp;&nbsp;priceAdjustment = Hotel.priceAdjustment (predeterminado 1.0)<br>
+<br>
+<strong>PASO 4 -- Ejecutar calculateBookingCommission(...)</strong><br>
+<br>
+<strong>PASO 5 -- Verificar safetyCheckPassed:</strong><br>
+&nbsp;&nbsp;SI falso: registrar alerta, marcar para revision de admin, NO bloquear reserva<br>
+<br>
+<strong>PASO 6 -- Almacenar commissionDetails en el registro de la reserva</strong>
+</span>
+    </div>
+  </div>
+</div>
+<script>
+/* ═══════════════════════════════════════════
+   LANGUAGE TOGGLE
+   ═══════════════════════════════════════════ */
+function setLang(lang) {
+  document.body.classList.toggle('lang-es', lang === 'es');
+  document.querySelectorAll('.lang-btn').forEach(b => {
+    b.classList.toggle('active', b.textContent.trim() === lang.toUpperCase());
+  });
+}
+
+/* ═══════════════════════════════════════════
+   TAB NAVIGATION
+   ═══════════════════════════════════════════ */
+function showTab(id, btn) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('sec-' + id).classList.add('active');
+  btn.classList.add('active');
+  if (id === 'calculator') { calc(); }
+  if (id === 'projections') { renderProjectionChart(); }
+}
+
+/* ═══════════════════════════════════════════
+   SLIDER UTILITIES
+   ═══════════════════════════════════════════ */
+function setSlider(id, val, btn) {
+  document.getElementById(id).value = val;
+  if (btn) {
+    btn.closest('.preset-btns').querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  }
+  calc();
+}
+
+function updateSliderTrack(el) {
+  const pct = ((el.value - el.min) / (el.max - el.min)) * 100;
+  el.style.background = 'linear-gradient(to right, var(--teal) ' + pct + '%, var(--border-light) ' + pct + '%)';
+}
+
+function toggleOverride() {
+  const t = document.getElementById('toggle-override');
+  t.classList.toggle('on');
+  document.getElementById('override-slider').style.display = t.classList.contains('on') ? 'block' : 'none';
+  calc();
+}
+
+/* ═══════════════════════════════════════════
+   TIER PRESETS
+   ═══════════════════════════════════════════ */
+const TIERS = {
+  starter:   { earning: 12 },
+  growth:    { earning: 18 },
+  elite:     { earning: 24 },
+  strategic: { earning: 32 }
+};
+
+function tierChanged() {
+  const tier = document.getElementById('inp-tier').value;
+  const t = TIERS[tier];
+  document.getElementById('inp-earning').value = t.earning;
+  calc();
+}
+
+/* ═══════════════════════════════════════════
+   SCENARIO PRESETS
+   ═══════════════════════════════════════════ */
+function loadPreset(name, btn) {
+  document.querySelectorAll('.scenario-preset-btn').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  const presets = {
+    standard:  { netprice:150, nights:3, priceadj:1.00, gm:7.5, tier:'starter', earning:12, cost2attain:2.5, override:false, overridePct:25, rebate:0, agencies:10, bookings:30 },
+    melia:     { netprice:150, nights:3, priceadj:0.85, gm:7.5, tier:'elite', earning:24, cost2attain:2.5, override:false, overridePct:25, rebate:4, agencies:20, bookings:40 },
+    iberostar: { netprice:180, nights:4, priceadj:0.82, gm:7.5, tier:'growth', earning:18, cost2attain:2.5, override:false, overridePct:25, rebate:0, agencies:15, bookings:35 },
+    domina:    { netprice:120, nights:3, priceadj:0.80, gm:9.0, tier:'starter', earning:12, cost2attain:3.0, override:false, overridePct:25, rebate:0, agencies:10, bookings:30 },
+    gaviota:   { netprice:200, nights:5, priceadj:0.80, gm:9.0, tier:'growth', earning:18, cost2attain:3.0, override:false, overridePct:25, rebate:0, agencies:12, bookings:32 },
+    newagency: { netprice:150, nights:3, priceadj:1.00, gm:7.5, tier:'starter', earning:10, cost2attain:2.5, override:false, overridePct:25, rebate:0, agencies:1, bookings:30 },
+    override:  { netprice:150, nights:3, priceadj:0.85, gm:7.5, tier:'starter', earning:12, cost2attain:2.5, override:true, overridePct:25, rebate:0, agencies:5, bookings:25 }
+  };
+  const p = presets[name];
+  document.getElementById('inp-netprice').value = p.netprice;
+  document.getElementById('inp-nights').value = p.nights;
+  document.getElementById('inp-priceadj').value = p.priceadj;
+  document.getElementById('inp-gm').value = p.gm;
+  document.getElementById('inp-tier').value = p.tier;
+  document.getElementById('inp-earning').value = p.earning;
+  document.getElementById('inp-cost2attain').value = p.cost2attain;
+  document.getElementById('inp-rebate').value = p.rebate;
+  document.getElementById('inp-agencies').value = p.agencies;
+  document.getElementById('inp-bookings').value = p.bookings;
+  const tog = document.getElementById('toggle-override');
+  if (p.override && !tog.classList.contains('on')) tog.classList.add('on');
+  if (!p.override && tog.classList.contains('on')) tog.classList.remove('on');
+  document.getElementById('override-slider').style.display = p.override ? 'block' : 'none';
+  if (p.override) document.getElementById('inp-override').value = p.overridePct;
+  // Update priceAdj preset buttons
+  document.querySelectorAll('#inp-priceadj').forEach(function(){});
+  const paPresets = document.getElementById('inp-priceadj').closest('.input-group').querySelectorAll('.preset-btn');
+  paPresets.forEach(b => {
+    const val = parseFloat(b.textContent.match(/[\d.]+/)?.[0] || '0');
+    b.classList.toggle('active', Math.abs(val - p.priceadj) < 0.001);
+  });
+  calc();
+}
+
+/* ═══════════════════════════════════════════
+   FORMATTING
+   ═══════════════════════════════════════════ */
+function fmt$(v) { return '$' + v.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ','); }
+function fmtPct(v) { return v.toFixed(1) + '%'; }
+function fmtInt(v) { return Math.round(v).toLocaleString(); }
+
+/* ═══════════════════════════════════════════
+   CHART INSTANCES
+   ═══════════════════════════════════════════ */
+let waterfallChart = null;
+let pieChart = null;
+let projectionChart = null;
+
+/* ═══════════════════════════════════════════
+   MAIN CALCULATOR
+   ═══════════════════════════════════════════ */
+function calc() {
+  // Read inputs
+  const netPrice = parseFloat(document.getElementById('inp-netprice').value);
+  const nights = parseInt(document.getElementById('inp-nights').value);
+  const priceAdj = parseFloat(document.getElementById('inp-priceadj').value);
+  const gmTarget = parseFloat(document.getElementById('inp-gm').value) / 100;
+  const cost2attain = parseFloat(document.getElementById('inp-cost2attain').value) / 100;
+  const baseComm = gmTarget / (1 - gmTarget);  // derived markup
+  const useOverride = document.getElementById('toggle-override').classList.contains('on');
+  const overridePct = parseInt(document.getElementById('inp-override').value) / 100;
+  const earningPct = parseInt(document.getElementById('inp-earning').value) / 100;
+  // cost2attain already read above
+  const rebatePct = parseFloat(document.getElementById('inp-rebate').value) / 100;
+  const agencies = parseInt(document.getElementById('inp-agencies').value);
+  const bookingsPerAgency = parseInt(document.getElementById('inp-bookings').value);
+
+  // Display values
+  document.getElementById('disp-netprice').textContent = '$' + netPrice;
+  document.getElementById('disp-nights').textContent = nights;
+  document.getElementById('disp-priceadj').textContent = priceAdj.toFixed(2);
+  document.getElementById('disp-gm').textContent = fmtPct(gmTarget * 100);
+  document.getElementById('disp-derived-markup').textContent = '~' + fmtPct(baseComm * 100);
+  document.getElementById('disp-earning').textContent = Math.round(earningPct * 100) + '%';
+  document.getElementById('disp-cost2attain').textContent = fmtPct(cost2attain * 100);
+  document.getElementById('disp-override').textContent = Math.round(overridePct * 100) + '%';
+  document.getElementById('disp-rebate').textContent = fmtPct(rebatePct * 100);
+  document.getElementById('disp-agencies').textContent = agencies;
+  document.getElementById('disp-bookings').textContent = bookingsPerAgency;
+
+  // Update slider tracks
+  document.querySelectorAll('input[type="range"]').forEach(updateSliderTrack);
+
+  // Commission calculation
+  const supplierTotal = netPrice * nights;
+  const adjustedCost = supplierTotal * priceAdj;
+  const ergosSell = adjustedCost * (1 + baseComm);
+  const agencyEffPrice = ergosSell * (1 - rebatePct);
+  const grossMargin = agencyEffPrice - adjustedCost;
+  const grossMarginPct = (grossMargin / agencyEffPrice) * 100;
+  const effectiveEarningPct = useOverride ? overridePct : earningPct;
+  const agentEarning = grossMargin * effectiveEarningPct;
+  const opsCost = agencyEffPrice * cost2attain;
+  const ergosNet = grossMargin - agentEarning - opsCost;
+  const ergosNetPct = (ergosNet / agencyEffPrice) * 100;
+  // Scaled floor: derives min % of sell price based on gross margin target
+  const gmPctVal = gmTarget * 100;
+  let floorPct;
+  if (gmPctVal <= 5)        floorPct = 1.5 + (gmPctVal - 3) * 0.5;    // 1.5% at 3%, 2.5% at 5%
+  else if (gmPctVal <= 7.5)  floorPct = 2.5 + (gmPctVal - 5) * 0.6;    // 2.5% at 5%, 4.0% at 7.5%
+  else if (gmPctVal <= 11)   floorPct = 4.0 + (gmPctVal - 7.5) * 0.429; // 4.0% at 7.5%, 5.5% at 11%
+  else if (gmPctVal <= 15)   floorPct = 5.5 + (gmPctVal - 11) * 0.375;  // 5.5% at 11%, 7.0% at 15%
+  else                       floorPct = 7.0 + (gmPctVal - 15) * 0.3;
+  floorPct = Math.max(floorPct, 1.5); // absolute minimum
+  // Secondary check: Ergos must retain >= 50% of gross margin
+  const grossRetentionPct = grossMargin > 0 ? (ergosNet / grossMargin) * 100 : 0;
+  const floorCheckPassed = ergosNetPct >= floorPct;
+  const retentionCheckPassed = grossRetentionPct >= 50.0;
+  const safetyPassed = floorCheckPassed && retentionCheckPassed;
+
+  // KPIs
+  document.getElementById('kpi-agencypays').textContent = fmt$(agencyEffPrice);
+  document.getElementById('kpi-agencypays-sub').textContent = nights + ' night' + (nights > 1 ? 's' : '') + ' @ ' + fmt$(netPrice) + '/night';
+  document.getElementById('kpi-grossmargin').textContent = fmt$(grossMargin);
+  document.getElementById('kpi-grossmargin-sub').textContent = fmtPct(grossMarginPct) + ' of agency price';
+  document.getElementById('kpi-agentearns').textContent = fmt$(agentEarning);
+  document.getElementById('kpi-agentearns-sub').textContent = fmtPct(effectiveEarningPct * 100) + ' of gross margin';
+  const ergosNetEl = document.getElementById('kpi-ergosnet');
+  ergosNetEl.textContent = fmt$(ergosNet);
+  ergosNetEl.className = 'kpi-value ' + (safetyPassed ? 'positive' : 'negative');
+  document.getElementById('kpi-ergosnet-sub').textContent = fmtPct(ergosNetPct) + ' of agency price';
+
+  // Who Earns What table
+  const tbody = document.getElementById('tbody-earnings');
+  const isEN = !document.body.classList.contains('lang-es');
+  const agencyRebateAmt = ergosSell - agencyEffPrice;
+  tbody.innerHTML =
+    '<tr><td>' + (isEN ? 'Supplier' : 'Proveedor') + '</td><td class="money">' + fmt$(adjustedCost) + '</td><td class="pct">' + fmtPct((adjustedCost/agencyEffPrice)*100) + '</td></tr>' +
+    '<tr><td>' + (isEN ? 'Ergos Net' : 'Neto Ergos') + '</td><td class="money">' + fmt$(ergosNet) + '</td><td class="pct">' + fmtPct(ergosNetPct) + '</td></tr>' +
+    '<tr><td>' + (isEN ? 'Agent Commission' : 'Comision del Agente') + '</td><td class="money">' + fmt$(agentEarning) + '</td><td class="pct">' + fmtPct((agentEarning/agencyEffPrice)*100) + '</td></tr>' +
+    '<tr><td>' + (isEN ? 'Ergos Costs' : 'Costos Ergos') + '</td><td class="money">' + fmt$(opsCost) + '</td><td class="pct">' + fmtPct((opsCost/agencyEffPrice)*100) + '</td></tr>' +
+    (agencyRebateAmt > 0.01 ? '<tr><td>' + (isEN ? 'Agency Rebate' : 'Rebaja Agencia') + '</td><td class="money">' + fmt$(agencyRebateAmt) + '</td><td class="pct">' + fmtPct((agencyRebateAmt/ergosSell)*100) + '</td></tr>' : '') +
+    '<tr class="row-total"><td>' + (isEN ? 'Agency Pays' : 'La Agencia Paga') + '</td><td class="money">' + fmt$(agencyEffPrice) + '</td><td class="pct">100.0%</td></tr>';
+
+  // Safety check
+  const safeDiv = document.getElementById('safety-check');
+  let safetyHtml = '';
+  if (safetyPassed) {
+    safetyHtml = '<div class="callout callout-success" style="margin-bottom:20px;"><strong>' + (isEN ? 'Safety Check: PASSED' : 'Verificacion de Seguridad: APROBADA') + '</strong><br>' +
+      (isEN ? 'Ergos net margin: ' : 'Margen neto Ergos: ') + fmtPct(ergosNetPct) + (isEN ? ' (floor: ' : ' (piso: ') + fmtPct(floorPct) + (isEN ? ' at ' : ' al ') + fmtPct(grossMarginPct) + (isEN ? ' gross margin)<br>' : ' margen bruto)<br>') +
+      (isEN ? 'Gross margin retention: ' : 'Retencion de margen bruto: ') + fmtPct(grossRetentionPct) + (isEN ? ' (min: 50%)' : ' (min: 50%)') + '</div>';
+  } else {
+    let reasons = [];
+    if (!floorCheckPassed) {
+      const shortfall = floorPct - ergosNetPct;
+      reasons.push((isEN ? 'Net margin ' : 'Margen neto ') + fmtPct(ergosNetPct) + (isEN ? ' is ' : ' es ') + fmtPct(shortfall) + (isEN ? ' below the ' : ' por debajo del piso de ') + fmtPct(floorPct) + (isEN ? ' floor (at ' : ' (al ') + fmtPct(grossMarginPct) + (isEN ? ' gross margin)' : ' margen bruto)'));
+    }
+    if (!retentionCheckPassed) {
+      reasons.push((isEN ? 'Gross margin retention is ' : 'Retencion de margen bruto es ') + fmtPct(grossRetentionPct) + (isEN ? ', below the 50% minimum' : ', por debajo del minimo del 50%'));
+    }
+    safetyHtml = '<div class="callout callout-danger" style="margin-bottom:20px;"><strong>' + (isEN ? 'Safety Check: FAILED' : 'Verificacion de Seguridad: FALLIDA') + '</strong><br>' + reasons.join('<br>') + '<br><em>' + (isEN ? 'Review agent commission, agency rebate, or gross margin configuration.' : 'Revise la configuracion de comision del agente, rebaja de agencia, o margen bruto.') + '</em></div>';
+  }
+  safeDiv.innerHTML = safetyHtml;
+
+  // Monthly/Annual projections
+  const monthlyBookings = agencies * bookingsPerAgency;
+  const monthlyAgentEarn = monthlyBookings * agentEarning;
+  const monthlyErgosNet = monthlyBookings * ergosNet;
+  const projTbody = document.getElementById('tbody-projections');
+  projTbody.innerHTML =
+    '<tr><td>' + (isEN ? 'Monthly' : 'Mensual') + '</td><td class="money">' + fmtInt(monthlyBookings) + '</td><td class="money">' + fmt$(monthlyAgentEarn) + '</td><td class="money">' + fmt$(monthlyErgosNet) + '</td></tr>' +
+    '<tr><td>' + (isEN ? 'Quarterly' : 'Trimestral') + '</td><td class="money">' + fmtInt(monthlyBookings*3) + '</td><td class="money">' + fmt$(monthlyAgentEarn*3) + '</td><td class="money">' + fmt$(monthlyErgosNet*3) + '</td></tr>' +
+    '<tr class="row-total"><td>' + (isEN ? 'Annual' : 'Anual') + '</td><td class="money">' + fmtInt(monthlyBookings*12) + '</td><td class="money">' + fmt$(monthlyAgentEarn*12) + '</td><td class="money">' + fmt$(monthlyErgosNet*12) + '</td></tr>';
+
+  // Waterfall chart
+  renderWaterfallChart(adjustedCost, ergosNet, agentEarning, opsCost, agencyRebateAmt);
+
+  // Pie chart
+  renderPieChart(adjustedCost, ergosNet, agentEarning, opsCost);
+}
+
+/* ═══════════════════════════════════════════
+   CHARTS
+   ═══════════════════════════════════════════ */
+function renderWaterfallChart(cost, ergosNet, agent, ops, rebate) {
+  const ctx = document.getElementById('chart-waterfall');
+  if (!ctx) return;
+  if (waterfallChart) waterfallChart.destroy();
+  const isEN = !document.body.classList.contains('lang-es');
+  const labels = isEN
+    ? ['Cost Basis', 'Ergos Net', 'Agent Earning', 'Ops Cost', 'Agency Rebate']
+    : ['Base Costo', 'Neto Ergos', 'Ganancia Agente', 'Costo Ops', 'Rebaja Agencia'];
+  waterfallChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: labels,
+      datasets: [{
+        label: isEN ? 'Amount ($)' : 'Monto ($)',
+        data: [cost, ergosNet, agent, ops, rebate],
+        backgroundColor: ['#e8e8f0', '#1b8a42', '#0fa89b', '#e67e00', '#6a1b9a'],
+        borderRadius: 6,
+        borderSkipped: false
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { display: false },
+        tooltip: { callbacks: { label: function(c) { return '$' + c.raw.toFixed(2); } } }
+      },
+      scales: {
+        y: { beginAtZero: true, ticks: { callback: function(v) { return '$' + v; } } },
+        x: { grid: { display: false } }
+      }
+    }
+  });
+}
+
+function renderPieChart(cost, ergosNet, agent, ops) {
+  const ctx = document.getElementById('chart-pie');
+  if (!ctx) return;
+  if (pieChart) pieChart.destroy();
+  const isEN = !document.body.classList.contains('lang-es');
+  pieChart = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels: isEN
+        ? ['Supplier', 'Ergos Net', 'Agent', 'Operations']
+        : ['Proveedor', 'Neto Ergos', 'Agente', 'Operaciones'],
+      datasets: [{
+        data: [cost, ergosNet, agent, ops],
+        backgroundColor: ['#e8e8f0', '#1b8a42', '#0fa89b', '#e67e00'],
+        borderWidth: 2, borderColor: '#fff'
+      }]
+    },
+    options: {
+      responsive: true,
+      cutout: '55%',
+      plugins: {
+        legend: { position: 'bottom', labels: { padding: 16, font: { family: "'DM Sans', sans-serif", size: 12 } } },
+        tooltip: { callbacks: { label: function(c) { return c.label + ': $' + c.raw.toFixed(2); } } }
+      }
+    }
+  });
+}
+
+function renderProjectionChart() {
+  const ctx = document.getElementById('chart-projection');
+  if (!ctx) return;
+  if (projectionChart) projectionChart.destroy();
+  const isEN = !document.body.classList.contains('lang-es');
+  const months = [];
+  for (let i = 1; i <= 36; i++) months.push((isEN ? 'Month ' : 'Mes ') + i);
+  // Conservative/Base/Aggressive growth curves
+  function genCurve(baseAgencies, baseBookings, baseNet) {
+    const data = [];
+    for (let m = 1; m <= 36; m++) {
+      const growthFactor = 1 + (m - 1) * 0.03; // 3% monthly growth
+      const agencies = Math.round(baseAgencies * growthFactor);
+      const monthly = agencies * baseBookings * baseNet;
+      data.push(monthly);
+    }
+    return data;
+  }
+  projectionChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: months,
+      datasets: [
+        {
+          label: isEN ? 'Conservative' : 'Conservador',
+          data: genCurve(80, 25, 7.00),
+          borderColor: '#e67e00', backgroundColor: 'rgba(230,126,0,0.08)',
+          fill: true, tension: 0.3, pointRadius: 0, borderWidth: 2
+        },
+        {
+          label: isEN ? 'Base Case' : 'Caso Base',
+          data: genCurve(100, 32, 8.07),
+          borderColor: '#0fa89b', backgroundColor: 'rgba(15,168,155,0.08)',
+          fill: true, tension: 0.3, pointRadius: 0, borderWidth: 2
+        },
+        {
+          label: isEN ? 'Aggressive' : 'Agresivo',
+          data: genCurve(150, 40, 10.50),
+          borderColor: '#1b8a42', backgroundColor: 'rgba(27,138,66,0.08)',
+          fill: true, tension: 0.3, pointRadius: 0, borderWidth: 2
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      interaction: { intersect: false, mode: 'index' },
+      plugins: {
+        legend: { position: 'bottom', labels: { padding: 16, font: { family: "'DM Sans', sans-serif", size: 12 } } },
+        tooltip: { callbacks: { label: function(c) { return c.dataset.label + ': $' + Math.round(c.raw).toLocaleString(); } } }
+      },
+      scales: {
+        y: { beginAtZero: true, ticks: { callback: function(v) { return '$' + (v/1000).toFixed(0) + 'K'; } } },
+        x: { grid: { display: false }, ticks: { maxTicksLimit: 12 } }
+      }
+    }
+  });
+}
+
+/* ═══════════════════════════════════════════
+   INITIALIZATION
+   ═══════════════════════════════════════════ */
+document.addEventListener('DOMContentLoaded', function() {
+  calc();
+});
+</script>
+</body>
+</html>

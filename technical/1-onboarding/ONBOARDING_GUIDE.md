@@ -154,7 +154,7 @@ git clone git@github.com:<org>/backend-service.git
 git clone git@github.com:<org>/alibaba-infra.git
 ```
 
-> **Note:** Replace `<org>` with the actual GitHub organization name provided by your team lead.
+> **⚠️ Note:** Replace `<org>` with the actual GitHub organization name provided by your team lead.
 
 After cloning, your directory should look like:
 
@@ -951,7 +951,7 @@ open http://localhost:3001/admin/queues
 
 ## 10. Who to Ask for Help
 
-> **Action Required:** Before distributing this guide, replace all _[Name]_ placeholders below with actual team member names.
+> **⚠️ Action Required:** Before distributing this guide, replace all _[Name]_ placeholders below with actual team member names.
 
 ### Team Contacts
 
