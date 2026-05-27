@@ -1139,8 +1139,8 @@ table .mono { font-family: 'JetBrains Mono', monospace; font-size: 12px; }
         <td class="mono">baseCommission</td>
         <td>Hotel · CommissionDefaults</td>
         <td><strong style="color: var(--navy);">Ergos</strong></td>
-        <td>Markup applied on top of the GDS's adjusted cost. Drives <code>ergosSell&nbsp;=&nbsp;adjustedCost × (1 + baseCommission/100)</code>. Higher → Ergos earns more.</td>
-        <td class="mono">0–100 integer (13 = 13%)</td>
+        <td>Markup applied on top of the GDS's adjusted cost. Drives <code>ergosSell&nbsp;=&nbsp;adjustedCost × (1 + baseCommission/100)</code>. Higher → Ergos earns more. <strong>Default 3</strong> per 2026-05-27 policy; chain or per-hotel overrides bump this for chain-discounted or rebate-paying bookings.</td>
+        <td class="mono">1–100 integer (3 = 3%)</td>
       </tr>
       <tr>
         <td class="mono">chainDiscountPct</td>
@@ -1206,16 +1206,19 @@ table .mono { font-family: 'JetBrains Mono', monospace; font-size: 12px; }
 │ [Hotels]       │  Breadcrumb: Global › Meliá   │ ─ Simulate ─    │
 │ [Agencies]     │                               │ GDS net    │
 │ [Agents]       │  ┌─ 1. Global Defaults ──┐    │ [ $200    ]     │
-│                │  │  baseCommission 8%    │    │                 │
+│                │  │  baseCommission 3%    │    │                 │
 │ Country: ▾     │  │  chainDiscountPct 0    │    │ Margin: 5.6%    │
 │ [Search...  ]  │  └───────────────────────┘    │                 │
 │                │                               │ Waterfall:      │
 │ ★ Global       │  ┌─ 2. Hotel: Meliá ────┐    │ GDS  $200  │
 │ ─────────      │  │  Chain: [Meliá ▾]    │    │ × (1−15/100)    │
 │ • Meliá BCN    │  │  baseCommission 13   │    │ = Cost    $170  │
-│ • Riu Cancún   │  │  chainDiscountPct 15 │    │ × (1+13/100)    │
-│ • NH Madrid    │  └───────────────────────┘    │ = Sell    $192  │
-│ ... virtual    │                               │                 │
+│ • Riu Cancún   │  │  (inherits from     │    │ × (1+13/100)    │
+│ • NH Madrid    │  │   chain.baseCommiss │    │ = Sell    $192  │
+│ ... virtual    │  │   or set per-hotel) │    │                 │
+│                │  │  chainDiscountPct 15│    │                 │
+│                │  └───────────────────────┘    │                 │
+│                │                               │                 │
 │                │  ┌─ 3. Agency Rebate ───┐    │ Guardrails:     │
 │                │  │  rebatePct 4         │    │ ✓ minNet  5.1%  │
 │                │  └───────────────────────┘    │ ✓ agentCap 26%  │
@@ -2996,7 +2999,7 @@ ergosPctOfGross  = ergosNet ÷ ergosGross     <span class="comment">// must be �
 
   <h4 style="margin-top: 18px;">Case B — Chain-discounted hotel (Meliá-style)</h4>
 
-  <p>Assumptions: $300 USD GDS net, 15% chain discount, 13% Ergos markup, 4% agency rebate, Elite-tier booking agent (24% earning, 6% ops).</p>
+  <p>Assumptions: $300 USD GDS net, 15% chain discount, 13% Ergos markup (set on the chain via the chain editor's <code>baseCommission</code> field — chains with negotiated discounts uplift markup above the 3% non-chain default), 4% agency rebate, Elite-tier booking agent (24% earning, 6% ops).</p>
 
   <table>
     <thead>
