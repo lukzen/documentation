@@ -1057,8 +1057,8 @@ table .mono { font-family: 'JetBrains Mono', monospace; font-size: 12px; }
     <div class="layer-card l2">
       <div class="layer-num">2</div>
       <div class="layer-info">
-        <div class="layer-name">Hotel</div>
-        <div class="layer-desc">Per-hotel overrides for Ergos markup and chain discount.</div>
+        <div class="layer-name">Hotel <span style="font-size: 11px; opacity: 0.7;">(with chain inheritance)</span></div>
+        <div class="layer-desc">Per-hotel overrides for Ergos markup and chain discount. <strong>baseCommission</strong> cascades hotel → linked chain → global default; <strong>chainDiscountPct</strong> cascades hotel → linked chain (vendor-gated) → 0.</div>
         <div class="layer-fields">baseCommission · chainDiscountPct · chainId (link to chain)</div>
       </div>
     </div>
@@ -1095,6 +1095,14 @@ table .mono { font-family: 'JetBrains Mono', monospace; font-size: 12px; }
   <div class="callout callout-warning">
     <strong>Storage convention — WHOLE PERCENT integers (0–100).</strong>
     Every commission / discount / rebate / markup field on the platform is stored, transported via API, and displayed as a whole-percent integer. <code>13</code> means 13%, <code>4</code> means 4%, <code>0</code> means none. The commission engine converts to decimal once internally via <code>pct(n) = n/100</code>. This includes the agency-side <code>defaultMarkupPct</code> on the TravelAgency model and its booking snapshot <code>agencyMarkupPctSnapshot</code> — even though those sit <em>outside</em> the commission engine's math, they follow the same integer convention for consistency across the codebase, the UI input controls, and the API contract.
+  </div>
+
+  <div class="callout callout-teal">
+    <strong>Policy revision — 2026-05-27.</strong> Two material changes to <code>baseCommission</code> that affect everything below:
+    <ul style="margin-top: 8px; margin-bottom: 0;">
+      <li><strong>New default is 3% (was 15%).</strong> Stakeholders ratified a min 1% / average 3% / max 100% policy. The global default in <code>CommissionDefaults</code> dropped from 15 → 3 and a one-shot migration (<code>migrate-base-commission-to-conservative.ts</code>) reset existing hotels to 3 where they were below the new floor or above the threshold without a chain discount. The schema enforces <code>min: 1, max: 100</code>; the ≥5% + chain-discount relationship is <em>informational guidance in the UI</em>, not an enforced rule. (A short-lived enforcement variant existed briefly the same day and was rolled back per stakeholder feedback.)</li>
+      <li><strong>Chain-level <code>baseCommission</code> cascade.</strong> The <code>CommissionChain</code> model now carries an optional <code>baseCommission</code> field. The Layer-2 resolution order is <code>hotel.baseCommission → chain.baseCommission → global default</code>. Useful for the Cuba chains (DOMINA, MELIA, IBEROSTAR, GRANCARIBE, GAVIOTA) where one chain-wide markup avoids per-property edits across dozens of hotels. The pure helper <code>resolveBaseCommission(hotel, chain, globalDefault)</code> mirrors the existing <code>resolveHotelChainDiscount</code>.</li>
+    </ul>
   </div>
 
   <!-- ─────────────────────────────────────────────────────────── -->
@@ -1416,7 +1424,7 @@ table .mono { font-family: 'JetBrains Mono', monospace; font-size: 12px; }
   <h3>Each chain card has 4 actions</h3>
 
   <h4>1. Edit Chain</h4>
-  <p>Opens a form to change name, code, hasDiscount flag, chainDiscountPct, contract status (signed/pending/expired), effective/expiry dates, and notes.</p>
+  <p>Opens a form to change name, code, hasDiscount flag, chainDiscountPct, contract status (signed/pending/expired), effective/expiry dates, notes, and (since 2026-05-27) an optional <strong>chain-wide Ergos markup</strong> (<code>baseCommission</code>, range 1–100). When set, this value is inherited by every linked hotel that doesn't have its own per-hotel <code>baseCommission</code> override — see the Layer-2 cascade in Section 1. A small help line under the input notes that values ≥5% are usually paired with a negotiated chain discount; this is informational only and the form will save any value within range.</p>
 
   <h4>2. Manage Hotels — the LinkedHotelsDialog</h4>
   <p>The most useful action for chains with many hotels. Opens a side-drawer with two stacked sections:</p>
