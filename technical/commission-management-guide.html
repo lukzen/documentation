@@ -1184,16 +1184,20 @@ table .mono { font-family: 'JetBrains Mono', monospace; font-size: 12px; }
 <section id="screen-policy">
   <h2>2. Screen: Commission Policy <span class="label">/commission-policy</span></h2>
 
-  <p>This is the main workspace where admins view and edit the 5-layer policy for any scope (a specific hotel, agency, or agent). It uses a <strong>3-panel layout</strong>: pick the scope on the left, see the layers in the center, see the math on the right.</p>
+  <p>This is the main workspace where admins view and edit the 5-layer policy for two scopes: a specific <strong>hotel</strong> or a specific <strong>agent</strong>. It uses a <strong>3-panel layout</strong>: pick the scope on the left, see the layers in the center, see the math on the right.</p>
+
+  <div class="callout callout-info" style="margin-bottom: 12px;">
+    <strong>Per-agency rebate editing lives elsewhere.</strong> The Commission Policy page used to have an Agencies scope tab; that was removed (commit <code>86dbcb9</code>). Per-(agency, hotel) <code>rebatePct</code> overrides are now edited from the Travel Agency module — open an agency, switch to the <strong>Hotel Commission Overrides</strong> tab (see <code>EditTravelAgencyModal</code>). The Agency Rebate <em>layer card</em> still renders in the inheritance stack here (because the engine still cascades through it), but it's read-only on this page.
+  </div>
 
   <figure class="screenshot">
     <div class="screenshot-frame">
       <img src="commission-screenshots/01-commission-policy-full.png"
-           alt="Commission Policy page — full 3-panel layout with left scope rail, center 5 layer cards, and right simulate panel"
+           alt="Commission Policy page — full 3-panel layout with left scope rail (Hotels + Agents tabs), center 5 layer cards, and right simulate panel"
            loading="lazy"
            onerror="this.style.display='none'" />
     </div>
-    <figcaption>Commission Policy page in production · drop screenshot at <span class="file">commission-screenshots/01-commission-policy-full.png</span></figcaption>
+    <figcaption>Commission Policy page in production · drop screenshot at <span class="file">commission-screenshots/01-commission-policy-full.png</span> <em>(re-capture needed: existing screenshots predate the 2026-05-27 cleanup that removed the Agencies tab and the right-rail Guardrails section)</em></figcaption>
   </figure>
 
   <details class="wireframe-fallback">
@@ -1204,45 +1208,55 @@ table .mono { font-family: 'JetBrains Mono', monospace; font-size: 12px; }
 │  selector      │  & editor                     │  preview        │
 ├────────────────┼───────────────────────────────┼─────────────────┤
 │ [Hotels]       │  Breadcrumb: Global › Meliá   │ ─ Simulate ─    │
-│ [Agencies]     │                               │ GDS net    │
-│ [Agents]       │  ┌─ 1. Global Defaults ──┐    │ [ $200    ]     │
-│                │  │  baseCommission 3%    │    │                 │
-│ Country: ▾     │  │  chainDiscountPct 0    │    │ Margin: 5.6%    │
+│ [Agents]       │                               │ GDS net         │
+│                │  ┌─ 1. Global Defaults ──┐    │ [ $200    ]     │
+│ GDS:    ▾      │  │  baseCommission 3%    │    │                 │
+│ Country: ▾     │  │  chainDiscountPct 0    │    │ Ergos net 5.6%  │
 │ [Search...  ]  │  └───────────────────────┘    │                 │
 │                │                               │ Waterfall:      │
-│ ★ Global       │  ┌─ 2. Hotel: Meliá ────┐    │ GDS  $200  │
+│ ★ Global       │  ┌─ 2. Hotel: Meliá ────┐    │ GDS    $200     │
 │ ─────────      │  │  Chain: [Meliá ▾]    │    │ × (1−15/100)    │
-│ • Meliá BCN    │  │  baseCommission 13   │    │ = Cost    $170  │
+│ • Meliá BCN    │  │  baseCommission 13   │    │ = Cost  $170    │
 │ • Riu Cancún   │  │  (inherits from     │    │ × (1+13/100)    │
-│ • NH Madrid    │  │   chain.baseCommiss │    │ = Sell    $192  │
+│ • NH Madrid    │  │   chain.baseCommiss │    │ = Sell  $192    │
 │ ... virtual    │  │   or set per-hotel) │    │                 │
-│                │  │  chainDiscountPct 15│    │                 │
-│                │  └───────────────────────┘    │                 │
-│                │                               │                 │
-│                │  ┌─ 3. Agency Rebate ───┐    │ Guardrails:     │
-│                │  │  rebatePct 4         │    │ ✓ minNet  5.1%  │
-│                │  └───────────────────────┘    │ ✓ agentCap 26%  │
-│                │                               │ ⚠ ergosShare    │
-│                │  ┌─ 4. Elite tier 🔒 ──┐     │   48% < 50%     │
-│                │  │  range 21–26%        │    │                 │
-│                │  │  defaults: 24% / 6%  │    │ ─ Audit ─       │
+│                │  │  chainDiscountPct 15│    │ ─ Audit ─       │
 │                │  └───────────────────────┘    │ Latest 50       │
 │                │                               │ entries inline  │
+│                │  ┌─ 3. Agency Rebate ───┐    │                 │
+│                │  │  rebatePct 4         │    │                 │
+│                │  │  (read-only here —   │    │                 │
+│                │  │   edit via Travel    │    │                 │
+│                │  │   Agency module)     │    │                 │
+│                │  └───────────────────────┘    │                 │
+│                │                               │                 │
+│                │  ┌─ 4. Elite tier 🔒 ──┐     │                 │
+│                │  │  range 21–26%        │    │                 │
+│                │  │  defaults: 24% / 6%  │    │                 │
+│                │  └───────────────────────┘    │                 │
+│                │                               │                 │
 │                │  ┌─ 5. Agent-Hotel ─────┐    │                 │
 │                │  │  earningPctOverride 26│   │                 │
 │                │  └───────────────────────┘    │                 │
 │                │                               │                 │
 │                │  ▼ Effective Configuration ▼  │                 │
 └────────────────┴───────────────────────────────┴─────────────────┘
-            [Audit Trail]  [Bulk Edit]  ← header actions</div>
+            [Audit Trail]  [Bulk Edit]  ← header actions
+
+NOTE — wireframe reflects post-2026-05-27 state:
+  • Left rail has 2 scope tabs (Hotels + Agents); Agencies tab removed.
+  • Right rail Guardrails section removed (engine cleanup, see §4).
+  • Agency Rebate layer card stays in the cascade but is read-only here —
+    per-(agency, hotel) editing moved to the Travel Agency module's
+    "Hotel Commission Overrides" tab.</div>
   </details>
 
   <p style="font-size: 12px; color: var(--text-secondary); margin-top: -4px;">Additional screenshots referenced below: <span class="mono">02-hotel-layer-card.png</span>, <span class="mono">03-tier-layer-locked.png</span>, <span class="mono">04-simulate-panel.png</span>.</p>
 
   <h3>Left rail — what you're looking at</h3>
   <ul>
-    <li><strong>Three scope tabs:</strong> Hotels / Agencies / Agents. Pick the entity you want to view or edit.</li>
-    <li><strong>Country dropdown + search box</strong> drive <em>server-side</em> filtering of the hotel list. Type 3+ chars in the search box — after 300ms idle, the server returns matching hotels. The country filter is exact-match.</li>
+    <li><strong>Two scope tabs:</strong> Hotels / Agents. Pick the entity you want to view or edit. (The Agencies tab that previously sat between them was removed on 2026-05-27 — per-agency rebate editing moved to the Travel Agency module's "Hotel Commission Overrides" tab.)</li>
+    <li><strong>GDS dropdown + Country dropdown + search box</strong> drive <em>server-side</em> filtering of the hotel list. Type 3+ chars in the search box — after 300ms idle, the server returns matching hotels. The GDS filter narrows the country options (e.g. selecting Dingus only shows the countries Dingus has hotels in).</li>
     <li><strong>Virtualized list:</strong> scales to thousands of items. Only ~12 rows live in the DOM at any moment, even when the filtered total is 12,000+.</li>
     <li><strong>★ Global pinned button</strong> at the top — shows the global defaults view.</li>
   </ul>
@@ -1289,7 +1303,7 @@ table .mono { font-family: 'JetBrains Mono', monospace; font-size: 12px; }
            loading="lazy"
            onerror="this.style.display='none'" />
     </div>
-    <figcaption>Right-rail Simulate panel with live waterfall · drop screenshot at <span class="file">commission-screenshots/04-simulate-panel.png</span></figcaption>
+    <figcaption>Right-rail Simulate panel with live waterfall · drop screenshot at <span class="file">commission-screenshots/04-simulate-panel.png</span> <em>(re-capture needed: existing screenshot predates the 2026-05-27 guardrail removal — the &quot;Guardrails&quot; section below the waterfall no longer exists)</em></figcaption>
   </figure>
 
   <h3>Header actions (top right)</h3>
