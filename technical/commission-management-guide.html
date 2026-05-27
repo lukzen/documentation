@@ -1507,7 +1507,7 @@ table .mono { font-family: 'JetBrains Mono', monospace; font-size: 12px; }
         <td><strong>Min Ergos net</strong></td>
         <td>Ergos net ÷ Ergos sell ≥ threshold</td>
         <td class="mono">≥ 5.0%</td>
-        <td><strong style="color: var(--red);">Hard block</strong></td>
+        <td><strong style="color: var(--amber);">Soft (reason required)</strong></td>
       </tr>
       <tr>
         <td><strong>Max agent share</strong></td>
@@ -1531,7 +1531,7 @@ table .mono { font-family: 'JetBrains Mono', monospace; font-size: 12px; }
   <!-- ─────────────────────────────────────────────────────────── -->
   <h3 id="safe-ceilings">Safe ceiling values — how high can each variable go?</h3>
 
-  <p>The guardrail table above defines the floor for Ergos's profitability (<code>ergosNetPct ≥ 5%</code>). That floor implicitly creates a <strong>ceiling on each commission variable</strong>: set any one too high (or, for <code>chainDiscountPct</code>, too high relative to the cost basis) and Ergos drops below the floor — the SaveConfirmModal then hard-blocks the change.</p>
+  <p>The guardrail table above defines the floor for Ergos's profitability (<code>ergosNetPct ≥ 5%</code>). That floor implicitly creates a <strong>ceiling on each commission variable</strong>: set any one too high (or, for <code>chainDiscountPct</code>, too high relative to the cost basis) and Ergos drops below the floor — the SaveConfirmModal then surfaces an amber warning and requires a reason (≥10 chars) to proceed. Per the 2026-05-27 revision, this is no longer a hard block; the reason is audited so unprofitable saves are always traceable.</p>
 
   <p>The ceilings below are <strong>derived from that floor</strong>, holding the other variables at their defaults. Tighten one knob and the ceilings on the others shrink; relax it and they widen.</p>
 
@@ -1607,7 +1607,7 @@ ergosNet        = ergosGross × (1 − 0.24 − 0.06)
 1 − r                      ≥ 0.9564
 <strong>r ≤ 4.4%</strong>           <span class="comment">// the ceiling for rebatePct</span></div>
 
-  <p>Set rebate at 4% → ergosNetPct lands at 5.25%, just above the floor. Set it at 5% → ergosNetPct drops to 4.55%, the modal hard-blocks. The right rail's <strong>Simulate panel</strong> runs the same calculation live as you edit, and the SaveConfirmModal re-runs it before commit, so the math above matches what the UI tells you in real time.</p>
+  <p>Set rebate at 4% → ergosNetPct lands at 5.25%, just above the floor. Set it at 5% → ergosNetPct drops to 4.55%, and the modal raises an amber warning that requires a reason (≥10 chars) — save still goes through, with the reason stored in audit. The right rail's <strong>Simulate panel</strong> runs the same calculation live as you edit, and the SaveConfirmModal re-runs it before commit, so the math above matches what the UI tells you in real time.</p>
 
   <div class="callout callout-teal">
     <strong>Practical order for setting policy</strong> (under the new 2026-05-27 policy):
@@ -1617,7 +1617,7 @@ ergosNet        = ergosGross × (1 − 0.24 − 0.06)
       <li>Negotiate <code>rebatePct</code> with each agency, staying within the ceiling that the effective <code>baseCommission</code> permits (derive from the worked example above using the actual effective value).</li>
       <li>Then tier agents (or set per-(agent, hotel) overrides) within the 32% hard cap.</li>
     </ol>
-    Doing this in reverse — promising high agent earnings or large agency rebates without first raising <code>baseCommission</code> above the 3% default — almost always trips the 5% Ergos-net hard floor.
+    Doing this in reverse — promising high agent earnings or large agency rebates without first raising <code>baseCommission</code> above the 3% default — almost always trips the 5% Ergos-net warning, which then forces every save to carry an audit reason.
   </div>
 
   <h3>When you click "Review and Save"</h3>
@@ -1629,12 +1629,14 @@ ergosNet        = ergosGross × (1 − 0.24 − 0.06)
     <li><strong>Reason textarea</strong> — appears (and is required) only when a soft guardrail is breached.</li>
   </ol>
 
-  <h3>Three possible outcomes</h3>
+  <h3>Two possible outcomes</h3>
+
+  <p>Per the 2026-05-27 stakeholder revision, all three guardrails (min Ergos net, max agent share, min Ergos share) are <strong>soft warnings</strong>: a breach requires a reason but never blocks the save. The modal therefore has only two visual states.</p>
 
   <figure class="screenshot">
     <div class="screenshot-frame">
       <img src="commission-screenshots/05-save-confirm-modal.png"
-           alt="SaveConfirmModal — diff table of proposed changes on top, post-edit guardrail status indicators, and reason textarea when a soft guardrail is breached"
+           alt="SaveConfirmModal — diff table of proposed changes on top, post-edit guardrail status indicators, and reason textarea when any guardrail is breached"
            loading="lazy"
            onerror="this.style.display='none'" />
     </div>
@@ -1646,11 +1648,7 @@ ergosNet        = ergosGross × (1 − 0.24 − 0.06)
   </div>
 
   <div class="callout callout-warning">
-    <strong>⚠ Amber (soft guardrail breach)</strong> — Reason textarea (min 10 chars) becomes required. Button label changes to "Confirm with reason". On save, the reason is stored on every audit entry from this change.
-  </div>
-
-  <div class="callout callout-danger">
-    <strong>✗ Red (Ergos net &lt; 5% — hard floor)</strong> — No save button at all. Only "Cancel" and a "Cannot proceed" badge. The admin literally cannot save this configuration. They have to adjust values until the floor is respected.
+    <strong>⚠ Amber (any guardrail breached — including the 5% Ergos net floor)</strong> — Reason textarea (min 10 chars) becomes required. Button label changes to "Confirm with reason" and renders in amber. On save, the reason is stored on every audit entry from this change, so unprofitable or off-policy decisions are always traceable.
   </div>
 
   <h3>Centralized audit</h3>
@@ -2319,14 +2317,14 @@ ergosPctOfGross  = ergosNet ÷ ergosGross     <span class="comment">// must be �
   </div>
 
   <h4>Now check the 3 guardrails</h4>
-  <p>Before we save (or commit a booking), the system runs 3 sanity checks on what we just calculated. All three must pass — or, depending on which one fails, the admin gets a warning or a hard block.</p>
+  <p>Before we save (or commit a booking), the system runs 3 sanity checks on what we just calculated. All three must pass — if any fails, the admin gets an amber warning and must enter a reason (≥10 chars) before the save proceeds (audited).</p>
 
   <div class="guardrail-check">
     <h5>Guardrail evaluations for Scenario A</h5>
     <div class="grow-row">
       <div>
         <strong>Min Ergos net %</strong>
-        <div style="font-size: 11px; color: var(--text-muted);">Ergos's net divided by sell price — must stay above 5% (hard floor)</div>
+        <div style="font-size: 11px; color: var(--text-muted);">Ergos's net divided by sell price — soft floor at 5%; breach requires audit reason</div>
       </div>
       <div class="grow-formula">$12.00 ÷ $216.00</div>
       <div class="grow-value grow-pass">5.56% ✓</div>
@@ -2501,9 +2499,11 @@ ergosPctOfGross  = ergosNet ÷ ergosGross     <span class="comment">// must be �
     <strong>The big takeaway:</strong> The agency got a cheaper price ($192 vs $216), the agency got cashback ($7.68 rebate), the agent earned more ($3.46 vs $2.88), and Ergos's net only dropped by $1.90 (from $12.00 to $10.10). <strong>Everyone wins because the chain discount expanded the pie</strong> — the $30 saved on cost was distributed across the agency, the agent, and Ergos.
   </div>
 
-  <h3>Scenario C — The hard block (why the 5% floor exists)</h3>
-  <div class="callout callout-danger" style="margin-bottom: 8px;">
-    <strong>The story:</strong> Same hotel as Scenario A (ordinary 8% markup, no chain, no rebate) — but the admin tries to assign a <strong>Strategic-tier</strong> agent (30% earning). The math will look fine until the very end, when the floor check fails. Let's see exactly where it breaks.
+  <h3>Scenario C — The amber warning (why the 5% floor matters)</h3>
+  <div class="callout callout-warning" style="margin-bottom: 8px;">
+    <strong>The story:</strong> Same hotel as Scenario A (ordinary 8% markup, no chain, no rebate) — but the admin tries to assign a <strong>Strategic-tier</strong> agent (30% earning). The math will look fine until the very end, when the floor check trips an amber warning. Let's see exactly where it breaks — and why a reason becomes required to proceed.
+    <br><br>
+    <strong>Note (2026-05-27 revision):</strong> this used to be a hard block — the save button disappeared and the admin couldn't proceed. The policy now treats it as a soft warning: the save goes through with a required reason (≥10 chars), and the reason is captured in the audit log so unprofitable configurations are always traceable to a documented decision.
   </div>
 
   <table>
@@ -2562,15 +2562,15 @@ ergosPctOfGross  = ergosNet ÷ ergosGross     <span class="comment">// must be �
 
   </div>
 
-  <h4>Guardrail check — and here's where it fails</h4>
-  <div class="guardrail-check" style="background: linear-gradient(135deg, var(--red-light) 0%, var(--bg-white) 100%); border-color: var(--red);">
+  <h4>Guardrail check — and here's where it trips the warning</h4>
+  <div class="guardrail-check" style="background: linear-gradient(135deg, #fff3e0 0%, var(--bg-white) 100%); border-color: var(--amber);">
     <div class="grow-row">
       <div>
-        <strong style="color: var(--red);">Min Ergos net %</strong>
-        <div style="font-size: 11px; color: var(--text-muted);">Hard floor — never below 5%</div>
+        <strong style="color: var(--amber);">Min Ergos net %</strong>
+        <div style="font-size: 11px; color: var(--text-muted);">Soft floor — below 5% requires audit reason (was hard block before 2026-05-27)</div>
       </div>
       <div class="grow-formula">$10.40 ÷ $216.00</div>
-      <div class="grow-value grow-fail">4.81% ✗ BLOCKED</div>
+      <div class="grow-value" style="color: var(--amber); font-weight: 600;">4.81% ⚠ WARNING</div>
     </div>
     <div class="grow-row">
       <div>
@@ -2590,12 +2590,12 @@ ergosPctOfGross  = ergosNet ÷ ergosGross     <span class="comment">// must be �
     </div>
   </div>
 
-  <div class="callout callout-danger">
-    <strong>SAVE BLOCKED.</strong> The SaveConfirmModal opens with a red header, the reason textarea is hidden, and there's no Confirm button — only Cancel. <strong>The system literally won't let the admin save this configuration.</strong>
+  <div class="callout callout-warning">
+    <strong>AMBER WARNING — REASON REQUIRED.</strong> The SaveConfirmModal opens with an amber header, the reason textarea is shown, and the Confirm button is enabled only after a ≥10-character reason is typed. The save then goes through and the reason is captured on every audit entry for this change. <strong>The system permits the configuration but creates a permanent record of <em>why</em> it was approved.</strong>
     <br><br>
-    <strong>Why the floor matters:</strong> if Ergos retains less than 5% of sell as net, payment processing fees (1-1.5%), technology infrastructure, G&A, and required profit all have to come out of that thin slice — which doesn't work. The 5% floor is the line below which a booking literally loses money for Ergos.
+    <strong>Why the floor still matters:</strong> if Ergos retains less than 5% of sell as net, payment processing fees (1-1.5%), technology infrastructure, G&A, and required profit all have to come out of that thin slice — which doesn't work as a default operating posture. The 5% floor is the line where a booking starts to lose money for Ergos. Strategic exceptions (volume deals, new-market entry) may justify operating below it, but those exceptions need documentation.
     <br><br>
-    <strong>How to fix it:</strong> either (a) put the Strategic agent on hotels with ≥10% markup, (b) put them on chain-discounted hotels (cost basis lowered → more gross → enough room for their take), or (c) lower their earning percentage. The system pushes the admin toward the right combination.
+    <strong>How to clear the warning instead of overriding:</strong> either (a) put the Strategic agent on hotels with ≥10% markup, (b) put them on chain-discounted hotels (cost basis lowered → more gross → enough room for their take), or (c) lower their earning percentage. Clearing the warning is preferred to overriding it — the audit log makes any standing pattern of overrides easy to spot in compliance review.
   </div>
 
   <h3>Side-by-side comparison</h3>
@@ -2627,13 +2627,13 @@ ergosPctOfGross  = ergosNet ÷ ergosGross     <span class="comment">// must be �
         <td class="mono" style="text-align:right"><strong>$10.10</strong></td>
         <td><span style="color:var(--green)">✓ 5.26%</span></td>
       </tr>
-      <tr style="background: var(--red-light);">
-        <td><strong>C — Hard block</strong></td>
+      <tr style="background: #fff3e0;">
+        <td><strong>C — Amber warning</strong></td>
         <td>Strategic (30%)</td>
         <td class="mono" style="text-align:right">$216.00</td>
         <td class="mono" style="text-align:right">$4.80</td>
         <td class="mono" style="text-align:right"><strong>$10.40</strong></td>
-        <td><span style="color:var(--red); font-weight:700">✗ 4.81%</span></td>
+        <td><span style="color:var(--amber); font-weight:700">⚠ 4.81%</span></td>
       </tr>
     </tbody>
   </table>
