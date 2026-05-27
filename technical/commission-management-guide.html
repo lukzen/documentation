@@ -1197,7 +1197,7 @@ table .mono { font-family: 'JetBrains Mono', monospace; font-size: 12px; }
            loading="lazy"
            onerror="this.style.display='none'" />
     </div>
-    <figcaption>Commission Policy page in production · drop screenshot at <span class="file">commission-screenshots/01-commission-policy-full.png</span> <em>(re-capture needed: existing screenshots predate the 2026-05-27 cleanup that removed the Agencies tab and the right-rail Guardrails section)</em></figcaption>
+    <figcaption>Commission Policy page in production (captured 2026-05-27 via Playwright after the Agencies-tab removal and right-rail Guardrails cleanup). File: <span class="file">commission-screenshots/01-commission-policy-full.png</span></figcaption>
   </figure>
 
   <details class="wireframe-fallback">
@@ -1303,7 +1303,7 @@ NOTE — wireframe reflects post-2026-05-27 state:
            loading="lazy"
            onerror="this.style.display='none'" />
     </div>
-    <figcaption>Right-rail Simulate panel with live waterfall · drop screenshot at <span class="file">commission-screenshots/04-simulate-panel.png</span> <em>(re-capture needed: existing screenshot predates the 2026-05-27 guardrail removal — the &quot;Guardrails&quot; section below the waterfall no longer exists)</em></figcaption>
+    <figcaption>Right-rail Simulate panel with live waterfall (captured 2026-05-27 via Playwright). The legacy &quot;Guardrails&quot; section below the waterfall no longer exists. File: <span class="file">commission-screenshots/04-simulate-panel.png</span></figcaption>
   </figure>
 
   <h3>Header actions (top right)</h3>
@@ -1523,6 +1523,16 @@ NOTE — wireframe reflects post-2026-05-27 state:
     <li><strong>Proposed changes</strong> — a table of every field that will change, scoped by entity (hotel, agency, agent, etc.).</li>
     <li><strong>Cancel / Confirm Save</strong> — the only two actions. There is no warning state, no required reason, no hard block. Schema-level invariants (e.g. <code>baseCommission &ge; 1</code>) are still enforced server-side; if a save would violate them, the backend returns 400 and the dialog surfaces the message inline.</li>
   </ol>
+
+  <figure class="screenshot">
+    <div class="screenshot-frame">
+      <img src="commission-screenshots/05-save-confirm-modal.png"
+           alt="SaveConfirmModal — green Confirm Changes header, proposed-changes diff list, Cancel and Confirm Save buttons. No guardrail status box, no reason textarea, no Cannot proceed badge."
+           loading="lazy"
+           onerror="this.style.display='none'" />
+    </div>
+    <figcaption>SaveConfirmModal in its post-2026-05-27 form: green header, diff list, Cancel + Confirm Save. No guardrail status box, no reason textarea, no &quot;Cannot proceed&quot; badge. Captured 2026-05-27 via Playwright. File: <span class="file">commission-screenshots/05-save-confirm-modal.png</span></figcaption>
+  </figure>
 
   <h3>Centralized audit</h3>
   <p>On confirm, the page POSTs each layer's changes to a <strong>single centralized endpoint</strong> (<code>PATCH /admin/commission-policy/layer/{scope}/{scopeId}</code>) which writes the change AND an audit entry atomically. Every edit is therefore traceable to who changed what, when, and to what new value — independent of whether any threshold was crossed.</p>
