@@ -1776,7 +1776,7 @@ agencyMarkupPctSnapshot: <span class="num">15</span>,        <span class="commen
   <p>Layer 3 (Agency → Customer) sits outside our commission policy. The agency configures a <code>defaultMarkupPct</code> on their Profile page if they want to use the platform's optional invoicing helpers, but the value has <strong>zero effect</strong> on:</p>
   <ul>
     <li>The Ergos sell price (what the agency pays Ergos)</li>
-    <li>The booking agent's commission</li>
+    <li>The agent's commission</li>
     <li>The Ergos net margin</li>
     <li>The savability of a commission policy</li>
   </ul>
@@ -1793,14 +1793,14 @@ agencyMarkupPctSnapshot: <span class="num">15</span>,        <span class="commen
     </thead>
     <tbody>
       <tr>
-        <td><strong>Booking agent commission</strong> (Layer 1, baseline 18–24% of Ergos gross)</td>
-        <td>The agent who closes a booking with a customer for the agency</td>
-        <td>This is the original commission engine — keeps existing booking-side agents paid fairly across hotel/chain/agency overrides</td>
+        <td><strong>Agent commission</strong> (baseline 18–24% of Ergos gross via <code>SalesAgent.earningPercentage</code>)</td>
+        <td>The agent paid per booking, computed at booking time and frozen into <code>commissionSnapshot</code></td>
+        <td>This is the only commission flow implemented in the engine today. Resolved through tiers (Starter → Strategic) and optional per-(agent, hotel) overrides</td>
       </tr>
       <tr>
-        <td><strong>Sales-agent recruiting commission</strong> (new — see §11)</td>
-        <td>The independent sales rep who recruits new travel agencies onto Ergos and supports them ongoingly</td>
-        <td>This is our primary growth lever. Each productive agency a sales agent recruits compounds Ergos's volume against a near-fixed cost base. Detailed model in §11.</td>
+        <td><strong>Recruiting compensation</strong> (proposed — see §11, not yet implemented)</td>
+        <td>What Ergos would pay sales agents to recruit and retain travel agencies on the platform</td>
+        <td>Proposed growth lever. Each productive agency a sales agent recruits compounds Ergos's volume against a near-fixed cost base. Unit economics modeling in §11; no engine support yet</td>
       </tr>
     </tbody>
   </table>
@@ -2645,47 +2645,15 @@ ergosPctOfGross  = ergosNet ÷ ergosGross</div>
 <section id="sales-agent-model">
   <h2>11. Sales-Agent Recruiting Model &amp; Unit Economics <span class="label">Growth lever</span></h2>
 
-  <p>This section defines a <strong>second commission flow</strong> alongside the booking-agent commission documented in §1–§9. Where the booking-agent commission pays the person who <em>closes a sale to a customer</em>, the sales-agent recruiting commission pays the person who <em>recruits a travel agency onto the Ergos platform</em> — and continues to share in that agency's lifetime booking volume.</p>
+  <p>This section describes how Ergos compensates sales agents for recruiting travel agencies onto the platform. Travel-agency recruitment is Ergos's primary growth channel. Many target agencies don't yet have a website or any digital ability to access international hotel inventory; they're currently constrained to whatever single GDS they have a manual relationship with. Onboarding them to Ergos gives them instant access to the full Dingus + Hotetec + Restel + Juniper aggregated inventory — and gives Ergos compounding booking volume against a near-fixed cost base.</p>
 
-  <p>Travel-agency recruitment is Ergos's primary growth channel. Many target agencies don't yet have a website or any digital ability to access international hotel inventory; they're currently constrained to whatever single GDS they have a manual relationship with. Onboarding them to Ergos gives them instant access to the full Dingus + Hotetec + Restel + Juniper aggregated inventory — and gives Ergos compounding booking volume against a near-fixed cost base.</p>
-
-  <div class="callout callout-info">
-    <strong>What this section is NOT:</strong> It is not about the agency markup to the final customer. That's the agency's decision and is out of scope (see §6). This section is exclusively about <strong>what Ergos pays sales agents to recruit and retain travel agencies</strong>.
+  <div class="callout callout-warning">
+    <strong>Status:</strong> The proposal below is unit economics modeling for a recruiting compensation mechanism. <strong>It is not implemented in code today.</strong> The existing <code>SalesAgent</code> model (<code>sales-agent.model.ts</code>) supports only per-booking commission via <code>earningPercentage × ergosGross</code> — described in §1–§9. The recruiting compensation modeled here (signing bonus, per-booking residual on recruited agencies' bookings) would require a new data model, a payout job, and a sales-agent portal view, none of which exist yet.
   </div>
 
-  <h3>The two-flow commission architecture</h3>
-
-  <table>
-    <thead>
-      <tr><th>Commission flow</th><th>Who earns it</th><th>What triggers it</th><th>Where it's documented</th></tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><strong>Booking-agent commission</strong></td>
-        <td>The agent who closes a booking with a final customer</td>
-        <td>Per booking, % of Ergos gross, tiered (Starter → Strategic)</td>
-        <td>§1–§9 (existing engine)</td>
-      </tr>
-      <tr>
-        <td><strong>Sales-agent recruiting commission</strong></td>
-        <td>The independent rep who recruited the agency onto Ergos</td>
-        <td>Per booking from that agency + signing bonus on onboarding</td>
-        <td>This section (§11)</td>
-      </tr>
-    </tbody>
-  </table>
-
-  <p>The two flows are <strong>additive on the same booking</strong>. A single booking from a recruited agency triggers both: the booking agent who handled the customer-facing transaction is paid via §1–§9; the sales agent who originally recruited the agency is paid additionally via §11.</p>
-
-  <h3>Why this is a separate flow (not just an additional tier)</h3>
-
-  <p>A sales agent's economics are fundamentally different from a booking agent's:</p>
-  <ul>
-    <li><strong>Booking agents</strong> earn per sale and have direct control over each transaction. Their commission ties to their closing performance.</li>
-    <li><strong>Sales agents</strong> earn per booking from a portfolio of agencies they recruited. Their commission ties to <em>partner activation and retention</em> — they win by recruiting productive agencies and keeping them supported, not by closing individual bookings.</li>
-  </ul>
-
-  <p>Mixing these into a single commission engine would muddy both incentive structures. They're modeled as parallel flows: booking-time agent commissions land in <code>commissionSnapshot</code>; sales-agent recruiting commissions are computed downstream against the productive bookings attributed to the recruited agency.</p>
+  <div class="callout callout-info">
+    <strong>What this section is NOT:</strong> It is not about the agency markup to the final customer. That's the agency's decision and is out of scope (see §6). This section is exclusively about <strong>what Ergos would pay sales agents to recruit and retain travel agencies</strong> if the proposed mechanism is adopted.
+  </div>
 
   <h3>The cost base reality (mid-2026)</h3>
 
@@ -2715,16 +2683,16 @@ ergosPctOfGross  = ergosNet ÷ ergosGross</div>
   </table>
 
   <div class="callout callout-warning">
-    <strong>This is the controllable cost picture.</strong> Hotel net rates, agency rebates, and booking-agent commissions are either contractually fixed or already engine-managed. The two genuinely controllable cost levers Ergos has are (a) what we pay sales agents to recruit travel agencies, and (b) the infrastructure scaling curve. Everything else is downstream of those.
+    <strong>This is the controllable cost picture.</strong> Hotel net rates, agency rebates, and per-booking agent earnings (existing <code>SalesAgent.earningPercentage</code>) are either contractually fixed or already engine-managed. The two genuinely controllable cost levers Ergos has are (a) what we pay sales agents (if any) to recruit travel agencies, and (b) the infrastructure scaling curve. Everything else is downstream of those.
   </div>
 
   <h3>Per-booking economics — two cases</h3>
 
   <p>Sales-agent commission is computed per booking as a <strong>flat dollar amount</strong> ($2.00 USD recommended at MVP scale), not a percentage of gross. This keeps the math predictable for sales agents and easy to reason about across hotel categories with very different margins. The Ergos net floor (§4) still applies after the deduction.</p>
 
-  <h4 style="margin-top: 18px;">Case A — Standard international hotel (no chain discount)</h4>
+  <h4 style="margin-top: 18px;">Case A — Standard international hotel (no chain discount, no rebate)</h4>
 
-  <p>Assumptions: $300 USD GDS net (international weighted average), 8% Ergos markup, 4% agency rebate, Growth-tier booking agent (18% earning, 7% ops).</p>
+  <p>Assumptions: $300 USD GDS net (international weighted average), <strong>3% Ergos markup</strong> (the new 2026-05-27 default for non-chain, non-rebate bookings), 0% agency rebate, Growth-tier agent (18% earning, 7% ops). The recruiting compensation is a flat $2.00 per booking (proposed — see model below).</p>
 
   <table>
     <thead>
@@ -2732,23 +2700,27 @@ ergosPctOfGross  = ergosNet ÷ ergosGross</div>
     </thead>
     <tbody>
       <tr><td>GDS net</td><td class="mono">—</td><td class="mono">$300.00</td></tr>
-      <tr><td>Ergos sell</td><td class="mono">$300 × 1.08</td><td class="mono">$324.00</td></tr>
-      <tr><td>Agency rebate (4%)</td><td class="mono">$324 × 0.04</td><td class="mono">−$12.96</td></tr>
-      <tr><td>Ergos receives</td><td class="mono">—</td><td class="mono">$311.04</td></tr>
+      <tr><td>Ergos sell</td><td class="mono">$300 × 1.03</td><td class="mono">$309.00</td></tr>
+      <tr><td>Agency rebate (0%)</td><td class="mono">—</td><td class="mono">$0.00</td></tr>
+      <tr><td>Ergos receives</td><td class="mono">—</td><td class="mono">$309.00</td></tr>
       <tr><td>Pay hotel</td><td class="mono">—</td><td class="mono">−$300.00</td></tr>
-      <tr><td>Ergos gross</td><td class="mono">—</td><td class="mono">$11.04</td></tr>
-      <tr><td>Pay booking agent (18%)</td><td class="mono">$11.04 × 0.18</td><td class="mono">−$1.99</td></tr>
-      <tr><td>Pay ops (7%)</td><td class="mono">$11.04 × 0.07</td><td class="mono">−$0.77</td></tr>
-      <tr><td><strong>Pay sales agent (recruiting)</strong></td><td class="mono">flat</td><td class="mono"><strong>−$2.00</strong></td></tr>
-      <tr><td><strong>Ergos contribution margin</strong></td><td class="mono">—</td><td class="mono"><strong>$6.28</strong></td></tr>
+      <tr><td>Ergos gross</td><td class="mono">—</td><td class="mono">$9.00</td></tr>
+      <tr><td>Pay agent (18%)</td><td class="mono">$9.00 × 0.18</td><td class="mono">−$1.62</td></tr>
+      <tr><td>Pay ops (7%)</td><td class="mono">$9.00 × 0.07</td><td class="mono">−$0.63</td></tr>
+      <tr><td><strong>Pay recruiting sales agent (proposed)</strong></td><td class="mono">flat</td><td class="mono"><strong>−$2.00</strong></td></tr>
+      <tr><td><strong>Ergos contribution margin</strong></td><td class="mono">—</td><td class="mono"><strong>$4.75</strong></td></tr>
     </tbody>
   </table>
 
-  <p>Each standard booking contributes <strong>$6.28</strong> toward fixed-cost recovery and profit, after both commission flows are paid.</p>
+  <p>Each standard booking at the new 3% default contributes <strong>$4.75</strong> toward fixed-cost recovery and profit, after agent + ops + the proposed $2 recruiting commission.</p>
+
+  <div class="callout callout-warning" style="margin-bottom: 16px;">
+    <strong>What happens if this same booking carries a 4% agency rebate?</strong> At 3% baseCommission + 4% rebate, <code>ergosGross = ergosSell × (1 − 0.04) − supplierNet = $309 × 0.96 − $300 = −$3.36</code> — Ergos receives less than what it owes the hotel. The booking is structurally unprofitable before paying anyone. <strong>Rebate-paying agencies on the 3% default are not viable under the new policy.</strong> The fix is to uplift <code>baseCommission</code> at the per-hotel or per-chain level (e.g. set chain.baseCommission ≥ 8 for hotels whose agencies receive rebate) so the gross has room for the rebate plus everything downstream. The legacy Case A (8% markup + 4% rebate → $6.28 contribution) only worked because the legacy default was 8–13%, not 3%.
+  </div>
 
   <h4 style="margin-top: 18px;">Case B — Chain-discounted hotel (Meliá-style)</h4>
 
-  <p>Assumptions: $300 USD GDS net, 15% chain discount, 13% Ergos markup (set on the chain via the chain editor's <code>baseCommission</code> field — chains with negotiated discounts uplift markup above the 3% non-chain default), 4% agency rebate, Elite-tier booking agent (24% earning, 6% ops).</p>
+  <p>Assumptions: $300 USD GDS net, 15% chain discount, 13% Ergos markup (set on the chain via the chain editor's <code>baseCommission</code> field — chains with negotiated discounts uplift markup above the 3% non-chain default), 4% agency rebate, Elite-tier agent (24% earning, 6% ops).</p>
 
   <table>
     <thead>
@@ -2762,18 +2734,18 @@ ergosPctOfGross  = ergosNet ÷ ergosGross</div>
       <tr><td>Ergos receives</td><td class="mono">—</td><td class="mono">$276.62</td></tr>
       <tr><td>Pay hotel</td><td class="mono">—</td><td class="mono">−$255.00</td></tr>
       <tr><td>Ergos gross</td><td class="mono">—</td><td class="mono">$21.62</td></tr>
-      <tr><td>Pay booking agent (24%)</td><td class="mono">$21.62 × 0.24</td><td class="mono">−$5.19</td></tr>
+      <tr><td>Pay agent (24%)</td><td class="mono">$21.62 × 0.24</td><td class="mono">−$5.19</td></tr>
       <tr><td>Pay ops (6%)</td><td class="mono">$21.62 × 0.06</td><td class="mono">−$1.30</td></tr>
       <tr><td><strong>Pay sales agent (recruiting)</strong></td><td class="mono">flat</td><td class="mono"><strong>−$2.00</strong></td></tr>
       <tr><td><strong>Ergos contribution margin</strong></td><td class="mono">—</td><td class="mono"><strong>$13.13</strong></td></tr>
     </tbody>
   </table>
 
-  <p>Each chain-discounted booking contributes <strong>$13.13</strong> — over 2× more than a standard booking. This is the structural reason chain partnerships are the highest-value inventory to push.</p>
+  <p>Each chain-discounted booking contributes <strong>$13.13</strong> — almost 3× more than a standard 3%-default booking. This is the structural reason chain partnerships (and per-hotel <code>baseCommission</code> uplifts) are the highest-value inventory to push under the new policy.</p>
 
   <h3>Break-even and volume sensitivity</h3>
 
-  <p>Assuming a 70% standard / 30% chain inventory mix, the weighted average per-booking contribution is <strong>$8.34 USD</strong> (= 0.70 × $6.28 + 0.30 × $13.13).</p>
+  <p>Assuming a 70% standard / 30% chain inventory mix, the weighted average per-booking contribution is <strong>$7.26 USD</strong> (= 0.70 × $4.75 + 0.30 × $13.13). This is meaningfully lower than the legacy mix (~$8.34) because Case A's contribution dropped from $6.28 to $4.75 when the default markup moved 8% → 3%.</p>
 
   <p>At $3,650 USD/month fixed costs:</p>
 
@@ -2782,17 +2754,19 @@ ergosPctOfGross  = ergosNet ÷ ergosGross</div>
       <tr><th>Monthly bookings</th><th>Total contribution</th><th>Fixed costs</th><th>True net profit</th><th>Status</th></tr>
     </thead>
     <tbody>
-      <tr><td class="mono">250</td><td class="mono">$2,085</td><td class="mono">$3,650</td><td class="mono">−$1,565</td><td>Pre-break-even</td></tr>
-      <tr><td class="mono"><strong>438</strong></td><td class="mono"><strong>$3,654</strong></td><td class="mono"><strong>$3,650</strong></td><td class="mono"><strong>$0</strong></td><td><strong>Break-even</strong></td></tr>
-      <tr><td class="mono">500</td><td class="mono">$4,170</td><td class="mono">$3,650</td><td class="mono">+$520</td><td>Slightly profitable</td></tr>
-      <tr><td class="mono">1,000</td><td class="mono">$8,340</td><td class="mono">$3,650</td><td class="mono">+$4,690</td><td>Profitable</td></tr>
-      <tr><td class="mono">2,500</td><td class="mono">$20,850</td><td class="mono">$3,650</td><td class="mono">+$17,200</td><td>Strong</td></tr>
-      <tr><td class="mono">5,000</td><td class="mono">$41,700</td><td class="mono">$3,650</td><td class="mono">+$38,050</td><td>Scaled</td></tr>
+      <tr><td class="mono">250</td><td class="mono">$1,815</td><td class="mono">$3,650</td><td class="mono">−$1,835</td><td>Pre-break-even</td></tr>
+      <tr><td class="mono"><strong>503</strong></td><td class="mono"><strong>$3,652</strong></td><td class="mono"><strong>$3,650</strong></td><td class="mono"><strong>$2</strong></td><td><strong>Break-even</strong></td></tr>
+      <tr><td class="mono">750</td><td class="mono">$5,445</td><td class="mono">$3,650</td><td class="mono">+$1,795</td><td>Slightly profitable</td></tr>
+      <tr><td class="mono">1,000</td><td class="mono">$7,260</td><td class="mono">$3,650</td><td class="mono">+$3,610</td><td>Profitable</td></tr>
+      <tr><td class="mono">2,500</td><td class="mono">$18,150</td><td class="mono">$3,650</td><td class="mono">+$14,500</td><td>Strong</td></tr>
+      <tr><td class="mono">5,000</td><td class="mono">$36,300</td><td class="mono">$3,650</td><td class="mono">+$32,650</td><td>Scaled</td></tr>
     </tbody>
   </table>
 
   <div class="callout callout-gold">
-    <strong>Break-even at ~440 bookings/month.</strong> A productive travel agency does 50–200 bookings/month, so 3–8 agencies covers fixed costs entirely. This is the headline number for any conversation with prospective sales agents: <em>"Once you've recruited 5–8 active agencies, Ergos is profitable and every additional booking you bring in is overwhelmingly margin."</em>
+    <strong>Break-even at ~500 bookings/month under the new 1/3/5 policy</strong> (up from ~440 under the legacy 8% default). A productive travel agency does 50–200 bookings/month, so 4–10 agencies covers fixed costs. Headline for any conversation with prospective sales agents: <em>"Once you've recruited about 5–10 active agencies — or fewer if they're booking chain-discounted inventory — Ergos is profitable and every additional booking you bring in is overwhelmingly margin."</em>
+    <br><br>
+    <strong>Why chain inventory mix matters more than ever:</strong> shifting the mix from 70/30 standard/chain to 50/50 raises the weighted average from $7.26 to $8.94 — a 23% improvement to per-booking contribution. The product pitch to recruited agencies should highlight chain discount access as a primary value prop.
   </div>
 
   <h3>Sales agent compensation — recommended model (conservative)</h3>
@@ -2822,7 +2796,7 @@ ergosPctOfGross  = ergosNet ÷ ergosGross</div>
       <tr>
         <td><strong>Portfolio guardrail</strong></td>
         <td class="mono">cap at 30% of monthly contribution</td>
-        <td>Total recruiting commissions in any month cannot exceed 30% of Ergos's total contribution margin that month; excess rolls to next month. Protects against runaway costs in early scaling.</td>
+        <td>Total recruiting commissions in any month cannot exceed 30% of Ergos's total contribution margin that month; excess rolls to next month. Protects against runaway costs in early scaling. Under the new 1/3/5 policy: $2/booking is 27.5% of the weighted $7.26 contribution at 70/30 mix (within cap), but a recruiter with 100% non-chain inventory (Case A only) would hit the cap at $1.43/booking effective. Pushes recruiters toward chain-discounted inventory.</td>
       </tr>
     </tbody>
   </table>
@@ -2878,7 +2852,7 @@ ergosPctOfGross  = ergosNet ÷ ergosGross</div>
     <tbody>
       <tr>
         <td><strong>Percentage of Ergos gross margin</strong> (instead of flat $2)</td>
-        <td>Couples sales-agent income to variables they don't control (hotel net rate, booking-agent tier, ops cost). Recruiting reps need predictable per-booking economics to pitch productively.</td>
+        <td>Couples recruiting-comp income to variables the recruiter doesn't control (hotel net rate, agent tier, ops cost). Recruiting reps need predictable per-booking economics to pitch productively.</td>
       </tr>
       <tr>
         <td><strong>Percentage of agency markup</strong> (sharing the agency's margin)</td>
@@ -2914,7 +2888,7 @@ ergosPctOfGross  = ergosNet ÷ ergosGross</div>
     <li>Should signing bonuses be tiered by recruited agency's projected volume (e.g., $500 default, $1,000 if agency commits to 100+ bookings/month minimum)?</li>
     <li>Should sales agents be paid for agencies they recruit even after they leave the program (lifetime trailing commission), or should commissions cease when they exit?</li>
     <li>Geographic recruitment sprints: should there be a 6-month doubled-rate window for agencies recruited in priority markets (Spain, Mexico, North America)?</li>
-    <li>Sales-agent tiers: parallel to booking-agent tiers (Starter → Strategic), should top recruiters unlock higher per-booking rates as a retention mechanism?</li>
+    <li>Recruiter tiers: parallel to the existing agent tiers (Starter → Strategic) on the <code>SalesAgent</code> model, should top recruiters unlock higher per-booking rates as a retention mechanism?</li>
   </ul>
 
   <div class="callout callout-info">
