@@ -1496,6 +1496,8 @@ table .mono { font-family: 'JetBrains Mono', monospace; font-size: 12px; }
 
   <div class="callout callout-teal" style="margin-bottom: 16px;">
     <strong>Legacy guardrails removed (2026-05-27).</strong> Earlier versions of the engine enforced three runtime guardrails (<code>minErgosNetPct = 5%</code>, <code>maxAgentPctOfGross = 32%</code>, <code>minErgosPctOfGross = 50%</code>). These were inherited from an early business spec and did not reflect the stakeholder-ratified commission picture (GDS → chain discount → Ergos markup → optional agency rebate → travel-agency markup). They were removed from the engine, frontend mirror, SaveConfirmModal, and right-rail UI. The only floor enforced today is the schema-level <code>baseCommission &ge; 1</code>.
+    <br><br>
+    <strong>Active lock-in:</strong> the no-guardrail state is asserted by 4 cypress tests in <code>backoffice-app/cypress/e2e/commission-policy-save-flow.cy.ts</code> (added in commit <code>c99a218</code>). Any accidental re-introduction of the Guardrails section in the right rail, the reason textarea, the &quot;Cannot proceed&quot; badge, or any of the 8 removed locale strings will fail the suite — so the doc and the code can&apos;t drift on this without breaking CI.
   </div>
 
   <p>The SaveConfirmModal is a confirmation step — diff in, audit out. No runtime guardrails are evaluated.</p>
