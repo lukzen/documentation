@@ -1548,10 +1548,10 @@ table .mono { font-family: 'JetBrains Mono', monospace; font-size: 12px; }
     <tbody>
       <tr>
         <td class="mono">baseCommission</td>
-        <td class="mono">8–15%</td>
+        <td class="mono">1–3%<br><small style="font-weight:400; text-transform: none; color: var(--text-muted);">(default 3, per 2026-05-27 policy)</small></td>
         <td class="mono">no upper floor risk</td>
-        <td class="mono">100%</td>
-        <td>Higher → Ergos earns more, so there is no profitability ceiling. Limited by market acceptance (above ~25% the agency/customer pushes back) and by GDS contracts.</td>
+        <td class="mono">1–100%</td>
+        <td>Stakeholder policy: min 1% (schema floor), default 3% (new average), max 100% (schema cap). Values ≥5% are typically paired with a negotiated chain discount — this is informational guidance in the UI, not an enforced rule. Higher → Ergos earns more, so there is no upper profitability ceiling. Limited by market acceptance and GDS contracts.</td>
       </tr>
       <tr>
         <td class="mono">chainDiscountPct</td>
@@ -1565,7 +1565,7 @@ table .mono { font-family: 'JetBrains Mono', monospace; font-size: 12px; }
         <td class="mono">0–4%</td>
         <td class="mono">~5%</td>
         <td class="mono">100%</td>
-        <td>Erodes Ergos net 1:1. Higher rebate requires higher <code>baseCommission</code> to compensate. With <code>baseCommission = 13</code>, rebate above ~4.4% breaks the 5% floor (worked example below).</td>
+        <td>Erodes Ergos net 1:1. Higher rebate requires higher <code>baseCommission</code> to compensate. With <code>baseCommission = 13</code> (legacy default), rebate above ~4.4% breaks the 5% floor (worked example below). With the new <code>baseCommission = 3</code> default, the system is already near the floor — practically <strong>any positive rebate forces a per-hotel or per-chain baseCommission uplift</strong> to remain saveable.</td>
       </tr>
       <tr>
         <td class="mono"><strong>earningPercentage</strong></td>
@@ -1585,6 +1585,10 @@ table .mono { font-family: 'JetBrains Mono', monospace; font-size: 12px; }
   </table>
 
   <h4>Worked example: deriving the <code>rebatePct</code> ceiling</h4>
+
+  <div class="callout callout-warning" style="margin-bottom: 8px;">
+    <strong>Two scenarios — same math, very different ceilings.</strong> Below uses <code>baseCommission = 13</code> (legacy operating value before 2026-05-27) to derive a meaningful rebate ceiling. After the policy revision (<code>baseCommission</code> default = 3), the math below applied with 3 instead of 13 gives a <em>negative</em> ceiling — meaning at the new default, <strong>no rebate at all is sustainable</strong> without per-hotel or per-chain markup uplift. This is intentional: the 3% default is for non-rebate-paying bookings; agencies with rebate deals require a higher <code>baseCommission</code> override at the chain or hotel layer.
+  </div>
 
   <p>Fix the other variables at their typical values. Stored values (whole percent): <code>baseCommission&nbsp;=&nbsp;13</code>, <code>chainDiscountPct&nbsp;=&nbsp;0</code>, <code>earningPct&nbsp;=&nbsp;24</code> (Elite default), <code>opsExpense&nbsp;=&nbsp;6</code>. The engine converts via <code>pct(n)&nbsp;=&nbsp;n/100</code>, so below we work in decimal form: <code>0.13</code>, <code>0</code>, <code>0.24</code>, <code>0.06</code>. Normalize <code>gdsNet&nbsp;=&nbsp;100</code> and let <code>r</code> be the unknown rebate fraction.</p>
 
@@ -1606,13 +1610,14 @@ ergosNet        = ergosGross × (1 − 0.24 − 0.06)
   <p>Set rebate at 4% → ergosNetPct lands at 5.25%, just above the floor. Set it at 5% → ergosNetPct drops to 4.55%, the modal hard-blocks. The right rail's <strong>Simulate panel</strong> runs the same calculation live as you edit, and the SaveConfirmModal re-runs it before commit, so the math above matches what the UI tells you in real time.</p>
 
   <div class="callout callout-teal">
-    <strong>Practical order for setting policy:</strong>
+    <strong>Practical order for setting policy</strong> (under the new 2026-05-27 policy):
     <ol style="margin-top: 8px;">
-      <li>Pick <code>baseCommission</code> first — this lever creates the gross margin out of which everything else is paid.</li>
-      <li>Negotiate <code>rebatePct</code> with each agency, staying within the ceiling that <code>baseCommission</code> permits.</li>
+      <li>Start from the <strong>global default of 3%</strong> and only override upward at the chain or hotel layer when the booking economics require it (rebate-paying agency, expensive agent tier, or guardrail headroom).</li>
+      <li>For each chain with a negotiated discount (e.g. the Cuba chains: DOMINA, MELIA, IBEROSTAR, GRANCARIBE, GAVIOTA), set the <strong>chain-wide <code>baseCommission</code></strong> in the chain editor — this cascades to every linked hotel without per-property edits.</li>
+      <li>Negotiate <code>rebatePct</code> with each agency, staying within the ceiling that the effective <code>baseCommission</code> permits (derive from the worked example above using the actual effective value).</li>
       <li>Then tier agents (or set per-(agent, hotel) overrides) within the 32% hard cap.</li>
     </ol>
-    Doing this in reverse — promising high agent earnings or large agency rebates before the markup is set — almost always trips the hard floor.
+    Doing this in reverse — promising high agent earnings or large agency rebates without first raising <code>baseCommission</code> above the 3% default — almost always trips the 5% Ergos-net hard floor.
   </div>
 
   <h3>When you click "Review and Save"</h3>
