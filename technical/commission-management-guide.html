@@ -1,0 +1,3215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ergos Commission Management — How It Works</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy: #0f0f3d; --navy-mid: #1a1a4e; --navy-light: #2e2e6e;
+  --teal: #0fa89b; --teal-bright: #11c4b5; --teal-dark: #0d8a7f;
+  --teal-soft: #e0f7f5;
+  --gold: #c4962c; --gold-light: #f3e3b6;
+  --cream: #fdf6ec; --cream-dark: #f0e0c8;
+  --red: #d32f2f; --red-light: #ffebee;
+  --green: #1b8a42; --green-light: #e8f5e9;
+  --amber: #e67e00; --amber-light: #fff3e0;
+  --blue: #1565c0; --blue-light: #e3f2fd;
+  --purple: #6a1b9a; --purple-light: #f3e5f5;
+  --text-primary: #1a1a2e; --text-secondary: #3d3d5c;
+  --text-muted: #5c5c7a; --text-light: #7a7a96;
+  --border: #d0d0e0; --border-light: #e8e8f0;
+  --bg-white: #ffffff; --bg-gray: #f5f5fa;
+  --shadow-sm: 0 1px 4px rgba(15,15,61,0.06);
+  --shadow: 0 2px 12px rgba(15,15,61,0.08);
+  --shadow-lg: 0 8px 32px rgba(15,15,61,0.12);
+  --radius: 10px; --radius-lg: 14px;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { height: 100%; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg-gray);
+  color: var(--text-primary);
+  line-height: 1.65;
+  font-size: 15px;
+  overflow: hidden; /* the panes handle their own scrolling */
+}
+
+/* Sidebar brand block (replaces the old top header bar) */
+.sidebar-brand {
+  background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 100%);
+  color: white;
+  padding: 22px 20px;
+  border-radius: var(--radius);
+  margin-bottom: 18px;
+}
+.sidebar-brand h1 {
+  font-family: 'DM Serif Display', serif;
+  font-size: 22px;
+  font-weight: 400;
+  letter-spacing: 0.2px;
+  line-height: 1.25;
+  margin: 0;
+}
+.sidebar-brand .brand-subtitle {
+  font-size: 11.5px;
+  opacity: 0.7;
+  margin-top: 6px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+/* ─── Two-pane layout: fixed left sidebar + scrollable right pane ─── */
+.layout {
+  display: flex;
+  height: 100vh;
+  width: 100%;
+  overflow: hidden;
+}
+.sidebar {
+  width: 320px;
+  flex-shrink: 0;
+  height: 100vh;
+  overflow-y: auto;
+  background: var(--bg-white);
+  border-right: 1px solid var(--border);
+  box-shadow: 2px 0 12px rgba(15, 15, 61, 0.04);
+  padding: 20px 16px;
+  z-index: 10;
+}
+.sidebar::-webkit-scrollbar { width: 6px; }
+.sidebar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+.sidebar::-webkit-scrollbar-track { background: transparent; }
+.main-content {
+  flex: 1;
+  height: 100vh;
+  overflow-y: auto;
+  padding: 36px 48px 60px;
+  background: var(--bg-gray);
+}
+.main-content::-webkit-scrollbar { width: 10px; }
+.main-content::-webkit-scrollbar-thumb { background: var(--border); border-radius: 5px; }
+.main-content::-webkit-scrollbar-track { background: transparent; }
+
+/* Sidebar TOC (replaces the old top-centered TOC) */
+.toc h3 {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  color: var(--text-muted);
+  font-weight: 700;
+  margin-bottom: 14px;
+  padding: 0 6px;
+}
+.toc-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.toc a {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 9px 12px;
+  border-radius: 7px;
+  color: var(--navy-mid);
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.4;
+  transition: all 0.15s;
+  border-left: 3px solid transparent;
+}
+.toc a:hover {
+  background: var(--bg-gray);
+  color: var(--teal-dark);
+}
+.toc a.active {
+  background: var(--teal-soft);
+  color: var(--teal-dark);
+  font-weight: 700;
+  border-left-color: var(--teal);
+}
+.toc-num {
+  display: inline-block;
+  min-width: 22px;
+  color: var(--text-muted);
+  font-weight: 600;
+  font-size: 12px;
+  flex-shrink: 0;
+}
+.toc a.active .toc-num { color: var(--teal-dark); }
+
+/* Section visibility: only the .active section is shown */
+.main-content > section {
+  display: none;
+}
+.main-content > section.active {
+  display: block;
+  animation: fadeIn 0.18s ease-out;
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Section navigation buttons at the bottom of each section */
+.section-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 2px solid var(--border-light);
+  gap: 12px;
+}
+.section-nav-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 16px;
+  background: var(--bg-gray);
+  color: var(--navy-mid);
+  text-decoration: none;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  transition: all 0.15s;
+  border: 1px solid var(--border);
+  cursor: pointer;
+}
+.section-nav-btn:hover {
+  background: var(--teal-soft);
+  color: var(--teal-dark);
+  border-color: var(--teal);
+}
+.section-nav-btn.is-disabled {
+  visibility: hidden;
+}
+
+/* Sections */
+section {
+  background: var(--bg-white);
+  border-radius: var(--radius-lg);
+  padding: 36px 40px;
+  margin-bottom: 28px;
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border-light);
+}
+section h2 {
+  font-family: 'DM Serif Display', serif;
+  font-size: 30px;
+  color: var(--navy);
+  margin-bottom: 6px;
+  padding-bottom: 14px;
+  border-bottom: 2px solid var(--border-light);
+}
+section h2 .label {
+  display: inline-block;
+  font-size: 11px;
+  font-family: 'DM Sans', sans-serif;
+  background: var(--teal-soft);
+  color: var(--teal-dark);
+  padding: 3px 10px;
+  border-radius: 12px;
+  vertical-align: middle;
+  margin-left: 10px;
+  letter-spacing: 0.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+section h2 .sublabel {
+  background: var(--cream-dark);
+  color: #6d4e00;
+}
+section h3 {
+  font-size: 19px;
+  font-weight: 700;
+  color: var(--navy-mid);
+  margin: 28px 0 12px;
+}
+section h4 {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 18px 0 8px;
+  letter-spacing: 0.2px;
+}
+section p { color: var(--text-secondary); margin-bottom: 12px; }
+section ul, section ol { margin: 8px 0 14px 22px; color: var(--text-secondary); }
+section li { margin-bottom: 6px; }
+section strong { color: var(--text-primary); }
+section code {
+  background: var(--bg-gray);
+  padding: 2px 7px;
+  border-radius: 4px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  color: var(--navy-mid);
+  font-weight: 500;
+}
+
+/* Callouts */
+.callout {
+  padding: 16px 20px;
+  border-radius: var(--radius);
+  margin: 16px 0;
+  border-left: 4px solid;
+  font-size: 14px;
+  line-height: 1.6;
+}
+.callout-info { background: var(--blue-light); border-color: var(--blue); color: #0d3b73; }
+.callout-warning { background: var(--amber-light); border-color: var(--amber); color: #5d3a00; }
+.callout-success { background: var(--green-light); border-color: var(--green); color: #0d4a1f; }
+.callout-danger { background: var(--red-light); border-color: var(--red); color: #7a1a1a; }
+.callout-teal { background: var(--teal-soft); border-color: var(--teal); color: #064d46; }
+.callout-gold { background: var(--gold-light); border-color: var(--gold); color: #6d4e00; }
+.callout strong { color: inherit; }
+
+/* Layer diagram */
+.layer-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin: 24px 0;
+  max-width: 720px;
+}
+.layer-card {
+  background: var(--bg-white);
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px 20px;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  position: relative;
+}
+.layer-card.l1 { border-color: var(--navy); background: linear-gradient(135deg, var(--navy) 0%, var(--navy-mid) 100%); color: white; }
+.layer-card.l1 .layer-name { color: white; }
+.layer-card.l1 .layer-desc { color: rgba(255,255,255,0.85); }
+.layer-card.l2 { border-color: var(--teal); }
+.layer-card.l3 { border-color: var(--gold); }
+.layer-card.l4 { border-color: var(--purple); background: var(--bg-gray); }
+.layer-card.l5 { border-color: var(--teal-dark); }
+.layer-card:not(:last-child) { margin-bottom: 14px; }
+.layer-card:not(:last-child)::after {
+  content: '▾';
+  position: absolute;
+  left: 40px;
+  bottom: -18px;
+  font-size: 18px;
+  color: var(--border);
+  z-index: 2;
+}
+.layer-num {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--bg-white);
+  color: var(--navy);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 16px;
+  flex-shrink: 0;
+  border: 2px solid currentColor;
+}
+.layer-card.l1 .layer-num { background: white; color: var(--navy); }
+.layer-info { flex: 1; }
+.layer-name {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--navy);
+  margin-bottom: 2px;
+}
+.layer-desc {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+.layer-fields {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+.layer-card.l1 .layer-fields { color: rgba(255,255,255,0.65); }
+
+/* Screen mockup boxes (ASCII) */
+.screen-mock {
+  background: var(--navy);
+  color: #d0e0d8;
+  padding: 18px 22px;
+  border-radius: var(--radius);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11.5px;
+  line-height: 1.55;
+  margin: 16px 0;
+  overflow-x: auto;
+  white-space: pre;
+}
+
+/* Real screenshots from the running app. Drop PNGs into
+   ./commission-screenshots/. Diagonal-striped placeholder shows
+   when a file is missing, so the doc stays presentable. */
+figure.screenshot {
+  margin: 16px 0 6px;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: white;
+}
+.screenshot-frame {
+  position: relative;
+  min-height: 240px;
+  background:
+    repeating-linear-gradient(45deg, #f5f5f5, #f5f5f5 10px, #ebebeb 10px, #ebebeb 20px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.screenshot-frame::before {
+  content: "Screenshot pending — see filename in caption";
+  position: absolute;
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-family: 'JetBrains Mono', monospace;
+  z-index: 0;
+  padding: 0 16px;
+  text-align: center;
+}
+.screenshot-frame img {
+  position: relative;
+  z-index: 1;
+  display: block;
+  max-width: 100%;
+  height: auto;
+  background: white;
+}
+figure.screenshot figcaption {
+  padding: 10px 14px;
+  font-size: 12px;
+  color: var(--text-secondary);
+  border-top: 1px solid var(--border-light);
+  background: white;
+}
+figure.screenshot figcaption .file {
+  font-family: 'JetBrains Mono', monospace;
+  background: var(--surface-2);
+  padding: 1px 6px;
+  border-radius: 3px;
+  color: var(--text-primary);
+}
+details.wireframe-fallback {
+  margin: -2px 0 18px;
+}
+details.wireframe-fallback > summary {
+  cursor: pointer;
+  font-size: 12px;
+  color: var(--text-secondary);
+  padding: 6px 0;
+  user-select: none;
+  list-style: none;
+}
+details.wireframe-fallback > summary::before {
+  content: "▸ ";
+}
+details.wireframe-fallback[open] > summary::before {
+  content: "▾ ";
+}
+details.wireframe-fallback[open] > summary {
+  margin-bottom: 6px;
+}
+
+/* Tables */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  margin: 16px 0 20px;
+}
+table th {
+  text-align: left;
+  padding: 10px 14px;
+  background: var(--navy);
+  color: white;
+  font-weight: 600;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+table th:first-child { border-radius: 6px 0 0 0; }
+table th:last-child { border-radius: 0 6px 0 0; }
+table td {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border-light);
+  color: var(--text-secondary);
+  vertical-align: top;
+}
+table tr:hover td { background: var(--bg-gray); }
+table td strong { color: var(--text-primary); }
+table .mono { font-family: 'JetBrains Mono', monospace; font-size: 12px; }
+
+/* Formula box */
+.formula {
+  background: var(--navy);
+  color: #d0e0d8;
+  padding: 14px 18px;
+  border-radius: 8px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  margin: 12px 0;
+  line-height: 1.7;
+  overflow-x: auto;
+}
+.formula .comment { color: #7a8c98; }
+.formula .keyword { color: var(--teal-bright); }
+.formula .num { color: var(--gold-light); }
+
+/* Use case cards */
+.use-case {
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius);
+  padding: 24px 28px;
+  margin: 18px 0;
+  background: var(--bg-white);
+  position: relative;
+  border-left: 5px solid var(--teal);
+}
+.use-case.uc-bulk { border-left-color: var(--gold); }
+.use-case.uc-warning { border-left-color: var(--amber); }
+.use-case.uc-block { border-left-color: var(--red); }
+.use-case.uc-audit { border-left-color: var(--purple); }
+.use-case-num {
+  display: inline-block;
+  background: var(--navy);
+  color: white;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: 12px;
+  letter-spacing: 0.5px;
+  margin-bottom: 10px;
+}
+.use-case h3 {
+  margin: 0 0 6px;
+  font-size: 18px;
+  color: var(--navy);
+}
+.scenario {
+  background: var(--cream);
+  padding: 10px 14px;
+  border-radius: 6px;
+  margin-bottom: 14px;
+  font-size: 13px;
+  color: var(--text-secondary);
+  font-style: italic;
+  border-left: 3px solid var(--cream-dark);
+}
+.scenario strong { color: var(--text-primary); font-style: normal; }
+.steps {
+  counter-reset: step;
+  list-style: none;
+  margin-left: 0;
+}
+.steps > li {
+  counter-increment: step;
+  position: relative;
+  padding-left: 34px;
+  margin-bottom: 10px;
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+.steps > li::before {
+  content: counter(step);
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--teal);
+  color: white;
+  font-size: 11px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.uc-bulk .steps > li::before { background: var(--gold); }
+.uc-warning .steps > li::before { background: var(--amber); }
+.uc-block .steps > li::before { background: var(--red); }
+.uc-audit .steps > li::before { background: var(--purple); }
+.uc-result {
+  background: var(--green-light);
+  border-left: 3px solid var(--green);
+  padding: 10px 14px;
+  border-radius: 6px;
+  margin-top: 14px;
+  font-size: 13px;
+  color: #0d4a1f;
+}
+.uc-result strong { color: #0d4a1f; }
+
+/* Architecture diagram */
+.arch-diagram {
+  background: var(--bg-gray);
+  border-radius: var(--radius);
+  padding: 24px;
+  margin: 20px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+.arch-row {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.arch-box {
+  background: var(--bg-white);
+  border: 2px solid var(--navy);
+  border-radius: 8px;
+  padding: 12px 18px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--navy);
+  min-width: 200px;
+  text-align: center;
+}
+.arch-box.action { border-color: var(--teal); }
+.arch-box.engine { border-color: var(--gold); background: var(--cream); }
+.arch-box.data { border-color: var(--purple); background: var(--purple-light); }
+.arch-box small {
+  display: block;
+  font-weight: 400;
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 3px;
+}
+.arrow {
+  font-size: 22px;
+  color: var(--text-muted);
+}
+
+/* Pricing chain — horizontal flow showing the 4 stages of price formation */
+.pricing-chain {
+  display: flex;
+  align-items: stretch;
+  flex-wrap: wrap;
+  margin: 20px 0;
+  justify-content: center;
+  gap: 4px;
+}
+.pc-stage {
+  background: var(--bg-white);
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px 18px;
+  text-align: center;
+  min-width: 160px;
+  flex: 1;
+  max-width: 200px;
+}
+.pc-stage.l0 { border-color: var(--text-muted); background: var(--bg-gray); }
+.pc-stage.l1 { border-color: var(--teal); }
+.pc-stage.l2 { border-color: var(--gold); background: var(--cream); }
+.pc-stage.l3 {
+  border-color: var(--navy);
+  background: linear-gradient(135deg, var(--navy) 0%, var(--navy-mid) 100%);
+  color: white;
+}
+.pc-label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--text-muted);
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+.pc-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--navy);
+  margin-bottom: 6px;
+}
+.pc-value {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--teal-dark);
+}
+.pc-formula {
+  font-size: 10.5px;
+  color: var(--text-muted);
+  margin-top: 6px;
+  font-style: italic;
+}
+.pc-stage.l3 .pc-label,
+.pc-stage.l3 .pc-name,
+.pc-stage.l3 .pc-value { color: white; }
+.pc-stage.l3 .pc-formula { color: rgba(255, 255, 255, 0.7); }
+.pc-arrow {
+  display: flex;
+  align-items: center;
+  font-size: 22px;
+  color: var(--text-light);
+  font-weight: 700;
+}
+@media (max-width: 860px) {
+  .pricing-chain { flex-direction: column; align-items: center; }
+  .pc-stage { max-width: 280px; width: 100%; }
+  .pc-arrow { transform: rotate(90deg); padding: 4px 0; }
+}
+
+/* Per-party P&L cards (Hotel, Ergos, Agency, Agent) */
+.party-card {
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius);
+  padding: 18px 22px;
+  margin: 12px 0;
+  background: var(--bg-white);
+  border-left: 5px solid;
+}
+.party-card.hotel { border-left-color: #5c5c7a; }
+.party-card.ergos { border-left-color: var(--navy); }
+.party-card.agency { border-left-color: var(--gold); }
+.party-card.agent { border-left-color: var(--teal); }
+.party-card h4 {
+  font-size: 16px;
+  margin-bottom: 8px;
+  margin-top: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--navy);
+}
+.party-card .role-tag {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-weight: 700;
+  font-family: 'DM Sans', sans-serif;
+}
+.party-card.hotel .role-tag { background: #e8e8f0; color: #3d3d5c; }
+.party-card.ergos .role-tag { background: #d4d4e8; color: var(--navy); }
+.party-card.agency .role-tag { background: var(--gold-light); color: #6d4e00; }
+.party-card.agent .role-tag { background: var(--teal-soft); color: var(--teal-dark); }
+.party-pnl {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: 4px 14px;
+  font-size: 13px;
+  margin: 10px 0 4px;
+  align-items: center;
+}
+.party-pnl .pnl-label { color: var(--text-secondary); }
+.party-pnl .pnl-detail {
+  font-size: 11px;
+  color: var(--text-muted);
+  font-style: italic;
+}
+.party-pnl .pnl-value {
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 600;
+  text-align: right;
+  min-width: 80px;
+}
+.party-pnl .pnl-income { color: var(--green); }
+.party-pnl .pnl-expense { color: var(--red); }
+.party-pnl .pnl-net {
+  border-top: 1.5px solid var(--border);
+  padding-top: 8px;
+  margin-top: 4px;
+}
+.party-pnl .pnl-net .pnl-value {
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--navy);
+}
+
+/* Money flow transaction list */
+.money-flow {
+  margin: 16px 0;
+}
+.money-flow-row {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 16px;
+  background: var(--bg-white);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius);
+  margin-bottom: 6px;
+}
+.money-flow-row .mf-party {
+  font-weight: 700;
+  color: var(--navy);
+  font-size: 14px;
+}
+.money-flow-row .mf-arrow {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  color: var(--teal-dark);
+  font-weight: 700;
+}
+.money-flow-row .mf-arrow .mf-amount {
+  background: var(--teal-soft);
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 13px;
+  border: 1px solid var(--teal);
+}
+.money-flow-row .mf-arrow .mf-label {
+  font-size: 10px;
+  color: var(--text-muted);
+  margin-top: 3px;
+  font-style: italic;
+}
+.money-flow-row .mf-to { text-align: right; }
+.money-flow-row.rebate .mf-amount {
+  background: var(--gold-light);
+  border-color: var(--gold);
+  color: #6d4e00;
+}
+.money-flow-row.commission .mf-amount {
+  background: var(--bg-gray);
+  border-color: var(--text-muted);
+  color: var(--text-secondary);
+}
+
+/* Step-by-step calc cards (for the waterfall walkthrough) */
+.calc-walk {
+  margin: 20px 0;
+  border-left: 3px solid var(--teal);
+  padding-left: 0;
+}
+.calc-step {
+  background: var(--bg-white);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius);
+  padding: 16px 18px 16px 20px;
+  margin: 0 0 10px 16px;
+  display: grid;
+  grid-template-columns: 40px 1fr auto;
+  gap: 14px;
+  align-items: start;
+  position: relative;
+}
+.calc-step::before {
+  content: '';
+  position: absolute;
+  left: -19px;
+  top: 24px;
+  width: 18px;
+  height: 1px;
+  background: var(--teal);
+}
+.calc-step .step-num {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--teal);
+  color: white;
+  font-weight: 700;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.calc-step.is-final .step-num {
+  background: var(--navy);
+  width: 38px;
+  height: 38px;
+  font-size: 16px;
+}
+.calc-step .step-body { min-width: 0; }
+.calc-step h5 {
+  font-size: 14px;
+  color: var(--navy);
+  margin: 4px 0 6px;
+  font-weight: 700;
+}
+.calc-step .step-explain {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin-bottom: 8px;
+}
+.calc-step .step-formula {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  background: var(--bg-gray);
+  padding: 7px 11px;
+  border-radius: 5px;
+  color: var(--navy-mid);
+  display: inline-block;
+}
+.calc-step .step-meaning {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 6px;
+  font-style: italic;
+}
+.calc-step .step-result {
+  background: var(--teal-soft);
+  color: var(--teal-dark);
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 700;
+  font-size: 15px;
+  padding: 8px 14px;
+  border-radius: 6px;
+  white-space: nowrap;
+  align-self: center;
+  border: 1.5px solid var(--teal);
+}
+.calc-step.is-final .step-result {
+  background: var(--navy);
+  color: white;
+  font-size: 17px;
+  padding: 10px 16px;
+  border-color: var(--navy);
+}
+.calc-step.is-cost .step-result {
+  background: #fde2e2;
+  color: #8a0e0e;
+  border-color: var(--red);
+}
+.calc-step.is-neutral .step-result {
+  background: var(--bg-gray);
+  color: var(--text-secondary);
+  border-color: var(--border);
+}
+.calc-step .step-result small {
+  display: block;
+  font-size: 10px;
+  font-weight: 500;
+  opacity: 0.7;
+  text-align: right;
+  margin-top: 2px;
+}
+
+/* Guardrail check block at end of walkthrough */
+.guardrail-check {
+  background: linear-gradient(135deg, var(--cream) 0%, var(--bg-white) 100%);
+  border: 1px solid var(--cream-dark);
+  border-radius: var(--radius);
+  padding: 18px 22px;
+  margin: 16px 0 20px;
+}
+.guardrail-check h5 {
+  font-size: 13px;
+  color: var(--navy);
+  margin-bottom: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: 700;
+}
+.guardrail-check .grow-row {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: 14px;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border-light);
+  font-size: 13px;
+}
+.guardrail-check .grow-row:last-child { border-bottom: none; }
+.guardrail-check .grow-formula {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+.guardrail-check .grow-value {
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 700;
+  font-size: 14px;
+}
+.guardrail-check .grow-pass { color: var(--green); }
+.guardrail-check .grow-fail { color: var(--red); }
+
+/* Glossary */
+.glossary dt {
+  font-weight: 700;
+  color: var(--navy);
+  margin-top: 12px;
+  font-size: 14px;
+}
+.glossary dt code {
+  font-size: 12px;
+  background: var(--bg-gray);
+  padding: 2px 6px;
+  border-radius: 3px;
+  margin-left: 6px;
+  color: var(--navy-mid);
+  font-weight: 500;
+}
+.glossary dd {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-left: 18px;
+  margin-top: 4px;
+}
+
+/* Print: show everything in linear order */
+@media print {
+  html, body { height: auto; overflow: visible; background: white; font-size: 11px; }
+  section { box-shadow: none; border: 1px solid var(--border); break-inside: avoid; }
+  .sidebar { display: none; }
+  .layout { display: block; height: auto; overflow: visible; }
+  .main-content { padding: 24px; height: auto; overflow: visible; }
+  .main-content > section { display: block !important; animation: none; margin-bottom: 24px; }
+  .section-nav { display: none; }
+  .use-case { break-inside: avoid; }
+}
+
+/* Tablet & small desktop: narrower sidebar */
+@media (max-width: 1180px) {
+  .sidebar { width: 270px; padding: 18px 12px; }
+  .main-content { padding: 28px 32px 60px; }
+  .toc a { font-size: 12px; padding: 8px 10px; }
+}
+
+/* Mobile: stacked layout, sidebar takes top with collapsible height */
+@media (max-width: 860px) {
+  html, body { overflow: auto; }
+  section { padding: 24px 20px; }
+  .layout { flex-direction: column; height: auto; overflow: visible; }
+  .sidebar {
+    width: 100%;
+    height: auto;
+    max-height: 50vh;
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+    box-shadow: 0 2px 12px rgba(15, 15, 61, 0.04);
+  }
+  .sidebar-brand { padding: 16px 18px; }
+  .sidebar-brand h1 { font-size: 18px; }
+  .main-content { height: auto; overflow: visible; padding: 24px 18px 40px; }
+  .toc-grid { gap: 1px; }
+  .toc a { font-size: 13px; padding: 8px 12px; }
+}
+</style>
+</head>
+<body>
+
+<!-- TWO-PANE LAYOUT: left sidebar (TOC) · right pane (content) -->
+<div class="layout">
+
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <h1>Commission Management</h1>
+      <div class="brand-subtitle">Ergos Continental · Backoffice v2.0</div>
+    </div>
+    <nav class="toc">
+      <h3>Table of Contents</h3>
+      <div class="toc-grid">
+        <a href="#mental-model"><span class="toc-num">1.</span><span>Mental Model — 5-layer inheritance</span></a>
+        <a href="#screen-policy"><span class="toc-num">2.</span><span>Screen: Commission Policy</span></a>
+        <a href="#screen-chains"><span class="toc-num">3.</span><span>Screen: Commission Chains</span></a>
+        <a href="#guardrails"><span class="toc-num">4.</span><span>Guardrails &amp; Save Flow</span></a>
+        <a href="#snapshot"><span class="toc-num">5.</span><span>Booking-time Snapshot</span></a>
+        <a href="#money-flow"><span class="toc-num">6.</span><span>Money Flow — Who Earns What</span></a>
+        <a href="#use-cases"><span class="toc-num">7.</span><span>Use Cases (10 examples)</span></a>
+        <a href="#formulas"><span class="toc-num">8.</span><span>Formulas Reference</span></a>
+        <a href="#worked-numbers"><span class="toc-num">9.</span><span>Worked Numbers &amp; Tier Evolution</span></a>
+        <a href="#glossary"><span class="toc-num">10.</span><span>Glossary</span></a>
+        <a href="#sales-agent-model"><span class="toc-num">11.</span><span>Sales-Agent Recruiting Model &amp; Unit Economics</span></a>
+      </div>
+    </nav>
+  </aside>
+
+  <main class="main-content">
+
+<!-- ============================================================ -->
+<!-- SECTION 1: MENTAL MODEL -->
+<!-- ============================================================ -->
+<section id="mental-model">
+  <h2>1. The Mental Model <span class="label">Start here</span></h2>
+
+  <p>The whole commission system is built on one idea: <strong>commission values cascade down 5 layers, and a more-specific layer can override a less-specific one.</strong></p>
+
+  <p>When the engine prices a booking for a given combination of <code>(hotel, agency, agent)</code>, it walks the layers in order. For each field, the most-specific value wins. The result is the <strong>effective commission</strong> used in the math.</p>
+
+  <div class="layer-stack">
+    <div class="layer-card l1">
+      <div class="layer-num">1</div>
+      <div class="layer-info">
+        <div class="layer-name">Global Defaults</div>
+        <div class="layer-desc">Platform-wide baseline that applies to every booking unless overridden below.</div>
+        <div class="layer-fields">baseCommission · chainDiscountPct · earningPercentage · operationalExpense</div>
+      </div>
+    </div>
+    <div class="layer-card l2">
+      <div class="layer-num">2</div>
+      <div class="layer-info">
+        <div class="layer-name">Hotel</div>
+        <div class="layer-desc">Per-hotel overrides for Ergos markup and chain discount.</div>
+        <div class="layer-fields">baseCommission · chainDiscountPct · chainId (link to chain)</div>
+      </div>
+    </div>
+    <div class="layer-card l3">
+      <div class="layer-num">3</div>
+      <div class="layer-info">
+        <div class="layer-name">Agency Rebate (per hotel)</div>
+        <div class="layer-desc">The rebate this agency gets from Ergos for bookings at this specific hotel.</div>
+        <div class="layer-fields">rebatePct</div>
+      </div>
+    </div>
+    <div class="layer-card l4">
+      <div class="layer-num">4</div>
+      <div class="layer-info">
+        <div class="layer-name">Agent Tier · read-only</div>
+        <div class="layer-desc">Tier defaults are policy constants in code (not editable from the UI). Each agent belongs to one tier: Starter / Growth / Elite / Strategic.</div>
+        <div class="layer-fields">earningRange · default earningPct · default opsExpense</div>
+      </div>
+    </div>
+    <div class="layer-card l5">
+      <div class="layer-num">5</div>
+      <div class="layer-info">
+        <div class="layer-name">Agent-Hotel Override</div>
+        <div class="layer-desc">A specific (agent, hotel) earning override that beats the tier default.</div>
+        <div class="layer-fields">earningPctOverride</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout callout-teal">
+    <strong>Why this design?</strong> Most bookings use the global or hotel-level defaults. Special cases (a strategic agency, a key agent's pet hotel) need surgical overrides without rewriting the whole policy. The cascade lets you set baseline policy once and tweak only the exceptions.
+  </div>
+
+  <div class="callout callout-warning">
+    <strong>Storage convention — WHOLE PERCENT integers (0–100).</strong>
+    Every commission / discount / rebate / markup field on the platform is stored, transported via API, and displayed as a whole-percent integer. <code>13</code> means 13%, <code>4</code> means 4%, <code>0</code> means none. The commission engine converts to decimal once internally via <code>pct(n) = n/100</code>. This includes the agency-side <code>defaultMarkupPct</code> on the TravelAgency model and its booking snapshot <code>agencyMarkupPctSnapshot</code> — even though those sit <em>outside</em> the commission engine's math, they follow the same integer convention for consistency across the codebase, the UI input controls, and the API contract.
+  </div>
+
+  <!-- ─────────────────────────────────────────────────────────── -->
+  <!-- WHO OWNS EACH VARIABLE — added to clear up the common      -->
+  <!-- confusion over earningPercentage. The 5 layers are policy  -->
+  <!-- locations; the fields inside each layer represent          -->
+  <!-- different parties' money.                                  -->
+  <!-- ─────────────────────────────────────────────────────────── -->
+  <h3 id="who-owns-what">Which party owns each variable?</h3>
+
+  <p>The 5 layers above are <em>policy locations</em>. The fields you edit inside those layers each represent <strong>a different party's money</strong>. The most common confusion is over <code>earningPercentage</code> — it is the <strong>sales agent's cut</strong>, not Ergos's and not the agency's.</p>
+
+  <div class="callout callout-gold">
+    <strong>Quick mental map:</strong>
+    <ul style="margin-top: 8px;">
+      <li><strong>Ergos earns</strong> via <code>baseCommission</code> (the markup that creates <code>ergosGross</code>).</li>
+      <li><strong>The travel agency earns</strong> via <code>rebatePct</code> (cashback from Ergos) <em>and</em> via its own customer-facing markup (captured separately in the agency app).</li>
+      <li><strong>The sales agent earns</strong> via <code>earningPercentage</code> — the agent's share <em>of Ergos's gross margin</em>, not of sell price.</li>
+    </ul>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Field</th>
+        <th>Stored on</th>
+        <th>Whose money?</th>
+        <th>Meaning</th>
+        <th>Unit / range</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="mono">baseCommission</td>
+        <td>Hotel · CommissionDefaults</td>
+        <td><strong style="color: var(--navy);">Ergos</strong></td>
+        <td>Markup applied on top of the GDS's adjusted cost. Drives <code>ergosSell&nbsp;=&nbsp;adjustedCost × (1 + baseCommission/100)</code>. Higher → Ergos earns more.</td>
+        <td class="mono">0–100 integer (13 = 13%)</td>
+      </tr>
+      <tr>
+        <td class="mono">chainDiscountPct</td>
+        <td>Hotel · Chain · CommissionDefaults</td>
+        <td>GDS (cost-side)</td>
+        <td>Negotiated chain discount as a percentage off GDS net. <code>15</code> = 15% off cost. Higher → better margin for Ergos. Default <code>0</code> means no discount. Schema validators on the Hotel model enforce <code>min: 0, max: 100</code>.</td>
+        <td class="mono">0–100 integer (15 = 15% off)</td>
+      </tr>
+      <tr>
+        <td class="mono">rebatePct</td>
+        <td>per (Agency, Hotel)</td>
+        <td><strong style="color: var(--teal);">Travel agency</strong></td>
+        <td>Cashback paid to the agency, taken off <code>ergosSell</code>. <code>4</code> = 4% rebate. In-house Ergos agency uses <code>0</code>. Stored in the <code>travel_agency_commission</code> collection as <code>commissionPercentage</code>; surfaced via API/UI as <code>rebatePct</code>.</td>
+        <td class="mono">0–100 integer (4 = 4%)</td>
+      </tr>
+      <tr>
+        <td class="mono"><strong>earningPercentage</strong></td>
+        <td>SalesAgent · CommissionDefaults</td>
+        <td><strong style="color: var(--gold);">Sales agent</strong></td>
+        <td><strong>Agent's slice of Ergos's GROSS margin</strong> — NOT of sell, NOT Ergos's net, NOT the agency's. <code>24</code> = the agent keeps 24% of <code>ergosGross</code>. Default per tier; per-(agent, hotel) overrides win. Per-agent-hotel overrides are stored in <code>sales_agent_commission</code> as <code>commissionPercentage</code>; surfaced via API/UI as <code>earningPctOverride</code>.</td>
+        <td class="mono">0–100 integer (capped at 32 by guardrail)</td>
+      </tr>
+      <tr>
+        <td class="mono">operationalExpense</td>
+        <td>SalesAgent · CommissionDefaults</td>
+        <td>Agent's overhead</td>
+        <td>Agent's operational expense modeled as a percentage of Ergos gross (back-office cost, dispute handling, ramp cost). Deducted alongside agent earning.</td>
+        <td class="mono">0–100 integer</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="callout callout-info">
+    Older API surfaces use the alias <code>commissionPercentage</code> on the TravelAgency model and on the legacy sales-agent endpoint. These are <em>aliases of the same concepts</em>; the canonical names used end-to-end by the commission engine and stored on every booking snapshot are the ones in the table above.
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SECTION 2: COMMISSION POLICY SCREEN -->
+<!-- ============================================================ -->
+<section id="screen-policy">
+  <h2>2. Screen: Commission Policy <span class="label">/commission-policy</span></h2>
+
+  <p>This is the main workspace where admins view and edit the 5-layer policy for any scope (a specific hotel, agency, or agent). It uses a <strong>3-panel layout</strong>: pick the scope on the left, see the layers in the center, see the math on the right.</p>
+
+  <figure class="screenshot">
+    <div class="screenshot-frame">
+      <img src="commission-screenshots/01-commission-policy-full.png"
+           alt="Commission Policy page — full 3-panel layout with left scope rail, center 5 layer cards, and right simulate panel"
+           loading="lazy"
+           onerror="this.style.display='none'" />
+    </div>
+    <figcaption>Commission Policy page in production · drop screenshot at <span class="file">commission-screenshots/01-commission-policy-full.png</span></figcaption>
+  </figure>
+
+  <details class="wireframe-fallback">
+    <summary>View wireframe (text-art version)</summary>
+    <div class="screen-mock">┌────────────────┬───────────────────────────────┬─────────────────┐
+│  LEFT RAIL     │  CENTER PANEL                 │  RIGHT RAIL     │
+│  scope         │  inheritance stack            │  live margin    │
+│  selector      │  & editor                     │  preview        │
+├────────────────┼───────────────────────────────┼─────────────────┤
+│ [Hotels]       │  Breadcrumb: Global › Meliá   │ ─ Simulate ─    │
+│ [Agencies]     │                               │ GDS net    │
+│ [Agents]       │  ┌─ 1. Global Defaults ──┐    │ [ $200    ]     │
+│                │  │  baseCommission 8%    │    │                 │
+│ Country: ▾     │  │  chainDiscountPct 0    │    │ Margin: 5.6%    │
+│ [Search...  ]  │  └───────────────────────┘    │                 │
+│                │                               │ Waterfall:      │
+│ ★ Global       │  ┌─ 2. Hotel: Meliá ────┐    │ GDS  $200  │
+│ ─────────      │  │  Chain: [Meliá ▾]    │    │ × (1−15/100)    │
+│ • Meliá BCN    │  │  baseCommission 13   │    │ = Cost    $170  │
+│ • Riu Cancún   │  │  chainDiscountPct 15 │    │ × (1+13/100)    │
+│ • NH Madrid    │  └───────────────────────┘    │ = Sell    $192  │
+│ ... virtual    │                               │                 │
+│                │  ┌─ 3. Agency Rebate ───┐    │ Guardrails:     │
+│                │  │  rebatePct 4         │    │ ✓ minNet  5.1%  │
+│                │  └───────────────────────┘    │ ✓ agentCap 26%  │
+│                │                               │ ⚠ ergosShare    │
+│                │  ┌─ 4. Elite tier 🔒 ──┐     │   48% < 50%     │
+│                │  │  range 21–26%        │    │                 │
+│                │  │  defaults: 24% / 6%  │    │ ─ Audit ─       │
+│                │  └───────────────────────┘    │ Latest 50       │
+│                │                               │ entries inline  │
+│                │  ┌─ 5. Agent-Hotel ─────┐    │                 │
+│                │  │  earningPctOverride 26│   │                 │
+│                │  └───────────────────────┘    │                 │
+│                │                               │                 │
+│                │  ▼ Effective Configuration ▼  │                 │
+└────────────────┴───────────────────────────────┴─────────────────┘
+            [Audit Trail]  [Bulk Edit]  ← header actions</div>
+  </details>
+
+  <p style="font-size: 12px; color: var(--text-secondary); margin-top: -4px;">Additional screenshots referenced below: <span class="mono">02-hotel-layer-card.png</span>, <span class="mono">03-tier-layer-locked.png</span>, <span class="mono">04-simulate-panel.png</span>.</p>
+
+  <h3>Left rail — what you're looking at</h3>
+  <ul>
+    <li><strong>Three scope tabs:</strong> Hotels / Agencies / Agents. Pick the entity you want to view or edit.</li>
+    <li><strong>Country dropdown + search box</strong> drive <em>server-side</em> filtering of the hotel list. Type 3+ chars in the search box — after 300ms idle, the server returns matching hotels. The country filter is exact-match.</li>
+    <li><strong>Virtualized list:</strong> scales to thousands of items. Only ~12 rows live in the DOM at any moment, even when the filtered total is 12,000+.</li>
+    <li><strong>★ Global pinned button</strong> at the top — shows the global defaults view.</li>
+  </ul>
+
+  <h3>Center panel — the 5 editable layers</h3>
+  <ul>
+    <li>Each card is a <strong>layer</strong>, connected by a dotted line (visual metaphor for the cascade).</li>
+    <li>Cards show an <strong>Inherited</strong> badge (grey) when no override is active, or <strong>Overridden</strong> (gold) when one is.</li>
+    <li>The <strong>Hotel layer</strong> has a special <strong>Chain dropdown</strong> that links the hotel to a chain in the registry.</li>
+    <li>The <strong>Tier card (Layer 4) is read-only</strong> with a 🔒 "Policy constant" badge — tier defaults live in code (<code>TIER_DEFAULTS</code> constant), not in the database.</li>
+    <li>Below the 5 cards: a dark blue <strong>Effective Configuration</strong> summary card showing the final resolved values.</li>
+  </ul>
+
+  <figure class="screenshot">
+    <div class="screenshot-frame">
+      <img src="commission-screenshots/02-hotel-layer-card.png"
+           alt="Hotel layer card up close — showing chainId dropdown, baseCommission input, chainDiscountPct input, and Overridden badge"
+           loading="lazy"
+           onerror="this.style.display='none'" />
+    </div>
+    <figcaption>Hotel layer card (Layer 2) · drop screenshot at <span class="file">commission-screenshots/02-hotel-layer-card.png</span></figcaption>
+  </figure>
+
+  <figure class="screenshot">
+    <div class="screenshot-frame">
+      <img src="commission-screenshots/03-tier-layer-locked.png"
+           alt="Tier layer card (Layer 4) read-only with lock badge — showing earningRange and default ops for the selected tier"
+           loading="lazy"
+           onerror="this.style.display='none'" />
+    </div>
+    <figcaption>Tier layer card — read-only, sourced from <code>TIER_DEFAULTS</code> · drop screenshot at <span class="file">commission-screenshots/03-tier-layer-locked.png</span></figcaption>
+  </figure>
+
+  <h3>Right rail — what the math says</h3>
+  <ul>
+    <li><strong>Simulate tab:</strong> type a GDS net price → see the full waterfall (GDS net → adjusted cost → Ergos sell → Ergos gross → Ergos net), plus 3 traffic-light guardrail indicators.</li>
+    <li><strong>Audit tab:</strong> inline quick-view of the latest 50 entries for the currently-selected scope.</li>
+  </ul>
+
+  <figure class="screenshot">
+    <div class="screenshot-frame">
+      <img src="commission-screenshots/04-simulate-panel.png"
+           alt="Right rail Simulate panel — GDS net input, full waterfall breakdown, and the three guardrail traffic lights"
+           loading="lazy"
+           onerror="this.style.display='none'" />
+    </div>
+    <figcaption>Right-rail Simulate panel with live waterfall and guardrails · drop screenshot at <span class="file">commission-screenshots/04-simulate-panel.png</span></figcaption>
+  </figure>
+
+  <h3>Header actions (top right)</h3>
+  <ul>
+    <li><strong>Audit Trail</strong> button — opens a full-page drawer with date / scope / admin filters and pagination.</li>
+    <li><strong>Bulk Edit</strong> button — opens a drawer to update many hotels at once with preview + typed-confirm.</li>
+  </ul>
+
+  <figure class="screenshot">
+    <div class="screenshot-frame">
+      <img src="commission-screenshots/08-bulk-edit-drawer.png"
+           alt="Bulk Edit drawer — filter form for stars/vendor/chain, diff preview table of affected hotels, typed-confirm input"
+           loading="lazy"
+           onerror="this.style.display='none'" />
+    </div>
+    <figcaption>Bulk Edit drawer · drop screenshot at <span class="file">commission-screenshots/08-bulk-edit-drawer.png</span></figcaption>
+  </figure>
+
+  <figure class="screenshot">
+    <div class="screenshot-frame">
+      <img src="commission-screenshots/09-audit-drawer.png"
+           alt="Full Audit Trail drawer — date/scope/admin filters at top, paginated list of audit entries below"
+           loading="lazy"
+           onerror="this.style.display='none'" />
+    </div>
+    <figcaption>Audit Trail drawer · drop screenshot at <span class="file">commission-screenshots/09-audit-drawer.png</span></figcaption>
+  </figure>
+</section>
+
+<!-- ============================================================ -->
+<!-- SECTION 3: CHAINS SCREEN -->
+<!-- ============================================================ -->
+<section id="screen-chains">
+  <h2>3. Screen: Commission Chains <span class="label">/commission-chains</span></h2>
+
+  <p>This screen manages the <strong>chain registry</strong>. A chain represents a contractual relationship with a hotel chain (Meliá, Iberostar, etc.) — including any negotiated discount, contract status, and dates.</p>
+
+  <div class="callout callout-info">
+    <strong>Why are chains separate from the policy editor?</strong> A chain is <em>metadata about a contract</em> (status, dates, notes) — not commission policy directly. The chain doesn't auto-cascade to hotels. Instead, admins create the chain once, link hotels, and then <strong>explicitly apply</strong> the discount when ready. This keeps audit clean and avoids surprise mass updates.
+  </div>
+
+  <figure class="screenshot">
+    <div class="screenshot-frame">
+      <img src="commission-screenshots/06-commission-chains-grid.png"
+           alt="Commission Chains page — grid of chain cards with status badges, chain discount, and linked hotel counts"
+           loading="lazy"
+           onerror="this.style.display='none'" />
+    </div>
+    <figcaption>Commission Chains page · drop screenshot at <span class="file">commission-screenshots/06-commission-chains-grid.png</span></figcaption>
+  </figure>
+
+  <details class="wireframe-fallback">
+    <summary>View wireframe (text-art version)</summary>
+    <div class="screen-mock">┌──────────────────────────────────────────────────────────────┐
+│  Commission Chains                          [+ Add Chain]    │
+│  Manage hotel chains and their negotiated discounts.         │
+├──────────────────────────────────────────────────────────────┤
+│  ┌──────────────────┐  ┌──────────────────┐                  │
+│  │ Meliá            │  │ Domina           │                  │
+│  │ MELIA   [Pending]│  │ DOMINA  [Signed] │                  │
+│  ├──────────────────┤  ├──────────────────┤                  │
+│  │ Discount 15% off │  │ Discount 20% off │                  │
+│  │ Linked: 12 hotel │  │ Linked: 8 hotel  │                  │
+│  ├──────────────────┤  ├──────────────────┤                  │
+│  │ [Edit] [Manage   │  │ [Edit] [Manage   │                  │
+│  │   Hotels] [⚡    │  │   Hotels] [⚡    │                  │
+│  │   Apply] [🗑]    │  │   Apply] [🗑]    │                  │
+│  └──────────────────┘  └──────────────────┘                  │
+└──────────────────────────────────────────────────────────────┘</div>
+  </details>
+
+  <h3 id="seeded-chains">The 5 chains currently seeded</h3>
+
+  <p>From <code>backend-service/src/scripts/seed-commission-chains.ts</code>. Auto-link matching uses two signals: <code>matchPatterns</code> (case-insensitive substring on <code>hotel.name</code>) and <code>applicableVendors</code> (matches against <code>hotel.vendor</code> — the sub-vendor code the catalog sync recorded). When <code>matchPatterns</code> is empty, the chain is vendor-only — every hotel returned by that sub-vendor feed is considered a member.</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Chain</th>
+        <th>Code</th>
+        <th>chainDiscountPct</th>
+        <th>contractStatus</th>
+        <th>GDS / sub-vendor</th>
+        <th>matchPatterns</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Domina</strong></td>
+        <td class="mono">DOMINA</td>
+        <td class="mono">20</td>
+        <td class="mono">signed</td>
+        <td>Hotetec / <code>DOMI</code></td>
+        <td>(none — vendor-only)</td>
+      </tr>
+      <tr>
+        <td><strong>Meliá</strong></td>
+        <td class="mono">MELIA</td>
+        <td class="mono">15</td>
+        <td class="mono">pending</td>
+        <td>Dingus / <code>melia</code></td>
+        <td>meliá, melia, paradisus, sol by meliá, innside by meliá, gran meliá</td>
+      </tr>
+      <tr>
+        <td><strong>Iberostar</strong></td>
+        <td class="mono">IBEROSTAR</td>
+        <td class="mono">18</td>
+        <td class="mono">pending</td>
+        <td>Dingus / <code>iberostar</code></td>
+        <td>iberostar</td>
+      </tr>
+      <tr>
+        <td><strong>Gran Caribe</strong></td>
+        <td class="mono">GRANCARIBE</td>
+        <td class="mono">20</td>
+        <td class="mono">signed</td>
+        <td>Hotetec / <code>GHGC</code></td>
+        <td>(none — vendor-only)</td>
+      </tr>
+      <tr>
+        <td><strong>HTL Gaviota</strong></td>
+        <td class="mono">GAVIOTA</td>
+        <td class="mono">20</td>
+        <td class="mono">signed</td>
+        <td>Hotetec / <code>GAVI</code></td>
+        <td>(none — vendor-only)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="callout callout-info">
+    <strong>Sub-vendor model.</strong> Dingus and Hotetec each return a <code>vendor</code> code per hotel that names the sub-feed (e.g. <code>melia</code> for the Meliá feed, <code>DOMI</code> for the Domina feed). A chain's <code>applicableVendors</code> array gates whether the chain discount applies to a candidate hotel even if its name matches. For chains where the entire sub-feed is by definition that chain (Cuban national chains, Domina), <code>matchPatterns</code> is empty — vendor membership alone qualifies.
+  </div>
+
+  <h3>Each chain card has 4 actions</h3>
+
+  <h4>1. Edit Chain</h4>
+  <p>Opens a form to change name, code, hasDiscount flag, chainDiscountPct, contract status (signed/pending/expired), effective/expiry dates, and notes.</p>
+
+  <h4>2. Manage Hotels — the LinkedHotelsDialog</h4>
+  <p>The most useful action for chains with many hotels. Opens a side-drawer with two stacked sections:</p>
+
+  <div class="screen-mock">┌─────────────────────────────────────┐
+│ Manage hotels for Meliá             │
+├─────────────────────────────────────┤
+│ Reason: [optional audit reason___]  │
+│                                     │
+│ Currently linked (12)               │
+│ ┌───────────────────────────────┐  │
+│ │ Meliá Barcelona       [Unlink]│  │
+│ │ Meliá Madrid          [Unlink]│  │
+│ │ ...                           │  │
+│ └───────────────────────────────┘  │
+│                                     │
+│ Add hotels                          │
+│ [search...] [Spain__]               │
+│ ┌───────────────────────────────┐  │
+│ │ ☐ Meliá Sevilla               │  │
+│ │ ☐ Gran Meliá Roma             │  │
+│ │ ✓ Meliá Tenerife   [Selected] │  │
+│ └───────────────────────────────┘  │
+│                                     │
+│ [Close]            [Link 1 hotel(s)]│
+└─────────────────────────────────────┘</div>
+
+  <ul>
+    <li><strong>Top section:</strong> hotels currently linked, with per-row Unlink button.</li>
+    <li><strong>Bottom section:</strong> server-side hotel search (debounced 300ms) + country filter. Multi-select hotels to bulk-link.</li>
+    <li><strong>Already-linked hotels are greyed out</strong> in the search results so you don't try to link them again.</li>
+    <li><strong>Every link/unlink writes a per-hotel audit entry</strong> — the chain field, old/new value, and your reason text.</li>
+  </ul>
+
+  <figure class="screenshot">
+    <div class="screenshot-frame">
+      <img src="commission-screenshots/07-linked-hotels-dialog.png"
+           alt="LinkedHotelsDialog open for the Meliá chain — top section lists currently-linked hotels with Unlink button, bottom section provides server-side search + country filter to add more"
+           loading="lazy"
+           onerror="this.style.display='none'" />
+    </div>
+    <figcaption>LinkedHotelsDialog · drop screenshot at <span class="file">commission-screenshots/07-linked-hotels-dialog.png</span></figcaption>
+  </figure>
+
+  <h4>3. Apply discount to linked hotels</h4>
+  <p>Only visible when the chain has a discount AND there are linked hotels. This is the <strong>chain → hotel cascade</strong>, made explicit. Clicking it:</p>
+  <ol>
+    <li>Asks for confirmation: "Apply 15% off to N hotel(s)?"</li>
+    <li>Lets you add a reason text</li>
+    <li>On confirm, writes each linked hotel's <code>chainDiscountPct</code> to the chain's value</li>
+    <li>Creates one audit entry per affected hotel (not one bulk entry — per-hotel granularity)</li>
+  </ol>
+  <div class="callout callout-warning">
+    <strong>Important:</strong> "Apply" is explicit, not automatic. If you change the chain's chainDiscountPct, linked hotels are NOT auto-updated. You have to click Apply. This is deliberate — it prevents silent mass changes and keeps each hotel's audit history intact.
+  </div>
+
+  <h4>4. Delete Chain</h4>
+  <p>Only allowed if 0 hotels are linked. Otherwise blocked with a clear message: "Cannot delete — N hotel(s) still linked. Unlink them first."</p>
+</section>
+
+<!-- ============================================================ -->
+<!-- SECTION 4: GUARDRAILS & SAVE FLOW -->
+<!-- ============================================================ -->
+<section id="guardrails">
+  <h2>4. Guardrails &amp; Save Flow <span class="label">SaveConfirmModal</span></h2>
+
+  <p>The system enforces 3 financial invariants on every commission policy change. These are evaluated <strong>after</strong> the edits would take effect, so admins see the consequences before committing.</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Guardrail</th>
+        <th>Rule</th>
+        <th>Default</th>
+        <th>Severity</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Min Ergos net</strong></td>
+        <td>Ergos net ÷ Ergos sell ≥ threshold</td>
+        <td class="mono">≥ 5.0%</td>
+        <td><strong style="color: var(--red);">Hard block</strong></td>
+      </tr>
+      <tr>
+        <td><strong>Max agent share</strong></td>
+        <td>Agent earning ÷ Ergos gross ≤ threshold</td>
+        <td class="mono">≤ 32.0%</td>
+        <td><strong style="color: var(--amber);">Soft (reason required)</strong></td>
+      </tr>
+      <tr>
+        <td><strong>Min Ergos share</strong></td>
+        <td>Ergos net ÷ Ergos gross ≥ threshold</td>
+        <td class="mono">≥ 50.0%</td>
+        <td><strong style="color: var(--amber);">Soft (reason required)</strong></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- ─────────────────────────────────────────────────────────── -->
+  <!-- SAFE CEILINGS — derived from the 5% Ergos net floor.       -->
+  <!-- Answers: "how high can I set each variable before Ergos    -->
+  <!-- stops earning money?"                                      -->
+  <!-- ─────────────────────────────────────────────────────────── -->
+  <h3 id="safe-ceilings">Safe ceiling values — how high can each variable go?</h3>
+
+  <p>The guardrail table above defines the floor for Ergos's profitability (<code>ergosNetPct ≥ 5%</code>). That floor implicitly creates a <strong>ceiling on each commission variable</strong>: set any one too high (or, for <code>chainDiscountPct</code>, too high relative to the cost basis) and Ergos drops below the floor — the SaveConfirmModal then hard-blocks the change.</p>
+
+  <p>The ceilings below are <strong>derived from that floor</strong>, holding the other variables at their defaults. Tighten one knob and the ceilings on the others shrink; relax it and they widen.</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Variable</th>
+        <th>Soft target<br><span style="font-weight: 400; text-transform: none;">typical operating value</span></th>
+        <th>Hard ceiling<br><span style="font-weight: 400; text-transform: none;">above this, floor breaks</span></th>
+        <th>Schema cap<br><span style="font-weight: 400; text-transform: none;">validator max</span></th>
+        <th>What sets the ceiling</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="mono">baseCommission</td>
+        <td class="mono">8–15%</td>
+        <td class="mono">no upper floor risk</td>
+        <td class="mono">100%</td>
+        <td>Higher → Ergos earns more, so there is no profitability ceiling. Limited by market acceptance (above ~25% the agency/customer pushes back) and by GDS contracts.</td>
+      </tr>
+      <tr>
+        <td class="mono">chainDiscountPct</td>
+        <td class="mono">10–20 (10–20% off)</td>
+        <td class="mono">~50 (50% off — extreme)</td>
+        <td class="mono">100 (100% off)</td>
+        <td>Whole-percent discount — <code>0</code> means no discount, <code>15</code> means 15% off GDS net. Hotel schema validator caps at 100, but real chain deals top out around 20.</td>
+      </tr>
+      <tr>
+        <td class="mono">rebatePct</td>
+        <td class="mono">0–4%</td>
+        <td class="mono">~5%</td>
+        <td class="mono">100%</td>
+        <td>Erodes Ergos net 1:1. Higher rebate requires higher <code>baseCommission</code> to compensate. With <code>baseCommission = 13</code>, rebate above ~4.4% breaks the 5% floor (worked example below).</td>
+      </tr>
+      <tr>
+        <td class="mono"><strong>earningPercentage</strong></td>
+        <td class="mono">12–24% (tier defaults)</td>
+        <td class="mono"><strong>32% (hard cap)</strong></td>
+        <td class="mono">100%</td>
+        <td>Hard-capped by the <code>maxAgentPctOfGross&nbsp;=&nbsp;32</code> guardrail (from <code>DEFAULT_GUARDRAILS</code> in <code>commission-engine.ts</code>). No agent — at any tier, with any per-(agent, hotel) override — can keep more than 32% of Ergos gross.</td>
+      </tr>
+      <tr>
+        <td class="mono">operationalExpense</td>
+        <td class="mono">5–8%</td>
+        <td class="mono">~10%</td>
+        <td class="mono">100%</td>
+        <td>Stacks with <code>earningPercentage</code>. At max agent earning (32%) plus ops &gt; 18%, Ergos's gross is consumed before any net remains.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h4>Worked example: deriving the <code>rebatePct</code> ceiling</h4>
+
+  <p>Fix the other variables at their typical values. Stored values (whole percent): <code>baseCommission&nbsp;=&nbsp;13</code>, <code>chainDiscountPct&nbsp;=&nbsp;0</code>, <code>earningPct&nbsp;=&nbsp;24</code> (Elite default), <code>opsExpense&nbsp;=&nbsp;6</code>. The engine converts via <code>pct(n)&nbsp;=&nbsp;n/100</code>, so below we work in decimal form: <code>0.13</code>, <code>0</code>, <code>0.24</code>, <code>0.06</code>. Normalize <code>gdsNet&nbsp;=&nbsp;100</code> and let <code>r</code> be the unknown rebate fraction.</p>
+
+  <div class="formula"><span class="comment">// Walk the formula in commission-engine.ts</span>
+adjustedCost    = 100 × 1.0              = 100
+ergosSell       = 100 × 1.13             = 113
+agencyEffective = 113 × (1 − r)
+ergosGross      = 113(1 − r) − 100
+ergosNet        = ergosGross × (1 − 0.24 − 0.06)
+                = ergosGross × 0.70
+
+<span class="comment">// Apply the 5% floor: ergosNet ≥ 0.05 × ergosSell</span>
+0.70 × [113(1 − r) − 100] ≥ 0.05 × 113
+113(1 − r) − 100           ≥ 8.07
+113(1 − r)                 ≥ 108.07
+1 − r                      ≥ 0.9564
+<strong>r ≤ 4.4%</strong>           <span class="comment">// the ceiling for rebatePct</span></div>
+
+  <p>Set rebate at 4% → ergosNetPct lands at 5.25%, just above the floor. Set it at 5% → ergosNetPct drops to 4.55%, the modal hard-blocks. The right rail's <strong>Simulate panel</strong> runs the same calculation live as you edit, and the SaveConfirmModal re-runs it before commit, so the math above matches what the UI tells you in real time.</p>
+
+  <div class="callout callout-teal">
+    <strong>Practical order for setting policy:</strong>
+    <ol style="margin-top: 8px;">
+      <li>Pick <code>baseCommission</code> first — this lever creates the gross margin out of which everything else is paid.</li>
+      <li>Negotiate <code>rebatePct</code> with each agency, staying within the ceiling that <code>baseCommission</code> permits.</li>
+      <li>Then tier agents (or set per-(agent, hotel) overrides) within the 32% hard cap.</li>
+    </ol>
+    Doing this in reverse — promising high agent earnings or large agency rebates before the markup is set — almost always trips the hard floor.
+  </div>
+
+  <h3>When you click "Review and Save"</h3>
+
+  <p>The SaveConfirmModal opens and shows you:</p>
+  <ol>
+    <li><strong>Proposed changes</strong> — a table of every field that will change, scoped by entity.</li>
+    <li><strong>Post-edit guardrail status</strong> — runs the math with the new values and shows whether each guardrail passes.</li>
+    <li><strong>Reason textarea</strong> — appears (and is required) only when a soft guardrail is breached.</li>
+  </ol>
+
+  <h3>Three possible outcomes</h3>
+
+  <figure class="screenshot">
+    <div class="screenshot-frame">
+      <img src="commission-screenshots/05-save-confirm-modal.png"
+           alt="SaveConfirmModal — diff table of proposed changes on top, post-edit guardrail status indicators, and reason textarea when a soft guardrail is breached"
+           loading="lazy"
+           onerror="this.style.display='none'" />
+    </div>
+    <figcaption>SaveConfirmModal · drop screenshot at <span class="file">commission-screenshots/05-save-confirm-modal.png</span></figcaption>
+  </figure>
+
+  <div class="callout callout-success">
+    <strong>✓ Green (all guardrails pass)</strong> — Normal "Confirm Save" button. Save proceeds and each layer write produces an audit entry.
+  </div>
+
+  <div class="callout callout-warning">
+    <strong>⚠ Amber (soft guardrail breach)</strong> — Reason textarea (min 10 chars) becomes required. Button label changes to "Confirm with reason". On save, the reason is stored on every audit entry from this change.
+  </div>
+
+  <div class="callout callout-danger">
+    <strong>✗ Red (Ergos net &lt; 5% — hard floor)</strong> — No save button at all. Only "Cancel" and a "Cannot proceed" badge. The admin literally cannot save this configuration. They have to adjust values until the floor is respected.
+  </div>
+
+  <h3>Centralized audit</h3>
+  <p>On confirm, the page POSTs each layer's changes to a <strong>single centralized endpoint</strong> (<code>PATCH /admin/commission-policy/layer/{scope}/{scopeId}</code>) which writes the change AND an audit entry atomically. This closes the compliance hole where, previously, non-global edits silently bypassed audit.</p>
+</section>
+
+<!-- ============================================================ -->
+<!-- SECTION 5: BOOKING-TIME SNAPSHOT -->
+<!-- ============================================================ -->
+<section id="snapshot">
+  <h2>5. Booking-time Snapshot <span class="label">Compliance + dispute resolution</span></h2>
+
+  <p>Every booking — single-room or multi-room — stores a <strong>frozen copy of the resolved commission policy</strong> at the moment of booking. This guarantees that if the policy changes later, the booking's original terms are still recoverable.</p>
+
+  <h3>What's stored on each booking</h3>
+  <div class="formula"><span class="comment">// On every booking document (booking.model.ts):</span>
+commissionSnapshot: {
+  baseCommission: <span class="num">8</span>,        <span class="comment">// whole percent (8 = 8%) — Ergos markup at booking time</span>
+  chainDiscountPct: <span class="num">15</span>,     <span class="comment">// whole percent (15 = 15% off GDS net)</span>
+  rebatePct: <span class="num">4</span>,            <span class="comment">// whole percent (4 = 4% rebate)</span>
+  earningPct: <span class="num">26</span>,          <span class="comment">// whole percent (26 = 26% of gross)</span>
+  opsExpense: <span class="num">6</span>,           <span class="comment">// whole percent (6 = 6% of gross)</span>
+  resolvedAt: ISODate(<span class="num">'2026-03-15T14:22Z'</span>),
+}
+
+<span class="comment">// Stored on the SAME booking doc but OUTSIDE commissionSnapshot —</span>
+<span class="comment">// these capture the agency-side markup. Same whole-percent integer convention:</span>
+agencyCustomerPrice: <span class="num">220.92</span>,        <span class="comment">// dollars — what the agency charged the end customer</span>
+agencyMarkupPctSnapshot: <span class="num">15</span>,        <span class="comment">// whole percent (15 = 15%) — agency's markup % at booking time</span></div>
+
+  <div class="callout callout-info">
+    <strong>One consistent convention across the platform.</strong> All percentage fields — the 5 inside <code>commissionSnapshot</code> (driven by the commission engine) and the agency-side <code>agencyMarkupPctSnapshot</code> stored alongside it — are whole-percent integers. <code>15</code> means 15%, not <code>0.15</code>. The agency markup lives outside the commission engine's math (it doesn't affect any guardrail or payout calculation), but the storage format, validation rules, API contract, and input controls all follow the same integer pattern as every other percent field. The freeze logic in <code>booking.service.ts</code> writes the two snapshot blocks independently — one can succeed while the other fails (e.g. an agency without a configured <code>defaultMarkupPct</code>) — but their formats now match.
+  </div>
+
+  <h3>Where it's visible</h3>
+  <p>On the <strong>backoffice booking detail page</strong> (<code>/reservations/:id</code>), a "Commission Snapshot" card appears below the price distribution table. It shows the 5 percentages, a "Frozen at booking time" badge, and the resolution timestamp.</p>
+
+  <p>On the <strong>agency app</strong> (<code>agency-app</code>) <code>/bookings/:id</code> page, a "Your Earnings (P&amp;L)" card shows the agency's view: Ergos cost, customer paid, markup income (<code>customerPrice − ergosSell</code>), rebate income (<code>ergosSell × rebatePct/100</code>), and total profit — all computed from the same snapshot. There is also an aggregate <strong>Agency P&amp;L</strong> page at <code>/pnl</code> (route <code>GENERAL_ROUTES.pnl</code>) listing per-booking earnings over a date range.</p>
+
+  <div class="callout callout-info">
+    <strong>The key insight:</strong> if you change the global policy after a booking, the booking's snapshot stays unchanged. The Commission Snapshot card always shows what was agreed at <em>that</em> booking's quote time, regardless of how policy has evolved since.
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SECTION 6: MONEY FLOW — WHO EARNS WHAT -->
+<!-- ============================================================ -->
+<section id="money-flow">
+  <h2>6. Money Flow — Who Earns What <span class="label">All 4 parties</span></h2>
+
+  <p>Sections 1-5 explained how Ergos prices a booking and protects its margins. But every booking involves <strong>4 parties</strong> — the hotel, Ergos, the travel agency, and the sales agent — and each one makes money differently. This section makes the full money flow explicit, including the recently-shipped <strong>agency markup feature</strong> that lets the platform capture and report the agency's customer-facing price.</p>
+
+  <div class="callout callout-info">
+    <strong>Two different "layer" concepts live in this system — don't confuse them:</strong>
+    <ul style="margin-top: 8px;">
+      <li><strong>5-layer commission policy</strong> (Section 1) — how Ergos's INTERNAL policy is structured: Global → Hotel → Agency → Tier → Agent-Hotel Override</li>
+      <li><strong>4-layer pricing chain</strong> (this section) — how money flows from end customer back through to the hotel: GDS Net → Adjusted Cost → Ergos Sell → Agency Sell</li>
+    </ul>
+    They're complementary, not conflicting. The 5-layer policy DRIVES the pricing chain.
+  </div>
+
+  <h3>The 4-layer pricing chain</h3>
+
+  <p>Every booking's price is shaped by four sequential stages. Each stage transforms the price one step further down the chain:</p>
+
+  <div class="pricing-chain">
+    <div class="pc-stage l0">
+      <div class="pc-label">Layer 0</div>
+      <div class="pc-name">GDS Net</div>
+      <div class="pc-value">$200.00</div>
+      <div class="pc-formula">hotel's rate via GDS</div>
+    </div>
+    <div class="pc-arrow">→</div>
+    <div class="pc-stage l1">
+      <div class="pc-label">Layer 1</div>
+      <div class="pc-name">Adjusted Cost</div>
+      <div class="pc-value">$170.00</div>
+      <div class="pc-formula">× (1 − 15/100) = 15% chain discount</div>
+    </div>
+    <div class="pc-arrow">→</div>
+    <div class="pc-stage l2">
+      <div class="pc-label">Layer 2</div>
+      <div class="pc-name">Ergos Sell</div>
+      <div class="pc-value">$192.10</div>
+      <div class="pc-formula">× 1.13 Ergos markup</div>
+    </div>
+    <div class="pc-arrow">→</div>
+    <div class="pc-stage l3">
+      <div class="pc-label">Layer 3</div>
+      <div class="pc-name">Agency Sell</div>
+      <div class="pc-value">$220.92</div>
+      <div class="pc-formula">× 1.15 agency markup</div>
+    </div>
+  </div>
+
+  <div class="callout callout-teal">
+    <strong>Each layer is owned by a different party:</strong>
+    <ul style="margin-top: 8px;">
+      <li><strong>Layer 0 — GDS Net</strong>: the hotel sets this rate</li>
+      <li><strong>Layer 1 — Adjusted Cost</strong>: Ergos's chain discount lowers the cost basis</li>
+      <li><strong>Layer 2 — Ergos Sell</strong>: Ergos's markup determines what the agency pays</li>
+      <li><strong>Layer 3 — Agency Sell</strong>: the agency's own markup determines what the customer pays — this is the agency's primary revenue lever</li>
+    </ul>
+  </div>
+
+  <h3>How each party makes money</h3>
+
+  <p>Each party's economics on a single Meliá booking with these numbers:</p>
+
+  <div class="party-card hotel">
+    <h4>Hotel <span class="role-tag">GDS</span></h4>
+    <div class="party-pnl">
+      <span class="pnl-label">Receives from Ergos</span>
+      <span class="pnl-detail">after 15% chain discount</span>
+      <span class="pnl-value pnl-income">$170.00</span>
+    </div>
+    <p style="font-size: 13px; color: var(--text-secondary); margin-top: 12px;">
+      The hotel accepts the chain discount because Ergos brings high booking volume. From the hotel's perspective, $170 is what they collect per booking.
+    </p>
+  </div>
+
+  <div class="party-card ergos">
+    <h4>Ergos <span class="role-tag">platform</span></h4>
+    <div class="party-pnl">
+      <span class="pnl-label">Income from agency</span>
+      <span class="pnl-detail">ergosSell minus the rebate they get back</span>
+      <span class="pnl-value pnl-income">$184.42</span>
+    </div>
+    <div class="party-pnl">
+      <span class="pnl-label">Pay hotel</span>
+      <span class="pnl-detail">adjustedCost</span>
+      <span class="pnl-value pnl-expense">−$170.00</span>
+    </div>
+    <div class="party-pnl">
+      <span class="pnl-label">Pay sales agent</span>
+      <span class="pnl-detail">24% of gross (Elite tier)</span>
+      <span class="pnl-value pnl-expense">−$3.46</span>
+    </div>
+    <div class="party-pnl">
+      <span class="pnl-label">Operational expense</span>
+      <span class="pnl-detail">6% of gross (Elite tier ops)</span>
+      <span class="pnl-value pnl-expense">−$0.86</span>
+    </div>
+    <div class="party-pnl pnl-net">
+      <span class="pnl-label"><strong>Ergos net retained</strong></span>
+      <span class="pnl-detail">5.26% of ergosSell ✓ above floor</span>
+      <span class="pnl-value">$10.10</span>
+    </div>
+  </div>
+
+  <div class="party-card agency">
+    <h4>Travel Agency <span class="role-tag">distributor</span></h4>
+    <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 12px;">
+      The agency has <strong>two income streams</strong>, both modeled in the platform:
+    </p>
+    <div class="party-pnl">
+      <span class="pnl-label">Customer paid</span>
+      <span class="pnl-detail">agency's customer-facing price</span>
+      <span class="pnl-value pnl-income">$220.92</span>
+    </div>
+    <div class="party-pnl">
+      <span class="pnl-label">Paid to Ergos</span>
+      <span class="pnl-detail">ergosSell</span>
+      <span class="pnl-value pnl-expense">−$192.10</span>
+    </div>
+    <div class="party-pnl">
+      <span class="pnl-label">Markup income</span>
+      <span class="pnl-detail">customerPrice − ergosSell (15% markup)</span>
+      <span class="pnl-value" style="color: var(--green);"><strong>$28.82</strong></span>
+    </div>
+    <div class="party-pnl">
+      <span class="pnl-label">Rebate from Ergos</span>
+      <span class="pnl-detail">4% of ergosSell (cashback)</span>
+      <span class="pnl-value pnl-income">+$7.68</span>
+    </div>
+    <div class="party-pnl pnl-net">
+      <span class="pnl-label"><strong>Agency total income</strong></span>
+      <span class="pnl-detail">markup + rebate</span>
+      <span class="pnl-value">$36.50</span>
+    </div>
+  </div>
+
+  <div class="party-card agent">
+    <h4>Sales Agent <span class="role-tag">closer</span></h4>
+    <div class="party-pnl">
+      <span class="pnl-label">Commission per booking</span>
+      <span class="pnl-detail">Elite tier earning, 24% of Ergos gross</span>
+      <span class="pnl-value pnl-income">$3.46</span>
+    </div>
+    <p style="font-size: 13px; color: var(--text-secondary); margin-top: 12px;">
+      The agent's "career" is about (a) moving up tiers (higher earning %), and (b) building booking volume. A Strategic-tier agent doing high-margin chain bookings can earn ~$120 per booking — but the system enforces that high-earning tiers only work on high-margin hotels.
+    </p>
+  </div>
+
+  <h3>Where every dollar goes (full reconciliation)</h3>
+
+  <p>The customer paid $220.92 total. Here's where each dollar ends up:</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Recipient</th>
+        <th>$ from this booking</th>
+        <th>Source</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Hotel</strong></td>
+        <td class="mono">$170.00</td>
+        <td>via Ergos (after 15% chain discount)</td>
+      </tr>
+      <tr>
+        <td><strong>Travel Agency</strong> (markup income)</td>
+        <td class="mono">$28.82</td>
+        <td>customer paid − what agency paid Ergos</td>
+      </tr>
+      <tr>
+        <td><strong>Travel Agency</strong> (rebate income)</td>
+        <td class="mono">$7.68</td>
+        <td>cashback from Ergos (4% of ergosSell)</td>
+      </tr>
+      <tr>
+        <td><strong>Sales Agent</strong> (commission)</td>
+        <td class="mono">$3.46</td>
+        <td>via Ergos (24% of gross, Elite tier)</td>
+      </tr>
+      <tr>
+        <td><strong>Ergos (internal ops)</strong></td>
+        <td class="mono">$0.86</td>
+        <td>allocated to support, infrastructure, G&amp;A</td>
+      </tr>
+      <tr>
+        <td><strong>Ergos (net profit)</strong></td>
+        <td class="mono">$10.10</td>
+        <td>what Ergos actually retains</td>
+      </tr>
+      <tr style="background: var(--bg-gray);">
+        <td><strong>Total</strong></td>
+        <td class="mono"><strong>$220.92</strong></td>
+        <td>= what the customer paid the agency</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>The agency markup — out of scope for Ergos's commission policy</h3>
+
+  <div class="callout callout-info">
+    <strong>Important boundary:</strong> Whatever markup a travel agency charges its final customer is <strong>the agency's own business decision</strong>. Ergos does not set it, does not enforce it, and does not factor it into any commission calculation, guardrail, or profitability check. The agency manages it from their own back office.
+  </div>
+
+  <p>Layer 3 (Agency → Customer) sits outside our commission policy. The agency configures a <code>defaultMarkupPct</code> on their Profile page if they want to use the platform's optional invoicing helpers, but the value has <strong>zero effect</strong> on:</p>
+  <ul>
+    <li>The Ergos sell price (what the agency pays Ergos)</li>
+    <li>The booking agent's commission</li>
+    <li>The Ergos net margin</li>
+    <li>Any of the 4 guardrails (floors, caps, agent-share cap)</li>
+    <li>The savability of a commission policy</li>
+  </ul>
+
+  <p>The agency markup is captured purely as a convenience feature so the agency can run their own P&amp;L view inside the platform if they choose. They can also leave it blank and run their pricing entirely in their own POS — Ergos doesn't care.</p>
+
+  <h3>What Ergos actually controls and prices for</h3>
+
+  <p>Because the agency markup is out of scope, Ergos's commission policy focuses exclusively on the two cost levers we <em>do</em> control:</p>
+
+  <table>
+    <thead>
+      <tr><th>Lever</th><th>What it pays for</th><th>Why it matters</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Booking agent commission</strong> (Layer 1, baseline 18–24% of Ergos gross)</td>
+        <td>The agent who closes a booking with a customer for the agency</td>
+        <td>This is the original commission engine — keeps existing booking-side agents paid fairly across hotel/chain/agency overrides</td>
+      </tr>
+      <tr>
+        <td><strong>Sales-agent recruiting commission</strong> (new — see §11)</td>
+        <td>The independent sales rep who recruits new travel agencies onto Ergos and supports them ongoingly</td>
+        <td>This is our primary growth lever. Each productive agency a sales agent recruits compounds Ergos's volume against a near-fixed cost base. Detailed model in §11.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p>Everything else (hotel net rate, ops cost per booking, agency rebate) is either contractually negotiated upstream, infrastructurally driven, or fixed by partnership terms. The commission policy's job is to balance these two controllable costs against the Ergos net floor — nothing more.</p>
+
+  <h3>Agency types — recap (no markup column)</h3>
+
+  <table>
+    <thead>
+      <tr><th>Agency type</th><th>Rebate %</th><th>Use case</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>In-house agency</strong></td>
+        <td class="mono">0%</td>
+        <td>Ergos's own travel agency — the price the customer pays IS the ergosSell, no rebate applies</td>
+      </tr>
+      <tr>
+        <td><strong>Partner agency</strong></td>
+        <td class="mono">3-5%</td>
+        <td>Independent agency with negotiated partnership terms. Markup to their customer is their business.</td>
+      </tr>
+      <tr>
+        <td><strong>Strategic partner</strong></td>
+        <td class="mono">5%+ (subject to guardrails)</td>
+        <td>Very-high-volume partner with extended cashback to incentivize commitment. Still sets their own customer markup independently.</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ============================================================ -->
+<!-- SECTION 7: USE CASES -->
+<!-- ============================================================ -->
+<section id="use-cases">
+  <h2>7. Use Cases <span class="label">10 worked examples</span></h2>
+
+  <p>These are concrete scenarios you'll encounter, with the exact steps to execute them.</p>
+
+  <!-- UC1: First-time chain setup -->
+  <div class="use-case">
+    <span class="use-case-num">UC 1 · Chain onboarding</span>
+    <h3>First-time setup of a new hotel chain</h3>
+    <div class="scenario">
+      <strong>Scenario:</strong> Ergos signs an exclusive contract with Meliá for 15% off all 12 of their hotels in the catalog. The Meliá deal is signed and effective today.
+    </div>
+    <ol class="steps">
+      <li>Go to <code>/commission-chains</code> → click <strong>+ Add Chain</strong></li>
+      <li>Fill the form: name <code>Meliá</code>, code <code>MELIA</code>, hasDiscount <strong>ON</strong>, chainDiscountPct <code>15</code> (15% off), contractStatus <code>signed</code>, effectiveDate today, notes "Q3 master contract"</li>
+      <li>Save → new card appears with "0 hotel(s)"</li>
+      <li>Click <strong>Manage Hotels</strong> on the Meliá card</li>
+      <li>In the search box type <code>Meli</code> → server returns matching hotels after 300ms</li>
+      <li>Click all 12 Meliá hotels to select them → click <strong>Link 12 hotel(s)</strong></li>
+      <li>Back on the chain card → click <strong>⚡ Apply discount to linked hotels</strong></li>
+      <li>Confirm dialog: "Apply 15% off to 12 hotel(s)?" → add reason "Initial chain contract activation" → confirm</li>
+    </ol>
+    <div class="uc-result"><strong>Result:</strong> All 12 Meliá hotels now sell at 15% off cost basis. <strong>12 audit entries</strong> are created (one per hotel), each tagged with your reason text. Future Meliá bookings will use <code>chainDiscountPct 15</code> until renegotiated.</div>
+  </div>
+
+  <!-- UC2: Renegotiating a chain -->
+  <div class="use-case">
+    <span class="use-case-num">UC 2 · Chain renegotiation</span>
+    <h3>Renegotiating a chain discount</h3>
+    <div class="scenario">
+      <strong>Scenario:</strong> Iberostar agrees to a deeper discount (22% off, was 18%) for Q4. You need to push the new terms to all linked Iberostar hotels.
+    </div>
+    <ol class="steps">
+      <li>Go to <code>/commission-chains</code> → click <strong>Edit Chain</strong> on Iberostar</li>
+      <li>Change chainDiscountPct from <code>18</code> (18% off) to <code>22</code> (22% off)</li>
+      <li>Update notes: "Q4 renewed contract — deeper discount"</li>
+      <li>Save → chain card shows the new value</li>
+      <li>Click <strong>⚡ Apply discount to linked hotels</strong></li>
+      <li>Confirm: "Apply this chain's price adjustment (22) to all N linked hotel(s)?" → reason: "Q4 renegotiation activation" → confirm</li>
+    </ol>
+    <div class="uc-result"><strong>Result:</strong> All linked Iberostar hotels now have <code>chainDiscountPct 22</code>. Each hotel gets an audit entry showing the change from 18 → 22. The chain itself also has audit entries for the chainDiscountPct edit.</div>
+  </div>
+
+  <!-- UC3: Per-hotel exception -->
+  <div class="use-case">
+    <span class="use-case-num">UC 3 · Per-hotel exception</span>
+    <h3>One-off commission adjustment for a single hotel</h3>
+    <div class="scenario">
+      <strong>Scenario:</strong> Hotel Arts Barcelona is a luxury property and Ergos wants 10% markup there (default is 8%). Doesn't affect any other hotel.
+    </div>
+    <ol class="steps">
+      <li>Go to <code>/commission-policy</code> → Hotels tab → search "Hotel Arts" → click on it</li>
+      <li>Inheritance stack appears → on the <strong>Hotel layer card</strong>, change <em>Base Commission</em> from 8 to 10</li>
+      <li>Yellow save bar appears at the bottom — click <strong>Review and Save</strong></li>
+      <li>SaveConfirmModal shows: 1 proposed change, post-edit guardrails all green</li>
+      <li>Click <strong>Confirm Save</strong></li>
+    </ol>
+    <div class="uc-result"><strong>Result:</strong> Only Hotel Arts now has 10% markup. The change is audited with scope=hotel. Other hotels are unaffected — this is a surgical override.</div>
+  </div>
+
+  <!-- UC4: Bulk edit -->
+  <div class="use-case uc-bulk">
+    <span class="use-case-num">UC 4 · Bulk edit</span>
+    <h3>Update commission across many hotels at once</h3>
+    <div class="scenario">
+      <strong>Scenario:</strong> End of year — Ergos decides to raise all 5-star Hoteltec markups to 9% (from a mix of 7-8%). Doing this one hotel at a time would take hours.
+    </div>
+    <ol class="steps">
+      <li>Go to <code>/commission-policy</code> → click <strong>Bulk Edit</strong> in the page header (top right)</li>
+      <li>In the Bulk Edit drawer, set filter: Stars = <code>5</code>, Vendor = <code>Hoteltec</code></li>
+      <li>Set values: <em>Ergos markup</em> = <code>9</code> (leave chainDiscountPct blank)</li>
+      <li>Add reason: "End-of-year markup uplift for 5-star Hoteltec inventory"</li>
+      <li>Click <strong>Preview</strong> → drawer shows "47 hotel(s) affected" with a sample table of old → new values per hotel</li>
+      <li>If the preview looks right, type <code>APPLY</code> in the typed-confirm box</li>
+      <li>Click <strong>Apply</strong></li>
+    </ol>
+    <div class="uc-result"><strong>Result:</strong> 47 hotels updated atomically. <strong>47 audit entries</strong> are written, each with your reason. The drawer closes and the LeftRail refreshes so you can see the new values immediately.</div>
+  </div>
+
+  <!-- UC5: Tier promotion -->
+  <div class="use-case">
+    <span class="use-case-num">UC 5 · Agent tier change</span>
+    <h3>Promoting an agent to a higher tier</h3>
+    <div class="scenario">
+      <strong>Scenario:</strong> M. Ruiz hit Q3 targets and is being promoted from Growth to Elite tier. Her earning percentage should bump from 18% to 24%.
+    </div>
+    <ol class="steps">
+      <li>Go to <code>/sales-agent</code> → find M. Ruiz → click <strong>Edit</strong></li>
+      <li>Change <em>Commission Tier</em> dropdown: Growth → <strong>Elite</strong></li>
+      <li>Update <em>Earning Percentage</em> from 18 to 24 (within Elite's allowed range 21–26%)</li>
+      <li>Save</li>
+    </ol>
+    <div class="uc-result"><strong>Result:</strong> Future commission resolutions for M. Ruiz use Elite tier defaults. The change writes an audit entry with <code>scope=agent</code>, <code>field=tier</code> and <code>field=earningPercentage</code>. Bookings already made keep their snapshots — only new bookings use the new tier.</div>
+  </div>
+
+  <!-- UC6: Per-(agent, hotel) override -->
+  <div class="use-case">
+    <span class="use-case-num">UC 6 · Special relationship</span>
+    <h3>Per-(agent, hotel) earning override</h3>
+    <div class="scenario">
+      <strong>Scenario:</strong> M. Ruiz has a special long-standing relationship with the Meliá Barcelona property and earns 28% there only. Default Elite earning (24%) applies for every other hotel.
+    </div>
+    <ol class="steps">
+      <li>Go to <code>/commission-policy</code> → Agents tab → select M. Ruiz</li>
+      <li>Inheritance stack appears — note Layer 4 (Elite tier) shows 24% default</li>
+      <li>On <strong>Layer 5 (Agent-Hotel Override)</strong> card, enter <code>28</code> for earningPctOverride</li>
+      <li>Click <strong>Review and Save</strong></li>
+      <li>SaveConfirmModal may show a soft guardrail warning if 28% pushes agentPctOfGross past 32% — type a reason and confirm</li>
+    </ol>
+    <div class="uc-result"><strong>Result:</strong> M. Ruiz earns 28% at Meliá Barcelona, default Elite (24%) elsewhere. The override is stored as a <code>SalesAgentCommission</code> document keyed on (M. Ruiz, Meliá BCN). Reason is on the audit trail.</div>
+  </div>
+
+  <!-- UC7: Investigating a booking -->
+  <div class="use-case uc-audit">
+    <span class="use-case-num">UC 7 · Dispute investigation</span>
+    <h3>Investigating commission on a past booking</h3>
+    <div class="scenario">
+      <strong>Scenario:</strong> A travel agency disputes the commission on booking <code>B-2847</code>, claiming the rebate was wrong. The booking was made 2 months ago — policy has changed since.
+    </div>
+    <ol class="steps">
+      <li>Go to <code>/reservations</code> → search for <code>B-2847</code> → click into the booking detail page</li>
+      <li>Scroll past the Guest Info and Price Distribution sections</li>
+      <li>Find the <strong>Commission Snapshot</strong> card (with shield icon and "Frozen at booking time" badge)</li>
+      <li>Read the 5 values: baseCommission, chainDiscountPct, rebatePct, earningPct, opsExpense + the resolvedAt timestamp</li>
+      <li>(Optional) Compare with current policy by going to <code>/commission-policy</code> for the same hotel and seeing how values have changed</li>
+    </ol>
+    <div class="uc-result"><strong>Result:</strong> You can definitively reconstruct what was agreed at the moment of booking. The dispute is resolved by referencing the snapshot, not the current policy. This works even if the policy has changed dozens of times since.</div>
+  </div>
+
+  <!-- UC8: Compliance audit -->
+  <div class="use-case uc-audit">
+    <span class="use-case-num">UC 8 · Compliance audit</span>
+    <h3>Periodic compliance review</h3>
+    <div class="scenario">
+      <strong>Scenario:</strong> The CFO asks "who changed commission settings last month, and why?" — for a quarterly compliance review.
+    </div>
+    <ol class="steps">
+      <li>Go to <code>/commission-policy</code> → click <strong>Audit Trail</strong> in the header</li>
+      <li>Set filters: From date = <code>2026-02-01</code>, To date = <code>2026-02-28</code></li>
+      <li>(Optional) Filter by Scope = <code>hotel</code> to see only hotel-level changes</li>
+      <li>(Optional) Filter by Changed by = a specific admin email to investigate one person's activity</li>
+      <li>Browse the paginated results (25 per page, prev/next)</li>
+      <li>Each entry shows: timestamp, scope, who, what field, old → new, and reason text (if guardrail override or bulk edit)</li>
+    </ol>
+    <div class="uc-result"><strong>Result:</strong> Full chronological compliance trail for the period. Export-ready data via the underlying <code>GET /audit</code> endpoint if you need CSV/JSON for the CFO.</div>
+  </div>
+
+  <!-- UC9: Hard block -->
+  <div class="use-case uc-block">
+    <span class="use-case-num">UC 9 · System self-protection</span>
+    <h3>System blocks an unprofitable configuration</h3>
+    <div class="scenario">
+      <strong>Scenario:</strong> A new admin tries to lower the Ergos markup on Meliá Barcelona to 2% — not realizing this would drop Ergos net below the 5% floor and tank profitability.
+    </div>
+    <ol class="steps">
+      <li>Admin goes to <code>/commission-policy</code> → Hotel layer → changes Base Commission to <code>2</code></li>
+      <li>Clicks <strong>Review and Save</strong></li>
+      <li>SaveConfirmModal opens with <strong style="color: var(--red);">RED header "Save Blocked"</strong></li>
+      <li>The post-edit guardrail row shows Ergos net at <code>3.7%</code> in red</li>
+      <li>No Confirm button exists — only Cancel and a "Cannot proceed" badge</li>
+      <li>Admin clicks Cancel, talks to a senior, and re-enters a viable value</li>
+    </ol>
+    <div class="uc-result"><strong>Result:</strong> The system protected Ergos from an unprofitable configuration. The 5% floor is non-negotiable from the UI. If a special exception is ever truly needed, it would require a code-level admin override (not exposed in the UI by design).</div>
+  </div>
+
+  <!-- UC10: Override with reason -->
+  <div class="use-case uc-warning">
+    <span class="use-case-num">UC 10 · Strategic override</span>
+    <h3>Override a soft guardrail with documented reason</h3>
+    <div class="scenario">
+      <strong>Scenario:</strong> Ergos wants to offer 8% rebate to a strategic agency for a Q3 launch promotion — knowing it will push Ergos's gross share below the 50% target. CFO has pre-approved this loss-leader.
+    </div>
+    <ol class="steps">
+      <li>Go to <code>/commission-policy</code> → select the agency → set rebatePct to <code>8</code></li>
+      <li>Click <strong>Review and Save</strong></li>
+      <li>SaveConfirmModal opens with <strong style="color: var(--amber);">AMBER header "Guardrail Warning"</strong></li>
+      <li>Post-edit guardrails show: Min Ergos share 45% &lt; 50% (breached)</li>
+      <li>A red-labeled <strong>Reason textarea</strong> appears — required (min 10 chars), disabled Confirm button until filled</li>
+      <li>Type: <em>"Strategic loss-leader for Q3 launch — approved by CFO 2026-03-12"</em></li>
+      <li>Click <strong>Confirm with reason</strong></li>
+    </ol>
+    <div class="uc-result"><strong>Result:</strong> Save succeeds. The audit entry stores the reason text alongside the field change. Future audits will show <em>why</em> this breach was acceptable, providing the forensic trail the compliance team needs.</div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SECTION 7: FORMULAS -->
+<!-- ============================================================ -->
+<section id="formulas">
+  <h2>8. Formulas Reference <span class="label">The math</span></h2>
+
+  <p>The commission engine is a pure function. Same inputs always produce the same outputs. These formulas are mirrored on both the backend (canonical, used at save and booking) and frontend (live preview in the right rail and Save modal).</p>
+
+  <h3>The waterfall</h3>
+  <p style="font-size: 13px; color: var(--text-secondary); margin-top: -4px;">Stored values are <strong>whole-percent integers</strong> (<code>15</code> = 15%). The engine converts each percent input via <code>pct(n) = n/100</code> before plugging into the formulas below. The expressions are written in decimal form for math clarity — substitute <code>chainDiscountPct/100</code>, <code>baseCommission/100</code>, etc. if you're working from stored values.</p>
+  <div class="formula"><span class="comment">// Engine inputs are decimal-form (after pct() conversion):</span>
+adjustedCost     = gdsNet × (1 - chainDiscountPct)
+ergosSell        = adjustedCost × (<span class="num">1</span> + baseCommission)
+rebateAmt        = ergosSell × rebatePct
+agencyEffective  = ergosSell − rebateAmt
+ergosGross       = agencyEffective − adjustedCost
+agentEarning     = ergosGross × earningPct
+opsAmt           = ergosGross × opsExpense
+<span class="keyword">ergosNet</span>         = ergosGross − agentEarning − opsAmt</div>
+
+  <h3>The guardrail KPIs</h3>
+  <div class="formula"><span class="comment">// Derived from the waterfall outputs:</span>
+ergosNetPct      = ergosNet ÷ ergosSell      <span class="comment">// must be ≥ 5%</span>
+agentPctOfGross  = agentEarning ÷ ergosGross <span class="comment">// must be ≤ 32%</span>
+ergosPctOfGross  = ergosNet ÷ ergosGross     <span class="comment">// must be ≥ 50%</span></div>
+
+  <h3>Tier defaults (constant)</h3>
+  <table>
+    <thead>
+      <tr><th>Tier</th><th>Earning range</th><th>Default earningPct</th><th>Default opsExpense</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><strong>Starter</strong></td><td class="mono">10–14%</td><td class="mono">12%</td><td class="mono">8%</td></tr>
+      <tr><td><strong>Growth</strong></td><td class="mono">15–20%</td><td class="mono">18%</td><td class="mono">7%</td></tr>
+      <tr><td><strong>Elite</strong></td><td class="mono">21–26%</td><td class="mono">24%</td><td class="mono">6%</td></tr>
+      <tr><td><strong>Strategic</strong></td><td class="mono">27–32%</td><td class="mono">30%</td><td class="mono">5%</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ============================================================ -->
+<!-- SECTION 8: WORKED NUMBERS + TIER EVOLUTION -->
+<!-- ============================================================ -->
+<section id="worked-numbers">
+  <h2>9. Worked Numbers &amp; Tier Evolution <span class="label">The math, made concrete</span></h2>
+
+  <p>Section 7 gave you the formulas. This section runs them with real numbers so you can see exactly how each variable affects Ergos's take, the agent's earning, and the guardrails. Every walkthrough uses <code>gdsNet = $200</code> as a baseline — so when you compare them, you're looking at the same booking with different policies applied.</p>
+
+  <h3>Scenario A — Baseline (most common booking)</h3>
+  <div class="callout callout-info" style="margin-bottom: 8px;">
+    <strong>The story:</strong> An in-house agency books one room at an ordinary hotel. No chain discount. The sales agent is at the Growth tier (mid-career). Let's follow the $200 from the moment the hotel charges Ergos all the way to Ergos's net profit.
+  </div>
+
+  <table>
+    <thead><tr><th>Input</th><th class="mono" style="text-align:right">Value</th><th>What it means in plain English</th></tr></thead>
+    <tbody>
+      <tr><td><code>gdsNet</code></td><td class="mono" style="text-align:right">$200.00</td><td>The GDS (hotel system) charges Ergos $200 for this room</td></tr>
+      <tr><td><code>baseCommission</code></td><td class="mono" style="text-align:right">8%</td><td>Ergos's markup on top of cost</td></tr>
+      <tr><td><code>chainDiscountPct</code></td><td class="mono" style="text-align:right">0 (no discount)</td><td>No chain discount applies here</td></tr>
+      <tr><td><code>rebatePct</code></td><td class="mono" style="text-align:right">0%</td><td>In-house agency — no rebate to anyone</td></tr>
+      <tr><td><code>earningPct</code></td><td class="mono" style="text-align:right">18%</td><td>Growth-tier agent earns 18% of Ergos's gross profit</td></tr>
+      <tr><td><code>opsExpense</code></td><td class="mono" style="text-align:right">7%</td><td>Support / account management cost is 7% of Ergos's gross profit</td></tr>
+    </tbody>
+  </table>
+
+  <h4 style="margin-top: 24px;">Step-by-step walkthrough</h4>
+
+  <div class="calc-walk">
+
+    <div class="calc-step">
+      <div class="step-num">1</div>
+      <div class="step-body">
+        <h5>Start with what the hotel charges us</h5>
+        <p class="step-explain">The hotel's reservation system (Hotetec, Restel, Juniper, etc.) tells us this room costs $200. This is Ergos's raw cost — the money we owe the hotel.</p>
+        <div class="step-formula">gdsNet  =  $200.00</div>
+      </div>
+      <div class="step-result is-cost">$200.00 <small>cost to Ergos</small></div>
+    </div>
+
+    <div class="calc-step">
+      <div class="step-num">2</div>
+      <div class="step-body">
+        <h5>Apply any negotiated chain discount</h5>
+        <p class="step-explain">If we had a deal with the hotel chain (e.g. Meliá's 15% off), we'd lower our cost basis here. This hotel isn't part of a discounted chain, so the multiplier is 1.000 — no change.</p>
+        <div class="step-formula">adjustedCost  =  $200.00  ×  1.000</div>
+        <p class="step-meaning">The cost basis stays the same as gdsNet because there's no chain discount.</p>
+      </div>
+      <div class="step-result is-neutral">$200.00 <small>adjusted cost</small></div>
+    </div>
+
+    <div class="calc-step">
+      <div class="step-num">3</div>
+      <div class="step-body">
+        <h5>Add Ergos's markup — this is what the agency will pay us</h5>
+        <p class="step-explain">Ergos adds 8% on top of cost. The result is the <strong>sell price</strong> — what we charge the travel agency. Note: we multiply by 1.08 (not just add 8%) — that's the standard markup formula.</p>
+        <div class="step-formula">ergosSell  =  $200.00  ×  (1 + 0.08)  =  $200.00  ×  1.08</div>
+        <p class="step-meaning">The agency sees this $216 price on their screen. They don't see the $200 cost — that's Ergos's information only.</p>
+      </div>
+      <div class="step-result">$216.00 <small>sell price</small></div>
+    </div>
+
+    <div class="calc-step">
+      <div class="step-num">4</div>
+      <div class="step-body">
+        <h5>Calculate the agency rebate (cashback)</h5>
+        <p class="step-explain">Partner agencies often get a rebate from Ergos as a thank-you for bringing volume. In-house agencies (Ergos's own travel agency) don't — so rebate is 0% here.</p>
+        <div class="step-formula">rebateAmt  =  $216.00  ×  0.00</div>
+      </div>
+      <div class="step-result is-neutral">$0.00 <small>rebate amount</small></div>
+    </div>
+
+    <div class="calc-step">
+      <div class="step-num">5</div>
+      <div class="step-body">
+        <h5>What the agency truly paid Ergos (after rebate)</h5>
+        <p class="step-explain">If there were a rebate, we'd subtract it here. Since rebate is $0, this equals the sell price.</p>
+        <div class="step-formula">agencyEffective  =  $216.00  −  $0.00</div>
+        <p class="step-meaning">This is the money that actually lands in Ergos's bank account from this booking.</p>
+      </div>
+      <div class="step-result">$216.00 <small>money to Ergos</small></div>
+    </div>
+
+    <div class="calc-step">
+      <div class="step-num">6</div>
+      <div class="step-body">
+        <h5>Subtract our cost to get Ergos's gross profit</h5>
+        <p class="step-explain">Ergos received $216, paid the hotel $200. The difference is our <strong>gross margin</strong> — but we haven't paid the agent or covered operational costs yet.</p>
+        <div class="step-formula">ergosGross  =  $216.00  −  $200.00</div>
+        <p class="step-meaning">$16 looks small, but remember: this is per-booking. Over thousands of bookings per day, it adds up.</p>
+      </div>
+      <div class="step-result">$16.00 <small>gross profit</small></div>
+    </div>
+
+    <div class="calc-step">
+      <div class="step-num">7</div>
+      <div class="step-body">
+        <h5>Pay the sales agent (18% of gross)</h5>
+        <p class="step-explain">The Growth-tier agent who made the booking earns 18% of our gross profit. This is their commission for this booking.</p>
+        <div class="step-formula">agentEarning  =  $16.00  ×  0.18</div>
+        <p class="step-meaning">Higher tiers earn more (Elite is 24%, Strategic is 30%) — but only on bookings where Ergos's margin can absorb it (see Scenario C below).</p>
+      </div>
+      <div class="step-result is-cost">−$2.88 <small>to the agent</small></div>
+    </div>
+
+    <div class="calc-step">
+      <div class="step-num">8</div>
+      <div class="step-body">
+        <h5>Account for operational expenses (7% of gross)</h5>
+        <p class="step-explain">Account management, customer support, platform infrastructure, marketing — these costs are allocated as 7% of gross for Growth-tier agents. Higher tiers have less ops overhead (more autonomous).</p>
+        <div class="step-formula">opsAmt  =  $16.00  ×  0.07</div>
+      </div>
+      <div class="step-result is-cost">−$1.12 <small>operational cost</small></div>
+    </div>
+
+    <div class="calc-step is-final">
+      <div class="step-num">9</div>
+      <div class="step-body">
+        <h5>What Ergos actually keeps (net profit)</h5>
+        <p class="step-explain">Take Ergos's gross profit, subtract what we paid the agent, subtract operational costs. <strong>This is Ergos's take-home from the booking.</strong></p>
+        <div class="step-formula">ergosNet  =  $16.00  −  $2.88  −  $1.12</div>
+        <p class="step-meaning">This $12 represents real money Ergos can reinvest, distribute to shareholders, or use to grow the business.</p>
+      </div>
+      <div class="step-result">$12.00 <small>Ergos net profit</small></div>
+    </div>
+
+  </div>
+
+  <h4>Now check the 3 guardrails</h4>
+  <p>Before we save (or commit a booking), the system runs 3 sanity checks on what we just calculated. All three must pass — or, depending on which one fails, the admin gets a warning or a hard block.</p>
+
+  <div class="guardrail-check">
+    <h5>Guardrail evaluations for Scenario A</h5>
+    <div class="grow-row">
+      <div>
+        <strong>Min Ergos net %</strong>
+        <div style="font-size: 11px; color: var(--text-muted);">Ergos's net divided by sell price — must stay above 5% (hard floor)</div>
+      </div>
+      <div class="grow-formula">$12.00 ÷ $216.00</div>
+      <div class="grow-value grow-pass">5.56% ✓</div>
+    </div>
+    <div class="grow-row">
+      <div>
+        <strong>Max agent share of gross</strong>
+        <div style="font-size: 11px; color: var(--text-muted);">Agent's earning as % of Ergos gross — must stay below 32%</div>
+      </div>
+      <div class="grow-formula">$2.88 ÷ $16.00</div>
+      <div class="grow-value grow-pass">18.00% ✓</div>
+    </div>
+    <div class="grow-row">
+      <div>
+        <strong>Min Ergos share of gross</strong>
+        <div style="font-size: 11px; color: var(--text-muted);">Ergos keeps at least 50% of its own gross margin — soft guardrail</div>
+      </div>
+      <div class="grow-formula">$12.00 ÷ $16.00</div>
+      <div class="grow-value grow-pass">75.00% ✓</div>
+    </div>
+  </div>
+
+  <div class="callout callout-success">
+    <strong>Outcome:</strong> Ergos receives <strong>$216</strong> from the agency, pays the hotel <strong>$200</strong>, pays the agent <strong>$2.88</strong>, covers <strong>$1.12</strong> of ops, and keeps <strong>$12.00</strong> as net profit. All guardrails green — save proceeds without any modal warning. This is the "default healthy booking" — most of your traffic should look like this.
+  </div>
+
+  <h3>Scenario B — With chain discount (the Meliá story)</h3>
+  <div class="callout callout-info" style="margin-bottom: 8px;">
+    <strong>The story:</strong> Same kind of booking, but this time it's a Meliá hotel (chain discount −15%), the agency is a partner (gets a 4% rebate), and the sales agent is an <strong>Elite-tier</strong> veteran (higher earning %). Three things change from Scenario A — let's see how each one affects the final net.
+  </div>
+
+  <table>
+    <thead><tr><th>Input</th><th class="mono" style="text-align:right">Value</th><th>What changed from A &amp; why</th></tr></thead>
+    <tbody>
+      <tr><td><code>gdsNet</code></td><td class="mono" style="text-align:right">$200.00</td><td>Same baseline (so we can compare apples to apples)</td></tr>
+      <tr><td><code>baseCommission</code></td><td class="mono" style="text-align:right">13%</td><td><strong>↑ from 8%</strong> — chain hotels carry a richer markup</td></tr>
+      <tr><td><code>chainDiscountPct</code></td><td class="mono" style="text-align:right">15 (15% off)</td><td><strong>↑ from 0</strong> — Meliá negotiated 15% off the cost</td></tr>
+      <tr><td><code>rebatePct</code></td><td class="mono" style="text-align:right">4%</td><td><strong>↑ from 0%</strong> — partner agency (Viajes Azul) gets a rebate</td></tr>
+      <tr><td><code>earningPct</code></td><td class="mono" style="text-align:right">24%</td><td><strong>↑ from 18%</strong> — Elite tier earns more than Growth</td></tr>
+      <tr><td><code>opsExpense</code></td><td class="mono" style="text-align:right">6%</td><td><strong>↓ from 7%</strong> — Elite agents need less support overhead</td></tr>
+    </tbody>
+  </table>
+
+  <h4 style="margin-top: 24px;">Step-by-step walkthrough</h4>
+
+  <div class="calc-walk">
+
+    <div class="calc-step">
+      <div class="step-num">1</div>
+      <div class="step-body">
+        <h5>Start with what the hotel charges us</h5>
+        <p class="step-explain">Same $200 cost as Scenario A. The hotel doesn't care that we have a chain deal with their parent company — they just charge their standard rate to the GDS.</p>
+        <div class="step-formula">gdsNet  =  $200.00</div>
+      </div>
+      <div class="step-result is-cost">$200.00 <small>cost to Ergos</small></div>
+    </div>
+
+    <div class="calc-step" style="border-left: 4px solid var(--gold);">
+      <div class="step-num" style="background: var(--gold);">2</div>
+      <div class="step-body">
+        <h5>Apply Meliá's 15% chain discount ← <span style="color: var(--gold);">CHANGED FROM A</span></h5>
+        <p class="step-explain">This is where the chain discount kicks in. Meliá's contract says Ergos pays 85% of the hotel's rate (a 15% discount). So our cost basis drops from $200 to $170.</p>
+        <div class="step-formula">adjustedCost  =  $200.00  ×  0.850</div>
+        <p class="step-meaning">Saved <strong>$30</strong> on cost. This $30 is the chain discount's tangible benefit — it stays inside Ergos and improves margin downstream.</p>
+      </div>
+      <div class="step-result is-neutral">$170.00 <small>adjusted cost</small></div>
+    </div>
+
+    <div class="calc-step" style="border-left: 4px solid var(--gold);">
+      <div class="step-num" style="background: var(--gold);">3</div>
+      <div class="step-body">
+        <h5>Add Ergos's 13% markup ← <span style="color: var(--gold);">HIGHER THAN A (was 8%)</span></h5>
+        <p class="step-explain">Because chain hotels carry richer margins, Ergos uses a higher markup (13% vs 8% on ordinary hotels). We're charging 1.13 × the adjusted cost.</p>
+        <div class="step-formula">ergosSell  =  $170.00  ×  (1 + 0.13)  =  $170.00  ×  1.13</div>
+        <p class="step-meaning">Sell price is <strong>$192.10</strong> — actually LOWER than Scenario A's $216, even with a higher markup! Why? Because the chain discount lowered the cost basis first. <strong>The agency gets a better price AND Ergos makes a richer margin. Win-win.</strong></p>
+      </div>
+      <div class="step-result">$192.10 <small>sell price</small></div>
+    </div>
+
+    <div class="calc-step" style="border-left: 4px solid var(--gold);">
+      <div class="step-num" style="background: var(--gold);">4</div>
+      <div class="step-body">
+        <h5>Calculate the agency rebate (4%) ← <span style="color: var(--gold);">CHANGED FROM A (was 0%)</span></h5>
+        <p class="step-explain">Viajes Azul is a partner agency, not in-house. They've negotiated a 4% rebate as a thank-you for the volume they bring. This is real money Ergos hands back.</p>
+        <div class="step-formula">rebateAmt  =  $192.10  ×  0.04</div>
+      </div>
+      <div class="step-result is-cost">−$7.68 <small>rebate to agency</small></div>
+    </div>
+
+    <div class="calc-step">
+      <div class="step-num">5</div>
+      <div class="step-body">
+        <h5>What Ergos actually received after rebate</h5>
+        <p class="step-explain">The agency paid $192.10 and immediately gets $7.68 back as rebate. Net cash to Ergos: $184.42.</p>
+        <div class="step-formula">agencyEffective  =  $192.10  −  $7.68</div>
+      </div>
+      <div class="step-result">$184.42 <small>money to Ergos</small></div>
+    </div>
+
+    <div class="calc-step">
+      <div class="step-num">6</div>
+      <div class="step-body">
+        <h5>Subtract our cost to get gross profit</h5>
+        <p class="step-explain">Received $184.42, paid hotel $170 (the adjusted cost). Gross margin: $14.42 — slightly less than Scenario A's $16, because the rebate ate into it. But still healthy.</p>
+        <div class="step-formula">ergosGross  =  $184.42  −  $170.00</div>
+      </div>
+      <div class="step-result">$14.42 <small>gross profit</small></div>
+    </div>
+
+    <div class="calc-step" style="border-left: 4px solid var(--gold);">
+      <div class="step-num" style="background: var(--gold);">7</div>
+      <div class="step-body">
+        <h5>Pay the Elite agent 24% of gross ← <span style="color: var(--gold);">HIGHER THAN A (was 18%)</span></h5>
+        <p class="step-explain">Elite tier earns more per booking than Growth tier. The agent's take is 24% of Ergos's gross.</p>
+        <div class="step-formula">agentEarning  =  $14.42  ×  0.24</div>
+        <p class="step-meaning">$3.46 vs. Growth's $2.88 in Scenario A — Elite tier means more take-home per booking for the agent.</p>
+      </div>
+      <div class="step-result is-cost">−$3.46 <small>to the agent</small></div>
+    </div>
+
+    <div class="calc-step" style="border-left: 4px solid var(--gold);">
+      <div class="step-num" style="background: var(--gold);">8</div>
+      <div class="step-body">
+        <h5>Operational expenses (6% of gross) ← <span style="color: var(--gold);">LOWER THAN A (was 7%)</span></h5>
+        <p class="step-explain">Elite agents are more autonomous, so the platform spends less per booking on support and account management. This partially offsets their higher earning rate.</p>
+        <div class="step-formula">opsAmt  =  $14.42  ×  0.06</div>
+      </div>
+      <div class="step-result is-cost">−$0.86 <small>operational cost</small></div>
+    </div>
+
+    <div class="calc-step is-final">
+      <div class="step-num">9</div>
+      <div class="step-body">
+        <h5>Ergos's net profit</h5>
+        <p class="step-explain">After all that — chain discount applied, rebate paid, Elite agent compensated, ops covered — Ergos keeps <strong>$10.10</strong>. Only $1.90 less than the baseline Scenario A ($12.00), despite a higher-paid agent AND an agency rebate. That's the chain discount earning its keep.</p>
+        <div class="step-formula">ergosNet  =  $14.42  −  $3.46  −  $0.86</div>
+      </div>
+      <div class="step-result">$10.10 <small>Ergos net profit</small></div>
+    </div>
+
+  </div>
+
+  <h4>Guardrail check for Scenario B</h4>
+  <div class="guardrail-check">
+    <div class="grow-row">
+      <div>
+        <strong>Min Ergos net %</strong>
+        <div style="font-size: 11px; color: var(--text-muted);">Hard floor — never below 5%</div>
+      </div>
+      <div class="grow-formula">$10.10 ÷ $192.10</div>
+      <div class="grow-value grow-pass">5.26% ✓</div>
+    </div>
+    <div class="grow-row">
+      <div>
+        <strong>Max agent share of gross</strong>
+        <div style="font-size: 11px; color: var(--text-muted);">Soft cap — agent should not take more than 32% of gross</div>
+      </div>
+      <div class="grow-formula">$3.46 ÷ $14.42</div>
+      <div class="grow-value grow-pass">24.00% ✓</div>
+    </div>
+    <div class="grow-row">
+      <div>
+        <strong>Min Ergos share of gross</strong>
+        <div style="font-size: 11px; color: var(--text-muted);">Ergos keeps ≥ 50% of its own gross margin</div>
+      </div>
+      <div class="grow-formula">$10.10 ÷ $14.42</div>
+      <div class="grow-value grow-pass">70.04% ✓</div>
+    </div>
+  </div>
+
+  <div class="callout callout-teal">
+    <strong>The big takeaway:</strong> The agency got a cheaper price ($192 vs $216), the agency got cashback ($7.68 rebate), the agent earned more ($3.46 vs $2.88), and Ergos's net only dropped by $1.90 (from $12.00 to $10.10). <strong>Everyone wins because the chain discount expanded the pie</strong> — the $30 saved on cost was distributed across the agency, the agent, and Ergos.
+  </div>
+
+  <h3>Scenario C — The hard block (why the 5% floor exists)</h3>
+  <div class="callout callout-danger" style="margin-bottom: 8px;">
+    <strong>The story:</strong> Same hotel as Scenario A (ordinary 8% markup, no chain, no rebate) — but the admin tries to assign a <strong>Strategic-tier</strong> agent (30% earning). The math will look fine until the very end, when the floor check fails. Let's see exactly where it breaks.
+  </div>
+
+  <table>
+    <thead><tr><th>Input</th><th class="mono" style="text-align:right">Value</th><th>What changed from A</th></tr></thead>
+    <tbody>
+      <tr><td colspan="3" style="background: var(--bg-gray); font-style: italic; font-size: 12px; padding: 8px 14px; color: var(--text-muted);">Inputs 1-4 are IDENTICAL to Scenario A — only the agent tier changes</td></tr>
+      <tr><td><code>earningPct</code></td><td class="mono" style="text-align:right">30%</td><td><strong>↑ from 18%</strong> — Strategic tier earns much more</td></tr>
+      <tr><td><code>opsExpense</code></td><td class="mono" style="text-align:right">5%</td><td><strong>↓ from 7%</strong> — Strategic agents are nearly self-managed</td></tr>
+    </tbody>
+  </table>
+
+  <h4 style="margin-top: 24px;">Step-by-step walkthrough</h4>
+
+  <div class="calc-walk">
+
+    <div class="calc-step">
+      <div class="step-num">1-6</div>
+      <div class="step-body">
+        <h5>Steps 1 through 6 are identical to Scenario A</h5>
+        <p class="step-explain">Cost, sell price, no rebate, gross profit — all the same numbers as Scenario A. The Strategic tier only affects the last two steps (agent earning and ops).</p>
+        <div class="step-formula">gdsNet $200 → adjustedCost $200 → ergosSell $216 → ergosGross $16.00</div>
+      </div>
+      <div class="step-result">$16.00 <small>gross profit</small></div>
+    </div>
+
+    <div class="calc-step is-cost" style="border-left: 4px solid var(--red);">
+      <div class="step-num" style="background: var(--red);">7</div>
+      <div class="step-body">
+        <h5>Pay the Strategic agent 30% of gross ← <span style="color: var(--red);">MUCH HIGHER THAN A</span></h5>
+        <p class="step-explain">Strategic-tier agents are the top of the ladder — they earn 30% of Ergos's gross per booking. On this $16 gross, that's $4.80 — over 2.5× what Scenario A's Growth agent earned ($2.88).</p>
+        <div class="step-formula">agentEarning  =  $16.00  ×  0.30</div>
+        <p class="step-meaning">Big agent earnings on a small gross — this is going to squeeze Ergos badly.</p>
+      </div>
+      <div class="step-result is-cost">−$4.80 <small>to the agent</small></div>
+    </div>
+
+    <div class="calc-step">
+      <div class="step-num">8</div>
+      <div class="step-body">
+        <h5>Operational expenses (5% of gross)</h5>
+        <p class="step-explain">Strategic agents need almost no platform support, so ops cost is at its lowest — 5%. This recovers a tiny bit of margin.</p>
+        <div class="step-formula">opsAmt  =  $16.00  ×  0.05</div>
+      </div>
+      <div class="step-result is-cost">−$0.80 <small>operational cost</small></div>
+    </div>
+
+    <div class="calc-step is-final" style="border-left: 4px solid var(--red);">
+      <div class="step-num" style="background: var(--red);">9</div>
+      <div class="step-body">
+        <h5>Ergos's net profit — looks OK in absolute terms…</h5>
+        <p class="step-explain">$10.40 in net profit. Sounds fine! But here's the catch: the guardrail isn't an absolute dollar amount — it's a percentage of the sell price. And against a $216 sell price, $10.40 is only…</p>
+        <div class="step-formula">ergosNet  =  $16.00  −  $4.80  −  $0.80</div>
+      </div>
+      <div class="step-result" style="background: #fff3e0; color: #8a5d00; border-color: var(--amber);">$10.40 <small>looks ok, but…</small></div>
+    </div>
+
+  </div>
+
+  <h4>Guardrail check — and here's where it fails</h4>
+  <div class="guardrail-check" style="background: linear-gradient(135deg, var(--red-light) 0%, var(--bg-white) 100%); border-color: var(--red);">
+    <div class="grow-row">
+      <div>
+        <strong style="color: var(--red);">Min Ergos net %</strong>
+        <div style="font-size: 11px; color: var(--text-muted);">Hard floor — never below 5%</div>
+      </div>
+      <div class="grow-formula">$10.40 ÷ $216.00</div>
+      <div class="grow-value grow-fail">4.81% ✗ BLOCKED</div>
+    </div>
+    <div class="grow-row">
+      <div>
+        <strong>Max agent share of gross</strong>
+        <div style="font-size: 11px; color: var(--text-muted);">Soft cap — agent at exactly 30%</div>
+      </div>
+      <div class="grow-formula">$4.80 ÷ $16.00</div>
+      <div class="grow-value grow-pass">30.00% ✓ (right at limit)</div>
+    </div>
+    <div class="grow-row">
+      <div>
+        <strong>Min Ergos share of gross</strong>
+        <div style="font-size: 11px; color: var(--text-muted);">Ergos keeps ≥ 50% of its own gross margin</div>
+      </div>
+      <div class="grow-formula">$10.40 ÷ $16.00</div>
+      <div class="grow-value grow-pass">65.00% ✓</div>
+    </div>
+  </div>
+
+  <div class="callout callout-danger">
+    <strong>SAVE BLOCKED.</strong> The SaveConfirmModal opens with a red header, the reason textarea is hidden, and there's no Confirm button — only Cancel. <strong>The system literally won't let the admin save this configuration.</strong>
+    <br><br>
+    <strong>Why the floor matters:</strong> if Ergos retains less than 5% of sell as net, payment processing fees (1-1.5%), technology infrastructure, G&A, and required profit all have to come out of that thin slice — which doesn't work. The 5% floor is the line below which a booking literally loses money for Ergos.
+    <br><br>
+    <strong>How to fix it:</strong> either (a) put the Strategic agent on hotels with ≥10% markup, (b) put them on chain-discounted hotels (cost basis lowered → more gross → enough room for their take), or (c) lower their earning percentage. The system pushes the admin toward the right combination.
+  </div>
+
+  <h3>Side-by-side comparison</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>Scenario</th>
+        <th>Tier</th>
+        <th class="mono" style="text-align:right">Ergos sell</th>
+        <th class="mono" style="text-align:right">Agent earns</th>
+        <th class="mono" style="text-align:right">Ergos net</th>
+        <th>Floor</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>A — Baseline</strong></td>
+        <td>Growth (18%)</td>
+        <td class="mono" style="text-align:right">$216.00</td>
+        <td class="mono" style="text-align:right">$2.88</td>
+        <td class="mono" style="text-align:right"><strong>$12.00</strong></td>
+        <td><span style="color:var(--green)">✓ 5.56%</span></td>
+      </tr>
+      <tr>
+        <td><strong>B — Meliá chain</strong></td>
+        <td>Elite (24%)</td>
+        <td class="mono" style="text-align:right">$192.10</td>
+        <td class="mono" style="text-align:right">$3.46</td>
+        <td class="mono" style="text-align:right"><strong>$10.10</strong></td>
+        <td><span style="color:var(--green)">✓ 5.26%</span></td>
+      </tr>
+      <tr style="background: var(--red-light);">
+        <td><strong>C — Hard block</strong></td>
+        <td>Strategic (30%)</td>
+        <td class="mono" style="text-align:right">$216.00</td>
+        <td class="mono" style="text-align:right">$4.80</td>
+        <td class="mono" style="text-align:right"><strong>$10.40</strong></td>
+        <td><span style="color:var(--red); font-weight:700">✗ 4.81%</span></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>Tier career evolution — same booking, different tiers</h3>
+
+  <p>Here's the same $200 baseline booking (8% markup, no chain, no rebate) priced for the same agent at each tier of their career. Note how <strong>ops overhead decreases as the agent matures</strong> (more autonomous → less support cost) — that partially offsets their higher earning percentage.</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Tier</th>
+        <th class="mono" style="text-align:right">earningPct</th>
+        <th class="mono" style="text-align:right">opsExpense</th>
+        <th class="mono" style="text-align:right">Agent earns</th>
+        <th class="mono" style="text-align:right">Ops cost</th>
+        <th class="mono" style="text-align:right">Ergos net</th>
+        <th class="mono" style="text-align:right">Ergos net %</th>
+        <th>Floor</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span style="display:inline-block; padding:2px 10px; border-radius:12px; background:var(--green-light); color:var(--green); font-size:11px; font-weight:700;">Starter</span></td>
+        <td class="mono" style="text-align:right">12%</td>
+        <td class="mono" style="text-align:right">8%</td>
+        <td class="mono" style="text-align:right">$1.92</td>
+        <td class="mono" style="text-align:right">$1.28</td>
+        <td class="mono" style="text-align:right"><strong>$12.80</strong></td>
+        <td class="mono" style="text-align:right">5.93%</td>
+        <td><span style="color:var(--green)">✓</span></td>
+      </tr>
+      <tr>
+        <td><span style="display:inline-block; padding:2px 10px; border-radius:12px; background:var(--blue-light); color:var(--blue); font-size:11px; font-weight:700;">Growth</span></td>
+        <td class="mono" style="text-align:right">18%</td>
+        <td class="mono" style="text-align:right">7%</td>
+        <td class="mono" style="text-align:right">$2.88</td>
+        <td class="mono" style="text-align:right">$1.12</td>
+        <td class="mono" style="text-align:right"><strong>$12.00</strong></td>
+        <td class="mono" style="text-align:right">5.56%</td>
+        <td><span style="color:var(--green)">✓</span></td>
+      </tr>
+      <tr>
+        <td><span style="display:inline-block; padding:2px 10px; border-radius:12px; background:var(--amber-light); color:var(--amber); font-size:11px; font-weight:700;">Elite</span></td>
+        <td class="mono" style="text-align:right">24%</td>
+        <td class="mono" style="text-align:right">6%</td>
+        <td class="mono" style="text-align:right">$3.84</td>
+        <td class="mono" style="text-align:right">$0.96</td>
+        <td class="mono" style="text-align:right"><strong>$11.20</strong></td>
+        <td class="mono" style="text-align:right">5.19%</td>
+        <td><span style="color:var(--green)">✓</span></td>
+      </tr>
+      <tr style="background: var(--red-light);">
+        <td><span style="display:inline-block; padding:2px 10px; border-radius:12px; background:var(--purple-light); color:var(--purple); font-size:11px; font-weight:700;">Strategic</span></td>
+        <td class="mono" style="text-align:right">30%</td>
+        <td class="mono" style="text-align:right">5%</td>
+        <td class="mono" style="text-align:right">$4.80</td>
+        <td class="mono" style="text-align:right">$0.80</td>
+        <td class="mono" style="text-align:right"><strong>$10.40</strong></td>
+        <td class="mono" style="text-align:right; color:var(--red); font-weight:700">4.81%</td>
+        <td><span style="color:var(--red); font-weight:700">✗ blocked</span></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="callout callout-warning">
+    <strong>The career-vs-floor story:</strong> on a low-margin booking (8% markup), an agent can be promoted from Starter to Elite and Ergos still nets above the 5% floor. But Strategic tier — the highest paid — pushes Ergos below the floor, and the save modal will block it. This is by design: <strong>strategic agents are reserved for premium / chain-discounted hotels where the gross margin is bigger</strong>.
+  </div>
+
+  <h3>The same evolution on a richer hotel (10% markup)</h3>
+
+  <p>If the hotel has a higher Ergos markup — say 10% instead of 8% — even Strategic-tier agents stay safely above the floor:</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Tier</th>
+        <th class="mono" style="text-align:right">Agent earns</th>
+        <th class="mono" style="text-align:right">Ergos net</th>
+        <th class="mono" style="text-align:right">Ergos net %</th>
+        <th>Floor</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span style="display:inline-block; padding:2px 10px; border-radius:12px; background:var(--green-light); color:var(--green); font-size:11px; font-weight:700;">Starter</span></td>
+        <td class="mono" style="text-align:right">$2.40</td>
+        <td class="mono" style="text-align:right"><strong>$16.00</strong></td>
+        <td class="mono" style="text-align:right">7.27%</td>
+        <td><span style="color:var(--green)">✓</span></td>
+      </tr>
+      <tr>
+        <td><span style="display:inline-block; padding:2px 10px; border-radius:12px; background:var(--blue-light); color:var(--blue); font-size:11px; font-weight:700;">Growth</span></td>
+        <td class="mono" style="text-align:right">$3.60</td>
+        <td class="mono" style="text-align:right"><strong>$15.00</strong></td>
+        <td class="mono" style="text-align:right">6.82%</td>
+        <td><span style="color:var(--green)">✓</span></td>
+      </tr>
+      <tr>
+        <td><span style="display:inline-block; padding:2px 10px; border-radius:12px; background:var(--amber-light); color:var(--amber); font-size:11px; font-weight:700;">Elite</span></td>
+        <td class="mono" style="text-align:right">$4.80</td>
+        <td class="mono" style="text-align:right"><strong>$14.00</strong></td>
+        <td class="mono" style="text-align:right">6.36%</td>
+        <td><span style="color:var(--green)">✓</span></td>
+      </tr>
+      <tr>
+        <td><span style="display:inline-block; padding:2px 10px; border-radius:12px; background:var(--purple-light); color:var(--purple); font-size:11px; font-weight:700;">Strategic</span></td>
+        <td class="mono" style="text-align:right">$6.00</td>
+        <td class="mono" style="text-align:right"><strong>$13.00</strong></td>
+        <td class="mono" style="text-align:right">5.91%</td>
+        <td><span style="color:var(--green)">✓</span></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>Annual earnings projection</h3>
+
+  <p>Per-booking commission is small ($2–$5 typical). The earnings story for an agent only makes sense at scale. Here's what each tier earns over a year at different booking volumes and average ticket sizes (using baseline 8% markup, no chain discount):</p>
+
+  <h4>200 bookings/year @ $200 average GDS net</h4>
+  <table>
+    <thead>
+      <tr><th>Tier</th><th class="mono" style="text-align:right">Per booking</th><th class="mono" style="text-align:right">Annual (200 bk)</th><th class="mono" style="text-align:right">Annual (500 bk)</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><strong>Starter</strong></td><td class="mono" style="text-align:right">$1.92</td><td class="mono" style="text-align:right">$384</td><td class="mono" style="text-align:right">$960</td></tr>
+      <tr><td><strong>Growth</strong></td><td class="mono" style="text-align:right">$2.88</td><td class="mono" style="text-align:right">$576</td><td class="mono" style="text-align:right">$1,440</td></tr>
+      <tr><td><strong>Elite</strong></td><td class="mono" style="text-align:right">$3.84</td><td class="mono" style="text-align:right">$768</td><td class="mono" style="text-align:right">$1,920</td></tr>
+      <tr><td><strong>Strategic</strong></td><td class="mono" style="text-align:right">$4.80</td><td class="mono" style="text-align:right">$960</td><td class="mono" style="text-align:right">$2,400</td></tr>
+    </tbody>
+  </table>
+
+  <h4>Same volumes @ $1,000 average GDS net (mid-range trips)</h4>
+  <table>
+    <thead>
+      <tr><th>Tier</th><th class="mono" style="text-align:right">Per booking</th><th class="mono" style="text-align:right">Annual (200 bk)</th><th class="mono" style="text-align:right">Annual (500 bk)</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><strong>Starter</strong></td><td class="mono" style="text-align:right">$9.60</td><td class="mono" style="text-align:right">$1,920</td><td class="mono" style="text-align:right">$4,800</td></tr>
+      <tr><td><strong>Growth</strong></td><td class="mono" style="text-align:right">$14.40</td><td class="mono" style="text-align:right">$2,880</td><td class="mono" style="text-align:right">$7,200</td></tr>
+      <tr><td><strong>Elite</strong></td><td class="mono" style="text-align:right">$19.20</td><td class="mono" style="text-align:right">$3,840</td><td class="mono" style="text-align:right">$9,600</td></tr>
+      <tr><td><strong>Strategic</strong></td><td class="mono" style="text-align:right">$24.00</td><td class="mono" style="text-align:right">$4,800</td><td class="mono" style="text-align:right">$12,000</td></tr>
+    </tbody>
+  </table>
+
+  <h4>Same volumes @ $5,000 average GDS net (luxury trips)</h4>
+  <table>
+    <thead>
+      <tr><th>Tier</th><th class="mono" style="text-align:right">Per booking</th><th class="mono" style="text-align:right">Annual (200 bk)</th><th class="mono" style="text-align:right">Annual (500 bk)</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><strong>Starter</strong></td><td class="mono" style="text-align:right">$48.00</td><td class="mono" style="text-align:right">$9,600</td><td class="mono" style="text-align:right">$24,000</td></tr>
+      <tr><td><strong>Growth</strong></td><td class="mono" style="text-align:right">$72.00</td><td class="mono" style="text-align:right">$14,400</td><td class="mono" style="text-align:right">$36,000</td></tr>
+      <tr><td><strong>Elite</strong></td><td class="mono" style="text-align:right">$96.00</td><td class="mono" style="text-align:right">$19,200</td><td class="mono" style="text-align:right">$48,000</td></tr>
+      <tr><td><strong>Strategic</strong></td><td class="mono" style="text-align:right">$120.00</td><td class="mono" style="text-align:right">$24,000</td><td class="mono" style="text-align:right">$60,000</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout callout-teal">
+    <strong>What the agent compensation story really is:</strong> a Starter agent doing 200 mid-range bookings/year earns ~$1,900. The same activity at Strategic-tier doubles that, but the agent has to "qualify" the customer / mix into chain-discounted or high-ticket inventory to keep Ergos's floor intact. <strong>Tier promotion is a partnership: the agent commits to higher-value bookings, Ergos commits to a larger share of the gross.</strong>
+  </div>
+
+  <h3>Decision matrix: which tier on which hotel?</h3>
+  <p>This table shows the minimum recommended hotel <code>baseCommission</code> to keep each tier safely above the 5% floor (with no chain discount and no agency rebate):</p>
+  <table>
+    <thead>
+      <tr><th>Tier</th><th class="mono" style="text-align:right">Min safe baseCommission</th><th>Why</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Starter</strong> (12%)</td>
+        <td class="mono" style="text-align:right">~7%</td>
+        <td>Low agent take leaves plenty of room for Ergos</td>
+      </tr>
+      <tr>
+        <td><strong>Growth</strong> (18%)</td>
+        <td class="mono" style="text-align:right">~7-8%</td>
+        <td>Default operating point — works on most hotels</td>
+      </tr>
+      <tr>
+        <td><strong>Elite</strong> (24%)</td>
+        <td class="mono" style="text-align:right">~8%</td>
+        <td>Right at the edge on the default markup</td>
+      </tr>
+      <tr>
+        <td><strong>Strategic</strong> (30%)</td>
+        <td class="mono" style="text-align:right">~10% or chain discount</td>
+        <td>Needs either a richer markup OR cost-side reduction (chain) to stay above floor</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ============================================================ -->
+<!-- SECTION 9: GLOSSARY -->
+<!-- ============================================================ -->
+<section id="glossary">
+  <h2>10. Glossary</h2>
+
+  <dl class="glossary">
+    <dt>baseCommission <code>8 = 8%</code></dt>
+    <dd>The Ergos markup added to the GDS's adjusted cost. Stored as a whole-percent integer (0–100). Hotel schema validators: <code>min: 0, max: 100, required</code>.</dd>
+
+    <dt>chainDiscountPct <code>15 = 15% off</code></dt>
+    <dd>Negotiated chain discount expressed as a whole-percent integer off GDS net. Applied BEFORE the markup (<code>adjustedCost = gdsNet × (1 − chainDiscountPct/100)</code>). A value of <code>0</code> means no discount. Hotel schema validators: <code>min: 0, max: 100, default: 0</code>.</dd>
+
+    <dt>rebatePct <code>4 = 4%</code></dt>
+    <dd>Agency rebate as a whole-percent integer of Ergos sell. Per-(agency, hotel). In-house agencies have rebatePct = 0. Stored in <code>travel_agency_commission.commissionPercentage</code>; surfaced via API/UI as <code>rebatePct</code>.</dd>
+
+    <dt>earningPct <code>24 = 24%</code></dt>
+    <dd>Agent earning as a whole-percent integer of Ergos gross margin. Capped by the <code>maxAgentPctOfGross = 32</code> guardrail. Per-agent-hotel overrides stored in <code>sales_agent_commission.commissionPercentage</code>; surfaced via API/UI as <code>earningPctOverride</code>.</dd>
+
+    <dt>opsExpense <code>6 = 6%</code></dt>
+    <dd>Agent operational expense (account management, support overhead) as a whole-percent integer of Ergos gross.</dd>
+
+    <dt>defaultMarkupPct <code>15 = 15%</code> (whole-percent integer)</dt>
+    <dd>The agency's customer-facing markup on top of <code>ergosSell</code>. Lives on the TravelAgency model (<code>min: 0, max: 200, default: 15, integer, required</code>) and is frozen per booking as <code>agencyMarkupPctSnapshot</code>. Stored, transported, and displayed as a whole-percent integer, matching every other percent field on the platform — even though this value sits outside the commission engine and has zero effect on any guardrail, floor, or payout calculation. The integer convention is for code consistency, not because the engine touches it.</dd>
+
+    <dt>ergosSell</dt>
+    <dd>The price shown to the agency for a booking. <code>adjustedCost × (1 + baseCommission/100)</code>.</dd>
+
+    <dt>ergosGross</dt>
+    <dd>Ergos's gross margin from a booking. <code>agencyEffective − adjustedCost</code>.</dd>
+
+    <dt>ergosNet</dt>
+    <dd>Ergos's net margin after paying the agent and ops. <code>ergosGross − agentEarning − opsAmt</code>.</dd>
+
+    <dt>Layer</dt>
+    <dd>One of the 5 levels of the inheritance cascade: Global, Hotel, Agency, Agent Tier, Agent-Hotel Override.</dd>
+
+    <dt>Override</dt>
+    <dd>An explicit value set at a layer that beats the cascade default. Shown with a gold badge in the UI.</dd>
+
+    <dt>Snapshot</dt>
+    <dd>A frozen copy of the resolved commission policy stored on each booking at the moment of booking. Used for dispute resolution.</dd>
+
+    <dt>Hard floor</dt>
+    <dd>An invariant the system refuses to violate via the UI. Currently: Ergos net &lt; 5% of sell.</dd>
+
+    <dt>Soft guardrail</dt>
+    <dd>An invariant the system warns about and requires a reason to override. Currently: agent share &gt; 32% of gross, and Ergos share &lt; 50% of gross.</dd>
+
+    <dt>Chain</dt>
+    <dd>A document in <code>commission_chain</code> representing a hotel chain (Meliá, Iberostar, etc.) and any negotiated discount terms. Hotels link to a chain via <code>chainId</code>. As of this writing, 5 chains are seeded (Domina, Meliá, Iberostar, Gran Caribe, HTL Gaviota) — see Section 3 for the full table.</dd>
+
+    <dt>Sub-vendor</dt>
+    <dd>The <code>vendor</code> code recorded on each hotel by the catalog sync — names the specific sub-feed within a GDS. Examples: <code>melia</code>, <code>iberostar</code> (Dingus sub-feeds); <code>DOMI</code>, <code>GHGC</code>, <code>GAVI</code> (Hotetec sub-feeds). Chain auto-link uses this code (via <code>applicableVendors</code>) in addition to name patterns.</dd>
+
+    <dt>Apply (chain)</dt>
+    <dd>Explicit admin action that writes a chain's chainDiscountPct to all linked hotels. Not automatic — clicking the button is required.</dd>
+  </dl>
+</section>
+
+<!-- ============================================================ -->
+<!-- SECTION 11: SALES-AGENT RECRUITING MODEL -->
+<!-- ============================================================ -->
+<section id="sales-agent-model">
+  <h2>11. Sales-Agent Recruiting Model &amp; Unit Economics <span class="label">Growth lever</span></h2>
+
+  <p>This section defines a <strong>second commission flow</strong> alongside the booking-agent commission documented in §1–§9. Where the booking-agent commission pays the person who <em>closes a sale to a customer</em>, the sales-agent recruiting commission pays the person who <em>recruits a travel agency onto the Ergos platform</em> — and continues to share in that agency's lifetime booking volume.</p>
+
+  <p>Travel-agency recruitment is Ergos's primary growth channel. Many target agencies don't yet have a website or any digital ability to access international hotel inventory; they're currently constrained to whatever single GDS they have a manual relationship with. Onboarding them to Ergos gives them instant access to the full Dingus + Hotetec + Restel + Juniper aggregated inventory — and gives Ergos compounding booking volume against a near-fixed cost base.</p>
+
+  <div class="callout callout-info">
+    <strong>What this section is NOT:</strong> It is not about the agency markup to the final customer. That's the agency's decision and is out of scope (see §6). This section is exclusively about <strong>what Ergos pays sales agents to recruit and retain travel agencies</strong>.
+  </div>
+
+  <h3>The two-flow commission architecture</h3>
+
+  <table>
+    <thead>
+      <tr><th>Commission flow</th><th>Who earns it</th><th>What triggers it</th><th>Where it's documented</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Booking-agent commission</strong></td>
+        <td>The agent who closes a booking with a final customer</td>
+        <td>Per booking, % of Ergos gross, tiered (Starter → Strategic)</td>
+        <td>§1–§9 (existing engine)</td>
+      </tr>
+      <tr>
+        <td><strong>Sales-agent recruiting commission</strong></td>
+        <td>The independent rep who recruited the agency onto Ergos</td>
+        <td>Per booking from that agency + signing bonus on onboarding</td>
+        <td>This section (§11)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p>The two flows are <strong>additive on the same booking</strong>. A single booking from a recruited agency triggers both: the booking agent who handled the customer-facing transaction is paid via §1–§9; the sales agent who originally recruited the agency is paid additionally via §11.</p>
+
+  <h3>Why this is a separate flow (not just an additional tier)</h3>
+
+  <p>A sales agent's economics are fundamentally different from a booking agent's:</p>
+  <ul>
+    <li><strong>Booking agents</strong> earn per sale and have direct control over each transaction. Their commission ties to their closing performance.</li>
+    <li><strong>Sales agents</strong> earn per booking from a portfolio of agencies they recruited. Their commission ties to <em>partner activation and retention</em> — they win by recruiting productive agencies and keeping them supported, not by closing individual bookings.</li>
+  </ul>
+
+  <p>Mixing these into a single commission engine would muddy both incentive structures. They're modeled as parallel flows with shared guardrails (the Ergos net floor is computed across <em>both</em> deductions).</p>
+
+  <h3>The cost base reality (mid-2026)</h3>
+
+  <p>Sales-agent commissions are sized against Ergos's actual fixed-cost base, which at MVP scale is intentionally lean:</p>
+
+  <table>
+    <thead>
+      <tr><th>Cost category</th><th>Monthly (CAD)</th><th>Notes</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Operations + payroll baseline</td>
+        <td class="mono">~$4,000</td>
+        <td>Current operating expenses (excluding infrastructure)</td>
+      </tr>
+      <tr>
+        <td>Alibaba Cloud infrastructure (k3s, PostgreSQL, Elasticsearch, Valkey)</td>
+        <td class="mono">~$1,000</td>
+        <td>Production-grade cluster, scales sublinearly with volume</td>
+      </tr>
+      <tr>
+        <td><strong>Total fixed monthly</strong></td>
+        <td class="mono"><strong>~$5,000 CAD (~$3,650 USD)</strong></td>
+        <td>Real burn rate — the number break-even is measured against</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="callout callout-warning">
+    <strong>This is the controllable cost picture.</strong> Hotel net rates, agency rebates, and booking-agent commissions are either contractually fixed or already engine-managed. The two genuinely controllable cost levers Ergos has are (a) what we pay sales agents to recruit travel agencies, and (b) the infrastructure scaling curve. Everything else is downstream of those.
+  </div>
+
+  <h3>Per-booking economics — two cases</h3>
+
+  <p>Sales-agent commission is computed per booking as a <strong>flat dollar amount</strong> ($2.00 USD recommended at MVP scale), not a percentage of gross. This keeps the math predictable for sales agents and easy to reason about across hotel categories with very different margins. The Ergos net floor (§4) still applies after the deduction.</p>
+
+  <h4 style="margin-top: 18px;">Case A — Standard international hotel (no chain discount)</h4>
+
+  <p>Assumptions: $300 USD GDS net (international weighted average), 8% Ergos markup, 4% agency rebate, Growth-tier booking agent (18% earning, 7% ops).</p>
+
+  <table>
+    <thead>
+      <tr><th>Line item</th><th>Calculation</th><th>Amount (USD)</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>GDS net</td><td class="mono">—</td><td class="mono">$300.00</td></tr>
+      <tr><td>Ergos sell</td><td class="mono">$300 × 1.08</td><td class="mono">$324.00</td></tr>
+      <tr><td>Agency rebate (4%)</td><td class="mono">$324 × 0.04</td><td class="mono">−$12.96</td></tr>
+      <tr><td>Ergos receives</td><td class="mono">—</td><td class="mono">$311.04</td></tr>
+      <tr><td>Pay hotel</td><td class="mono">—</td><td class="mono">−$300.00</td></tr>
+      <tr><td>Ergos gross</td><td class="mono">—</td><td class="mono">$11.04</td></tr>
+      <tr><td>Pay booking agent (18%)</td><td class="mono">$11.04 × 0.18</td><td class="mono">−$1.99</td></tr>
+      <tr><td>Pay ops (7%)</td><td class="mono">$11.04 × 0.07</td><td class="mono">−$0.77</td></tr>
+      <tr><td><strong>Pay sales agent (recruiting)</strong></td><td class="mono">flat</td><td class="mono"><strong>−$2.00</strong></td></tr>
+      <tr><td><strong>Ergos contribution margin</strong></td><td class="mono">—</td><td class="mono"><strong>$6.28</strong></td></tr>
+    </tbody>
+  </table>
+
+  <p>Each standard booking contributes <strong>$6.28</strong> toward fixed-cost recovery and profit, after both commission flows are paid.</p>
+
+  <h4 style="margin-top: 18px;">Case B — Chain-discounted hotel (Meliá-style)</h4>
+
+  <p>Assumptions: $300 USD GDS net, 15% chain discount, 13% Ergos markup, 4% agency rebate, Elite-tier booking agent (24% earning, 6% ops).</p>
+
+  <table>
+    <thead>
+      <tr><th>Line item</th><th>Calculation</th><th>Amount (USD)</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>GDS net</td><td class="mono">—</td><td class="mono">$300.00</td></tr>
+      <tr><td>Adjusted cost (after 15% discount)</td><td class="mono">$300 × 0.85</td><td class="mono">$255.00</td></tr>
+      <tr><td>Ergos sell</td><td class="mono">$255 × 1.13</td><td class="mono">$288.15</td></tr>
+      <tr><td>Agency rebate (4%)</td><td class="mono">$288.15 × 0.04</td><td class="mono">−$11.53</td></tr>
+      <tr><td>Ergos receives</td><td class="mono">—</td><td class="mono">$276.62</td></tr>
+      <tr><td>Pay hotel</td><td class="mono">—</td><td class="mono">−$255.00</td></tr>
+      <tr><td>Ergos gross</td><td class="mono">—</td><td class="mono">$21.62</td></tr>
+      <tr><td>Pay booking agent (24%)</td><td class="mono">$21.62 × 0.24</td><td class="mono">−$5.19</td></tr>
+      <tr><td>Pay ops (6%)</td><td class="mono">$21.62 × 0.06</td><td class="mono">−$1.30</td></tr>
+      <tr><td><strong>Pay sales agent (recruiting)</strong></td><td class="mono">flat</td><td class="mono"><strong>−$2.00</strong></td></tr>
+      <tr><td><strong>Ergos contribution margin</strong></td><td class="mono">—</td><td class="mono"><strong>$13.13</strong></td></tr>
+    </tbody>
+  </table>
+
+  <p>Each chain-discounted booking contributes <strong>$13.13</strong> — over 2× more than a standard booking. This is the structural reason chain partnerships are the highest-value inventory to push.</p>
+
+  <h3>Break-even and volume sensitivity</h3>
+
+  <p>Assuming a 70% standard / 30% chain inventory mix, the weighted average per-booking contribution is <strong>$8.34 USD</strong> (= 0.70 × $6.28 + 0.30 × $13.13).</p>
+
+  <p>At $3,650 USD/month fixed costs:</p>
+
+  <table>
+    <thead>
+      <tr><th>Monthly bookings</th><th>Total contribution</th><th>Fixed costs</th><th>True net profit</th><th>Status</th></tr>
+    </thead>
+    <tbody>
+      <tr><td class="mono">250</td><td class="mono">$2,085</td><td class="mono">$3,650</td><td class="mono">−$1,565</td><td>Pre-break-even</td></tr>
+      <tr><td class="mono"><strong>438</strong></td><td class="mono"><strong>$3,654</strong></td><td class="mono"><strong>$3,650</strong></td><td class="mono"><strong>$0</strong></td><td><strong>Break-even</strong></td></tr>
+      <tr><td class="mono">500</td><td class="mono">$4,170</td><td class="mono">$3,650</td><td class="mono">+$520</td><td>Slightly profitable</td></tr>
+      <tr><td class="mono">1,000</td><td class="mono">$8,340</td><td class="mono">$3,650</td><td class="mono">+$4,690</td><td>Profitable</td></tr>
+      <tr><td class="mono">2,500</td><td class="mono">$20,850</td><td class="mono">$3,650</td><td class="mono">+$17,200</td><td>Strong</td></tr>
+      <tr><td class="mono">5,000</td><td class="mono">$41,700</td><td class="mono">$3,650</td><td class="mono">+$38,050</td><td>Scaled</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout callout-gold">
+    <strong>Break-even at ~440 bookings/month.</strong> A productive travel agency does 50–200 bookings/month, so 3–8 agencies covers fixed costs entirely. This is the headline number for any conversation with prospective sales agents: <em>"Once you've recruited 5–8 active agencies, Ergos is profitable and every additional booking you bring in is overwhelmingly margin."</em>
+  </div>
+
+  <h3>Sales agent compensation — recommended model (conservative)</h3>
+
+  <p>The recommended starting structure, after modeling against the cost base above:</p>
+
+  <table>
+    <thead>
+      <tr><th>Component</th><th>Amount</th><th>Trigger / Conditions</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Signing bonus</strong></td>
+        <td class="mono">$500 USD one-time</td>
+        <td>Paid after the recruited agency completes its first 10 paid bookings (filters out tire-kickers)</td>
+      </tr>
+      <tr>
+        <td><strong>Per-booking recurring commission</strong></td>
+        <td class="mono">$2.00 USD per booking</td>
+        <td>Paid on every booking made by an agency the sales agent recruited, for the lifetime of that agency's activity on Ergos</td>
+      </tr>
+      <tr>
+        <td><strong>Productivity throttle</strong></td>
+        <td class="mono">drops to $1.00/booking</td>
+        <td>If recruited agency drops below 50 bookings/month for 3 consecutive months — keeps sales agents motivated to support productivity, not sign-and-forget</td>
+      </tr>
+      <tr>
+        <td><strong>Portfolio guardrail</strong></td>
+        <td class="mono">cap at 30% of monthly contribution</td>
+        <td>Total recruiting commissions in any month cannot exceed 30% of Ergos's total contribution margin that month; excess rolls to next month. Protects against runaway costs in early scaling.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>What a sales agent actually earns</h3>
+
+  <p>Concrete projections under the recommended model:</p>
+
+  <table>
+    <thead>
+      <tr><th>Sales agent portfolio</th><th>Monthly recurring</th><th>Annual recurring</th><th>+ Signing bonuses (year 1)</th><th>Year 1 total</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>1 agency × 200 bookings/mo</td>
+        <td class="mono">$400</td>
+        <td class="mono">$4,800</td>
+        <td class="mono">$500</td>
+        <td class="mono">$5,300</td>
+      </tr>
+      <tr>
+        <td>5 agencies × 150 bookings/mo avg</td>
+        <td class="mono">$1,500</td>
+        <td class="mono">$18,000</td>
+        <td class="mono">$2,500</td>
+        <td class="mono">$20,500</td>
+      </tr>
+      <tr>
+        <td>10 agencies × 150 bookings/mo avg</td>
+        <td class="mono">$3,000</td>
+        <td class="mono">$36,000</td>
+        <td class="mono">$5,000</td>
+        <td class="mono">$41,000</td>
+      </tr>
+      <tr>
+        <td>15 agencies × 150 bookings/mo avg</td>
+        <td class="mono">$4,500</td>
+        <td class="mono">$54,000</td>
+        <td class="mono">$7,500</td>
+        <td class="mono">$61,500</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p>These are realistic earnings for commission-only B2B sales roles in the travel industry. A top performer with 15 active agencies earns north of $60K USD year one, with no base salary — fully variable comp aligned with platform growth.</p>
+
+  <h3>Alternative models considered and why they were rejected</h3>
+
+  <table>
+    <thead>
+      <tr><th>Model</th><th>Why rejected</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Percentage of Ergos gross margin</strong> (instead of flat $2)</td>
+        <td>Couples sales-agent income to variables they don't control (hotel net rate, booking-agent tier, ops cost). Recruiting reps need predictable per-booking economics to pitch productively.</td>
+      </tr>
+      <tr>
+        <td><strong>Percentage of agency markup</strong> (sharing the agency's margin)</td>
+        <td>Out of scope. The agency markup is the agency's business (see §6). Ergos doesn't share in it and won't allocate from it.</td>
+      </tr>
+      <tr>
+        <td><strong>One-time recruiting fee only</strong> (no recurring)</td>
+        <td>Creates sign-and-forget behavior. Sales agents have no incentive to keep recruited agencies productive once paid. Recurring commission ties sales-agent income to agency retention and health.</td>
+      </tr>
+      <tr>
+        <td><strong>Aggressive rates ($3+/booking, $1,000 signing)</strong></td>
+        <td>At MVP volume (~1,000 bookings/month target), aggressive rates compress true net margin below the level needed to fund product investment. Reserved for targeted geographic pushes (e.g., a Spain or Mexico-specific recruitment sprint).</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>Travel agency's incentive to embark</h3>
+
+  <p>For completeness — recruiting succeeds only if agencies have a compelling reason to join. The recruiting commission is a sales-side tool; the agency-side pitch rests on:</p>
+
+  <ol>
+    <li><strong>Inventory access they don't have today.</strong> Many small/mid agencies have one GDS relationship. Ergos gives them aggregated access to Dingus + Hotetec + Restel + Juniper instantly — hundreds of thousands of properties internationally.</li>
+    <li><strong>No website required.</strong> They use the Ergos agency app to search, quote, and book. Their own digital presence is optional.</li>
+    <li><strong>4% rebate</strong> on every Ergos sell, on top of whatever markup they charge their customer (which is their own business — they keep 100% of it).</li>
+    <li><strong>Chain discounts pushed through.</strong> When Ergos negotiates a chain rate (e.g., Meliá at 15%), the savings reduce the agency's net cost, expanding their markup headroom.</li>
+    <li><strong>Fast payouts via Tropipay</strong>, no credit-card processing infrastructure on their side, international payment support.</li>
+    <li><strong>A real human contact</strong> — the sales agent who recruited them stays as their ongoing support contact, with a financial incentive to keep them productive.</li>
+  </ol>
+
+  <h3>Open questions for next iteration</h3>
+
+  <ul>
+    <li>Should signing bonuses be tiered by recruited agency's projected volume (e.g., $500 default, $1,000 if agency commits to 100+ bookings/month minimum)?</li>
+    <li>Should sales agents be paid for agencies they recruit even after they leave the program (lifetime trailing commission), or should commissions cease when they exit?</li>
+    <li>Geographic recruitment sprints: should there be a 6-month doubled-rate window for agencies recruited in priority markets (Spain, Mexico, North America)?</li>
+    <li>Sales-agent tiers: parallel to booking-agent tiers (Starter → Strategic), should top recruiters unlock higher per-booking rates as a retention mechanism?</li>
+  </ul>
+
+  <div class="callout callout-info">
+    <strong>Status:</strong> The numbers in this section are derived from the cost base and worked-scenario math as of May 2026. Engine implementation (database schema, payout job, sales-agent portal P&amp;L view) is not yet built — this section documents the policy and unit economics ahead of implementation.
+  </div>
+</section>
+
+  </main>
+</div>
+
+<script>
+/**
+ * Two-pane navigation: click a TOC link → show only that section in the
+ * right pane. Hash-routed (URLs deep-link, browser back/forward works).
+ */
+(function () {
+  const sections = Array.from(document.querySelectorAll('.main-content > section'));
+  const tocLinks = Array.from(document.querySelectorAll('.toc-grid a'));
+  const mainContent = document.querySelector('.main-content');
+
+  function showSection(id) {
+    const target = sections.find((s) => s.id === id) || sections[0];
+    if (!target) return;
+    sections.forEach((s) => s.classList.toggle('active', s === target));
+    tocLinks.forEach((l) =>
+      l.classList.toggle('active', l.getAttribute('href') === '#' + target.id)
+    );
+    if (mainContent) mainContent.scrollTop = 0;
+
+    // Reflect in document title so browser history is meaningful
+    const titleEl = target.querySelector('h2');
+    if (titleEl) {
+      const sectionTitle = titleEl.textContent.replace(/\s+/g, ' ').trim();
+      document.title = sectionTitle + ' — Commission Management';
+    }
+  }
+
+  function handleHash() {
+    const id = window.location.hash.slice(1);
+    showSection(id);
+  }
+
+  tocLinks.forEach((link) => {
+    link.addEventListener('click', function (e) {
+      e.preventDefault();
+      const id = this.getAttribute('href').slice(1);
+      if (window.location.hash !== '#' + id) {
+        history.pushState(null, '', '#' + id);
+      }
+      showSection(id);
+    });
+  });
+
+  window.addEventListener('hashchange', handleHash);
+  window.addEventListener('popstate', handleHash);
+
+  // Initial render — show the hashed section, or default to the first one
+  handleHash();
+})();
+</script>
+
+</body>
+</html>
