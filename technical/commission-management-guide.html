@@ -1021,7 +1021,7 @@ table .mono { font-family: 'JetBrains Mono', monospace; font-size: 12px; }
         <a href="#mental-model"><span class="toc-num">1.</span><span>Mental Model — 5-layer inheritance</span></a>
         <a href="#screen-policy"><span class="toc-num">2.</span><span>Screen: Commission Policy</span></a>
         <a href="#screen-chains"><span class="toc-num">3.</span><span>Screen: Commission Chains</span></a>
-        <a href="#guardrails"><span class="toc-num">4.</span><span>Guardrails &amp; Save Flow</span></a>
+        <a href="#guardrails"><span class="toc-num">4.</span><span>Save Flow</span></a>
         <a href="#snapshot"><span class="toc-num">5.</span><span>Booking-time Snapshot</span></a>
         <a href="#money-flow"><span class="toc-num">6.</span><span>Money Flow — Who Earns What</span></a>
         <a href="#use-cases"><span class="toc-num">7.</span><span>Use Cases (10 examples)</span></a>
@@ -1161,7 +1161,7 @@ table .mono { font-family: 'JetBrains Mono', monospace; font-size: 12px; }
         <td>SalesAgent · CommissionDefaults</td>
         <td><strong style="color: var(--gold);">Sales agent</strong></td>
         <td><strong>Agent's slice of Ergos's GROSS margin</strong> — NOT of sell, NOT Ergos's net, NOT the agency's. <code>24</code> = the agent keeps 24% of <code>ergosGross</code>. Default per tier; per-(agent, hotel) overrides win. Per-agent-hotel overrides are stored in <code>sales_agent_commission</code> as <code>commissionPercentage</code>; surfaced via API/UI as <code>earningPctOverride</code>.</td>
-        <td class="mono">0–100 integer (capped at 32 by guardrail)</td>
+        <td class="mono">0–100 integer (no runtime cap; tier defaults max out at 32%)</td>
       </tr>
       <tr>
         <td class="mono">operationalExpense</td>
@@ -1278,18 +1278,18 @@ table .mono { font-family: 'JetBrains Mono', monospace; font-size: 12px; }
 
   <h3>Right rail — what the math says</h3>
   <ul>
-    <li><strong>Simulate tab:</strong> type a GDS net price → see the full waterfall (GDS net → adjusted cost → Ergos sell → Ergos gross → Ergos net), plus 3 traffic-light guardrail indicators.</li>
+    <li><strong>Simulate tab:</strong> type a GDS net price → see the full waterfall (GDS net → adjusted cost → Ergos sell → Ergos gross → Ergos net). The legacy guardrail traffic-light row was removed in the 2026-05-27 cleanup.</li>
     <li><strong>Audit tab:</strong> inline quick-view of the latest 50 entries for the currently-selected scope.</li>
   </ul>
 
   <figure class="screenshot">
     <div class="screenshot-frame">
       <img src="commission-screenshots/04-simulate-panel.png"
-           alt="Right rail Simulate panel — GDS net input, full waterfall breakdown, and the three guardrail traffic lights"
+           alt="Right rail Simulate panel — GDS net input and full waterfall breakdown"
            loading="lazy"
            onerror="this.style.display='none'" />
     </div>
-    <figcaption>Right-rail Simulate panel with live waterfall and guardrails · drop screenshot at <span class="file">commission-screenshots/04-simulate-panel.png</span></figcaption>
+    <figcaption>Right-rail Simulate panel with live waterfall · drop screenshot at <span class="file">commission-screenshots/04-simulate-panel.png</span></figcaption>
   </figure>
 
   <h3>Header actions (top right)</h3>
@@ -1489,173 +1489,27 @@ table .mono { font-family: 'JetBrains Mono', monospace; font-size: 12px; }
 </section>
 
 <!-- ============================================================ -->
-<!-- SECTION 4: GUARDRAILS & SAVE FLOW -->
+<!-- SECTION 4: SAVE FLOW -->
 <!-- ============================================================ -->
 <section id="guardrails">
-  <h2>4. Guardrails &amp; Save Flow <span class="label">SaveConfirmModal</span></h2>
+  <h2>4. Save Flow <span class="label">SaveConfirmModal</span></h2>
 
-  <p>The system enforces 3 financial invariants on every commission policy change. These are evaluated <strong>after</strong> the edits would take effect, so admins see the consequences before committing.</p>
-
-  <table>
-    <thead>
-      <tr>
-        <th>Guardrail</th>
-        <th>Rule</th>
-        <th>Default</th>
-        <th>Severity</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><strong>Min Ergos net</strong></td>
-        <td>Ergos net ÷ Ergos sell ≥ threshold</td>
-        <td class="mono">≥ 5.0%</td>
-        <td><strong style="color: var(--amber);">Soft (reason required)</strong></td>
-      </tr>
-      <tr>
-        <td><strong>Max agent share</strong></td>
-        <td>Agent earning ÷ Ergos gross ≤ threshold</td>
-        <td class="mono">≤ 32.0%</td>
-        <td><strong style="color: var(--amber);">Soft (reason required)</strong></td>
-      </tr>
-      <tr>
-        <td><strong>Min Ergos share</strong></td>
-        <td>Ergos net ÷ Ergos gross ≥ threshold</td>
-        <td class="mono">≥ 50.0%</td>
-        <td><strong style="color: var(--amber);">Soft (reason required)</strong></td>
-      </tr>
-    </tbody>
-  </table>
-
-  <!-- ─────────────────────────────────────────────────────────── -->
-  <!-- SAFE CEILINGS — derived from the 5% Ergos net floor.       -->
-  <!-- Answers: "how high can I set each variable before Ergos    -->
-  <!-- stops earning money?"                                      -->
-  <!-- ─────────────────────────────────────────────────────────── -->
-  <h3 id="safe-ceilings">Safe ceiling values — how high can each variable go?</h3>
-
-  <p>The guardrail table above defines the floor for Ergos's profitability (<code>ergosNetPct ≥ 5%</code>). That floor implicitly creates a <strong>ceiling on each commission variable</strong>: set any one too high (or, for <code>chainDiscountPct</code>, too high relative to the cost basis) and Ergos drops below the floor — the SaveConfirmModal then surfaces an amber warning and requires a reason (≥10 chars) to proceed. Per the 2026-05-27 revision, this is no longer a hard block; the reason is audited so unprofitable saves are always traceable.</p>
-
-  <p>The ceilings below are <strong>derived from that floor</strong>, holding the other variables at their defaults. Tighten one knob and the ceilings on the others shrink; relax it and they widen.</p>
-
-  <table>
-    <thead>
-      <tr>
-        <th>Variable</th>
-        <th>Soft target<br><span style="font-weight: 400; text-transform: none;">typical operating value</span></th>
-        <th>Hard ceiling<br><span style="font-weight: 400; text-transform: none;">above this, floor breaks</span></th>
-        <th>Schema cap<br><span style="font-weight: 400; text-transform: none;">validator max</span></th>
-        <th>What sets the ceiling</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td class="mono">baseCommission</td>
-        <td class="mono">1–3%<br><small style="font-weight:400; text-transform: none; color: var(--text-muted);">(default 3, per 2026-05-27 policy)</small></td>
-        <td class="mono">no upper floor risk</td>
-        <td class="mono">1–100%</td>
-        <td>Stakeholder policy: min 1% (schema floor), default 3% (new average), max 100% (schema cap). Values ≥5% are typically paired with a negotiated chain discount — this is informational guidance in the UI, not an enforced rule. Higher → Ergos earns more, so there is no upper profitability ceiling. Limited by market acceptance and GDS contracts.</td>
-      </tr>
-      <tr>
-        <td class="mono">chainDiscountPct</td>
-        <td class="mono">10–20 (10–20% off)</td>
-        <td class="mono">~50 (50% off — extreme)</td>
-        <td class="mono">100 (100% off)</td>
-        <td>Whole-percent discount — <code>0</code> means no discount, <code>15</code> means 15% off GDS net. Hotel schema validator caps at 100, but real chain deals top out around 20.</td>
-      </tr>
-      <tr>
-        <td class="mono">rebatePct</td>
-        <td class="mono">0–4%</td>
-        <td class="mono">~5%</td>
-        <td class="mono">100%</td>
-        <td>Erodes Ergos net 1:1. Higher rebate requires higher <code>baseCommission</code> to compensate. With <code>baseCommission = 13</code> (legacy default), rebate above ~4.4% breaks the 5% floor (worked example below). With the new <code>baseCommission = 3</code> default, the system is already near the floor — practically <strong>any positive rebate forces a per-hotel or per-chain baseCommission uplift</strong> to remain saveable.</td>
-      </tr>
-      <tr>
-        <td class="mono"><strong>earningPercentage</strong></td>
-        <td class="mono">12–24% (tier defaults)</td>
-        <td class="mono"><strong>32% (hard cap)</strong></td>
-        <td class="mono">100%</td>
-        <td>Hard-capped by the <code>maxAgentPctOfGross&nbsp;=&nbsp;32</code> guardrail (from <code>DEFAULT_GUARDRAILS</code> in <code>commission-engine.ts</code>). No agent — at any tier, with any per-(agent, hotel) override — can keep more than 32% of Ergos gross.</td>
-      </tr>
-      <tr>
-        <td class="mono">operationalExpense</td>
-        <td class="mono">5–8%</td>
-        <td class="mono">~10%</td>
-        <td class="mono">100%</td>
-        <td>Stacks with <code>earningPercentage</code>. At max agent earning (32%) plus ops &gt; 18%, Ergos's gross is consumed before any net remains.</td>
-      </tr>
-    </tbody>
-  </table>
-
-  <h4>Worked example: deriving the <code>rebatePct</code> ceiling</h4>
-
-  <div class="callout callout-warning" style="margin-bottom: 8px;">
-    <strong>Two scenarios — same math, very different ceilings.</strong> Below uses <code>baseCommission = 13</code> (legacy operating value before 2026-05-27) to derive a meaningful rebate ceiling. After the policy revision (<code>baseCommission</code> default = 3), the math below applied with 3 instead of 13 gives a <em>negative</em> ceiling — meaning at the new default, <strong>no rebate at all is sustainable</strong> without per-hotel or per-chain markup uplift. This is intentional: the 3% default is for non-rebate-paying bookings; agencies with rebate deals require a higher <code>baseCommission</code> override at the chain or hotel layer.
+  <div class="callout callout-teal" style="margin-bottom: 16px;">
+    <strong>Legacy guardrails removed (2026-05-27).</strong> Earlier versions of the engine enforced three runtime guardrails (<code>minErgosNetPct = 5%</code>, <code>maxAgentPctOfGross = 32%</code>, <code>minErgosPctOfGross = 50%</code>). These were inherited from an early business spec and did not reflect the stakeholder-ratified commission picture (GDS → chain discount → Ergos markup → optional agency rebate → travel-agency markup). They were removed from the engine, frontend mirror, SaveConfirmModal, and right-rail UI. The only floor enforced today is the schema-level <code>baseCommission &ge; 1</code>.
   </div>
 
-  <p>Fix the other variables at their typical values. Stored values (whole percent): <code>baseCommission&nbsp;=&nbsp;13</code>, <code>chainDiscountPct&nbsp;=&nbsp;0</code>, <code>earningPct&nbsp;=&nbsp;24</code> (Elite default), <code>opsExpense&nbsp;=&nbsp;6</code>. The engine converts via <code>pct(n)&nbsp;=&nbsp;n/100</code>, so below we work in decimal form: <code>0.13</code>, <code>0</code>, <code>0.24</code>, <code>0.06</code>. Normalize <code>gdsNet&nbsp;=&nbsp;100</code> and let <code>r</code> be the unknown rebate fraction.</p>
-
-  <div class="formula"><span class="comment">// Walk the formula in commission-engine.ts</span>
-adjustedCost    = 100 × 1.0              = 100
-ergosSell       = 100 × 1.13             = 113
-agencyEffective = 113 × (1 − r)
-ergosGross      = 113(1 − r) − 100
-ergosNet        = ergosGross × (1 − 0.24 − 0.06)
-                = ergosGross × 0.70
-
-<span class="comment">// Apply the 5% floor: ergosNet ≥ 0.05 × ergosSell</span>
-0.70 × [113(1 − r) − 100] ≥ 0.05 × 113
-113(1 − r) − 100           ≥ 8.07
-113(1 − r)                 ≥ 108.07
-1 − r                      ≥ 0.9564
-<strong>r ≤ 4.4%</strong>           <span class="comment">// the ceiling for rebatePct</span></div>
-
-  <p>Set rebate at 4% → ergosNetPct lands at 5.25%, just above the floor. Set it at 5% → ergosNetPct drops to 4.55%, and the modal raises an amber warning that requires a reason (≥10 chars) — save still goes through, with the reason stored in audit. The right rail's <strong>Simulate panel</strong> runs the same calculation live as you edit, and the SaveConfirmModal re-runs it before commit, so the math above matches what the UI tells you in real time.</p>
-
-  <div class="callout callout-teal">
-    <strong>Practical order for setting policy</strong> (under the new 2026-05-27 policy):
-    <ol style="margin-top: 8px;">
-      <li>Start from the <strong>global default of 3%</strong> and only override upward at the chain or hotel layer when the booking economics require it (rebate-paying agency, expensive agent tier, or guardrail headroom).</li>
-      <li>For each chain with a negotiated discount (e.g. the Cuba chains: DOMINA, MELIA, IBEROSTAR, GRANCARIBE, GAVIOTA), set the <strong>chain-wide <code>baseCommission</code></strong> in the chain editor — this cascades to every linked hotel without per-property edits.</li>
-      <li>Negotiate <code>rebatePct</code> with each agency, staying within the ceiling that the effective <code>baseCommission</code> permits (derive from the worked example above using the actual effective value).</li>
-      <li>Then tier agents (or set per-(agent, hotel) overrides) within the 32% hard cap.</li>
-    </ol>
-    Doing this in reverse — promising high agent earnings or large agency rebates without first raising <code>baseCommission</code> above the 3% default — almost always trips the 5% Ergos-net warning, which then forces every save to carry an audit reason.
-  </div>
+  <p>The SaveConfirmModal is a confirmation step — diff in, audit out. No runtime guardrails are evaluated.</p>
 
   <h3>When you click "Review and Save"</h3>
 
-  <p>The SaveConfirmModal opens and shows you:</p>
+  <p>The modal shows you:</p>
   <ol>
-    <li><strong>Proposed changes</strong> — a table of every field that will change, scoped by entity.</li>
-    <li><strong>Post-edit guardrail status</strong> — runs the math with the new values and shows whether each guardrail passes.</li>
-    <li><strong>Reason textarea</strong> — appears (and is required) only when a soft guardrail is breached.</li>
+    <li><strong>Proposed changes</strong> — a table of every field that will change, scoped by entity (hotel, agency, agent, etc.).</li>
+    <li><strong>Cancel / Confirm Save</strong> — the only two actions. There is no warning state, no required reason, no hard block. Schema-level invariants (e.g. <code>baseCommission &ge; 1</code>) are still enforced server-side; if a save would violate them, the backend returns 400 and the dialog surfaces the message inline.</li>
   </ol>
 
-  <h3>Two possible outcomes</h3>
-
-  <p>Per the 2026-05-27 stakeholder revision, all three guardrails (min Ergos net, max agent share, min Ergos share) are <strong>soft warnings</strong>: a breach requires a reason but never blocks the save. The modal therefore has only two visual states.</p>
-
-  <figure class="screenshot">
-    <div class="screenshot-frame">
-      <img src="commission-screenshots/05-save-confirm-modal.png"
-           alt="SaveConfirmModal — diff table of proposed changes on top, post-edit guardrail status indicators, and reason textarea when any guardrail is breached"
-           loading="lazy"
-           onerror="this.style.display='none'" />
-    </div>
-    <figcaption>SaveConfirmModal · drop screenshot at <span class="file">commission-screenshots/05-save-confirm-modal.png</span></figcaption>
-  </figure>
-
-  <div class="callout callout-success">
-    <strong>✓ Green (all guardrails pass)</strong> — Normal "Confirm Save" button. Save proceeds and each layer write produces an audit entry.
-  </div>
-
-  <div class="callout callout-warning">
-    <strong>⚠ Amber (any guardrail breached — including the 5% Ergos net floor)</strong> — Reason textarea (min 10 chars) becomes required. Button label changes to "Confirm with reason" and renders in amber. On save, the reason is stored on every audit entry from this change, so unprofitable or off-policy decisions are always traceable.
-  </div>
-
   <h3>Centralized audit</h3>
-  <p>On confirm, the page POSTs each layer's changes to a <strong>single centralized endpoint</strong> (<code>PATCH /admin/commission-policy/layer/{scope}/{scopeId}</code>) which writes the change AND an audit entry atomically. This closes the compliance hole where, previously, non-global edits silently bypassed audit.</p>
+  <p>On confirm, the page POSTs each layer's changes to a <strong>single centralized endpoint</strong> (<code>PATCH /admin/commission-policy/layer/{scope}/{scopeId}</code>) which writes the change AND an audit entry atomically. Every edit is therefore traceable to who changed what, when, and to what new value — independent of whether any threshold was crossed.</p>
 </section>
 
 <!-- ============================================================ -->
@@ -1683,7 +1537,7 @@ agencyCustomerPrice: <span class="num">220.92</span>,        <span class="commen
 agencyMarkupPctSnapshot: <span class="num">15</span>,        <span class="comment">// whole percent (15 = 15%) — agency's markup % at booking time</span></div>
 
   <div class="callout callout-info">
-    <strong>One consistent convention across the platform.</strong> All percentage fields — the 5 inside <code>commissionSnapshot</code> (driven by the commission engine) and the agency-side <code>agencyMarkupPctSnapshot</code> stored alongside it — are whole-percent integers. <code>15</code> means 15%, not <code>0.15</code>. The agency markup lives outside the commission engine's math (it doesn't affect any guardrail or payout calculation), but the storage format, validation rules, API contract, and input controls all follow the same integer pattern as every other percent field. The freeze logic in <code>booking.service.ts</code> writes the two snapshot blocks independently — one can succeed while the other fails (e.g. an agency without a configured <code>defaultMarkupPct</code>) — but their formats now match.
+    <strong>One consistent convention across the platform.</strong> All percentage fields — the 5 inside <code>commissionSnapshot</code> (driven by the commission engine) and the agency-side <code>agencyMarkupPctSnapshot</code> stored alongside it — are whole-percent integers. <code>15</code> means 15%, not <code>0.15</code>. The agency markup lives outside the commission engine's math (it doesn't affect any payout calculation), but the storage format, validation rules, API contract, and input controls all follow the same integer pattern as every other percent field. The freeze logic in <code>booking.service.ts</code> writes the two snapshot blocks independently — one can succeed while the other fails (e.g. an agency without a configured <code>defaultMarkupPct</code>) — but their formats now match.
   </div>
 
   <h3>Where it's visible</h3>
@@ -1797,7 +1651,7 @@ agencyMarkupPctSnapshot: <span class="num">15</span>,        <span class="commen
     </div>
     <div class="party-pnl pnl-net">
       <span class="pnl-label"><strong>Ergos net retained</strong></span>
-      <span class="pnl-detail">5.26% of ergosSell ✓ above floor</span>
+      <span class="pnl-detail">5.26% of ergosSell</span>
       <span class="pnl-value">$10.10</span>
     </div>
   </div>
@@ -1900,7 +1754,7 @@ agencyMarkupPctSnapshot: <span class="num">15</span>,        <span class="commen
   <h3>The agency markup — out of scope for Ergos's commission policy</h3>
 
   <div class="callout callout-info">
-    <strong>Important boundary:</strong> Whatever markup a travel agency charges its final customer is <strong>the agency's own business decision</strong>. Ergos does not set it, does not enforce it, and does not factor it into any commission calculation, guardrail, or profitability check. The agency manages it from their own back office.
+    <strong>Important boundary:</strong> Whatever markup a travel agency charges its final customer is <strong>the agency's own business decision</strong>. Ergos does not set it, does not enforce it, and does not factor it into any commission calculation or profitability check. The agency manages it from their own back office.
   </div>
 
   <p>Layer 3 (Agency → Customer) sits outside our commission policy. The agency configures a <code>defaultMarkupPct</code> on their Profile page if they want to use the platform's optional invoicing helpers, but the value has <strong>zero effect</strong> on:</p>
@@ -1908,7 +1762,6 @@ agencyMarkupPctSnapshot: <span class="num">15</span>,        <span class="commen
     <li>The Ergos sell price (what the agency pays Ergos)</li>
     <li>The booking agent's commission</li>
     <li>The Ergos net margin</li>
-    <li>Any of the 4 guardrails (floors, caps, agent-share cap)</li>
     <li>The savability of a commission policy</li>
   </ul>
 
@@ -1957,7 +1810,7 @@ agencyMarkupPctSnapshot: <span class="num">15</span>,        <span class="commen
       </tr>
       <tr>
         <td><strong>Strategic partner</strong></td>
-        <td class="mono">5%+ (subject to guardrails)</td>
+        <td class="mono">5%+</td>
         <td>Very-high-volume partner with extended cashback to incentivize commitment. Still sets their own customer markup independently.</td>
       </tr>
     </tbody>
@@ -2021,7 +1874,7 @@ agencyMarkupPctSnapshot: <span class="num">15</span>,        <span class="commen
       <li>Go to <code>/commission-policy</code> → Hotels tab → search "Hotel Arts" → click on it</li>
       <li>Inheritance stack appears → on the <strong>Hotel layer card</strong>, change <em>Base Commission</em> from 8 to 10</li>
       <li>Yellow save bar appears at the bottom — click <strong>Review and Save</strong></li>
-      <li>SaveConfirmModal shows: 1 proposed change, post-edit guardrails all green</li>
+      <li>SaveConfirmModal shows: 1 proposed change</li>
       <li>Click <strong>Confirm Save</strong></li>
     </ol>
     <div class="uc-result"><strong>Result:</strong> Only Hotel Arts now has 10% markup. The change is audited with scope=hotel. Other hotels are unaffected — this is a surgical override.</div>
@@ -2074,7 +1927,7 @@ agencyMarkupPctSnapshot: <span class="num">15</span>,        <span class="commen
       <li>Inheritance stack appears — note Layer 4 (Elite tier) shows 24% default</li>
       <li>On <strong>Layer 5 (Agent-Hotel Override)</strong> card, enter <code>28</code> for earningPctOverride</li>
       <li>Click <strong>Review and Save</strong></li>
-      <li>SaveConfirmModal may show a soft guardrail warning if 28% pushes agentPctOfGross past 32% — type a reason and confirm</li>
+      <li>SaveConfirmModal shows: 1 proposed change — click Confirm Save</li>
     </ol>
     <div class="uc-result"><strong>Result:</strong> M. Ruiz earns 28% at Meliá Barcelona, default Elite (24%) elsewhere. The override is stored as a <code>SalesAgentCommission</code> document keyed on (M. Ruiz, Meliá BCN). Reason is on the audit trail.</div>
   </div>
@@ -2109,47 +1962,11 @@ agencyMarkupPctSnapshot: <span class="num">15</span>,        <span class="commen
       <li>(Optional) Filter by Scope = <code>hotel</code> to see only hotel-level changes</li>
       <li>(Optional) Filter by Changed by = a specific admin email to investigate one person's activity</li>
       <li>Browse the paginated results (25 per page, prev/next)</li>
-      <li>Each entry shows: timestamp, scope, who, what field, old → new, and reason text (if guardrail override or bulk edit)</li>
+      <li>Each entry shows: timestamp, scope, who, what field, old → new, and reason text (when supplied for bulk edits or chain-discount applications)</li>
     </ol>
     <div class="uc-result"><strong>Result:</strong> Full chronological compliance trail for the period. Export-ready data via the underlying <code>GET /audit</code> endpoint if you need CSV/JSON for the CFO.</div>
   </div>
 
-  <!-- UC9: Hard block -->
-  <div class="use-case uc-block">
-    <span class="use-case-num">UC 9 · System self-protection</span>
-    <h3>System blocks an unprofitable configuration</h3>
-    <div class="scenario">
-      <strong>Scenario:</strong> A new admin tries to lower the Ergos markup on Meliá Barcelona to 2% — not realizing this would drop Ergos net below the 5% floor and tank profitability.
-    </div>
-    <ol class="steps">
-      <li>Admin goes to <code>/commission-policy</code> → Hotel layer → changes Base Commission to <code>2</code></li>
-      <li>Clicks <strong>Review and Save</strong></li>
-      <li>SaveConfirmModal opens with <strong style="color: var(--red);">RED header "Save Blocked"</strong></li>
-      <li>The post-edit guardrail row shows Ergos net at <code>3.7%</code> in red</li>
-      <li>No Confirm button exists — only Cancel and a "Cannot proceed" badge</li>
-      <li>Admin clicks Cancel, talks to a senior, and re-enters a viable value</li>
-    </ol>
-    <div class="uc-result"><strong>Result:</strong> The system protected Ergos from an unprofitable configuration. The 5% floor is non-negotiable from the UI. If a special exception is ever truly needed, it would require a code-level admin override (not exposed in the UI by design).</div>
-  </div>
-
-  <!-- UC10: Override with reason -->
-  <div class="use-case uc-warning">
-    <span class="use-case-num">UC 10 · Strategic override</span>
-    <h3>Override a soft guardrail with documented reason</h3>
-    <div class="scenario">
-      <strong>Scenario:</strong> Ergos wants to offer 8% rebate to a strategic agency for a Q3 launch promotion — knowing it will push Ergos's gross share below the 50% target. CFO has pre-approved this loss-leader.
-    </div>
-    <ol class="steps">
-      <li>Go to <code>/commission-policy</code> → select the agency → set rebatePct to <code>8</code></li>
-      <li>Click <strong>Review and Save</strong></li>
-      <li>SaveConfirmModal opens with <strong style="color: var(--amber);">AMBER header "Guardrail Warning"</strong></li>
-      <li>Post-edit guardrails show: Min Ergos share 45% &lt; 50% (breached)</li>
-      <li>A red-labeled <strong>Reason textarea</strong> appears — required (min 10 chars), disabled Confirm button until filled</li>
-      <li>Type: <em>"Strategic loss-leader for Q3 launch — approved by CFO 2026-03-12"</em></li>
-      <li>Click <strong>Confirm with reason</strong></li>
-    </ol>
-    <div class="uc-result"><strong>Result:</strong> Save succeeds. The audit entry stores the reason text alongside the field change. Future audits will show <em>why</em> this breach was acceptable, providing the forensic trail the compliance team needs.</div>
-  </div>
 </section>
 
 <!-- ============================================================ -->
@@ -2172,11 +1989,12 @@ agentEarning     = ergosGross × earningPct
 opsAmt           = ergosGross × opsExpense
 <span class="keyword">ergosNet</span>         = ergosGross − agentEarning − opsAmt</div>
 
-  <h3>The guardrail KPIs</h3>
+  <h3>Margin KPIs (informational only — no runtime check)</h3>
   <div class="formula"><span class="comment">// Derived from the waterfall outputs:</span>
-ergosNetPct      = ergosNet ÷ ergosSell      <span class="comment">// must be ≥ 5%</span>
-agentPctOfGross  = agentEarning ÷ ergosGross <span class="comment">// must be ≤ 32%</span>
-ergosPctOfGross  = ergosNet ÷ ergosGross     <span class="comment">// must be ≥ 50%</span></div>
+ergosNetPct      = ergosNet ÷ ergosSell
+agentPctOfGross  = agentEarning ÷ ergosGross
+ergosPctOfGross  = ergosNet ÷ ergosGross</div>
+  <p style="font-size: 13px; color: var(--text-muted); margin-top: -4px;">These ratios are computed for display in the right rail and reporting surfaces. They are not enforced. The earlier guardrail constants (<code>minErgosNetPct = 5</code>, <code>maxAgentPctOfGross = 32</code>, <code>minErgosPctOfGross = 50</code>) were removed from the engine on 2026-05-27 because they were not part of the stakeholder-ratified commission picture.</p>
 
   <h3>Tier defaults (constant)</h3>
   <table>
@@ -2198,7 +2016,7 @@ ergosPctOfGross  = ergosNet ÷ ergosGross     <span class="comment">// must be �
 <section id="worked-numbers">
   <h2>9. Worked Numbers &amp; Tier Evolution <span class="label">The math, made concrete</span></h2>
 
-  <p>Section 7 gave you the formulas. This section runs them with real numbers so you can see exactly how each variable affects Ergos's take, the agent's earning, and the guardrails. Every walkthrough uses <code>gdsNet = $200</code> as a baseline — so when you compare them, you're looking at the same booking with different policies applied.</p>
+  <p>Section 7 gave you the formulas. This section runs them with real numbers so you can see exactly how each variable affects Ergos's take and the agent's earning. Every walkthrough uses <code>gdsNet = $200</code> as a baseline — so when you compare them, you're looking at the same booking with different policies applied.</p>
 
   <h3>Scenario A — Baseline (most common booking)</h3>
   <div class="callout callout-info" style="margin-bottom: 8px;">
@@ -2319,39 +2137,8 @@ ergosPctOfGross  = ergosNet ÷ ergosGross     <span class="comment">// must be �
 
   </div>
 
-  <h4>Now check the 3 guardrails</h4>
-  <p>Before we save (or commit a booking), the system runs 3 sanity checks on what we just calculated. All three must pass — if any fails, the admin gets an amber warning and must enter a reason (≥10 chars) before the save proceeds (audited).</p>
-
-  <div class="guardrail-check">
-    <h5>Guardrail evaluations for Scenario A</h5>
-    <div class="grow-row">
-      <div>
-        <strong>Min Ergos net %</strong>
-        <div style="font-size: 11px; color: var(--text-muted);">Ergos's net divided by sell price — soft floor at 5%; breach requires audit reason</div>
-      </div>
-      <div class="grow-formula">$12.00 ÷ $216.00</div>
-      <div class="grow-value grow-pass">5.56% ✓</div>
-    </div>
-    <div class="grow-row">
-      <div>
-        <strong>Max agent share of gross</strong>
-        <div style="font-size: 11px; color: var(--text-muted);">Agent's earning as % of Ergos gross — must stay below 32%</div>
-      </div>
-      <div class="grow-formula">$2.88 ÷ $16.00</div>
-      <div class="grow-value grow-pass">18.00% ✓</div>
-    </div>
-    <div class="grow-row">
-      <div>
-        <strong>Min Ergos share of gross</strong>
-        <div style="font-size: 11px; color: var(--text-muted);">Ergos keeps at least 50% of its own gross margin — soft guardrail</div>
-      </div>
-      <div class="grow-formula">$12.00 ÷ $16.00</div>
-      <div class="grow-value grow-pass">75.00% ✓</div>
-    </div>
-  </div>
-
   <div class="callout callout-success">
-    <strong>Outcome:</strong> Ergos receives <strong>$216</strong> from the agency, pays the hotel <strong>$200</strong>, pays the agent <strong>$2.88</strong>, covers <strong>$1.12</strong> of ops, and keeps <strong>$12.00</strong> as net profit. All guardrails green — save proceeds without any modal warning. This is the "default healthy booking" — most of your traffic should look like this.
+    <strong>Outcome:</strong> Ergos receives <strong>$216</strong> from the agency, pays the hotel <strong>$200</strong>, pays the agent <strong>$2.88</strong>, covers <strong>$1.12</strong> of ops, and keeps <strong>$12.00</strong> as net profit. <code>ergosNet/ergosSell = 5.56%</code> — a healthy margin. This is the "default healthy booking" — most of your traffic should look like this.
   </div>
 
   <h3>Scenario B — With chain discount (the Meliá story)</h3>
@@ -2470,43 +2257,15 @@ ergosPctOfGross  = ergosNet ÷ ergosGross     <span class="comment">// must be �
 
   </div>
 
-  <h4>Guardrail check for Scenario B</h4>
-  <div class="guardrail-check">
-    <div class="grow-row">
-      <div>
-        <strong>Min Ergos net %</strong>
-        <div style="font-size: 11px; color: var(--text-muted);">Hard floor — never below 5%</div>
-      </div>
-      <div class="grow-formula">$10.10 ÷ $192.10</div>
-      <div class="grow-value grow-pass">5.26% ✓</div>
-    </div>
-    <div class="grow-row">
-      <div>
-        <strong>Max agent share of gross</strong>
-        <div style="font-size: 11px; color: var(--text-muted);">Soft cap — agent should not take more than 32% of gross</div>
-      </div>
-      <div class="grow-formula">$3.46 ÷ $14.42</div>
-      <div class="grow-value grow-pass">24.00% ✓</div>
-    </div>
-    <div class="grow-row">
-      <div>
-        <strong>Min Ergos share of gross</strong>
-        <div style="font-size: 11px; color: var(--text-muted);">Ergos keeps ≥ 50% of its own gross margin</div>
-      </div>
-      <div class="grow-formula">$10.10 ÷ $14.42</div>
-      <div class="grow-value grow-pass">70.04% ✓</div>
-    </div>
-  </div>
-
   <div class="callout callout-teal">
     <strong>The big takeaway:</strong> The agency got a cheaper price ($192 vs $216), the agency got cashback ($7.68 rebate), the agent earned more ($3.46 vs $2.88), and Ergos's net only dropped by $1.90 (from $12.00 to $10.10). <strong>Everyone wins because the chain discount expanded the pie</strong> — the $30 saved on cost was distributed across the agency, the agent, and Ergos.
   </div>
 
-  <h3>Scenario C — The amber warning (why the 5% floor matters)</h3>
-  <div class="callout callout-warning" style="margin-bottom: 8px;">
-    <strong>The story:</strong> Same hotel as Scenario A (ordinary 8% markup, no chain, no rebate) — but the admin tries to assign a <strong>Strategic-tier</strong> agent (30% earning). The math will look fine until the very end, when the floor check trips an amber warning. Let's see exactly where it breaks — and why a reason becomes required to proceed.
+  <h3>Scenario C — Strategic agent on a thin-markup hotel</h3>
+  <div class="callout callout-teal" style="margin-bottom: 8px;">
+    <strong>The story:</strong> Same hotel as Scenario A (ordinary 8% markup, no chain, no rebate) — but the admin assigns a <strong>Strategic-tier</strong> agent (30% earning) instead of a Growth agent (18%). The waterfall is identical through step 6; only the agent earnings and ops in steps 7–8 change. Useful to see how thin Ergos's net margin becomes when an expensive tier lands on a low-markup booking.
     <br><br>
-    <strong>Note (2026-05-27 revision):</strong> this used to be a hard block — the save button disappeared and the admin couldn't proceed. The policy now treats it as a soft warning: the save goes through with a required reason (≥10 chars), and the reason is captured in the audit log so unprofitable configurations are always traceable to a documented decision.
+    There is no save block or warning attached to this scenario — the policy ratified 2026-05-27 only enforces the schema-level <code>baseCommission &ge; 1</code> floor. Below-spec margins still save through the normal flow; the audit log captures the change either way.
   </div>
 
   <table>
@@ -2553,52 +2312,20 @@ ergosPctOfGross  = ergosNet ÷ ergosGross     <span class="comment">// must be �
       <div class="step-result is-cost">−$0.80 <small>operational cost</small></div>
     </div>
 
-    <div class="calc-step is-final" style="border-left: 4px solid var(--red);">
-      <div class="step-num" style="background: var(--red);">9</div>
+    <div class="calc-step is-final">
+      <div class="step-num">9</div>
       <div class="step-body">
-        <h5>Ergos's net profit — looks OK in absolute terms…</h5>
-        <p class="step-explain">$10.40 in net profit. Sounds fine! But here's the catch: the guardrail isn't an absolute dollar amount — it's a percentage of the sell price. And against a $216 sell price, $10.40 is only…</p>
+        <h5>Ergos's net profit</h5>
+        <p class="step-explain">$10.40 in absolute dollars — only $1.60 less than Scenario A's $12.00 net. But as a percentage of sell ($216.00), it lands at <strong>4.81%</strong> versus Scenario A's 5.56%. Same hotel, same supplier, same markup; just a more expensive agent tier compressing the net retention.</p>
         <div class="step-formula">ergosNet  =  $16.00  −  $4.80  −  $0.80</div>
       </div>
-      <div class="step-result" style="background: #fff3e0; color: #8a5d00; border-color: var(--amber);">$10.40 <small>looks ok, but…</small></div>
+      <div class="step-result">$10.40 <small>Ergos net</small></div>
     </div>
 
   </div>
 
-  <h4>Guardrail check — and here's where it trips the warning</h4>
-  <div class="guardrail-check" style="background: linear-gradient(135deg, #fff3e0 0%, var(--bg-white) 100%); border-color: var(--amber);">
-    <div class="grow-row">
-      <div>
-        <strong style="color: var(--amber);">Min Ergos net %</strong>
-        <div style="font-size: 11px; color: var(--text-muted);">Soft floor — below 5% requires audit reason (was hard block before 2026-05-27)</div>
-      </div>
-      <div class="grow-formula">$10.40 ÷ $216.00</div>
-      <div class="grow-value" style="color: var(--amber); font-weight: 600;">4.81% ⚠ WARNING</div>
-    </div>
-    <div class="grow-row">
-      <div>
-        <strong>Max agent share of gross</strong>
-        <div style="font-size: 11px; color: var(--text-muted);">Soft cap — agent at exactly 30%</div>
-      </div>
-      <div class="grow-formula">$4.80 ÷ $16.00</div>
-      <div class="grow-value grow-pass">30.00% ✓ (right at limit)</div>
-    </div>
-    <div class="grow-row">
-      <div>
-        <strong>Min Ergos share of gross</strong>
-        <div style="font-size: 11px; color: var(--text-muted);">Ergos keeps ≥ 50% of its own gross margin</div>
-      </div>
-      <div class="grow-formula">$10.40 ÷ $16.00</div>
-      <div class="grow-value grow-pass">65.00% ✓</div>
-    </div>
-  </div>
-
-  <div class="callout callout-warning">
-    <strong>AMBER WARNING — REASON REQUIRED.</strong> The SaveConfirmModal opens with an amber header, the reason textarea is shown, and the Confirm button is enabled only after a ≥10-character reason is typed. The save then goes through and the reason is captured on every audit entry for this change. <strong>The system permits the configuration but creates a permanent record of <em>why</em> it was approved.</strong>
-    <br><br>
-    <strong>Why the floor still matters:</strong> if Ergos retains less than 5% of sell as net, payment processing fees (1-1.5%), technology infrastructure, G&A, and required profit all have to come out of that thin slice — which doesn't work as a default operating posture. The 5% floor is the line where a booking starts to lose money for Ergos. Strategic exceptions (volume deals, new-market entry) may justify operating below it, but those exceptions need documentation.
-    <br><br>
-    <strong>How to clear the warning instead of overriding:</strong> either (a) put the Strategic agent on hotels with ≥10% markup, (b) put them on chain-discounted hotels (cost basis lowered → more gross → enough room for their take), or (c) lower their earning percentage. Clearing the warning is preferred to overriding it — the audit log makes any standing pattern of overrides easy to spot in compliance review.
+  <div class="callout callout-teal">
+    <strong>Takeaway — agent tier choice has real margin consequences.</strong> A Strategic agent costs Ergos $1.92 more per booking ($4.80 vs $2.88) and shaves Ergos's net retention from 5.56% to 4.81% of sell. That's still positive dollars but a thinner percentage. Pairing high-earning tiers (Elite, Strategic) with chain-discounted hotels — where the cost basis is lower — restores margin headroom (compare Scenario B: Meliá chain + Elite agent → 5.26%). When the math gets tight, the lever to pull is either (a) raise the per-hotel or per-chain <code>baseCommission</code>, or (b) place expensive-tier agents on chain-discounted properties.
   </div>
 
   <h3>Side-by-side comparison</h3>
@@ -2610,7 +2337,7 @@ ergosPctOfGross  = ergosNet ÷ ergosGross     <span class="comment">// must be �
         <th class="mono" style="text-align:right">Ergos sell</th>
         <th class="mono" style="text-align:right">Agent earns</th>
         <th class="mono" style="text-align:right">Ergos net</th>
-        <th>Floor</th>
+        <th class="mono" style="text-align:right">Ergos net %</th>
       </tr>
     </thead>
     <tbody>
@@ -2620,7 +2347,7 @@ ergosPctOfGross  = ergosNet ÷ ergosGross     <span class="comment">// must be �
         <td class="mono" style="text-align:right">$216.00</td>
         <td class="mono" style="text-align:right">$2.88</td>
         <td class="mono" style="text-align:right"><strong>$12.00</strong></td>
-        <td><span style="color:var(--green)">✓ 5.56%</span></td>
+        <td class="mono" style="text-align:right">5.56%</td>
       </tr>
       <tr>
         <td><strong>B — Meliá chain</strong></td>
@@ -2628,15 +2355,15 @@ ergosPctOfGross  = ergosNet ÷ ergosGross     <span class="comment">// must be �
         <td class="mono" style="text-align:right">$192.10</td>
         <td class="mono" style="text-align:right">$3.46</td>
         <td class="mono" style="text-align:right"><strong>$10.10</strong></td>
-        <td><span style="color:var(--green)">✓ 5.26%</span></td>
+        <td class="mono" style="text-align:right">5.26%</td>
       </tr>
-      <tr style="background: #fff3e0;">
-        <td><strong>C — Amber warning</strong></td>
+      <tr>
+        <td><strong>C — Strategic tier</strong></td>
         <td>Strategic (30%)</td>
         <td class="mono" style="text-align:right">$216.00</td>
         <td class="mono" style="text-align:right">$4.80</td>
         <td class="mono" style="text-align:right"><strong>$10.40</strong></td>
-        <td><span style="color:var(--amber); font-weight:700">⚠ 4.81%</span></td>
+        <td class="mono" style="text-align:right">4.81%</td>
       </tr>
     </tbody>
   </table>
@@ -2655,7 +2382,6 @@ ergosPctOfGross  = ergosNet ÷ ergosGross     <span class="comment">// must be �
         <th class="mono" style="text-align:right">Ops cost</th>
         <th class="mono" style="text-align:right">Ergos net</th>
         <th class="mono" style="text-align:right">Ergos net %</th>
-        <th>Floor</th>
       </tr>
     </thead>
     <tbody>
@@ -2667,7 +2393,6 @@ ergosPctOfGross  = ergosNet ÷ ergosGross     <span class="comment">// must be �
         <td class="mono" style="text-align:right">$1.28</td>
         <td class="mono" style="text-align:right"><strong>$12.80</strong></td>
         <td class="mono" style="text-align:right">5.93%</td>
-        <td><span style="color:var(--green)">✓</span></td>
       </tr>
       <tr>
         <td><span style="display:inline-block; padding:2px 10px; border-radius:12px; background:var(--blue-light); color:var(--blue); font-size:11px; font-weight:700;">Growth</span></td>
@@ -2677,7 +2402,6 @@ ergosPctOfGross  = ergosNet ÷ ergosGross     <span class="comment">// must be �
         <td class="mono" style="text-align:right">$1.12</td>
         <td class="mono" style="text-align:right"><strong>$12.00</strong></td>
         <td class="mono" style="text-align:right">5.56%</td>
-        <td><span style="color:var(--green)">✓</span></td>
       </tr>
       <tr>
         <td><span style="display:inline-block; padding:2px 10px; border-radius:12px; background:var(--amber-light); color:var(--amber); font-size:11px; font-weight:700;">Elite</span></td>
@@ -2687,23 +2411,21 @@ ergosPctOfGross  = ergosNet ÷ ergosGross     <span class="comment">// must be �
         <td class="mono" style="text-align:right">$0.96</td>
         <td class="mono" style="text-align:right"><strong>$11.20</strong></td>
         <td class="mono" style="text-align:right">5.19%</td>
-        <td><span style="color:var(--green)">✓</span></td>
       </tr>
-      <tr style="background: var(--red-light);">
+      <tr>
         <td><span style="display:inline-block; padding:2px 10px; border-radius:12px; background:var(--purple-light); color:var(--purple); font-size:11px; font-weight:700;">Strategic</span></td>
         <td class="mono" style="text-align:right">30%</td>
         <td class="mono" style="text-align:right">5%</td>
         <td class="mono" style="text-align:right">$4.80</td>
         <td class="mono" style="text-align:right">$0.80</td>
         <td class="mono" style="text-align:right"><strong>$10.40</strong></td>
-        <td class="mono" style="text-align:right; color:var(--red); font-weight:700">4.81%</td>
-        <td><span style="color:var(--red); font-weight:700">✗ blocked</span></td>
+        <td class="mono" style="text-align:right">4.81%</td>
       </tr>
     </tbody>
   </table>
 
-  <div class="callout callout-warning">
-    <strong>The career-vs-floor story:</strong> on a low-margin booking (8% markup), an agent can be promoted from Starter to Elite and Ergos still nets above the 5% floor. But Strategic tier — the highest paid — pushes Ergos below the floor, and the save modal will block it. This is by design: <strong>strategic agents are reserved for premium / chain-discounted hotels where the gross margin is bigger</strong>.
+  <div class="callout callout-teal">
+    <strong>The career-vs-margin story:</strong> on a low-markup booking (8% baseCommission), promoting an agent from Starter (12%) to Strategic (30%) drops Ergos's net retention from 5.93% to 4.81% of sell. Nothing is enforced — saves go through at every tier — but the math is a useful heuristic: <strong>higher-paid tiers are most economically deployed on premium or chain-discounted hotels where the gross margin has more room to absorb the take</strong>.
   </div>
 
   <h3>The same evolution on a richer hotel (10% markup)</h3>
@@ -2796,35 +2518,49 @@ ergosPctOfGross  = ergosNet ÷ ergosGross     <span class="comment">// must be �
   </table>
 
   <div class="callout callout-teal">
-    <strong>What the agent compensation story really is:</strong> a Starter agent doing 200 mid-range bookings/year earns ~$1,900. The same activity at Strategic-tier doubles that, but the agent has to "qualify" the customer / mix into chain-discounted or high-ticket inventory to keep Ergos's floor intact. <strong>Tier promotion is a partnership: the agent commits to higher-value bookings, Ergos commits to a larger share of the gross.</strong>
+    <strong>What the agent compensation story really is:</strong> a Starter agent doing 200 mid-range bookings/year earns ~$1,900. The same activity at Strategic-tier roughly doubles that. The economic question — for both the agent and Ergos — is which inventory mix the agent works on. Strategic tiers on premium / chain-discounted hotels produce the best margins for everyone; Strategic tiers on thin-markup hotels still save through the system but leave Ergos with a much smaller net.
   </div>
 
-  <h3>Decision matrix: which tier on which hotel?</h3>
-  <p>This table shows the minimum recommended hotel <code>baseCommission</code> to keep each tier safely above the 5% floor (with no chain discount and no agency rebate):</p>
+  <h3>Margin reference: Ergos net % by tier and markup</h3>
+  <p>This table shows <code>ergosNet ÷ ergosSell</code> at each tier and several baseCommission levels (no chain discount, no agency rebate). Useful for orienting which combinations leave Ergos with a comfortable margin versus a tight one. No threshold is enforced — these are reference values for commercial judgment, not pass/fail tests.</p>
   <table>
     <thead>
-      <tr><th>Tier</th><th class="mono" style="text-align:right">Min safe baseCommission</th><th>Why</th></tr>
+      <tr>
+        <th>Tier</th>
+        <th class="mono" style="text-align:right">baseCommission 3%</th>
+        <th class="mono" style="text-align:right">baseCommission 5%</th>
+        <th class="mono" style="text-align:right">baseCommission 8%</th>
+        <th class="mono" style="text-align:right">baseCommission 13%</th>
+      </tr>
     </thead>
     <tbody>
       <tr>
-        <td><strong>Starter</strong> (12%)</td>
-        <td class="mono" style="text-align:right">~7%</td>
-        <td>Low agent take leaves plenty of room for Ergos</td>
+        <td><strong>Starter</strong> (12% / 8% ops)</td>
+        <td class="mono" style="text-align:right">2.33%</td>
+        <td class="mono" style="text-align:right">3.81%</td>
+        <td class="mono" style="text-align:right">5.93%</td>
+        <td class="mono" style="text-align:right">9.20%</td>
       </tr>
       <tr>
-        <td><strong>Growth</strong> (18%)</td>
-        <td class="mono" style="text-align:right">~7-8%</td>
-        <td>Default operating point — works on most hotels</td>
+        <td><strong>Growth</strong> (18% / 7% ops)</td>
+        <td class="mono" style="text-align:right">2.18%</td>
+        <td class="mono" style="text-align:right">3.57%</td>
+        <td class="mono" style="text-align:right">5.56%</td>
+        <td class="mono" style="text-align:right">8.63%</td>
       </tr>
       <tr>
-        <td><strong>Elite</strong> (24%)</td>
-        <td class="mono" style="text-align:right">~8%</td>
-        <td>Right at the edge on the default markup</td>
+        <td><strong>Elite</strong> (24% / 6% ops)</td>
+        <td class="mono" style="text-align:right">2.04%</td>
+        <td class="mono" style="text-align:right">3.33%</td>
+        <td class="mono" style="text-align:right">5.19%</td>
+        <td class="mono" style="text-align:right">8.05%</td>
       </tr>
       <tr>
-        <td><strong>Strategic</strong> (30%)</td>
-        <td class="mono" style="text-align:right">~10% or chain discount</td>
-        <td>Needs either a richer markup OR cost-side reduction (chain) to stay above floor</td>
+        <td><strong>Strategic</strong> (30% / 5% ops)</td>
+        <td class="mono" style="text-align:right">1.89%</td>
+        <td class="mono" style="text-align:right">3.10%</td>
+        <td class="mono" style="text-align:right">4.81%</td>
+        <td class="mono" style="text-align:right">7.48%</td>
       </tr>
     </tbody>
   </table>
@@ -2847,13 +2583,13 @@ ergosPctOfGross  = ergosNet ÷ ergosGross     <span class="comment">// must be �
     <dd>Agency rebate as a whole-percent integer of Ergos sell. Per-(agency, hotel). In-house agencies have rebatePct = 0. Stored in <code>travel_agency_commission.commissionPercentage</code>; surfaced via API/UI as <code>rebatePct</code>.</dd>
 
     <dt>earningPct <code>24 = 24%</code></dt>
-    <dd>Agent earning as a whole-percent integer of Ergos gross margin. Capped by the <code>maxAgentPctOfGross = 32</code> guardrail. Per-agent-hotel overrides stored in <code>sales_agent_commission.commissionPercentage</code>; surfaced via API/UI as <code>earningPctOverride</code>.</dd>
+    <dd>Agent earning as a whole-percent integer of Ergos gross margin. Per-agent-hotel overrides stored in <code>sales_agent_commission.commissionPercentage</code>; surfaced via API/UI as <code>earningPctOverride</code>. Tier defaults max out at 32% (Strategic upper bound); no runtime cap is enforced beyond the schema-level 0–100 range.</dd>
 
     <dt>opsExpense <code>6 = 6%</code></dt>
     <dd>Agent operational expense (account management, support overhead) as a whole-percent integer of Ergos gross.</dd>
 
     <dt>defaultMarkupPct <code>15 = 15%</code> (whole-percent integer)</dt>
-    <dd>The agency's customer-facing markup on top of <code>ergosSell</code>. Lives on the TravelAgency model (<code>min: 0, max: 200, default: 15, integer, required</code>) and is frozen per booking as <code>agencyMarkupPctSnapshot</code>. Stored, transported, and displayed as a whole-percent integer, matching every other percent field on the platform — even though this value sits outside the commission engine and has zero effect on any guardrail, floor, or payout calculation. The integer convention is for code consistency, not because the engine touches it.</dd>
+    <dd>The agency's customer-facing markup on top of <code>ergosSell</code>. Lives on the TravelAgency model (<code>min: 0, max: 200, default: 15, integer, required</code>) and is frozen per booking as <code>agencyMarkupPctSnapshot</code>. Stored, transported, and displayed as a whole-percent integer, matching every other percent field on the platform — even though this value sits outside the commission engine and has zero effect on any Ergos-side payout calculation. The integer convention is for code consistency, not because the engine touches it.</dd>
 
     <dt>ergosSell</dt>
     <dd>The price shown to the agency for a booking. <code>adjustedCost × (1 + baseCommission/100)</code>.</dd>
@@ -2874,10 +2610,7 @@ ergosPctOfGross  = ergosNet ÷ ergosGross     <span class="comment">// must be �
     <dd>A frozen copy of the resolved commission policy stored on each booking at the moment of booking. Used for dispute resolution.</dd>
 
     <dt>Hard floor</dt>
-    <dd>An invariant the system refuses to violate via the UI. Currently: Ergos net &lt; 5% of sell.</dd>
-
-    <dt>Soft guardrail</dt>
-    <dd>An invariant the system warns about and requires a reason to override. Currently: agent share &gt; 32% of gross, and Ergos share &lt; 50% of gross.</dd>
+    <dd>An invariant the system refuses to violate. Currently: <code>baseCommission &ge; 1</code> (enforced by Mongoose schema and by the route-level validator). No other runtime floors are enforced as of 2026-05-27.</dd>
 
     <dt>Chain</dt>
     <dd>A document in <code>commission_chain</code> representing a hotel chain (Meliá, Iberostar, etc.) and any negotiated discount terms. Hotels link to a chain via <code>chainId</code>. As of this writing, 5 chains are seeded (Domina, Meliá, Iberostar, Gran Caribe, HTL Gaviota) — see Section 3 for the full table.</dd>
@@ -2936,7 +2669,7 @@ ergosPctOfGross  = ergosNet ÷ ergosGross     <span class="comment">// must be �
     <li><strong>Sales agents</strong> earn per booking from a portfolio of agencies they recruited. Their commission ties to <em>partner activation and retention</em> — they win by recruiting productive agencies and keeping them supported, not by closing individual bookings.</li>
   </ul>
 
-  <p>Mixing these into a single commission engine would muddy both incentive structures. They're modeled as parallel flows with shared guardrails (the Ergos net floor is computed across <em>both</em> deductions).</p>
+  <p>Mixing these into a single commission engine would muddy both incentive structures. They're modeled as parallel flows: booking-time agent commissions land in <code>commissionSnapshot</code>; sales-agent recruiting commissions are computed downstream against the productive bookings attributed to the recruited agency.</p>
 
   <h3>The cost base reality (mid-2026)</h3>
 
