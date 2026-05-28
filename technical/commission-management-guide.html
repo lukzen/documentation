@@ -1018,13 +1018,13 @@ table .mono { font-family: 'JetBrains Mono', monospace; font-size: 12px; }
     <nav class="toc">
       <h3>Table of Contents</h3>
       <div class="toc-grid">
-        <a href="#mental-model"><span class="toc-num">1.</span><span>Mental Model — 5-layer inheritance</span></a>
+        <a href="#mental-model"><span class="toc-num">1.</span><span>Mental Model — 5-layer cascade + markup_rules</span></a>
         <a href="#screen-policy"><span class="toc-num">2.</span><span>Screen: Commission Policy</span></a>
         <a href="#screen-chains"><span class="toc-num">3.</span><span>Screen: Commission Chains</span></a>
         <a href="#guardrails"><span class="toc-num">4.</span><span>Save Flow</span></a>
         <a href="#snapshot"><span class="toc-num">5.</span><span>Booking-time Snapshot</span></a>
         <a href="#money-flow"><span class="toc-num">6.</span><span>Money Flow — Who Earns What</span></a>
-        <a href="#use-cases"><span class="toc-num">7.</span><span>Use Cases (10 examples)</span></a>
+        <a href="#use-cases"><span class="toc-num">7.</span><span>Use Cases (12 examples)</span></a>
         <a href="#formulas"><span class="toc-num">8.</span><span>Formulas Reference</span></a>
         <a href="#worked-numbers"><span class="toc-num">9.</span><span>Worked Numbers &amp; Tier Evolution</span></a>
         <a href="#glossary"><span class="toc-num">10.</span><span>Glossary</span></a>
@@ -1041,9 +1041,9 @@ table .mono { font-family: 'JetBrains Mono', monospace; font-size: 12px; }
 <section id="mental-model">
   <h2>1. The Mental Model <span class="label">Start here</span></h2>
 
-  <p>The whole commission system is built on one idea: <strong>commission values cascade down 5 layers, and a more-specific layer can override a less-specific one.</strong></p>
+  <p>The commission system has two overlapping cascade mechanisms. The first governs all commission fields except <code>baseCommission</code>: values cascade down 5 policy layers and a more-specific layer can override a less-specific one. The second — introduced in this session — governs <code>baseCommission</code> exclusively through the unified <code>markup_rules</code> collection, which adds four additional resolution tiers between the per-hotel override and the global default.</p>
 
-  <p>When the engine prices a booking for a given combination of <code>(hotel, agency, agent)</code>, it walks the layers in order. For each field, the most-specific value wins. The result is the <strong>effective commission</strong> used in the math.</p>
+  <p>When the engine prices a booking for a given combination of <code>(hotel, agency, agent)</code>, it walks both cascades in order. For each field, the most-specific value wins. The result is the <strong>effective commission</strong> used in the math.</p>
 
   <div class="layer-stack">
     <div class="layer-card l1">
@@ -1057,24 +1057,24 @@ table .mono { font-family: 'JetBrains Mono', monospace; font-size: 12px; }
     <div class="layer-card l2">
       <div class="layer-num">2</div>
       <div class="layer-info">
-        <div class="layer-name">Hotel <span style="font-size: 11px; opacity: 0.7;">(with chain inheritance)</span></div>
-        <div class="layer-desc">Per-hotel overrides for Ergos markup and chain discount. <strong>baseCommission</strong> cascades hotel → linked chain → global default; <strong>chainDiscountPct</strong> cascades hotel → linked chain (vendor-gated) → 0.</div>
-        <div class="layer-fields">baseCommission · chainDiscountPct · chainId (link to chain)</div>
+        <div class="layer-name">Hotel <span style="font-size: 11px; opacity: 0.7;">(markup_rules cascade for baseCommission)</span></div>
+        <div class="layer-desc">Per-hotel overrides for Ergos markup and chain discount. <strong>chainDiscountPct</strong> cascades hotel → linked chain (vendor-gated) → 0. <strong>baseCommission</strong> has its own 7-step resolver — see the markup_rules cascade subsection below.</div>
+        <div class="layer-fields">baseCommission (via markup_rules) · chainDiscountPct · chainId (link to chain)</div>
       </div>
     </div>
     <div class="layer-card l3">
       <div class="layer-num">3</div>
       <div class="layer-info">
-        <div class="layer-name">Agency Rebate (per hotel)</div>
-        <div class="layer-desc">The rebate this agency gets from Ergos for bookings at this specific hotel.</div>
-        <div class="layer-fields">rebatePct</div>
+        <div class="layer-name">Agency Rebate</div>
+        <div class="layer-desc">The rebate Ergos pays this agency. Two sub-layers: per-(agency, hotel) override wins; falls back to <code>agency.defaultRebatePct</code> (editable on the Agencies tab); then 0. The Agencies tab in Commission Policy exposes the default rebate for the agency as a whole. Per-hotel overrides are edited in the Travel Agency module.</div>
+        <div class="layer-fields">rebatePct · agency.defaultRebatePct</div>
       </div>
     </div>
     <div class="layer-card l4">
       <div class="layer-num">4</div>
       <div class="layer-info">
         <div class="layer-name">Agent Tier · read-only</div>
-        <div class="layer-desc">Tier defaults are policy constants in code (not editable from the UI). Each agent belongs to one tier: Starter / Growth / Elite / Strategic.</div>
+        <div class="layer-desc">Tier defaults are policy constants in code (not editable from the UI). Each agent belongs to one tier: Starter / Growth / Elite / Strategic. The tier is now persisted on the <code>SalesAgent</code> document and drives the earning-range clamp visible in Layer 5.</div>
         <div class="layer-fields">earningRange · default earningPct · default opsExpense</div>
       </div>
     </div>
@@ -1082,8 +1082,8 @@ table .mono { font-family: 'JetBrains Mono', monospace; font-size: 12px; }
       <div class="layer-num">5</div>
       <div class="layer-info">
         <div class="layer-name">Agent-Hotel Override</div>
-        <div class="layer-desc">A specific (agent, hotel) earning override that beats the tier default.</div>
-        <div class="layer-fields">earningPctOverride</div>
+        <div class="layer-desc">A specific (agent, hotel) override stored in the <code>agencies_commissions</code> collection (the <code>SalesAgentCommission</code> model). Carries both earning and ops overrides independently — either can be set without the other.</div>
+        <div class="layer-fields">earningPctOverride · opsExpenseOverride</div>
       </div>
     </div>
   </div>
@@ -1097,12 +1097,51 @@ table .mono { font-family: 'JetBrains Mono', monospace; font-size: 12px; }
     Every commission / discount / rebate / markup field on the platform is stored, transported via API, and displayed as a whole-percent integer. <code>13</code> means 13%, <code>4</code> means 4%, <code>0</code> means none. The commission engine converts to decimal once internally via <code>pct(n) = n/100</code>. This includes the agency-side <code>defaultMarkupPct</code> on the TravelAgency model and its booking snapshot <code>agencyMarkupPctSnapshot</code> — even though those sit <em>outside</em> the commission engine's math, they follow the same integer convention for consistency across the codebase, the UI input controls, and the API contract.
   </div>
 
+  <!-- ─────────────────────────────────────────────────────────── -->
+  <!-- MARKUP_RULES CASCADE — new subsection 2026-05-28           -->
+  <!-- ─────────────────────────────────────────────────────────── -->
+  <h3 id="markup-rules-cascade">The markup_rules cascade — how baseCommission resolves</h3>
+
+  <p><code>baseCommission</code> (the Ergos markup percentage) has a dedicated resolver that consults the <code>markup_rules</code> MongoDB collection before falling back to the global default. The resolver is a pure function (<code>resolveBaseCommission</code> in <code>commission-policy.service.ts</code>) that takes the hotel document, a pre-fetched rule map, and the global default. It returns the winning value plus a <strong>source label</strong> used for the cascade-source badge in the UI and the <code>baseCommissionSource</code> field frozen into every booking snapshot.</p>
+
+  <p>The seven-step resolution order, most-specific first:</p>
+
+  <div class="formula"><span class="comment">// resolveBaseCommission — 7 steps, first match wins:</span>
+1. hotel.baseCommission          <span class="comment">// legacy per-hotel field (optional; cleared by migration)</span>
+   → source: <span class="keyword">'hotel'</span>
+2. markup_rules[scope='hotel',   identifier=hotel._id]
+   → source: <span class="keyword">'hotel_rule'</span>
+3. markup_rules[scope='chain',   identifier=hotel.chainId]
+   → source: <span class="keyword">'chain_rule'</span>
+4. markup_rules[scope='stars',   identifier=String(hotel.starRating)]
+   → source: <span class="keyword">'stars_rule'</span>
+5. markup_rules[scope='country', identifier=hotel.country]
+   → source: <span class="keyword">'country_rule'</span>
+6. markup_rules[scope='gds',     identifier=hotel.vendorKey]
+   → source: <span class="keyword">'gds_rule'</span>
+7. CommissionDefaults.baseCommission    <span class="comment">// global default (currently 3)</span>
+   → source: <span class="keyword">'default'</span></div>
+
+  <div class="callout callout-info">
+    <strong>What is a markup_rule?</strong> A document in the <code>markup_rules</code> collection with fields <code>{ scope, identifier, baseCommission, createdBy, updatedBy, timestamps }</code>. A unique compound index on <code>(scope, identifier)</code> enforces one rule per scope/identifier pair. The Bulk Edit drawer writes markup_rules documents; the Commission Policy Agents/Hotels tabs surface the resolved value with its source label. The <code>CommissionChain.baseCommission</code> field was removed from the schema on 2026-05-28 — existing values were migrated to <code>markup_rules</code> rows with <code>scope='chain'</code> by <code>migrate-chain-basecommission-to-rules.ts</code>.
+  </div>
+
+  <div class="callout callout-gold">
+    <strong>Why this replaces the old chain cascade.</strong> The previous model had one override level between the hotel and the global default: <code>chain.baseCommission</code>. The new model adds four intermediate levels (hotel_rule, chain_rule, stars_rule, country_rule, gds_rule), making it possible to set a single GDS-wide markup that covers all 100k+ Restel hotels with one document, while still allowing country-level, star-level, chain-level, or individual hotel overrides to override it surgically. The Bulk Edit drawer's Scope selector is the primary UI for creating these rules.
+  </div>
+
+  <figure class="screenshot">
+    <div class="screenshot-frame">
+      <img src="commission-screenshots/03-inheritance-cascade-source.png"
+           alt="Inheritance stack for Iberostar Grand Packard — Effective Configuration shows Ergos Markup 3.0% sourced from GDS markup rule"
+           loading="lazy"
+           onerror="this.style.display='none'" />
+    </div>
+    <figcaption>Effective Configuration card showing the cascade-source label "from GDS markup rule" for a Dingus hotel. The source label comes from <code>baseCommissionSource</code> resolved at policy-read time. File: <span class="file">commission-screenshots/03-inheritance-cascade-source.png</span></figcaption>
+  </figure>
+
   <div class="callout callout-teal">
-    <strong>Policy revision — 2026-05-27.</strong> Two material changes to <code>baseCommission</code> that affect everything below:
-    <ul style="margin-top: 8px; margin-bottom: 0;">
-      <li><strong>New default is 3% (was 15%).</strong> Stakeholders ratified a min 1% / average 3% / max 100% policy. The global default in <code>CommissionDefaults</code> dropped from 15 → 3 and a one-shot migration (<code>migrate-base-commission-to-conservative.ts</code>) reset existing hotels to 3 where they were below the new floor or above the threshold without a chain discount. The schema enforces <code>min: 1, max: 100</code>; the ≥5% + chain-discount relationship is <em>informational guidance in the UI</em>, not an enforced rule. (A short-lived enforcement variant existed briefly the same day and was rolled back per stakeholder feedback.)</li>
-      <li><strong>Chain-level <code>baseCommission</code> cascade.</strong> The <code>CommissionChain</code> model now carries an optional <code>baseCommission</code> field. The Layer-2 resolution order is <code>hotel.baseCommission → chain.baseCommission → global default</code>. Useful for the Cuba chains (DOMINA, MELIA, IBEROSTAR, GRANCARIBE, GAVIOTA) where one chain-wide markup avoids per-property edits across dozens of hotels. The pure helper <code>resolveBaseCommission(hotel, chain, globalDefault)</code> mirrors the existing <code>resolveHotelChainDiscount</code>.</li>
-    </ul>
+    <strong>2026-05-27 baseline policy note.</strong> The global default <code>baseCommission</code> was set to 3% (down from 15%) per stakeholder ratification. The schema enforces <code>min: 1, max: 100</code>. All 105,761 existing <code>hotel.baseCommission</code> values in the test environment were cleared by <code>migrate-clear-hotel-basecommission.ts</code> so the markup_rules cascade takes over. Hotels that genuinely need a per-hotel override can have one set via the Hotel layer card or via <code>markup_rules[scope='hotel']</code> through the Bulk Edit drawer.
   </div>
 
   <!-- ─────────────────────────────────────────────────────────── -->
@@ -1137,9 +1176,9 @@ table .mono { font-family: 'JetBrains Mono', monospace; font-size: 12px; }
     <tbody>
       <tr>
         <td class="mono">baseCommission</td>
-        <td>Hotel · CommissionDefaults</td>
+        <td>markup_rules collection · Hotel (legacy) · CommissionDefaults (global)</td>
         <td><strong style="color: var(--navy);">Ergos</strong></td>
-        <td>Markup applied on top of the GDS's adjusted cost. Drives <code>ergosSell&nbsp;=&nbsp;adjustedCost × (1 + baseCommission/100)</code>. Higher → Ergos earns more. <strong>Default 3</strong> per 2026-05-27 policy; chain or per-hotel overrides bump this for chain-discounted or rebate-paying bookings.</td>
+        <td>Markup applied on top of the GDS's adjusted cost. Drives <code>ergosSell&nbsp;=&nbsp;adjustedCost × (1 + baseCommission/100)</code>. Higher → Ergos earns more. <strong>Default 3</strong> per 2026-05-27 policy. Resolved through a 7-step cascade (hotel.baseCommission → hotel_rule → chain_rule → stars_rule → country_rule → gds_rule → global default) — see the markup_rules cascade subsection above.</td>
         <td class="mono">1–100 integer (3 = 3%)</td>
       </tr>
       <tr>
@@ -1158,9 +1197,9 @@ table .mono { font-family: 'JetBrains Mono', monospace; font-size: 12px; }
       </tr>
       <tr>
         <td class="mono"><strong>earningPercentage</strong></td>
-        <td>SalesAgent · CommissionDefaults</td>
+        <td>SalesAgent · CommissionDefaults · SalesAgentCommission (per-hotel override)</td>
         <td><strong style="color: var(--gold);">Sales agent</strong></td>
-        <td><strong>Agent's slice of Ergos's GROSS margin</strong> — NOT of sell, NOT Ergos's net, NOT the agency's. <code>24</code> = the agent keeps 24% of <code>ergosGross</code>. Default per tier; per-(agent, hotel) overrides win. Per-agent-hotel overrides are stored in <code>sales_agent_commission</code> as <code>commissionPercentage</code>; surfaced via API/UI as <code>earningPctOverride</code>.</td>
+        <td><strong>Agent's slice of Ergos's GROSS margin</strong> — NOT of sell, NOT Ergos's net, NOT the agency's. <code>24</code> = the agent keeps 24% of <code>ergosGross</code>. Default per tier (clamped to the tier's earningRange); per-(agent, hotel) overrides win. Overrides are stored in the <code>agencies_commissions</code> collection (model: <code>SalesAgentCommission</code>) as <code>commissionPercentage</code>; surfaced as <code>earningPctOverride</code>. The same collection row also carries an optional <code>opsExpenseOverride</code> — both can be set independently per (agent, hotel) pair.</td>
         <td class="mono">0–100 integer (no runtime cap; tier defaults max out at 32%)</td>
       </tr>
       <tr>
@@ -1184,10 +1223,10 @@ table .mono { font-family: 'JetBrains Mono', monospace; font-size: 12px; }
 <section id="screen-policy">
   <h2>2. Screen: Commission Policy <span class="label">/commission-policy</span></h2>
 
-  <p>This is the main workspace where admins view and edit the 5-layer policy for two scopes: a specific <strong>hotel</strong> or a specific <strong>agent</strong>. It uses a <strong>3-panel layout</strong>: pick the scope on the left, see the layers in the center, see the math on the right.</p>
+  <p>This is the main workspace where admins view and edit the commission policy for three scopes: a specific <strong>hotel</strong>, a specific <strong>travel agency</strong>, or a specific <strong>agent</strong>. It uses a <strong>3-panel layout</strong>: pick the scope on the left, see the inheritance stack in the center, see the math on the right.</p>
 
   <div class="callout callout-info" style="margin-bottom: 12px;">
-    <strong>Per-agency rebate editing lives elsewhere.</strong> The Commission Policy page used to have an Agencies scope tab; that was removed (commit <code>86dbcb9</code>). Per-(agency, hotel) <code>rebatePct</code> overrides are now edited from the Travel Agency module — open an agency, switch to the <strong>Hotel Commission Overrides</strong> tab (see <code>EditTravelAgencyModal</code>). The Agency Rebate <em>layer card</em> still renders in the inheritance stack here (because the engine still cascades through it), but it's read-only on this page.
+    <strong>Three scope tabs as of 2026-05-28.</strong> The left rail now has <strong>Hotels</strong>, <strong>Travel Agencies</strong>, and <strong>Agents</strong> tabs. Each tab shows a different alphabetically-grouped list with accordion letter headers. The Hotels tab previously required loading all 100k+ hotels at once — it now lazily paginates 200 at a time, triggering the next page when the user scrolls within 50 rows of the end.
   </div>
 
   <figure class="screenshot">
@@ -1197,7 +1236,7 @@ table .mono { font-family: 'JetBrains Mono', monospace; font-size: 12px; }
            loading="lazy"
            onerror="this.style.display='none'" />
     </div>
-    <figcaption>Commission Policy page in production (captured 2026-05-27 via Playwright after the Agencies-tab removal and right-rail Guardrails cleanup). File: <span class="file">commission-screenshots/01-commission-policy-full.png</span></figcaption>
+    <figcaption>Commission Policy page (captured 2026-05-28 via Playwright) — Hotels tab active, showing the three-tab left rail (Hotels / Travel Agencies / Agents), accordion letter grouping, and inheritance stack with cascade-source badge in the Effective Configuration card. File: <span class="file">commission-screenshots/01-commission-policy-full.png</span></figcaption>
   </figure>
 
   <details class="wireframe-fallback">
@@ -1207,27 +1246,24 @@ table .mono { font-family: 'JetBrains Mono', monospace; font-size: 12px; }
 │  scope         │  inheritance stack            │  live margin    │
 │  selector      │  & editor                     │  preview        │
 ├────────────────┼───────────────────────────────┼─────────────────┤
-│ [Hotels]       │  Breadcrumb: Global › Meliá   │ ─ Simulate ─    │
-│ [Agents]       │                               │ GDS net         │
+│ [Hotels] [TAs] │  Breadcrumb: Global › Meliá   │ ─ Simulate ─    │
+│ [Agents]       │                               │ Supplier net    │
 │                │  ┌─ 1. Global Defaults ──┐    │ [ $200    ]     │
 │ GDS:    ▾      │  │  baseCommission 3%    │    │                 │
-│ Country: ▾     │  │  chainDiscountPct 0    │    │ Ergos net 5.6%  │
-│ [Search...  ]  │  └───────────────────────┘    │                 │
-│                │                               │ Waterfall:      │
-│ ★ Global       │  ┌─ 2. Hotel: Meliá ────┐    │ GDS    $200     │
-│ ─────────      │  │  Chain: [Meliá ▾]    │    │ × (1−15/100)    │
-│ • Meliá BCN    │  │  baseCommission 13   │    │ = Cost  $170    │
-│ • Riu Cancún   │  │  (inherits from     │    │ × (1+13/100)    │
-│ • NH Madrid    │  │   chain.baseCommiss │    │ = Sell  $192    │
-│ ... virtual    │  │   or set per-hotel) │    │                 │
-│                │  │  chainDiscountPct 15│    │ ─ Audit ─       │
-│                │  └───────────────────────┘    │ Latest 50       │
-│                │                               │ entries inline  │
-│                │  ┌─ 3. Agency Rebate ───┐    │                 │
-│                │  │  rebatePct 4         │    │                 │
-│                │  │  (read-only here —   │    │                 │
-│                │  │   edit via Travel    │    │                 │
-│                │  │   Agency module)     │    │                 │
+│ Country: ▾     │  │  chainDiscountPct 0    │    │ Ergos net 2.9%  │
+│ [Search...  ]  │  └───────────────────────┘    │ off sell        │
+│                │                               │                 │
+│ ★ Global       │  ┌─ 2. Hotel: Iberostar ─┐    │ Waterfall:      │
+│ ─────────      │  │  Chain: [Iberostar ▾] │    │ GDS    $200     │
+│ A (1 hotel)    │  │  baseCommission —     │    │ × 0.820         │
+│ • Aston C.V.   │  │  Effective: 3%        │    │ = Cost  $164    │
+│ B (8 hotels)   │  │  from GDS markup rule │    │ × 1.030         │
+│ ▼ expanded     │  │  chainDiscountPct 18  │    │ = Sell  $168.92 │
+│ ...            │  └───────────────────────┘    │                 │
+│                │                               │ ─ Audit ─       │
+│                │  ┌─ 3. Agency Rebate ───┐    │ Latest 50       │
+│                │  │  rebatePct 0         │    │ entries inline  │
+│                │  │  (default 0%)        │    │                 │
 │                │  └───────────────────────┘    │                 │
 │                │                               │                 │
 │                │  ┌─ 4. Elite tier 🔒 ──┐     │                 │
@@ -1236,39 +1272,71 @@ table .mono { font-family: 'JetBrains Mono', monospace; font-size: 12px; }
 │                │  └───────────────────────┘    │                 │
 │                │                               │                 │
 │                │  ┌─ 5. Agent-Hotel ─────┐    │                 │
-│                │  │  earningPctOverride 26│   │                 │
+│                │  │  earningPctOverride   │    │                 │
+│                │  │  opsExpenseOverride   │    │                 │
 │                │  └───────────────────────┘    │                 │
 │                │                               │                 │
 │                │  ▼ Effective Configuration ▼  │                 │
+│                │    Ergos Markup: 3%           │                 │
+│                │    from GDS markup rule       │                 │
 └────────────────┴───────────────────────────────┴─────────────────┘
             [Audit Trail]  [Bulk Edit]  ← header actions
 
-NOTE — wireframe reflects post-2026-05-27 state:
-  • Left rail has 2 scope tabs (Hotels + Agents); Agencies tab removed.
-  • Right rail Guardrails section removed (engine cleanup, see §4).
-  • Agency Rebate layer card stays in the cascade but is read-only here —
-    per-(agency, hotel) editing moved to the Travel Agency module's
-    "Hotel Commission Overrides" tab.</div>
+NOTE — wireframe reflects 2026-05-28 state:
+  • Left rail: 3 scope tabs (Hotels / Travel Agencies / Agents).
+  • Hotels list: lazy-paginated (200 at a time), alphabetical accordion.
+  • Agency Rebate layer: editable when Agencies tab + agency selected.
+  • Right-rail Simulate label: "Ergos net % off sell" (not % of sell).
+  • Tooltip on "Ergos net % off sell" explains 2.9% vs 3% math.</div>
   </details>
 
-  <p style="font-size: 12px; color: var(--text-secondary); margin-top: -4px;">Additional screenshots referenced below: <span class="mono">02-hotel-layer-card.png</span>, <span class="mono">03-tier-layer-locked.png</span>, <span class="mono">04-simulate-panel.png</span>.</p>
+  <p style="font-size: 12px; color: var(--text-secondary); margin-top: -4px;">Additional screenshots referenced below: <span class="mono">02-hotel-layer-card.png</span>, <span class="mono">04-agents-tab-layer-locking.png</span>, <span class="mono">04-simulate-panel.png</span>, <span class="mono">06-leftrail-accordion-collapsed.png</span>.</p>
 
   <h3>Left rail — what you're looking at</h3>
   <ul>
-    <li><strong>Two scope tabs:</strong> Hotels / Agents. Pick the entity you want to view or edit. (The Agencies tab that previously sat between them was removed on 2026-05-27 — per-agency rebate editing moved to the Travel Agency module's "Hotel Commission Overrides" tab.)</li>
-    <li><strong>GDS dropdown + Country dropdown + search box</strong> drive <em>server-side</em> filtering of the hotel list. Type 3+ chars in the search box — after 300ms idle, the server returns matching hotels. The GDS filter narrows the country options (e.g. selecting Dingus only shows the countries Dingus has hotels in).</li>
-    <li><strong>Virtualized list:</strong> scales to thousands of items. Only ~12 rows live in the DOM at any moment, even when the filtered total is 12,000+.</li>
-    <li><strong>★ Global pinned button</strong> at the top — shows the global defaults view.</li>
+    <li><strong>Three scope tabs:</strong> Hotels / Travel Agencies / Agents. Each tab shows a different list; the active tab drives what the center panel displays.</li>
+    <li><strong>Alphabetical accordion grouping:</strong> items in every tab are grouped under letter-header buttons (A, B, C…; # for non-letter starts). Clicking a letter header collapses or expands all items under it. The header shows the count when collapsed (e.g. "A (4029)").</li>
+    <li><strong>Lazy pagination (Hotels only):</strong> fetches 200 hotels at a time. The next page loads automatically when the user scrolls within 50 rows of the end — replacing the previous behavior of loading all 105k+ hotels at once. The <code>/admin/hotels</code> route now honors <code>sortBy=name-asc</code>.</li>
+    <li><strong>GDS dropdown + Country dropdown + search box</strong> drive server-side filtering of the hotel list. Type 3+ chars in the search box — after 300ms idle, the server returns matching hotels. The GDS filter narrows the country options.</li>
+    <li><strong>★ Global pinned button</strong> at the top — shows the global defaults view regardless of which tab is active.</li>
   </ul>
 
-  <h3>Center panel — the 5 editable layers</h3>
+  <figure class="screenshot">
+    <div class="screenshot-frame">
+      <img src="commission-screenshots/06-leftrail-accordion-collapsed.png"
+           alt="LeftRail with letter A collapsed — showing the accordion letter header with item count and collapsed state"
+           loading="lazy"
+           onerror="this.style.display='none'" />
+    </div>
+    <figcaption>LeftRail accordion: clicking a letter header collapses all items under it. File: <span class="file">commission-screenshots/06-leftrail-accordion-collapsed.png</span></figcaption>
+  </figure>
+
+  <h3>Center panel — the inheritance stack and layer-locking</h3>
   <ul>
     <li>Each card is a <strong>layer</strong>, connected by a dotted line (visual metaphor for the cascade).</li>
     <li>Cards show an <strong>Inherited</strong> badge (grey) when no override is active, or <strong>Overridden</strong> (gold) when one is.</li>
-    <li>The <strong>Hotel layer</strong> has a special <strong>Chain dropdown</strong> that links the hotel to a chain in the registry.</li>
-    <li>The <strong>Tier card (Layer 4) is read-only</strong> with a 🔒 "Policy constant" badge — tier defaults live in code (<code>TIER_DEFAULTS</code> constant), not in the database.</li>
-    <li>Below the 5 cards: a dark blue <strong>Effective Configuration</strong> summary card showing the final resolved values.</li>
+    <li>The <strong>Hotel layer</strong> has a Chain dropdown that links the hotel to a chain in the registry, as well as the chainDiscountPct input.</li>
+    <li>The <strong>Tier card (Layer 4) is always read-only</strong> with a lock badge — tier defaults live in code (<code>TIER_DEFAULTS</code>), not in the database.</li>
+    <li>Below the 5 cards: a dark blue <strong>Effective Configuration</strong> summary showing the final resolved values, including a <strong>cascade-source label</strong> for <code>baseCommission</code> (e.g. "from GDS markup rule", "from chain markup rule", "global default").</li>
   </ul>
+
+  <h4>Layer-locking guardrails</h4>
+  <p>When a specific scope item is selected, upstream layers that are out of scope for that view become read-only or hidden to reduce noise and prevent accidental edits:</p>
+  <ul>
+    <li><strong>Hotels tab + hotel selected:</strong> Layer 1 (Global Defaults) is read-only. Layers 2–5 are editable.</li>
+    <li><strong>Agents tab + agent selected:</strong> Layer 1 (Global) is read-only; Layers 2 (Hotel) and 3 (Agency Rebate) are hidden entirely. Only Layer 4 (Tier, locked) and Layer 5 (Agent-Hotel Override) are shown.</li>
+    <li><strong>Agencies tab + agency selected:</strong> Layer 1 (Global) is read-only; Layer 3 (Agency Rebate / <code>defaultRebatePct</code>) is editable; all other layers are hidden.</li>
+  </ul>
+
+  <figure class="screenshot">
+    <div class="screenshot-frame">
+      <img src="commission-screenshots/04-agents-tab-layer-locking.png"
+           alt="Agents tab with an agent selected — only Tier card (locked) and Agent-Hotel Override card are visible; Global is read-only; Hotel and Agency Rebate layers are hidden"
+           loading="lazy"
+           onerror="this.style.display='none'" />
+    </div>
+    <figcaption>Agents tab with agent selected: layer-locking hides Hotel and Agency Rebate layers, locks Global, surfaces only Tier + Agent-Hotel Override. File: <span class="file">commission-screenshots/04-agents-tab-layer-locking.png</span></figcaption>
+  </figure>
 
   <figure class="screenshot">
     <div class="screenshot-frame">
@@ -1282,19 +1350,41 @@ NOTE — wireframe reflects post-2026-05-27 state:
 
   <figure class="screenshot">
     <div class="screenshot-frame">
-      <img src="commission-screenshots/03-tier-layer-locked.png"
-           alt="Tier layer card (Layer 4) read-only with lock badge — showing earningRange and default ops for the selected tier"
+      <img src="commission-screenshots/07-agent-edit-tier-select.png"
+           alt="Sales Agent edit form showing Commission Tier select (Elite selected), Earning Percentage with range hint 'Range for Elite: 21–26%', and Operational Expense"
            loading="lazy"
            onerror="this.style.display='none'" />
     </div>
-    <figcaption>Tier layer card — read-only, sourced from <code>TIER_DEFAULTS</code> · drop screenshot at <span class="file">commission-screenshots/03-tier-layer-locked.png</span></figcaption>
+    <figcaption>Sales Agent edit form — Commission Tier dropdown (Elite) with auto-populated Earning Percentage and Operational Expense. Range hint updates as tier changes. File: <span class="file">commission-screenshots/07-agent-edit-tier-select.png</span></figcaption>
+  </figure>
+
+  <h3>Travel Agencies tab</h3>
+  <p>The Agencies tab mirrors the Agents tab pattern. The left rail lists travel agencies alphabetically (with the same accordion grouping). Selecting an agency opens a simplified center panel containing only two cards:</p>
+  <ul>
+    <li><strong>Global Defaults</strong> — read-only (upstream lock).</li>
+    <li><strong>Agency Rebate</strong> — editable. This sets <code>agency.defaultRebatePct</code>, which becomes the fallback rebate for all bookings by this agency when no per-(agency, hotel) override exists. The cascade is: per-(agency, hotel) override → <code>agency.defaultRebatePct</code> → 0.</li>
+  </ul>
+  <p>Hotel (Layer 2), Tier (Layer 4), and Agent-Hotel Override (Layer 5) cards are all hidden — they are irrelevant when configuring an agency's rebate default. Per-(agency, hotel) overrides continue to be edited from the Travel Agency module's <strong>Hotel Commission Overrides</strong> tab.</p>
+
+  <figure class="screenshot">
+    <div class="screenshot-frame">
+      <img src="commission-screenshots/01-agencies-tab-selected.png"
+           alt="Commission Policy — Travel Agencies tab with Demo Agency selected, showing read-only Global Defaults and editable Agency Rebate card only"
+           loading="lazy"
+           onerror="this.style.display='none'" />
+    </div>
+    <figcaption>Travel Agencies tab with an agency selected. Only Global (read-only) and Agency Rebate (editable) are shown. All other layers are hidden. File: <span class="file">commission-screenshots/01-agencies-tab-selected.png</span></figcaption>
   </figure>
 
   <h3>Right rail — what the math says</h3>
   <ul>
-    <li><strong>Simulate tab:</strong> type a GDS net price → see the full waterfall (GDS net → adjusted cost → Ergos sell → Ergos gross → Ergos net). The legacy guardrail traffic-light row was removed in the 2026-05-27 cleanup.</li>
+    <li><strong>Simulate tab:</strong> type a supplier net price → see the full waterfall (GDS net → adjusted cost → Ergos sell → Ergos gross → Ergos net). The label reads <strong>"Ergos net % off sell"</strong> (previously "% of sell" — corrected to match standard margin-of-sell convention). A tooltip explains why the displayed percentage (e.g. 2.9%) differs from the <code>baseCommission</code> input (e.g. 3%): markup over cost compresses to a smaller margin of sell.</li>
     <li><strong>Audit tab:</strong> inline quick-view of the latest 50 entries for the currently-selected scope.</li>
   </ul>
+
+  <div class="callout callout-info">
+    <strong>HotelContext amber banner.</strong> When an agent or agency is selected on their respective tabs, the engine needs a hotel to compute the effective commission. The UI auto-picks a hotel context and shows it in an <strong>amber banner</strong> at the top of the center panel. This banner is a reminder that the hotel context can silently rebind when filters change — useful to know when reading cascade-source labels.
+  </div>
 
   <figure class="screenshot">
     <div class="screenshot-frame">
@@ -1309,17 +1399,28 @@ NOTE — wireframe reflects post-2026-05-27 state:
   <h3>Header actions (top right)</h3>
   <ul>
     <li><strong>Audit Trail</strong> button — opens a full-page drawer with date / scope / admin filters and pagination.</li>
-    <li><strong>Bulk Edit</strong> button — opens a drawer to update many hotels at once with preview + typed-confirm.</li>
+    <li><strong>Bulk Edit</strong> button — opens a drawer to create or update <code>markup_rules</code> for a chosen scope.</li>
   </ul>
+
+  <h4>Bulk Edit drawer — redesigned scope-based workflow</h4>
+  <p>The drawer now starts with a <strong>Scope</strong> selector: <code>GDS</code> / <code>Country</code> / <code>Stars</code> / <code>Individual hotels</code>. The selected scope determines which input becomes the rule's identifier; other filter inputs narrow the live preview only.</p>
+  <ul>
+    <li><strong>GDS scope</strong> — the picked vendor key becomes the identifier. One rule covers every hotel from that GDS without a more-specific rule above it.</li>
+    <li><strong>Country scope</strong> — the picked country becomes the identifier.</li>
+    <li><strong>Stars scope</strong> — the picked star rating (e.g. "5") becomes the identifier.</li>
+    <li><strong>Individual hotels</strong> — no single identifier; each matched hotel gets its own <code>scope='hotel'</code> rule via bulk upsert.</li>
+    <li><strong>Chain scope</strong> is supported by the backend (<code>markup_rules[scope='chain']</code>) but is not yet exposed in the UI dropdown — set via the Commission Chains → chain markup_rules endpoint directly.</li>
+  </ul>
+  <p>The live preview (debounced 300ms, race-guarded) shows how many hotels match the current filters and samples old → new values. The <strong>Apply</strong> button is enabled only when you type "APPLY" exactly (the input now auto-uppercases at the source, fixing a previous bug where CSS uppercase made lowercase input appear valid but the gate still failed).</p>
 
   <figure class="screenshot">
     <div class="screenshot-frame">
-      <img src="commission-screenshots/08-bulk-edit-drawer.png"
-           alt="Bulk Edit drawer — filter form for stars/vendor/chain, diff preview table of affected hotels, typed-confirm input"
+      <img src="commission-screenshots/05-bulk-edit-scope-selector.png"
+           alt="Bulk Edit drawer — new Scope selector at the top (GDS / Country / Stars / Individual hotels), vendor=Restel selected, other filters narrow the preview only"
            loading="lazy"
            onerror="this.style.display='none'" />
     </div>
-    <figcaption>Bulk Edit drawer · drop screenshot at <span class="file">commission-screenshots/08-bulk-edit-drawer.png</span></figcaption>
+    <figcaption>Bulk Edit drawer with the new Scope selector — scope=GDS, vendor=Restel selected. This creates a single <code>markup_rules</code> row with <code>scope='gds', identifier='restel'</code> that applies to all Restel hotels without a more-specific rule. File: <span class="file">commission-screenshots/05-bulk-edit-scope-selector.png</span></figcaption>
   </figure>
 
   <figure class="screenshot">
@@ -1352,7 +1453,7 @@ NOTE — wireframe reflects post-2026-05-27 state:
            loading="lazy"
            onerror="this.style.display='none'" />
     </div>
-    <figcaption>Commission Chains page · drop screenshot at <span class="file">commission-screenshots/06-commission-chains-grid.png</span></figcaption>
+    <figcaption>Commission Chains page (captured 2026-05-28). Chain cards no longer show a <code>baseCommission</code> field — chain-level markup overrides moved to <code>markup_rules</code>. File: <span class="file">commission-screenshots/06-commission-chains-grid.png</span></figcaption>
   </figure>
 
   <details class="wireframe-fallback">
@@ -1441,7 +1542,17 @@ NOTE — wireframe reflects post-2026-05-27 state:
   <h3>Each chain card has 4 actions</h3>
 
   <h4>1. Edit Chain</h4>
-  <p>Opens a form to change name, code, hasDiscount flag, chainDiscountPct, contract status (signed/pending/expired), effective/expiry dates, notes, and (since 2026-05-27) an optional <strong>chain-wide Ergos markup</strong> (<code>baseCommission</code>, range 1–100). When set, this value is inherited by every linked hotel that doesn't have its own per-hotel <code>baseCommission</code> override — see the Layer-2 cascade in Section 1. A small help line under the input notes that values ≥5% are usually paired with a negotiated chain discount; this is informational only and the form will save any value within range.</p>
+  <p>Opens a form to change name, code, hasDiscount flag, chainDiscountPct, contract status (signed/pending/expired), effective/expiry dates, notes, hotel name match patterns, and applicable vendors. The form does <strong>not</strong> contain a <code>baseCommission</code> field — chain-level Ergos markup overrides now live in the <code>markup_rules</code> collection (scope=chain) and are managed via the Bulk Edit drawer or the <code>/admin/markup-rules</code> API endpoint. The <code>CommissionChain.baseCommission</code> field was removed from the Mongoose schema on 2026-05-28 (strict mode drops any writes to it); the migration script <code>migrate-chain-basecommission-to-rules.ts</code> moved existing values to markup_rules rows.</p>
+
+  <figure class="screenshot">
+    <div class="screenshot-frame">
+      <img src="commission-screenshots/08-chain-edit-no-basecommission.png"
+           alt="Edit Chain dialog — shows name, code, has discount, chain discount pct, contract status, effective date, expiry date, notes, hotel name patterns, applicable vendors. No baseCommission input."
+           loading="lazy"
+           onerror="this.style.display='none'" />
+    </div>
+    <figcaption>Edit Chain dialog as of 2026-05-28 — no <code>baseCommission</code> field. Chain-level markup overrides are managed via the <code>markup_rules</code> collection. File: <span class="file">commission-screenshots/08-chain-edit-no-basecommission.png</span></figcaption>
+  </figure>
 
   <h4>2. Manage Hotels — the LinkedHotelsDialog</h4>
   <p>The most useful action for chains with many hotels. Opens a side-drawer with two stacked sections:</p>
@@ -1549,8 +1660,11 @@ NOTE — wireframe reflects post-2026-05-27 state:
   <h3>What's stored on each booking</h3>
   <div class="formula"><span class="comment">// On every booking document (booking.model.ts):</span>
 commissionSnapshot: {
-  baseCommission: <span class="num">8</span>,        <span class="comment">// whole percent (8 = 8%) — Ergos markup at booking time</span>
-  chainDiscountPct: <span class="num">15</span>,     <span class="comment">// whole percent (15 = 15% off GDS net)</span>
+  baseCommission: <span class="num">3</span>,         <span class="comment">// whole percent (3 = 3%) — Ergos markup at booking time</span>
+  baseCommissionSource: <span class="keyword">'gds_rule'</span>, <span class="comment">// which cascade layer produced this value — audit forensics</span>
+                                 <span class="comment">// one of: 'hotel' | 'hotel_rule' | 'chain_rule' |</span>
+                                 <span class="comment">//         'stars_rule' | 'country_rule' | 'gds_rule' | 'default'</span>
+  chainDiscountPct: <span class="num">18</span>,     <span class="comment">// whole percent (18 = 18% off GDS net)</span>
   rebatePct: <span class="num">4</span>,            <span class="comment">// whole percent (4 = 4% rebate)</span>
   earningPct: <span class="num">26</span>,          <span class="comment">// whole percent (26 = 26% of gross)</span>
   opsExpense: <span class="num">6</span>,           <span class="comment">// whole percent (6 = 6% of gross)</span>
@@ -1847,7 +1961,7 @@ agencyMarkupPctSnapshot: <span class="num">15</span>,        <span class="commen
 <!-- SECTION 7: USE CASES -->
 <!-- ============================================================ -->
 <section id="use-cases">
-  <h2>7. Use Cases <span class="label">10 worked examples</span></h2>
+  <h2>7. Use Cases <span class="label">12 worked examples</span></h2>
 
   <p>These are concrete scenarios you'll encounter, with the exact steps to execute them.</p>
 
@@ -1889,40 +2003,58 @@ agencyMarkupPctSnapshot: <span class="num">15</span>,        <span class="commen
     <div class="uc-result"><strong>Result:</strong> All linked Iberostar hotels now have <code>chainDiscountPct 22</code>. Each hotel gets an audit entry showing the change from 18 → 22. The chain itself also has audit entries for the chainDiscountPct edit.</div>
   </div>
 
-  <!-- UC3: Per-hotel exception -->
+  <!-- UC3: Per-hotel exception via markup_rules -->
   <div class="use-case">
-    <span class="use-case-num">UC 3 · Per-hotel exception</span>
-    <h3>One-off commission adjustment for a single hotel</h3>
+    <span class="use-case-num">UC 3 · Per-hotel override via Bulk Edit</span>
+    <h3>Override an individual hotel's markup</h3>
     <div class="scenario">
-      <strong>Scenario:</strong> Hotel Arts Barcelona is a luxury property and Ergos wants 10% markup there (default is 8%). Doesn't affect any other hotel.
+      <strong>Scenario:</strong> Iberostar Grand Packard is a luxury property and Ergos wants 8% markup there (the GDS rule gives it 3%). Doesn't affect any other hotel.
     </div>
     <ol class="steps">
-      <li>Go to <code>/commission-policy</code> → Hotels tab → search "Hotel Arts" → click on it</li>
-      <li>Inheritance stack appears → on the <strong>Hotel layer card</strong>, change <em>Base Commission</em> from 8 to 10</li>
-      <li>Yellow save bar appears at the bottom — click <strong>Review and Save</strong></li>
-      <li>SaveConfirmModal shows: 1 proposed change</li>
-      <li>Click <strong>Confirm Save</strong></li>
+      <li>Go to <code>/commission-policy</code> → click <strong>Bulk Edit</strong></li>
+      <li>In the Scope selector, choose <strong>Individual hotels</strong></li>
+      <li>In the search/filter, find and select <em>Iberostar Grand Packard</em></li>
+      <li>Set Ergos markup to <code>8</code></li>
+      <li>Add reason: "Luxury property premium markup"</li>
+      <li>Live preview shows "1 hotel(s) affected" — type <code>APPLY</code> and click Apply</li>
     </ol>
-    <div class="uc-result"><strong>Result:</strong> Only Hotel Arts now has 10% markup. The change is audited with scope=hotel. Other hotels are unaffected — this is a surgical override.</div>
+    <div class="uc-result"><strong>Result:</strong> A <code>markup_rules</code> row is created with <code>scope='hotel', identifier=&lt;hotelId&gt;, baseCommission=8</code>. The cascade source badge on that hotel's card now shows "from hotel markup rule". The GDS-level 3% rule still applies to all other Iberostar hotels. 1 audit entry written.</div>
   </div>
 
-  <!-- UC4: Bulk edit -->
+  <!-- UC4: Bulk edit with scope-based markup_rules -->
   <div class="use-case uc-bulk">
-    <span class="use-case-num">UC 4 · Bulk edit</span>
-    <h3>Update commission across many hotels at once</h3>
+    <span class="use-case-num">UC 4 · GDS-wide markup via Bulk Edit</span>
+    <h3>Set a markup for an entire GDS</h3>
     <div class="scenario">
-      <strong>Scenario:</strong> End of year — Ergos decides to raise all 5-star Hoteltec markups to 9% (from a mix of 7-8%). Doing this one hotel at a time would take hours.
+      <strong>Scenario:</strong> Ergos negotiates a special arrangement with Restel that warrants a 5% markup across all Restel inventory. This covers tens of thousands of hotels. A single rule is far better than editing hotels one by one.
     </div>
     <ol class="steps">
-      <li>Go to <code>/commission-policy</code> → click <strong>Bulk Edit</strong> in the page header (top right)</li>
-      <li>In the Bulk Edit drawer, set filter: Stars = <code>5</code>, Vendor = <code>Hoteltec</code></li>
-      <li>Set values: <em>Ergos markup</em> = <code>9</code> (leave chainDiscountPct blank)</li>
-      <li>Add reason: "End-of-year markup uplift for 5-star Hoteltec inventory"</li>
-      <li>Click <strong>Preview</strong> → drawer shows "47 hotel(s) affected" with a sample table of old → new values per hotel</li>
-      <li>If the preview looks right, type <code>APPLY</code> in the typed-confirm box</li>
-      <li>Click <strong>Apply</strong></li>
+      <li>Go to <code>/commission-policy</code> → click <strong>Bulk Edit</strong> in the page header</li>
+      <li>In the Scope selector at the top of the drawer, choose <strong>GDS</strong></li>
+      <li>In the vendor dropdown, select <strong>Restel</strong></li>
+      <li>Set Ergos markup to <code>5</code></li>
+      <li>Add reason: "Restel arrangement — 5% platform markup"</li>
+      <li>The live preview shows the matched hotel count (all Restel hotels that don't already have a more-specific rule). Type <code>APPLY</code> and click Apply</li>
     </ol>
-    <div class="uc-result"><strong>Result:</strong> 47 hotels updated atomically. <strong>47 audit entries</strong> are written, each with your reason. The drawer closes and the LeftRail refreshes so you can see the new values immediately.</div>
+    <div class="uc-result"><strong>Result:</strong> <strong>One</strong> <code>markup_rules</code> document is created with <code>scope='gds', identifier='restel', baseCommission=5</code>. Every Restel hotel that doesn't have a hotel_rule, chain_rule, stars_rule, or country_rule above it now resolves to 5%. Hotels that do have a more-specific rule are unaffected. 1 audit entry written. To override back for a specific Restel hotel, use "Individual hotels" scope targeting just that hotel.</div>
+  </div>
+
+  <!-- UC4b: Stars-level bulk edit -->
+  <div class="use-case uc-bulk">
+    <span class="use-case-num">UC 4b · Stars-level markup via Bulk Edit</span>
+    <h3>Raise markup for all 5-star Hotetec hotels</h3>
+    <div class="scenario">
+      <strong>Scenario:</strong> End of year — Ergos decides to raise all 5-star Hotetec markups to 9%. A single stars_rule scoped to Hotetec doesn't exist (scope is pure stars, no GDS filter at rule level), so use "Stars" scope + GDS filter for the live preview to check counts, then create the Stars rule.
+    </div>
+    <ol class="steps">
+      <li>Go to <code>/commission-policy</code> → click <strong>Bulk Edit</strong></li>
+      <li>Scope: <strong>Stars</strong> → Stars value: <code>5</code></li>
+      <li>Add GDS filter: <code>Hotetec</code> (narrows the live preview to Hotetec-only hotels, but the rule identifier will be "5" — applies across all GDS)</li>
+      <li>Set Ergos markup to <code>9</code></li>
+      <li>Add reason: "End-of-year uplift for 5-star inventory"</li>
+      <li>Review preview count → type <code>APPLY</code> → Apply</li>
+    </ol>
+    <div class="uc-result"><strong>Result:</strong> One <code>markup_rules[scope='stars', identifier='5', baseCommission=9]</code> document is created. All 5-star hotels across all GDS now resolve to 9% unless they have a more-specific hotel_rule or chain_rule above it. If you only want to affect Hotetec, use "Individual hotels" scope instead.</div>
   </div>
 
   <!-- UC5: Tier promotion -->
@@ -1930,32 +2062,31 @@ agencyMarkupPctSnapshot: <span class="num">15</span>,        <span class="commen
     <span class="use-case-num">UC 5 · Agent tier change</span>
     <h3>Promoting an agent to a higher tier</h3>
     <div class="scenario">
-      <strong>Scenario:</strong> M. Ruiz hit Q3 targets and is being promoted from Growth to Elite tier. Her earning percentage should bump from 18% to 24%.
+      <strong>Scenario:</strong> M. Ruiz hit Q3 targets and is being promoted from Growth to Elite tier. Her earning percentage should bump to 24%.
     </div>
     <ol class="steps">
       <li>Go to <code>/sales-agent</code> → find M. Ruiz → click <strong>Edit</strong></li>
-      <li>Change <em>Commission Tier</em> dropdown: Growth → <strong>Elite</strong></li>
-      <li>Update <em>Earning Percentage</em> from 18 to 24 (within Elite's allowed range 21–26%)</li>
-      <li>Save</li>
+      <li>Change the <em>Commission Tier</em> dropdown: Growth → <strong>Elite</strong></li>
+      <li>The <em>Earning Percentage</em> and <em>Operational Expense</em> inputs <strong>auto-populate</strong> to Elite's tier defaults (24% / 6%). The earning input also clamps its valid range to 21–26% (Elite's earningRange).</li>
+      <li>Adjust if needed, then Save</li>
     </ol>
-    <div class="uc-result"><strong>Result:</strong> Future commission resolutions for M. Ruiz use Elite tier defaults. The change writes an audit entry with <code>scope=agent</code>, <code>field=tier</code> and <code>field=earningPercentage</code>. Bookings already made keep their snapshots — only new bookings use the new tier.</div>
+    <div class="uc-result"><strong>Result:</strong> <code>SalesAgent.tier</code> is now persisted as "Elite" (was previously being silently stripped by the Zod schema — fixed). Future commission resolutions use Elite tier defaults; the earning-range clamp in Layer 5 reflects the new tier. Bookings already made keep their snapshots — only new bookings use the new tier.</div>
   </div>
 
-  <!-- UC6: Per-(agent, hotel) override -->
+  <!-- UC6: Per-(agent, hotel) override — earning AND ops -->
   <div class="use-case">
     <span class="use-case-num">UC 6 · Special relationship</span>
-    <h3>Per-(agent, hotel) earning override</h3>
+    <h3>Per-(agent, hotel) earning and ops override</h3>
     <div class="scenario">
-      <strong>Scenario:</strong> M. Ruiz has a special long-standing relationship with the Meliá Barcelona property and earns 28% there only. Default Elite earning (24%) applies for every other hotel.
+      <strong>Scenario:</strong> M. Ruiz has a special long-standing relationship with the Meliá Barcelona property. She earns 28% there and has lower ops overhead (4% instead of the Elite default 6%) because she handles support for that account herself.
     </div>
     <ol class="steps">
       <li>Go to <code>/commission-policy</code> → Agents tab → select M. Ruiz</li>
-      <li>Inheritance stack appears — note Layer 4 (Elite tier) shows 24% default</li>
-      <li>On <strong>Layer 5 (Agent-Hotel Override)</strong> card, enter <code>28</code> for earningPctOverride</li>
-      <li>Click <strong>Review and Save</strong></li>
-      <li>SaveConfirmModal shows: 1 proposed change — click Confirm Save</li>
+      <li>Inheritance stack shows only Tier (read-only) and Agent-Hotel Override cards</li>
+      <li>On <strong>Layer 5 (Agent-Hotel Override)</strong>, enter <code>28</code> for earningPctOverride and <code>4</code> for opsExpenseOverride</li>
+      <li>Click <strong>Review and Save</strong> → SaveConfirmModal shows 2 proposed changes → Confirm Save</li>
     </ol>
-    <div class="uc-result"><strong>Result:</strong> M. Ruiz earns 28% at Meliá Barcelona, default Elite (24%) elsewhere. The override is stored as a <code>SalesAgentCommission</code> document keyed on (M. Ruiz, Meliá BCN). Reason is on the audit trail.</div>
+    <div class="uc-result"><strong>Result:</strong> M. Ruiz earns 28% at Meliá Barcelona with 4% ops, default Elite (24% / 6%) elsewhere. Both overrides are stored independently on the same <code>SalesAgentCommission</code> document (collection: <code>agencies_commissions</code>) keyed on (M. Ruiz, Meliá BCN). Either can be cleared independently without affecting the other.</div>
   </div>
 
   <!-- UC7: Investigating a booking -->
@@ -1969,15 +2100,32 @@ agencyMarkupPctSnapshot: <span class="num">15</span>,        <span class="commen
       <li>Go to <code>/reservations</code> → search for <code>B-2847</code> → click into the booking detail page</li>
       <li>Scroll past the Guest Info and Price Distribution sections</li>
       <li>Find the <strong>Commission Snapshot</strong> card (with shield icon and "Frozen at booking time" badge)</li>
-      <li>Read the 5 values: baseCommission, chainDiscountPct, rebatePct, earningPct, opsExpense + the resolvedAt timestamp</li>
+      <li>Read the 6 values: baseCommission, <strong>baseCommissionSource</strong>, chainDiscountPct, rebatePct, earningPct, opsExpense + the resolvedAt timestamp. The <code>baseCommissionSource</code> field tells you which cascade layer produced the markup at booking time (e.g. <code>'gds_rule'</code>, <code>'chain_rule'</code>, <code>'default'</code>).</li>
       <li>(Optional) Compare with current policy by going to <code>/commission-policy</code> for the same hotel and seeing how values have changed</li>
     </ol>
     <div class="uc-result"><strong>Result:</strong> You can definitively reconstruct what was agreed at the moment of booking. The dispute is resolved by referencing the snapshot, not the current policy. This works even if the policy has changed dozens of times since.</div>
   </div>
 
-  <!-- UC8: Compliance audit -->
+  <!-- UC8: Set agency default rebate -->
+  <div class="use-case">
+    <span class="use-case-num">UC 8 · Agency default rebate</span>
+    <h3>Set an agency's default rebate percentage</h3>
+    <div class="scenario">
+      <strong>Scenario:</strong> "Viajes Express" is a new partner agency. Ergos wants to give them a 4% rebate as a default across all bookings, without setting per-hotel overrides for every property in the catalog.
+    </div>
+    <ol class="steps">
+      <li>Go to <code>/commission-policy</code> → click the <strong>Travel Agencies</strong> tab</li>
+      <li>Find and click <strong>Viajes Express</strong> in the left rail list</li>
+      <li>The center panel shows Global Defaults (read-only) and the Agency Rebate card</li>
+      <li>On the Agency Rebate card, enter <code>4</code> for the default rebate percentage</li>
+      <li>Click <strong>Review and Save</strong> → Confirm Save</li>
+    </ol>
+    <div class="uc-result"><strong>Result:</strong> <code>TravelAgency.defaultRebatePct</code> is set to 4. All future bookings for Viajes Express where no per-(agency, hotel) override exists will now use a 4% rebate. The change is audited with <code>scope=agency, field=defaultRebatePct</code>.</div>
+  </div>
+
+  <!-- UC9: Compliance audit -->
   <div class="use-case uc-audit">
-    <span class="use-case-num">UC 8 · Compliance audit</span>
+    <span class="use-case-num">UC 9 · Compliance audit</span>
     <h3>Periodic compliance review</h3>
     <div class="scenario">
       <strong>Scenario:</strong> The CFO asks "who changed commission settings last month, and why?" — for a quarterly compliance review.
@@ -2599,8 +2747,17 @@ ergosPctOfGross  = ergosNet ÷ ergosGross</div>
   <h2>10. Glossary</h2>
 
   <dl class="glossary">
-    <dt>baseCommission <code>8 = 8%</code></dt>
-    <dd>The Ergos markup added to the GDS's adjusted cost. Stored as a whole-percent integer (0–100). Hotel schema validators: <code>min: 0, max: 100, required</code>.</dd>
+    <dt>baseCommission <code>3 = 3%</code></dt>
+    <dd>The Ergos markup added to the GDS's adjusted cost. Stored as a whole-percent integer. Resolved via a 7-step cascade through the <code>markup_rules</code> collection — see the markup_rules cascade subsection in Section 1. Schema: <code>min: 1, max: 100</code> (optional on Hotel; cleared by migration so markup_rules takes over).</dd>
+
+    <dt>markup_rules</dt>
+    <dd>MongoDB collection holding Ergos markup overrides at every cascade level between per-hotel and global. Each document: <code>{ scope, identifier, baseCommission, createdBy, updatedBy, timestamps }</code>. Unique index on <code>(scope, identifier)</code>. Scope values: <code>gds</code> (vendorKey), <code>country</code> (hotel.country), <code>stars</code> (String(hotel.starRating)), <code>chain</code> (chainId), <code>hotel</code> (hotel._id). Written by the Bulk Edit drawer and the <code>/admin/markup-rules</code> API endpoint.</dd>
+
+    <dt>baseCommissionSource</dt>
+    <dd>Audit field frozen into every booking's <code>commissionSnapshot</code>. Records which cascade layer produced the resolved <code>baseCommission</code> at booking time. Values: <code>'hotel' | 'hotel_rule' | 'chain_rule' | 'stars_rule' | 'country_rule' | 'gds_rule' | 'default'</code>.</dd>
+
+    <dt>defaultRebatePct</dt>
+    <dd>Optional field on <code>TravelAgency</code>. The agency's default rebate percentage when no per-(agency, hotel) override exists. Edited from the Agencies tab in Commission Policy. Cascade: per-(agency, hotel) override wins → <code>agency.defaultRebatePct</code> → 0.</dd>
 
     <dt>chainDiscountPct <code>15 = 15% off</code></dt>
     <dd>Negotiated chain discount expressed as a whole-percent integer off GDS net. Applied BEFORE the markup (<code>adjustedCost = gdsNet × (1 − chainDiscountPct/100)</code>). A value of <code>0</code> means no discount. Hotel schema validators: <code>min: 0, max: 100, default: 0</code>.</dd>
@@ -2609,10 +2766,10 @@ ergosPctOfGross  = ergosNet ÷ ergosGross</div>
     <dd>Agency rebate as a whole-percent integer of Ergos sell. Per-(agency, hotel). In-house agencies have rebatePct = 0. Stored in <code>travel_agency_commission.commissionPercentage</code>; surfaced via API/UI as <code>rebatePct</code>.</dd>
 
     <dt>earningPct <code>24 = 24%</code></dt>
-    <dd>Agent earning as a whole-percent integer of Ergos gross margin. Per-agent-hotel overrides stored in <code>sales_agent_commission.commissionPercentage</code>; surfaced via API/UI as <code>earningPctOverride</code>. Tier defaults max out at 32% (Strategic upper bound); no runtime cap is enforced beyond the schema-level 0–100 range.</dd>
+    <dd>Agent earning as a whole-percent integer of Ergos gross margin. Per-(agent, hotel) overrides stored in the <code>agencies_commissions</code> collection (<code>SalesAgentCommission.commissionPercentage</code>); surfaced via API/UI as <code>earningPctOverride</code>. Clamped to the tier's earningRange in the Layer 5 UI input. Tier defaults max out at 32% (Strategic); no runtime cap beyond schema-level 0–100.</dd>
 
     <dt>opsExpense <code>6 = 6%</code></dt>
-    <dd>Agent operational expense (account management, support overhead) as a whole-percent integer of Ergos gross.</dd>
+    <dd>Agent operational expense (account management, support overhead) as a whole-percent integer of Ergos gross. Per-(agent, hotel) overrides stored as <code>SalesAgentCommission.operationalExpense</code>; surfaced as <code>opsExpenseOverride</code>. Optional — can be set or cleared independently of earningPctOverride on the same row.</dd>
 
     <dt>defaultMarkupPct <code>15 = 15%</code> (whole-percent integer)</dt>
     <dd>The agency's customer-facing markup on top of <code>ergosSell</code>. Lives on the TravelAgency model (<code>min: 0, max: 200, default: 15, integer, required</code>) and is frozen per booking as <code>agencyMarkupPctSnapshot</code>. Stored, transported, and displayed as a whole-percent integer, matching every other percent field on the platform — even though this value sits outside the commission engine and has zero effect on any Ergos-side payout calculation. The integer convention is for code consistency, not because the engine touches it.</dd>
