@@ -544,14 +544,38 @@ body.lang-es [lang-content="es"]{display:inline}
           </div>
         </div>
 
-        <!-- Layer 2: Agent Tier · Growth — Override -->
-        <div class="bp-card layer-card" style="border:1px solid rgba(196,150,44,0.3);background:linear-gradient(180deg,rgba(196,150,44,0.04) 0%,#fff 100%)">
+        <!-- Layer 2: Agent Tier · Growth — Inherited (tier-level baseline) -->
+        <div class="bp-card layer-card">
           <div class="card-head">
             <div class="card-title">
               <div class="layer-num">2</div>
               <div>
                 <h3>Agent Tier · Growth</h3>
-                <div class="src">Tier-level earning baseline (15–20% range) · <span style="background:#f3e3b6;color:#946400;padding:2px 8px;border-radius:999px;font-size:10px;font-weight:700">M. Ruiz qualified Mar 2025</span></div>
+                <div class="src">Tier-level baseline · earning range <code>15–20%</code> · <span style="background:#f3e3b6;color:#946400;padding:2px 8px;border-radius:999px;font-size:10px;font-weight:700">M. Ruiz qualified Mar 2025</span></div>
+              </div>
+            </div>
+            <div class="card-actions">
+              <span class="chip chip-inherited" style="background:#f0f0f5;color:#5c5c7a;padding:3px 10px;border-radius:999px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.4px">Inherited</span>
+            </div>
+          </div>
+          <div class="field-row">
+            <div><div class="field-label">earningPercentage</div><span class="field-hint">Growth tier baseline (mid-range)</span></div>
+            <div class="field-control"><input type="number" value="17.5" min="0" max="100" step="0.5" style="width:80px;padding:6px 8px;border:1px solid var(--border);border-radius:4px"><span style="font-size:11px;color:var(--text-muted)">%</span></div>
+          </div>
+          <div class="field-row">
+            <div><div class="field-label">operationalExpense</div><span class="field-hint">Tier ops baseline</span></div>
+            <div class="field-control"><input type="number" value="7" min="0" max="100" step="0.5" style="width:80px;padding:6px 8px;border:1px solid var(--border);border-radius:4px"><span style="font-size:11px;color:var(--text-muted)">%</span></div>
+          </div>
+        </div>
+
+        <!-- Layer 3: Agent · M. Ruiz — Override (the specific agent's value over tier baseline) -->
+        <div class="bp-card layer-card" style="border:1px solid rgba(196,150,44,0.3);background:linear-gradient(180deg,rgba(196,150,44,0.04) 0%,#fff 100%)">
+          <div class="card-head">
+            <div class="card-title">
+              <div class="layer-num">3</div>
+              <div>
+                <h3>Agent · M. Ruiz</h3>
+                <div class="src">Agent-specific override · <span style="background:rgba(15,168,155,0.14);color:#0d8a7f;padding:2px 8px;border-radius:999px;font-size:10px;font-weight:700">isOneClick</span> · top performer adj. on top of tier baseline</div>
               </div>
             </div>
             <div class="card-actions">
@@ -559,12 +583,12 @@ body.lang-es [lang-content="es"]{display:inline}
             </div>
           </div>
           <div class="field-row">
-            <div><div class="field-label">earningPercentage</div><span class="field-hint">Growth tier baseline</span></div>
-            <div class="field-control"><input type="number" value="22" min="0" max="100" step="0.5" style="width:80px;padding:6px 8px;border:1px solid var(--border);border-radius:4px;background:rgba(15,168,155,0.06)"><span style="font-size:11px;color:var(--text-muted)">%</span></div>
+            <div><div class="field-label">earningPercentage</div><span class="field-hint">M. Ruiz override (tier 17.5% → 19.5%, within Growth 15–20% range)</span></div>
+            <div class="field-control"><input type="number" value="19.5" min="0" max="100" step="0.5" style="width:80px;padding:6px 8px;border:1px solid var(--border);border-radius:4px;background:rgba(15,168,155,0.06)"><span style="font-size:11px;color:var(--text-muted)">%</span></div>
           </div>
           <div class="field-row">
-            <div><div class="field-label">operationalExpense</div><span class="field-hint">Tier ops baseline</span></div>
-            <div class="field-control"><input type="number" value="7" min="0" max="100" step="0.5" style="width:80px;padding:6px 8px;border:1px solid var(--border);border-radius:4px;background:rgba(15,168,155,0.06)"><span style="font-size:11px;color:var(--text-muted)">%</span></div>
+            <div><div class="field-label">operationalExpense</div><span class="field-hint">Falls back to tier baseline (7%)</span></div>
+            <div class="field-control"><input type="number" value="7" min="0" max="100" step="0.5" disabled style="width:80px;padding:6px 8px;border:1px solid var(--border);border-radius:4px;background:#fafafa;color:#5c5c7a"><span style="font-size:11px;color:var(--text-muted)">%</span></div>
           </div>
         </div>
 
