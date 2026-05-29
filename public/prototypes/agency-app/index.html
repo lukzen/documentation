@@ -1,0 +1,1823 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ergos Continental — Redesign Prototype</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- ========== PROTOTYPE TOOLBAR ========== -->
+  <div class="proto-toolbar">
+    <div class="proto-toolbar-left">
+      <span class="proto-logo">Ergos Continental — Redesign Prototype</span>
+    </div>
+    <div class="proto-toolbar-center">
+      <!-- Flow switcher -->
+      <div class="proto-flow-switcher">
+        <button class="proto-flow-btn active" data-flow="hotels">Hotels</button>
+      </div>
+      <!-- Hotel flow tabs -->
+      <div class="proto-flow-tabs" data-flow-group="hotels">
+        <button class="proto-tab active" data-screen="home">1. Home / Search</button>
+        <button class="proto-tab" data-screen="results">2. Search Results</button>
+        <button class="proto-tab" data-screen="hotel">3. Hotel Detail</button>
+        <button class="proto-tab" data-screen="guest">4. Guest Info</button>
+        <button class="proto-tab" data-screen="services">5. Add Services</button>
+        <button class="proto-tab" data-screen="payment">6. Payment</button>
+        <button class="proto-tab" data-screen="confirmation">7. Confirmation</button>
+        <button class="proto-tab" data-screen="bookings">8. My Bookings</button>
+        <button class="proto-tab" data-screen="booking-detail">9. Booking Detail</button>
+        <button class="proto-tab" data-screen="voucher">10. Voucher</button>
+        <button class="proto-tab" data-screen="invoice">11. Invoice</button>
+      </div>
+    </div>
+    <div class="proto-toolbar-right">
+      <button class="proto-changes-btn" id="changesToggle">Show Changes</button>
+    </div>
+  </div>
+
+  <div style="background:#fff7e0;border-bottom:1px solid #f0d670;padding:8px 18px;font-family:'DM Sans',sans-serif;font-size:12.5px;color:#5c3d00;text-align:center;">
+    <strong>Prototype scope:</strong> the 11 screens above cover the <em>hotel-booking funnel + Mozio transportation upsell</em>.
+    Features in the live app NOT modeled here: agency P&amp;L (<code>/pnl</code>), employee management (<code>/employees</code>), passkey settings (<code>/passkeys</code>), profile/account (<code>/profile</code>, <code>/profile-info</code>).
+    See the <a href="../../user-guide/agency-app-user-guide.html" style="color:#0d8a7f;font-weight:600;">Agency App User Guide</a> for the full live-app surface.
+  </div>
+
+  <!-- ========== SCREEN: HOME / SEARCH ========== -->
+  <div class="screen active" id="screen-home">
+    <nav class="navbar">
+      <div class="nav-left">
+        <div class="brand">
+          <div class="brand-icon">EC</div>
+          <span class="brand-name">Ergos Continental</span>
+        </div>
+        <a href="#" class="nav-link active" onclick="showScreen('home')">Hotels</a>
+        <a href="#" class="nav-link disabled" style="opacity:.4;cursor:default" title="Coming soon">Flights</a>
+        <a href="#" class="nav-link" onclick="showScreen('bookings')">My Bookings</a>
+      </div>
+      <div class="nav-right">
+        <button class="icon-btn help-btn" title="Need help?" aria-label="Help"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg></button>
+        <button class="icon-btn" aria-label="Language"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></button>
+        <button class="icon-btn" aria-label="Notifications"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0"/></svg></button>
+        <span class="nav-greeting" id="nav-greeting">Hello, Travel Agent</span>
+        <div class="avatar">TA</div>
+      </div>
+    </nav>
+
+    <div class="hero">
+      <div class="hero-overlay"></div>
+      <div class="hero-content">
+        <h1>Every client deserves a story worth telling</h1>
+        <p class="hero-sub">Curate unforgettable stays from 2,500+ handpicked hotels worldwide</p>
+
+        <div class="search-box" role="search" aria-label="Hotel search">
+          <div class="search-row">
+            <div class="search-field search-field-destination" style="position:relative">
+              <label>Destination or Hotel</label>
+              <div class="search-input-wrap">
+                <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6b7280" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+                <input type="text" placeholder="Country, city, region, or hotel name..." value="Havana, Cuba" class="search-input" id="dest-input" autocomplete="off">
+              </div>
+              <div class="autocomplete-dropdown" id="dest-autocomplete"></div>
+              <div class="change-callout" data-change="1.1">
+                <span class="change-badge">CHANGED</span>
+                Single unified field — replaces separate Country + Hotel Name + Star Category fields.
+                Accepts destinations (country, city, region) and hotel names with autocomplete.
+              </div>
+            </div>
+            <div class="search-field">
+              <label>Check-in</label>
+              <div class="search-input-wrap">
+                <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6b7280" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+                <input type="date" value="2026-03-25" id="home-checkin" class="search-input">
+              </div>
+            </div>
+            <div class="search-field">
+              <label>Check-out</label>
+              <div class="search-input-wrap">
+                <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6b7280" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+                <input type="date" value="2026-03-27" id="home-checkout" class="search-input">
+              </div>
+              <span class="nights-chip" id="nights-chip">2 Nights</span>
+            </div>
+            <div class="search-field">
+              <label>Rooms & Guests</label>
+              <div class="search-input-wrap occupancy-trigger" onclick="document.getElementById('occupancy-dropdown').classList.toggle('show')">
+                <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6b7280" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                <input type="text" value="1 Room, 2 Adults" class="search-input" readonly>
+              </div>
+              <div class="change-callout" data-change="1.2">
+                <span class="change-badge">CHANGED</span>
+                Toddlers category removed. Only Adults + Children. When child added, age/DOB is required — system auto-classifies as Infant/Child/Teen.
+              </div>
+            </div>
+            <button class="search-btn" onclick="performSearch()">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+              Search
+            </button>
+          </div>
+        </div>
+
+        <div class="destination-chips">
+          <span class="chip-label">Trending:</span>
+          <button class="dest-chip" onclick="showScreen('results')">Havana, Cuba</button>
+          <button class="dest-chip" onclick="showScreen('results')">Varadero</button>
+          <button class="dest-chip" onclick="showScreen('results')">Cancun</button>
+          <button class="dest-chip" onclick="showScreen('results')">Punta Cana</button>
+          <button class="dest-chip" onclick="showScreen('results')">Riviera Maya</button>
+        </div>
+
+        <!-- Occupancy Dropdown -->
+        <div class="occupancy-dropdown" id="occupancy-dropdown">
+          <div id="occ-rooms-container">
+            <!-- Rooms rendered by JS -->
+          </div>
+          <div class="occ-footer">
+            <a href="#" class="occ-add-room" id="occ-add-room-btn">+ Add another room</a>
+            <button class="occ-done-btn" onclick="closeOccupancy()">Done</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== SCREEN: SEARCH RESULTS ========== -->
+  <div class="screen" id="screen-results">
+    <nav class="navbar">
+      <div class="nav-left">
+        <div class="brand"><div class="brand-icon">EC</div><span class="brand-name">Ergos Continental</span></div>
+        <a href="#" class="nav-link" onclick="showScreen('home')">Hotels</a>
+        <a href="#" class="nav-link disabled" style="opacity:.4;cursor:default">Flights</a>
+        <a href="#" class="nav-link" onclick="showScreen('bookings')">My Bookings</a>
+      </div>
+      <div class="nav-right">
+        <button class="icon-btn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></button>
+        <button class="icon-btn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0"/></svg></button>
+        <div class="avatar">TA</div>
+      </div>
+    </nav>
+
+    <!-- Inline search bar -->
+    <div class="results-search-bar">
+      <div class="rsb-field"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6b7280" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg> Havana, Cuba</div>
+      <div class="rsb-sep"></div>
+      <div class="rsb-field"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6b7280" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg> Mar 25 – Mar 27, 2026</div>
+      <div class="rsb-sep"></div>
+      <div class="rsb-field"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6b7280" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg> 2 Adults</div>
+      <button class="rsb-edit"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+    </div>
+
+    <div class="results-layout">
+      <!-- Sidebar Filters -->
+      <aside class="filter-sidebar">
+        <h3 class="filter-title">Filters</h3>
+        <div class="change-callout" data-change="1.1b">
+          <span class="change-badge">CHANGED</span>
+          Star category moved here from home search. All filters on results page per B2B standard.
+        </div>
+
+        <div class="filter-section">
+          <h4>Hotel Name</h4>
+          <input type="text" id="filter-hotel-name" class="filter-input" placeholder="Search hotel...">
+        </div>
+        <div class="filter-section">
+          <h4>Point of Interest</h4>
+          <select class="filter-select"><option>Select...</option></select>
+          <input type="text" class="filter-input" placeholder="Address..." style="margin-top:8px">
+        </div>
+        <div class="filter-section">
+          <h4>Price Range</h4>
+          <div class="price-range">
+            <input type="range" min="0" max="2000" value="2000" id="filter-price-range" class="range-slider">
+            <div class="price-labels"><span>$0</span><span id="filter-price-label">$2,000+</span></div>
+          </div>
+        </div>
+        <div class="filter-section">
+          <h4>Category</h4>
+          <label class="filter-check"><input type="checkbox" class="filter-star" data-stars="5"> <span class="stars">★★★★★</span> <span class="count">(73)</span></label>
+          <label class="filter-check"><input type="checkbox" class="filter-star" data-stars="4"> <span class="stars">★★★★</span> <span class="count">(58)</span></label>
+          <label class="filter-check"><input type="checkbox" class="filter-star" data-stars="3"> <span class="stars">★★★</span> <span class="count">(100)</span></label>
+          <label class="filter-check"><input type="checkbox" class="filter-star" data-stars="2"> <span class="stars">★★</span> <span class="count">(18)</span></label>
+        </div>
+        <div class="filter-section">
+          <h4>Meal Plan</h4>
+          <label class="filter-check"><input type="checkbox" class="filter-meal" data-meal="All Inclusive"> All Inclusive</label>
+          <label class="filter-check"><input type="checkbox" class="filter-meal" data-meal="Bed & Breakfast"> Bed & Breakfast</label>
+          <label class="filter-check"><input type="checkbox" class="filter-meal" data-meal="Full Board"> Full Board</label>
+          <label class="filter-check"><input type="checkbox" class="filter-meal" data-meal="Half Board"> Half Board</label>
+          <label class="filter-check"><input type="checkbox" class="filter-meal" data-meal="Room Only"> Room Only</label>
+        </div>
+        <div class="filter-section">
+          <h4>Cancellation Policy</h4>
+          <label class="filter-radio"><input type="radio" name="refund" class="filter-refund" value="all" checked> All rates</label>
+          <label class="filter-radio"><input type="radio" name="refund" class="filter-refund" value="refundable"> Refundable only</label>
+          <label class="filter-radio"><input type="radio" name="refund" class="filter-refund" value="nonrefundable"> Non-refundable only</label>
+        </div>
+        <div class="filter-section">
+          <h4>Sort by</h4>
+          <select class="filter-select" id="filter-sort">
+            <option value="price-asc">Price: Low to High</option>
+            <option value="price-desc">Price: High to Low</option>
+            <option value="stars">Star Rating</option>
+            <option value="name">Hotel Name</option>
+          </select>
+        </div>
+      </aside>
+
+      <!-- Results List -->
+      <div class="results-list" id="results-list">
+        <div class="results-header">
+          <span class="results-count" id="results-count">24 hotels found in Havana, Cuba</span>
+        </div>
+
+        <!-- Hotel Card 1 -->
+        <div class="hotel-card" onclick="selectHotel(this)" data-name="Gran Muthu Habana" data-stars="5" data-price="194.40" data-meal="Bed & Breakfast" data-refund="refundable">
+          <div class="hotel-card-img">
+            <img src="https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400&h=280&fit=crop" alt="Hotel">
+            <div class="hotel-card-badge free">Free Cancellation</div>
+            <div class="hotel-card-badge-top">Top Pick</div>
+          </div>
+          <div class="hotel-card-body">
+            <div class="hotel-card-top">
+              <div class="hotel-card-top-row">
+                <h3>Gran Muthu Habana</h3>
+                <div class="review-score"><span class="review-score-num">8.7</span><span class="review-score-label">Excellent</span></div>
+              </div>
+              <div class="hotel-card-stars">★★★★★ <span class="hotel-card-loc">Miramar, Playa</span></div>
+            </div>
+            <div class="hotel-card-tags">
+              <span class="tag tag-meal">Bed & Breakfast</span>
+              <span class="tag tag-refund">Free cancellation until Mar 25</span>
+            </div>
+            <div class="social-proof">Booked 8 times this week</div>
+            <div class="hotel-card-bottom">
+              <div class="hotel-card-price">
+                <span class="price-label">From</span>
+                <span class="price-value">USD 194.40</span>
+                <span class="price-per">total for 2 nights</span>
+              </div>
+              <button class="view-rooms-btn">View Rooms →</button>
+            </div>
+            <div class="change-callout" data-change="2.2">
+              <span class="change-badge">CHANGED</span>
+              Now shows: meal plan, cancellation policy, and "Price from" on every card — visible before entering hotel detail. No internal codes.
+            </div>
+          </div>
+        </div>
+
+        <!-- Hotel Card 2 -->
+        <div class="hotel-card" onclick="selectHotel(this)" data-name="Playa Costa Verde" data-stars="4" data-price="275.00" data-meal="All Inclusive" data-refund="nonrefundable">
+          <div class="hotel-card-img">
+            <img src="https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=400&h=280&fit=crop" alt="Hotel">
+            <div class="hotel-card-badge nonrefund">Non-Refundable</div>
+          </div>
+          <div class="hotel-card-body">
+            <div class="hotel-card-top">
+              <div class="hotel-card-top-row">
+                <h3>Playa Costa Verde</h3>
+                <div class="review-score"><span class="review-score-num">7.9</span><span class="review-score-label">Very Good</span></div>
+              </div>
+              <div class="hotel-card-stars">★★★★ <span class="hotel-card-loc">Holguín</span></div>
+            </div>
+            <div class="hotel-card-tags">
+              <span class="tag tag-meal">All Inclusive</span>
+              <span class="tag tag-nonrefund">Non-refundable</span>
+            </div>
+            <div class="social-proof">Booked 3 times this week</div>
+            <div class="hotel-card-bottom">
+              <div class="hotel-card-price">
+                <span class="price-label">From</span>
+                <span class="price-value">USD 275.00</span>
+                <span class="price-per">total for 2 nights</span>
+              </div>
+              <button class="view-rooms-btn">View Rooms →</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Hotel Card 3 -->
+        <div class="hotel-card" onclick="selectHotel(this)" data-name="Playa Luxury Varadero" data-stars="5" data-price="725.00" data-meal="All Inclusive" data-refund="refundable">
+          <div class="hotel-card-img">
+            <img src="https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=400&h=280&fit=crop" alt="Hotel">
+            <div class="hotel-card-badge free">Free Cancellation</div>
+          </div>
+          <div class="hotel-card-body">
+            <div class="hotel-card-top">
+              <div class="hotel-card-top-row">
+                <h3>Playa Luxury Varadero</h3>
+                <div class="review-score"><span class="review-score-num">9.2</span><span class="review-score-label">Outstanding</span></div>
+              </div>
+              <div class="hotel-card-stars">★★★★★ <span class="hotel-card-loc">Varadero</span></div>
+            </div>
+            <div class="hotel-card-tags">
+              <span class="tag tag-meal">All Inclusive</span>
+              <span class="tag tag-refund">Free cancellation until Nov 1</span>
+            </div>
+            <div class="social-proof">Booked 12 times this week</div>
+            <div class="hotel-card-bottom">
+              <div class="hotel-card-price">
+                <span class="price-label">From</span>
+                <span class="price-value">USD 725.00</span>
+                <span class="price-per">total for 2 nights</span>
+              </div>
+              <button class="view-rooms-btn">View Rooms →</button>
+            </div>
+          </div>
+        </div>
+        <!-- Empty state (hidden by default) -->
+        <div class="results-empty" id="hotel-results-empty" style="display:none">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--warm-400)" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/><path d="M8 11h6"/></svg>
+          <h3>No hotels match your filters</h3>
+          <p>Try adjusting your search criteria or reset filters to see all results.</p>
+          <button class="btn-primary" onclick="resetHotelFilters()">Reset Filters</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== SCREEN: HOTEL DETAIL ========== -->
+  <div class="screen" id="screen-hotel">
+    <nav class="navbar">
+      <div class="nav-left">
+        <div class="brand"><div class="brand-icon">EC</div><span class="brand-name">Ergos Continental</span></div>
+        <a href="#" class="nav-link" onclick="showScreen('home')">Hotels</a>
+        <a href="#" class="nav-link disabled" style="opacity:.4;cursor:default">Flights</a>
+        <a href="#" class="nav-link" onclick="showScreen('bookings')">My Bookings</a>
+      </div>
+      <div class="nav-right">
+        <button class="icon-btn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></button>
+        <button class="icon-btn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0"/></svg></button>
+        <div class="avatar">TA</div>
+      </div>
+    </nav>
+
+    <div class="hotel-detail-page">
+      <a href="#" class="back-link" onclick="showScreen('results')">← Back to Results</a>
+
+      <div class="hotel-detail-header">
+        <div class="hotel-gallery">
+          <img src="https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800&h=400&fit=crop" alt="Hotel" class="gallery-main">
+          <div class="gallery-grid">
+            <img src="https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=200&h=140&fit=crop" alt="">
+            <img src="https://images.unsplash.com/photo-1590490360182-c33d57733427?w=200&h=140&fit=crop" alt="">
+            <img src="https://images.unsplash.com/photo-1584132967334-10e028bd69f7?w=200&h=140&fit=crop" alt="">
+            <div class="gallery-more">+36 photos</div>
+          </div>
+        </div>
+        <div class="hotel-detail-info">
+          <div class="hotel-detail-info-top">
+            <div>
+              <h1 id="hotel-detail-name">Gran Muthu Habana</h1>
+              <div class="hotel-detail-stars" id="hotel-detail-stars">★★★★★</div>
+              <p class="hotel-detail-address">Calle 66, entre 1ra y 3ra, Miramar, Playa</p>
+            </div>
+            <div class="hotel-detail-review">
+              <div class="review-score-lg"><span class="review-score-num-lg">8.7</span></div>
+              <div class="review-score-meta"><span class="review-score-label-lg">Excellent</span><span class="review-score-count">1,247 reviews</span></div>
+            </div>
+          </div>
+          <div class="hotel-detail-actions-row">
+            <button class="btn-virtual-tour" onclick="showToast('info','Virtual Tour','360° virtual tour would open in a fullscreen viewer.')">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+              Virtual Tour
+            </button>
+            <span class="hotel-detail-supplier">Supplied by <strong>Hotelbeds</strong></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Hotel Description -->
+      <div class="hotel-description">
+        <h2 class="section-title">About This Hotel</h2>
+        <p class="hotel-desc-text">Nestled along the vibrant Miramar waterfront, Gran Muthu Habana blends colonial charm with contemporary luxury. Originally built in the 1950s and meticulously restored, this five-star gem offers panoramic ocean views, two infinity pools, and a rooftop terrace bar that has become a favourite sunset destination for discerning travellers. Steps away from the iconic Malecón and Old Havana's UNESCO World Heritage sites.</p>
+        <div class="hotel-highlights">
+          <span class="highlight-tag">Beachfront</span>
+          <span class="highlight-tag">2 Pools</span>
+          <span class="highlight-tag">Spa & Wellness</span>
+          <span class="highlight-tag">3 Restaurants</span>
+          <span class="highlight-tag">Airport Shuttle</span>
+          <span class="highlight-tag">24/7 Concierge</span>
+        </div>
+      </div>
+
+      <h2 class="section-title">Available Rooms</h2>
+      <p class="section-sub">Mar 25 – Mar 27, 2026 · 2 Nights · 2 Adults</p>
+
+      <div class="room-card">
+        <div class="room-card-left">
+          <img src="https://images.unsplash.com/photo-1590490360182-c33d57733427?w=260&h=160&fit=crop" alt="Standard Room" class="room-thumb">
+          <h3>Standard Room</h3>
+          <div class="room-amenities">
+            <span>🛏 1 Double Bed</span>
+            <span>📐 28 m²</span>
+            <span>❄️ Air Conditioning</span>
+            <span>📶 Free WiFi</span>
+          </div>
+          <div class="change-callout" data-change="codes">
+            <span class="change-badge">CHANGED</span>
+            Shows "Standard Room" instead of vendor code "STD". Rate name hidden — only meal plan and policy shown.
+          </div>
+        </div>
+        <div class="room-card-right">
+          <div class="rate-option">
+            <div class="rate-info">
+              <span class="tag tag-meal">Bed & Breakfast</span>
+              <span class="tag tag-refund">Free cancellation until Mar 25</span>
+            </div>
+            <div class="rate-price">
+              <span class="rate-total">USD 194.40</span>
+              <span class="rate-per">total for 2 nights</span>
+              <button class="book-btn" onclick="bookRoom('Standard Room','Bed & Breakfast','194.40','Free cancellation until Mar 25')">Book this room</button>
+            </div>
+          </div>
+          <div class="rate-option">
+            <div class="rate-info">
+              <span class="tag tag-meal">Half Board</span>
+              <span class="tag tag-refund">Free cancellation until Mar 23</span>
+            </div>
+            <div class="rate-price">
+              <span class="rate-total">USD 294.40</span>
+              <span class="rate-per">total for 2 nights</span>
+              <button class="book-btn" onclick="bookRoom('Standard Room','Half Board','294.40','Free cancellation until Mar 23')">Book this room</button>
+            </div>
+          </div>
+          <div class="rate-option">
+            <div class="rate-info">
+              <span class="tag tag-meal">All Inclusive</span>
+              <span class="tag tag-nonrefund">Non-refundable</span>
+            </div>
+            <div class="rate-price">
+              <span class="rate-total">USD 394.40</span>
+              <span class="rate-per">total for 2 nights</span>
+              <button class="book-btn" onclick="bookRoom('Standard Room','All Inclusive','394.40','Non-refundable')">Book this room</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="room-card">
+        <div class="room-card-left">
+          <img src="https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=260&h=160&fit=crop" alt="Superior Room" class="room-thumb">
+          <h3>Superior Room — Ocean View</h3>
+          <div class="room-amenities">
+            <span>🛏 1 King Bed</span>
+            <span>📐 35 m²</span>
+            <span>🌊 Ocean View</span>
+            <span>📶 Free WiFi</span>
+          </div>
+        </div>
+        <div class="room-card-right">
+          <div class="rate-option">
+            <div class="rate-info">
+              <span class="tag tag-meal">Bed & Breakfast</span>
+              <span class="tag tag-refund">Free cancellation until Mar 25</span>
+            </div>
+            <div class="rate-price">
+              <span class="rate-total">USD 284.00</span>
+              <span class="rate-per">total for 2 nights</span>
+              <button class="book-btn" onclick="bookRoom('Superior Room — Ocean View','Bed & Breakfast','284.00','Free cancellation until Mar 25')">Book this room</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== SCREEN: GUEST INFO ========== -->
+  <div class="screen" id="screen-guest">
+    <nav class="navbar">
+      <div class="nav-left">
+        <div class="brand"><div class="brand-icon">EC</div><span class="brand-name">Ergos Continental</span></div>
+        <a href="#" class="nav-link" onclick="showScreen('home')">Hotels</a>
+        <a href="#" class="nav-link disabled" style="opacity:.4;cursor:default">Flights</a>
+        <a href="#" class="nav-link" onclick="showScreen('bookings')">My Bookings</a>
+      </div>
+      <div class="nav-right"><div class="avatar">TA</div></div>
+    </nav>
+
+    <div class="booking-flow-page">
+      <!-- Progress Steps -->
+      <div class="progress-steps">
+        <div class="step completed"><span class="step-num">1</span> Room Selection</div>
+        <div class="step-connector completed"></div>
+        <div class="step active"><span class="step-num">2</span> Guest Details</div>
+        <div class="step-connector"></div>
+        <div class="step"><span class="step-num">3</span> Add Services</div>
+        <div class="step-connector"></div>
+        <div class="step"><span class="step-num">4</span> Payment</div>
+        <div class="step-connector"></div>
+        <div class="step"><span class="step-num">5</span> Confirmation</div>
+      </div>
+
+      <div class="flow-layout">
+        <div class="flow-main">
+          <a href="#" class="back-link" onclick="showScreen('hotel')">← Back to Rooms</a>
+          <h2>Who's checking in?</h2>
+
+          <div class="form-card">
+            <h3>Primary Guest Details</h3>
+            <div class="form-row">
+              <div class="form-group"><label>First Name *</label><input type="text" value="Testing" class="form-input"></div>
+              <div class="form-group"><label>Last Name *</label><input type="text" value="Guest" class="form-input"></div>
+            </div>
+            <div class="form-row">
+              <div class="form-group"><label>Email *</label><input type="email" value="mayankjariwala1994@gmail.com" class="form-input"></div>
+              <div class="form-group"><label>Phone *</label><input type="tel" value="123456789" class="form-input"></div>
+            </div>
+            <div class="form-row">
+              <div class="form-group"><label>Nationality</label>
+                <select class="form-input"><option>United States</option></select>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="flow-sidebar">
+          <div class="order-summary">
+            <img src="https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400&h=160&fit=crop" alt="Gran Muthu Habana" class="os-hotel-img">
+            <h3>Booking Summary</h3>
+            <div class="os-hotel">Gran Muthu Habana ★★★★★</div>
+            <div class="os-address">Miramar, Playa, Havana</div>
+            <div class="os-divider"></div>
+            <div class="os-row"><span>Check-in</span><span>Wed, Mar 25, 2026</span></div>
+            <div class="os-row"><span>Check-out</span><span>Fri, Mar 27, 2026</span></div>
+            <div class="os-row"><span>Duration</span><span>2 Nights</span></div>
+            <div class="os-row"><span>Room</span><span>Standard Room</span></div>
+            <div class="os-row"><span>Guests</span><span>2 Adults</span></div>
+            <div class="os-row"><span>Meal Plan</span><span>Bed & Breakfast</span></div>
+            <div class="os-divider"></div>
+            <div class="os-row os-policy"><span>📗 Free cancellation until Mar 25, 2026</span></div>
+            <div class="os-divider"></div>
+            <div class="os-row os-total"><span>Total Price</span><span>USD 194.40</span></div>
+            <button class="continue-btn" onclick="showScreen('services')">Continue →</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== SCREEN: ADD SERVICES ========== -->
+  <div class="screen" id="screen-services">
+    <nav class="navbar">
+      <div class="nav-left">
+        <div class="brand"><div class="brand-icon">EC</div><span class="brand-name">Ergos Continental</span></div>
+        <a href="#" class="nav-link" onclick="showScreen('home')">Hotels</a>
+        <a href="#" class="nav-link disabled" style="opacity:.4;cursor:default">Flights</a>
+        <a href="#" class="nav-link" onclick="showScreen('bookings')">My Bookings</a>
+      </div>
+      <div class="nav-right"><div class="avatar">TA</div></div>
+    </nav>
+
+    <div class="booking-flow-page">
+      <div class="progress-steps">
+        <div class="step completed"><span class="step-num">1</span> Room Selection</div>
+        <div class="step-connector completed"></div>
+        <div class="step completed"><span class="step-num">2</span> Guest Details</div>
+        <div class="step-connector completed"></div>
+        <div class="step active"><span class="step-num">3</span> Add Services</div>
+        <div class="step-connector"></div>
+        <div class="step"><span class="step-num">4</span> Payment</div>
+        <div class="step-connector"></div>
+        <div class="step"><span class="step-num">5</span> Confirmation</div>
+      </div>
+
+      <div class="flow-layout">
+        <div class="flow-main">
+          <a href="#" class="back-link" onclick="showScreen('guest')">← Back to Guest Info</a>
+          <h2>Enhance your client's trip</h2>
+          <p class="services-subtitle">Add transportation or other services to create a complete travel package.</p>
+
+          <!-- Transfer Service Offer Card -->
+          <div class="service-offer-card" id="svc-transfer-card">
+            <div class="svc-offer-header" onclick="toggleServiceConfig('transfer')">
+              <div class="svc-offer-left">
+                <div class="svc-offer-icon">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13" rx="2"/><path d="M16 8h2a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2h-1"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/><path d="M8 18h8"/></svg>
+                </div>
+                <div>
+                  <h3>Airport Transfer</h3>
+                  <p>Private car service from the airport to hotel and back</p>
+                </div>
+              </div>
+              <div class="svc-offer-right">
+                <span class="svc-offer-from">from <strong id="svc-transfer-from-price" data-base-usd="25">USD 25</strong></span>
+                <span class="svc-offer-toggle" id="svc-transfer-toggle">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                </span>
+              </div>
+            </div>
+
+            <!-- Expandable configuration -->
+            <div class="svc-config" id="svc-transfer-config">
+              <div class="svc-config-inner">
+                <!-- Route config -->
+                <div class="svc-route-config">
+                  <div class="svc-route-row">
+                    <div class="svc-route-field">
+                      <label>Pickup</label>
+                      <input type="text" class="form-input" value="Jose Marti Intl Airport (HAV)" id="svc-pickup">
+                    </div>
+                    <button class="svc-swap-btn" onclick="swapServiceLocations()" title="Swap">⇆</button>
+                    <div class="svc-route-field">
+                      <label>Drop-off</label>
+                      <input type="text" class="form-input" value="Gran Muthu Habana, Miramar" id="svc-dropoff">
+                    </div>
+                  </div>
+                  <div class="svc-route-row">
+                    <div class="svc-route-field">
+                      <label>Date</label>
+                      <input type="date" class="form-input" value="2026-03-25" id="svc-tf-date">
+                    </div>
+                    <div class="svc-route-field">
+                      <label>Time</label>
+                      <input type="time" class="form-input" value="14:30" id="svc-tf-time">
+                    </div>
+                    <div class="svc-route-field">
+                      <label>Passengers</label>
+                      <input type="number" class="form-input" value="2" min="1" max="50" id="svc-tf-pax">
+                    </div>
+                  </div>
+                  <!-- Mode selector: One Way / Round Trip -->
+                  <div class="transfer-mode-pills" style="display:flex;gap:8px;margin:12px 0 4px">
+                    <button type="button" class="mode-pill active" id="mode-oneway" onclick="setTransferMode('oneway')">One Way</button>
+                    <button type="button" class="mode-pill" id="mode-roundtrip" onclick="setTransferMode('roundtrip')">Round Trip</button>
+                  </div>
+                  <!-- Return journey row (round trip only) -->
+                  <div class="svc-route-row svc-return-row" id="svc-return-row" style="display:none;background:#f8f7f5;border-radius:8px;padding:10px 12px;margin:8px 0">
+                    <div class="svc-route-field" style="flex:1">
+                      <label style="font-size:12px;color:#78716c">Return Date</label>
+                      <input type="date" class="form-input" value="2026-03-27" id="svc-tf-return-date">
+                    </div>
+                    <div class="svc-route-field" style="flex:1">
+                      <label style="font-size:12px;color:#78716c">Return Time</label>
+                      <input type="time" class="form-input" value="10:00" id="svc-tf-return-time">
+                    </div>
+                  </div>
+                  <div class="svc-autofill-badge" id="svc-autofill-badge" style="display:none">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#0d9488" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                    <span>Auto-filled from hotel booking</span>
+                  </div>
+                  <button class="btn-primary svc-search-btn" onclick="searchServiceTransfers()">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+                    Search Vehicles
+                  </button>
+                </div>
+
+                <!-- Inline results -->
+                <div class="svc-tf-results" id="svc-tf-results" style="display:none">
+                  <div class="svc-tf-controls">
+                    <span class="svc-tf-count" id="svc-tf-count">6 vehicles found</span>
+                    <select class="svc-tf-sort" onchange="sortServiceVehicles(this.value)">
+                      <option value="price-asc">Price: Low to High</option>
+                      <option value="price-desc">Price: High to Low</option>
+                      <option value="capacity-desc">Capacity: Most first</option>
+                    </select>
+                  </div>
+                  <div class="svc-tf-results-list" id="svc-tf-results-list">
+                    <!-- Vehicle 1: Shared Shuttle -->
+                    <div class="vehicle-card" data-price="10.43" data-vehicle="shuttle" data-class="Economy" data-capacity="12" data-supplier="GetTransfer">
+                      <div class="vc-icon"><svg width="40" height="28" viewBox="0 0 40 28" fill="none"><rect x="2" y="6" width="32" height="14" rx="3" stroke="#6b7280" stroke-width="1.5"/><rect x="34" y="9" width="4" height="8" rx="1" stroke="#6b7280" stroke-width="1.5"/><circle cx="10" cy="23" r="3" stroke="#6b7280" stroke-width="1.5"/><circle cx="28" cy="23" r="3" stroke="#6b7280" stroke-width="1.5"/><line x1="6" y1="12" x2="30" y2="12" stroke="#6b7280" stroke-width="1"/><line x1="12" y1="6" x2="12" y2="12" stroke="#6b7280" stroke-width="1"/><line x1="20" y1="6" x2="20" y2="12" stroke="#6b7280" stroke-width="1"/><line x1="28" y1="6" x2="28" y2="12" stroke="#6b7280" stroke-width="1"/></svg></div>
+                      <div class="vc-info">
+                        <div class="vc-name">Shared Shuttle</div>
+                        <div class="vc-meta">Economy · Up to 12 passengers · GetTransfer</div>
+                        <div class="vc-tags">
+                          <span class="vc-tag red">Non-refundable</span>
+                        </div>
+                      </div>
+                      <div class="vc-price">
+                        <div class="vc-net">Net USD 10.43/pp</div>
+                        <div class="vc-sell" id="vc-sell-0">USD 12.00/pp</div>
+                      </div>
+                      <button class="vc-add-btn" onclick="selectServiceVehicle(this.closest('.vehicle-card'))">+ Add</button>
+                    </div>
+                    <!-- Vehicle 2: Toyota Corolla -->
+                    <div class="vehicle-card" data-price="24.35" data-vehicle="sedan" data-class="Economy" data-capacity="3" data-supplier="TransGlobal">
+                      <div class="vc-icon"><svg width="40" height="28" viewBox="0 0 40 28" fill="none"><path d="M6 18h28" stroke="#6b7280" stroke-width="1.5"/><path d="M8 18l2-6c.5-1.5 2-2.5 3.5-2.5h13c1.5 0 3 1 3.5 2.5l2 6" stroke="#6b7280" stroke-width="1.5" fill="none"/><rect x="4" y="18" width="32" height="5" rx="2" stroke="#6b7280" stroke-width="1.5"/><circle cx="11" cy="25" r="2.5" stroke="#6b7280" stroke-width="1.5"/><circle cx="29" cy="25" r="2.5" stroke="#6b7280" stroke-width="1.5"/><line x1="14" y1="12" x2="26" y2="12" stroke="#6b7280" stroke-width="1"/></svg></div>
+                      <div class="vc-info">
+                        <div class="vc-name">Toyota Corolla</div>
+                        <div class="vc-meta">Economy · Up to 3 passengers · TransGlobal</div>
+                        <div class="vc-tags">
+                          <span class="vc-tag green">Free cancel 24h</span>
+                        </div>
+                      </div>
+                      <div class="vc-price">
+                        <div class="vc-net">Net USD 24.35</div>
+                        <div class="vc-sell" id="vc-sell-1">USD 28.00</div>
+                      </div>
+                      <button class="vc-add-btn" onclick="selectServiceVehicle(this.closest('.vehicle-card'))">+ Add</button>
+                    </div>
+                    <!-- Vehicle 3: Standard Sedan -->
+                    <div class="vehicle-card" data-price="30.43" data-vehicle="sedan" data-class="Standard" data-capacity="3" data-supplier="Sixt Ride">
+                      <div class="vc-icon"><svg width="40" height="28" viewBox="0 0 40 28" fill="none"><path d="M6 18h28" stroke="#6b7280" stroke-width="1.5"/><path d="M8 18l2-6c.5-1.5 2-2.5 3.5-2.5h13c1.5 0 3 1 3.5 2.5l2 6" stroke="#6b7280" stroke-width="1.5" fill="none"/><rect x="4" y="18" width="32" height="5" rx="2" stroke="#6b7280" stroke-width="1.5"/><circle cx="11" cy="25" r="2.5" stroke="#6b7280" stroke-width="1.5"/><circle cx="29" cy="25" r="2.5" stroke="#6b7280" stroke-width="1.5"/><line x1="14" y1="12" x2="26" y2="12" stroke="#6b7280" stroke-width="1"/></svg></div>
+                      <div class="vc-info">
+                        <div class="vc-name">Standard Sedan</div>
+                        <div class="vc-meta">Standard · Up to 3 passengers · Sixt Ride</div>
+                        <div class="vc-tags">
+                          <span class="vc-tag green">Free cancel 24h</span>
+                          <span class="vc-tag">Meet &amp; Greet</span>
+                        </div>
+                      </div>
+                      <div class="vc-price">
+                        <div class="vc-net">Net USD 30.43</div>
+                        <div class="vc-sell" id="vc-sell-2">USD 35.00</div>
+                      </div>
+                      <button class="vc-add-btn" onclick="selectServiceVehicle(this.closest('.vehicle-card'))">+ Add</button>
+                    </div>
+                    <!-- Vehicle 4: Mercedes E-Class -->
+                    <div class="vehicle-card" data-price="39.13" data-vehicle="sedan" data-class="Business" data-capacity="3" data-supplier="Sixt Ride">
+                      <div class="vc-icon"><svg width="40" height="28" viewBox="0 0 40 28" fill="none"><path d="M5 17h30" stroke="#6b7280" stroke-width="1.5"/><path d="M7 17l2.5-7c.5-1.5 2-2.5 3.5-2.5h14c1.5 0 3 1 3.5 2.5l2.5 7" stroke="#6b7280" stroke-width="1.5" fill="none"/><rect x="3" y="17" width="34" height="5" rx="2" stroke="#6b7280" stroke-width="1.5"/><circle cx="11" cy="24.5" r="2.5" stroke="#6b7280" stroke-width="1.5"/><circle cx="29" cy="24.5" r="2.5" stroke="#6b7280" stroke-width="1.5"/><line x1="13" y1="10" x2="27" y2="10" stroke="#6b7280" stroke-width="1"/><circle cx="20" cy="14" r="1.5" fill="#6b7280"/></svg></div>
+                      <div class="vc-info">
+                        <div class="vc-name">Mercedes E-Class</div>
+                        <div class="vc-meta">Business · Up to 3 passengers · Sixt Ride</div>
+                        <div class="vc-tags">
+                          <span class="vc-tag green">Free cancel 48h</span>
+                          <span class="vc-tag">Meet &amp; Greet</span>
+                          <span class="vc-tag">Flight Tracking</span>
+                        </div>
+                      </div>
+                      <div class="vc-price">
+                        <div class="vc-net">Net USD 39.13</div>
+                        <div class="vc-sell" id="vc-sell-3">USD 45.00</div>
+                      </div>
+                      <button class="vc-add-btn" onclick="selectServiceVehicle(this.closest('.vehicle-card'))">+ Add</button>
+                    </div>
+                    <!-- Vehicle 5: Mercedes V-Class -->
+                    <div class="vehicle-card" data-price="47.83" data-vehicle="van" data-class="Business" data-capacity="6" data-supplier="Blacklane">
+                      <div class="vc-icon"><svg width="40" height="28" viewBox="0 0 40 28" fill="none"><rect x="3" y="8" width="30" height="13" rx="3" stroke="#6b7280" stroke-width="1.5"/><path d="M33 12h3a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2h-1" stroke="#6b7280" stroke-width="1.5"/><circle cx="10" cy="24" r="2.5" stroke="#6b7280" stroke-width="1.5"/><circle cx="28" cy="24" r="2.5" stroke="#6b7280" stroke-width="1.5"/><line x1="8" y1="13" x2="28" y2="13" stroke="#6b7280" stroke-width="1"/></svg></div>
+                      <div class="vc-info">
+                        <div class="vc-name">Mercedes V-Class</div>
+                        <div class="vc-meta">Business · Up to 6 passengers · Blacklane</div>
+                        <div class="vc-tags">
+                          <span class="vc-tag green">Free cancel 48h</span>
+                          <span class="vc-tag">Meet &amp; Greet</span>
+                          <span class="vc-tag">WiFi</span>
+                        </div>
+                      </div>
+                      <div class="vc-price">
+                        <div class="vc-net">Net USD 47.83</div>
+                        <div class="vc-sell" id="vc-sell-4">USD 55.00</div>
+                      </div>
+                      <button class="vc-add-btn" onclick="selectServiceVehicle(this.closest('.vehicle-card'))">+ Add</button>
+                    </div>
+                    <!-- Vehicle 6: Premium SUV -->
+                    <div class="vehicle-card" data-price="56.52" data-vehicle="suv" data-class="First Class" data-capacity="4" data-supplier="Welcome Pickups">
+                      <div class="vc-icon"><svg width="40" height="28" viewBox="0 0 40 28" fill="none"><path d="M5 18h30" stroke="#6b7280" stroke-width="1.5"/><path d="M7 18l3-8c.5-1.5 2-2.5 3.5-2.5h13c1.5 0 3 1 3.5 2.5l3 8" stroke="#6b7280" stroke-width="1.5" fill="none"/><rect x="3" y="18" width="34" height="5.5" rx="2" stroke="#6b7280" stroke-width="1.5"/><circle cx="11" cy="26" r="2.5" stroke="#6b7280" stroke-width="1.5"/><circle cx="29" cy="26" r="2.5" stroke="#6b7280" stroke-width="1.5"/><line x1="13" y1="10.5" x2="27" y2="10.5" stroke="#6b7280" stroke-width="1"/><rect x="14" y="13" width="12" height="3" rx="1" stroke="#6b7280" stroke-width="0.75"/></svg></div>
+                      <div class="vc-info">
+                        <div class="vc-name">Premium SUV</div>
+                        <div class="vc-meta">First Class · Up to 4 passengers · Welcome Pickups</div>
+                        <div class="vc-tags">
+                          <span class="vc-tag green">Free cancel 72h</span>
+                          <span class="vc-tag">Meet &amp; Greet</span>
+                          <span class="vc-tag">Flight Tracking</span>
+                          <span class="vc-tag">WiFi</span>
+                        </div>
+                      </div>
+                      <div class="vc-price">
+                        <div class="vc-net">Net USD 56.52</div>
+                        <div class="vc-sell" id="vc-sell-5">USD 65.00</div>
+                      </div>
+                      <button class="vc-add-btn" onclick="selectServiceVehicle(this.closest('.vehicle-card'))">+ Add</button>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Selected state -->
+                <div class="svc-selected-banner" id="svc-tf-selected" style="display:none">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                  <span id="svc-tf-selected-text">Mercedes E-Class — USD 45.00</span>
+                  <button class="svc-remove-btn" onclick="removeServiceTransfer()">Remove</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Future: Flights service offer (disabled) -->
+          <div class="service-offer-card disabled">
+            <div class="svc-offer-header">
+              <div class="svc-offer-left">
+                <div class="svc-offer-icon">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.4-.1.9.3 1.1l5.2 3 2 2-5.2 3c-.4.2-.5.7-.3 1.1l.3.5c.2.4.6.6 1.1.5L13 16l2 2 3 5.2c.2.4.7.5 1.1.3l.5-.3c.4-.2.6-.6.5-1.1z"/></svg>
+                </div>
+                <div>
+                  <h3>Flight Reservation</h3>
+                  <p>Coming soon — book flights alongside hotel stays</p>
+                </div>
+              </div>
+              <div class="svc-offer-right">
+                <span class="svc-offer-badge-soon">Coming Soon</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="flow-sidebar">
+          <div class="order-summary">
+            <img src="https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400&h=160&fit=crop" alt="Gran Muthu Habana" class="os-hotel-img">
+            <h3>Trip Summary</h3>
+            <div class="os-service-header">🏨 Hotel</div>
+            <div class="os-hotel">Gran Muthu Habana ★★★★★</div>
+            <div class="os-row"><span>Check-in</span><span>Mar 25, 2026</span></div>
+            <div class="os-row"><span>Check-out</span><span>Mar 27, 2026</span></div>
+            <div class="os-row"><span>Room</span><span>Standard Room</span></div>
+            <div class="os-row"><span>Hotel subtotal</span><span>USD 194.40</span></div>
+            <div class="os-divider"></div>
+            <div class="os-transfer-section" id="svc-os-transfer" style="display:none">
+              <div class="os-service-header">🚗 Transfer</div>
+              <div class="os-row"><span>Route</span><span id="svc-os-route">HAV → Hotel</span></div>
+              <div class="os-row"><span>Vehicle</span><span id="svc-os-vehicle">—</span></div>
+              <div class="os-row"><span>Transfer subtotal</span><span id="svc-os-tf-price">USD 0.00</span></div>
+              <div class="os-divider"></div>
+            </div>
+            <div class="os-row os-total"><span>Total Client Price</span><span id="svc-os-total">USD 194.40</span></div>
+            <div class="svc-actions">
+              <button class="btn-outline svc-skip-btn" onclick="skipServices()">Skip — Hotel Only →</button>
+              <button class="continue-btn" id="svc-continue-btn" onclick="continueWithServices()" style="display:none">Continue to Payment →</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== SCREEN: PAYMENT ========== -->
+  <div class="screen" id="screen-payment">
+    <nav class="navbar">
+      <div class="nav-left">
+        <div class="brand"><div class="brand-icon">EC</div><span class="brand-name">Ergos Continental</span></div>
+        <a href="#" class="nav-link" onclick="showScreen('home')">Hotels</a>
+        <a href="#" class="nav-link disabled" style="opacity:.4;cursor:default">Flights</a>
+        <a href="#" class="nav-link" onclick="showScreen('bookings')">My Bookings</a>
+      </div>
+      <div class="nav-right"><div class="avatar">TA</div></div>
+    </nav>
+
+    <div class="booking-flow-page">
+      <div class="progress-steps">
+        <div class="step completed"><span class="step-num">1</span> Room Selection</div>
+        <div class="step-connector completed"></div>
+        <div class="step completed"><span class="step-num">2</span> Guest Details</div>
+        <div class="step-connector completed"></div>
+        <div class="step completed"><span class="step-num">3</span> Add Services</div>
+        <div class="step-connector completed"></div>
+        <div class="step active"><span class="step-num">4</span> Payment</div>
+        <div class="step-connector"></div>
+        <div class="step"><span class="step-num">5</span> Confirmation</div>
+      </div>
+
+      <div class="flow-layout">
+        <div class="flow-main">
+          <a href="#" class="back-link" onclick="showScreen('services')">← Back to Add Services</a>
+          <h2>Secure your booking</h2>
+
+          <div class="form-card">
+            <div class="payment-method-selected">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><path d="M1 10h22"/></svg>
+              <span>Credit / Debit Card</span>
+            </div>
+          </div>
+
+          <div class="form-card">
+            <h3>Card Details</h3>
+            <div class="form-row">
+              <div class="form-group full"><label>Cardholder Name *</label><input type="text" value="Testing Guest" class="form-input"></div>
+            </div>
+            <div class="form-row">
+              <div class="form-group full"><label>Card Number *</label><input type="text" value="4222 4222 4222 4222" class="form-input"></div>
+            </div>
+            <div class="form-row">
+              <div class="form-group"><label>Expiry Date *</label><input type="text" value="12/25" class="form-input"></div>
+              <div class="form-group"><label>CVV *</label><input type="text" value="123" class="form-input"></div>
+            </div>
+
+            <div class="security-notice">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              <span>Your card information is securely processed and not stored on our servers.</span>
+            </div>
+
+            <div class="trust-badges">
+              <span class="trust-badge">🔒 SSL Encrypted</span>
+              <span class="trust-badge">🛡 PCI DSS Compliant</span>
+              <span class="trust-badge">✓ Verified by Visa</span>
+              <div class="change-callout" data-change="trust">
+                <span class="change-badge">NEW</span>
+                Added trust badges for SSL, PCI compliance, and card network verification.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="flow-sidebar">
+          <div class="order-summary">
+            <img src="https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400&h=160&fit=crop" alt="Gran Muthu Habana" class="os-hotel-img">
+            <h3 id="pay-summary-title">Booking Summary</h3>
+            <div class="os-service-header">🏨 Hotel</div>
+            <div class="os-hotel">Gran Muthu Habana ★★★★★</div>
+            <div class="os-row"><span>Check-in</span><span>Mar 25, 2026</span></div>
+            <div class="os-row"><span>Check-out</span><span>Mar 27, 2026</span></div>
+            <div class="os-row"><span>Room (2 nights)</span><span>USD 194.40</span></div>
+            <div class="os-divider"></div>
+            <div class="os-transfer-section" id="pay-os-transfer" style="display:none">
+              <div class="os-service-header">🚗 Transfer</div>
+              <div class="os-row"><span id="pay-os-route">HAV → Hotel</span><span id="pay-os-tf-price">USD 45.00</span></div>
+              <div class="os-divider"></div>
+            </div>
+            <div class="os-row os-total"><span>Total Client Price</span><span id="pay-os-total">USD 194.40</span></div>
+            <button class="confirm-btn" onclick="confirmBooking()">Confirm Booking</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== SCREEN: CONFIRMATION ========== -->
+  <div class="screen" id="screen-confirmation">
+    <nav class="navbar">
+      <div class="nav-left">
+        <div class="brand"><div class="brand-icon">EC</div><span class="brand-name">Ergos Continental</span></div>
+        <a href="#" class="nav-link" onclick="showScreen('home')">Hotels</a>
+        <a href="#" class="nav-link disabled" style="opacity:.4;cursor:default">Flights</a>
+        <a href="#" class="nav-link" onclick="showScreen('bookings')">My Bookings</a>
+      </div>
+      <div class="nav-right"><div class="avatar">TA</div></div>
+    </nav>
+
+    <div class="confirmation-page">
+      <div class="conf-confetti" id="conf-confetti"></div>
+      <div class="confirmation-card">
+        <div class="conf-icon conf-icon-animate"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+        <h1 id="conf-heading">You're all set!</h1>
+        <p id="conf-subheading">Your client's stay has been confirmed. Here's everything you need.</p>
+
+        <div class="conf-refs">
+          <div class="conf-ref"><span class="conf-ref-label">Booking Reference</span><span class="conf-ref-val" id="conf-ref">PTA18G28E7CUANQ</span></div>
+          <div class="conf-ref"><span class="conf-ref-label">Status</span><span class="status-badge confirmed" id="conf-status">CONFIRMED</span></div>
+          <div class="conf-ref"><span class="conf-ref-label">Confirmation Date</span><span class="conf-ref-val" id="conf-date">Mar 19, 2026, 08:38 PM</span></div>
+          <div class="conf-ref"><span class="conf-ref-label">Cancellation Deadline</span><span class="conf-ref-val" id="conf-deadline">Wed, Mar 25, 2026</span></div>
+        </div>
+
+        <div class="conf-section">
+          <h3>🏨 Hotel & Room Details</h3>
+          <div class="conf-detail-grid">
+            <div><span class="cdg-label">Hotel</span><span id="conf-hotel">Gran Muthu Habana ★★★★★</span></div>
+            <div><span class="cdg-label">Room</span><span id="conf-room">Standard Room</span></div>
+            <div><span class="cdg-label">Meal Plan</span><span id="conf-meal">Bed & Breakfast</span></div>
+            <div><span class="cdg-label">Check-in</span><span id="conf-checkin">Wed, Mar 25, 2026</span></div>
+            <div><span class="cdg-label">Check-out</span><span id="conf-checkout">Fri, Mar 27, 2026</span></div>
+            <div><span class="cdg-label">Duration</span><span id="conf-duration">2 Nights</span></div>
+          </div>
+        </div>
+
+        <div class="conf-section">
+          <h3>Guest Information</h3>
+          <div class="conf-detail-grid">
+            <div><span class="cdg-label">Name</span><span id="conf-guest-name">Testing Guest</span></div>
+            <div><span class="cdg-label">Email</span><span id="conf-guest-email">mayankjariwala1994@gmail.com</span></div>
+            <div><span class="cdg-label">Guests</span><span>2 Adults</span></div>
+          </div>
+        </div>
+
+        <!-- Transfer details (shown when transfer is included) -->
+        <div class="conf-section" id="conf-transfer-section" style="display:none">
+          <h3>🚗 Transfer Details</h3>
+          <div class="conf-detail-grid">
+            <div><span class="cdg-label">Route</span><span id="conf-tf-route">HAV Airport → Gran Muthu Habana</span></div>
+            <div><span class="cdg-label">Vehicle</span><span id="conf-tf-vehicle">Mercedes E-Class</span></div>
+            <div><span class="cdg-label">Date & Time</span><span id="conf-tf-datetime">Mar 25, 2026 at 2:30 PM</span></div>
+            <div><span class="cdg-label">Passengers</span><span id="conf-tf-pax">2</span></div>
+          </div>
+        </div>
+
+        <div class="conf-total">
+          <div class="conf-total-breakdown" id="conf-breakdown" style="display:none">
+            <div class="conf-total-line"><span>Hotel subtotal</span><span id="conf-hotel-subtotal">USD 194.40</span></div>
+            <div class="conf-total-line"><span>Transfer subtotal</span><span id="conf-tf-subtotal">USD 45.00</span></div>
+          </div>
+          <span>Total Client Price</span>
+          <span class="conf-total-amount" id="conf-price">USD 194.40</span>
+        </div>
+
+        <div class="conf-next-steps">
+          <h3>What's Next?</h3>
+          <div class="conf-next-grid">
+            <div class="conf-next-item">
+              <span class="conf-next-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></span>
+              <span>Confirmation email sent to guest</span>
+            </div>
+            <div class="conf-next-item">
+              <span class="conf-next-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></span>
+              <span>Download voucher from booking details</span>
+            </div>
+            <div class="conf-next-item">
+              <span class="conf-next-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></span>
+              <span>Free modification until check-in date</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="conf-actions">
+          <button class="btn-secondary" onclick="showScreen('home')">← Book Another Stay</button>
+          <button class="btn-outline conf-email-btn" onclick="showToast('success','Email Sent','Confirmation details sent to the guest\'s email address.')">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            Email to Client
+          </button>
+          <button class="btn-primary" onclick="showScreen('booking-detail')">View Booking Details</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== SCREEN: MY BOOKINGS ========== -->
+  <div class="screen" id="screen-bookings">
+    <nav class="navbar">
+      <div class="nav-left">
+        <div class="brand"><div class="brand-icon">EC</div><span class="brand-name">Ergos Continental</span></div>
+        <a href="#" class="nav-link" onclick="showScreen('home')">Hotels</a>
+        <a href="#" class="nav-link disabled" style="opacity:.4;cursor:default">Flights</a>
+        <a href="#" class="nav-link active">My Bookings</a>
+      </div>
+      <div class="nav-right"><div class="avatar">TA</div></div>
+    </nav>
+
+    <div class="bookings-page">
+      <div class="bookings-layout">
+        <!-- Sidebar -->
+        <aside class="bookings-sidebar">
+          <a href="#" class="sidebar-link">Account Info</a>
+          <a href="#" class="sidebar-link">User Management</a>
+          <a href="#" class="sidebar-link">Change Password</a>
+          <a href="#" class="sidebar-link">Passkeys</a>
+          <a href="#" class="sidebar-link active">My Bookings</a>
+        </aside>
+
+        <div class="bookings-main">
+          <div class="bookings-header">
+            <div>
+              <h1>My Bookings</h1>
+              <p class="bookings-subtitle">408 bookings total</p>
+            </div>
+            <div class="bookings-actions-top">
+              <button class="btn-outline">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+                Export CSV
+              </button>
+              <button class="btn-primary" onclick="showScreen('home')">Browse Hotels</button>
+              <div class="change-callout" data-change="3.6">
+                <span class="change-badge">NEW</span>
+                Export Bookings button added for B2B operations.
+              </div>
+            </div>
+          </div>
+
+          <div class="bookings-filters">
+            <input type="text" placeholder="Search by reference or hotel name..." class="bookings-search">
+            <select class="bookings-filter-select">
+              <option>All Statuses</option>
+              <option>Confirmed</option>
+              <option>Cancelled</option>
+              <option>Pending</option>
+            </select>
+            <input type="date" class="bookings-filter-select" placeholder="Travel date from">
+            <input type="date" class="bookings-filter-select" placeholder="Travel date to">
+            <div class="change-callout" data-change="3.6b">
+              <span class="change-badge">NEW</span>
+              Added travel date filter per review requirements.
+            </div>
+          </div>
+
+          <div id="bookings-list-container"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== SCREEN: BOOKING DETAIL ========== -->
+  <div class="screen" id="screen-booking-detail">
+    <nav class="navbar">
+      <div class="nav-left">
+        <div class="brand"><div class="brand-icon">EC</div><span class="brand-name">Ergos Continental</span></div>
+        <a href="#" class="nav-link" onclick="showScreen('home')">Hotels</a>
+        <a href="#" class="nav-link disabled" style="opacity:.4;cursor:default">Flights</a>
+        <a href="#" class="nav-link" onclick="showScreen('bookings')">My Bookings</a>
+      </div>
+      <div class="nav-right"><div class="avatar">TA</div></div>
+    </nav>
+
+    <div class="booking-detail-page">
+      <a href="#" class="back-link" onclick="showScreen('bookings')">← Back to My Bookings</a>
+
+      <!-- Header Summary -->
+      <div class="bd-header">
+        <div class="bd-header-grid">
+          <div class="bd-h-item"><span class="bd-h-label">Booking Reference</span><span class="bd-h-val">PTA18G28E7CUANQ</span></div>
+          <div class="bd-h-item"><span class="bd-h-label">Confirmation Date</span><span class="bd-h-val">Mar 19, 2026</span></div>
+          <div class="bd-h-item"><span class="bd-h-label">Cancellation Deadline</span><span class="bd-h-val">Mar 25, 2026 08:00</span></div>
+          <div class="bd-h-item"><span class="bd-h-label">Total Client Price</span><span class="bd-h-val bd-h-price" id="bd-header-price">USD 194.40</span></div>
+          <div class="bd-h-item"><span class="bd-h-label">Status</span><span class="status-badge confirmed" id="bd-header-status">CONFIRMED</span></div>
+        </div>
+        <div class="change-callout" data-change="4.2">
+          <span class="change-badge">CHANGED</span>
+          Full-page booking detail (not modal). Header info visible without scrolling per W2M standard. Price labeled as "Total Client Price".
+        </div>
+      </div>
+
+      <div class="bd-body">
+        <div class="bd-main">
+          <!-- Cancellation Policy -->
+          <div class="bd-section">
+            <div class="cancellation-banner green">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4 12 14.01l-3-3"/></svg>
+              <span>Free cancellation until Mar 25, 2026 at 08:00</span>
+              <a href="#">See full policy →</a>
+            </div>
+            <div class="change-callout" data-change="4.4">
+              <span class="change-badge">OK</span>
+              Color-coded cancellation message with "See more" link. Already meets B2B standard.
+            </div>
+          </div>
+
+          <!-- Service Details: Hotel -->
+          <div class="bd-section">
+            <div class="bd-svc-header hotel">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M3 7v14M21 7v14M6 11h4v4H6zM14 11h4v4h-4zM9 3h6l3 4H6z"/></svg>
+              <h3>Hotel &amp; Room Details</h3>
+            </div>
+            <div class="bd-service-card" id="bd-service-card">
+              <div class="bd-sc-row"><span class="bd-sc-label">Hotel</span><span>Gran Muthu Habana ★★★★★</span></div>
+              <div class="bd-sc-row"><span class="bd-sc-label">Address</span><span>Calle 66, Miramar, Playa</span></div>
+              <div class="bd-sc-row"><span class="bd-sc-label">Check-in</span><span id="bd-checkin">Wed, Mar 25, 2026</span></div>
+              <div class="bd-sc-row"><span class="bd-sc-label">Check-out</span><span id="bd-checkout">Fri, Mar 27, 2026</span></div>
+              <div class="bd-sc-row"><span class="bd-sc-label">Duration</span><span id="bd-duration">2 Nights</span></div>
+              <div class="bd-sc-row"><span class="bd-sc-label">Room</span><span id="bd-room">Standard Room</span></div>
+              <div class="bd-sc-row"><span class="bd-sc-label">Meal Plan</span><span id="bd-meal">Bed & Breakfast</span></div>
+              <div class="bd-sc-row"><span class="bd-sc-label">Occupancy</span><span>2 Adults</span></div>
+              <div class="bd-sc-row bd-sc-price-row"><span class="bd-sc-label">Accommodation Price</span><span id="bd-hotel-price" class="bd-sc-price">USD 194.40</span></div>
+            </div>
+          </div>
+
+          <!-- Transfer Details (hidden unless combined booking) -->
+          <div class="bd-section" id="bd-transfer-section" style="display:none">
+            <div class="bd-svc-header transfer">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13" rx="2"/><path d="M16 8h4l3 3v5h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+              <h3>Transfer — Transport Details</h3>
+            </div>
+            <div class="bd-service-card">
+              <div class="bd-sc-row"><span class="bd-sc-label">Route</span><span id="bd-tf-route"></span></div>
+              <div class="bd-sc-row"><span class="bd-sc-label">Transfer Date</span><span id="bd-tf-date"></span></div>
+              <div class="bd-sc-row"><span class="bd-sc-label">Pickup Time</span><span id="bd-tf-time"></span></div>
+              <div class="bd-sc-row"><span class="bd-sc-label">Vehicle</span><span id="bd-tf-vehicle"></span></div>
+              <div class="bd-sc-row"><span class="bd-sc-label">Passengers</span><span id="bd-tf-passengers"></span></div>
+              <div class="bd-sc-row bd-sc-price-row"><span class="bd-sc-label">Transfer Price</span><span id="bd-tf-price" class="bd-sc-price">USD 0.00</span></div>
+            </div>
+          </div>
+
+          <!-- Price Summary (hidden unless combined booking) -->
+          <div class="bd-section" id="bd-price-summary" style="display:none">
+            <h3>Price Breakdown</h3>
+            <div class="bd-price-breakdown">
+              <div class="bd-pb-line"><span>Accommodation</span><span id="bd-pb-hotel">USD 0.00</span></div>
+              <div class="bd-pb-line"><span>Private Transfer</span><span id="bd-pb-transfer">USD 0.00</span></div>
+              <div class="bd-pb-line bd-pb-total"><span>Total Charged to Client</span><span id="bd-pb-total">USD 0.00</span></div>
+            </div>
+          </div>
+
+          <!-- Guest Info -->
+          <div class="bd-section">
+            <h3>Guest Information</h3>
+            <div class="bd-service-card">
+              <div class="bd-sc-row"><span class="bd-sc-label">Name</span><span>Testing Guest</span></div>
+              <div class="bd-sc-row"><span class="bd-sc-label">Email</span><span>mayankjariwala1994@gmail.com</span></div>
+              <div class="bd-sc-row"><span class="bd-sc-label">Phone</span><span>123456789</span></div>
+            </div>
+          </div>
+
+          <!-- Payment Info -->
+          <div class="bd-section">
+            <h3>Payment Information</h3>
+            <div class="bd-service-card">
+              <div class="bd-sc-row"><span class="bd-sc-label">Method</span><span>Credit Card</span></div>
+              <div class="bd-sc-row"><span class="bd-sc-label">Card</span><span>Visa ****4222</span></div>
+              <div class="bd-sc-row"><span class="bd-sc-label">Holder</span><span>Testing Guest</span></div>
+              <div class="bd-sc-row"><span class="bd-sc-label">Amount Paid</span><span id="bd-amount-paid" class="text-green">USD 194.40</span></div>
+              <div class="bd-sc-row"><span class="bd-sc-label">Amount Pending</span><span>USD 0.00</span></div>
+              <div class="bd-sc-row"><span class="bd-sc-label">Payment Status</span><span class="status-badge confirmed">PAID</span></div>
+            </div>
+            <div class="change-callout" data-change="4.7">
+              <span class="change-badge">NEW</span>
+              Payment breakdown: paid, pending, deadline, and status — per review requirement 4.7.
+            </div>
+          </div>
+
+          <!-- Booking Documentation -->
+          <div class="bd-section">
+            <h3>Booking Documentation</h3>
+            <div class="bd-docs">
+              <div class="bd-doc-row">
+                <select class="doc-lang-select" id="voucher-lang"><option>English</option><option>Spanish</option></select>
+                <button class="btn-doc" onclick="openVoucherPreview()">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                  Preview Voucher
+                </button>
+                <button class="btn-doc" onclick="downloadVoucher()">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+                  Download
+                </button>
+              </div>
+              <div class="bd-doc-row">
+                <select class="doc-lang-select" id="invoice-lang"><option>English</option><option>Spanish</option></select>
+                <button class="btn-doc" onclick="openInvoicePreview()">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                  Preview Invoice
+                </button>
+                <button class="btn-doc" onclick="downloadProforma()">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+                  Download
+                </button>
+              </div>
+            </div>
+            <div class="change-callout" data-change="4.6">
+              <span class="change-badge critical">CRITICAL — NEW</span>
+              Voucher and proforma invoice download with language selector. This was completely missing and is mandatory for B2B operations.
+            </div>
+          </div>
+        </div>
+
+        <!-- Action Sidebar -->
+        <div class="bd-sidebar">
+          <div class="bd-action-card">
+            <h3>Manage Booking</h3>
+            <button class="btn-modify" id="btn-modify-booking" onclick="openModal('modify-modal')">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+              Modify Booking
+            </button>
+            <button class="btn-cancel" id="btn-cancel-booking" onclick="openModal('cancel-modal')">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6M9 9l6 6"/></svg>
+              Cancel Booking
+            </button>
+            <div class="change-callout" data-change="3.4">
+              <span class="change-badge">CHANGED</span>
+              Cancellation only available from booking detail page — removed from list view. Must review policy and confirm before cancelling.
+            </div>
+          </div>
+
+          <div class="bd-trust-signals">
+            <div class="trust-signal-item">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4 12 14.01l-3-3"/></svg>
+              <span>Verified supplier — Hotelbeds</span>
+            </div>
+            <div class="trust-signal-item">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              <span>Secure payment — PCI DSS Level 1</span>
+            </div>
+            <div class="trust-signal-item">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+              <span>24/7 agent support hotline</span>
+            </div>
+          </div>
+
+          <div class="bd-timeline" id="bd-timeline">
+            <h3>Booking Timeline</h3>
+            <div class="timeline-item"><span class="tl-dot green"></span><span class="tl-text">Created: Mar 19, 2026 at 8:38 PM</span></div>
+            <div class="timeline-item"><span class="tl-dot green"></span><span class="tl-text">Confirmed: Mar 19, 2026 at 8:39 PM</span></div>
+            <div class="timeline-item"><span class="tl-dot blue"></span><span class="tl-text">Payment: Mar 19, 2026 at 8:39 PM</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== SCREEN: VOUCHER PREVIEW ========== -->
+  <div class="screen" id="screen-voucher">
+    <nav class="navbar">
+      <div class="nav-left">
+        <div class="brand"><div class="brand-icon">EC</div><span class="brand-name">Ergos Continental</span></div>
+        <a href="#" class="nav-link" onclick="showScreen('home')">Hotels</a>
+        <a href="#" class="nav-link disabled" style="opacity:.4;cursor:default">Flights</a>
+        <a href="#" class="nav-link" onclick="showScreen('bookings')">My Bookings</a>
+      </div>
+      <div class="nav-right"><div class="avatar">TA</div></div>
+    </nav>
+
+    <div class="doc-preview-page">
+      <div class="doc-preview-toolbar">
+        <a href="#" class="back-link" onclick="goBackFromDoc()">← Back to Booking Detail</a>
+        <div class="doc-preview-actions">
+          <select class="doc-lang-select" id="voucher-preview-lang" onchange="renderVoucherPreview()">
+            <option>English</option>
+            <option>Spanish</option>
+          </select>
+          <button class="btn-outline" onclick="printDocPreview('voucher')">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+            Print
+          </button>
+          <button class="btn-primary" onclick="downloadVoucher()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+            Download
+          </button>
+        </div>
+      </div>
+      <div class="doc-preview-container">
+        <div class="doc-preview-paper" id="voucher-preview-content">
+          <!-- Rendered by JS -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== SCREEN: INVOICE PREVIEW ========== -->
+  <div class="screen" id="screen-invoice">
+    <nav class="navbar">
+      <div class="nav-left">
+        <div class="brand"><div class="brand-icon">EC</div><span class="brand-name">Ergos Continental</span></div>
+        <a href="#" class="nav-link" onclick="showScreen('home')">Hotels</a>
+        <a href="#" class="nav-link disabled" style="opacity:.4;cursor:default">Flights</a>
+        <a href="#" class="nav-link" onclick="showScreen('bookings')">My Bookings</a>
+      </div>
+      <div class="nav-right"><div class="avatar">TA</div></div>
+    </nav>
+
+    <div class="doc-preview-page">
+      <div class="doc-preview-toolbar">
+        <a href="#" class="back-link" onclick="goBackFromDoc()">← Back to Booking Detail</a>
+        <div class="doc-preview-actions">
+          <select class="doc-lang-select" id="invoice-preview-lang" onchange="renderInvoicePreview()">
+            <option>English</option>
+            <option>Spanish</option>
+          </select>
+          <button class="btn-outline" onclick="printDocPreview('invoice')">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+            Print
+          </button>
+          <button class="btn-primary" onclick="downloadProforma()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+            Download
+          </button>
+        </div>
+      </div>
+      <div class="doc-preview-container">
+        <div class="doc-preview-paper" id="invoice-preview-content">
+          <!-- Rendered by JS -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== SCREEN: AGENCY MARKUP CONFIGURATION ========== -->
+  <div class="screen" id="screen-markup">
+    <nav class="navbar">
+      <div class="nav-left">
+        <div class="brand"><div class="brand-icon">EC</div><span class="brand-name">Ergos Continental</span></div>
+        <a href="#" class="nav-link" onclick="showScreen('home')">Hotels</a>
+        <a href="#" class="nav-link disabled" style="opacity:.4;cursor:default">Flights</a>
+        <a href="#" class="nav-link" onclick="showScreen('bookings')">My Bookings</a>
+        <a href="#" class="nav-link active" onclick="showScreen('markup')">Settings</a>
+      </div>
+      <div class="nav-right"><div class="avatar">TA</div></div>
+    </nav>
+
+    <div class="booking-detail-page">
+      <a href="#" class="back-link" onclick="showScreen('home')">← Back to Home</a>
+
+      <div class="bd-header">
+        <div class="bd-header-grid">
+          <div class="bd-h-item"><span class="bd-h-label">Agency</span><span class="bd-h-val">Ergos Continental Travel</span></div>
+          <div class="bd-h-item"><span class="bd-h-label">Agent</span><span class="bd-h-val">Travel Agent</span></div>
+          <div class="bd-h-item"><span class="bd-h-label">Account</span><span class="bd-h-val">EC-2024-0847</span></div>
+          <div class="bd-h-item"><span class="bd-h-label">Status</span><span class="status-badge confirmed">ACTIVE</span></div>
+        </div>
+      </div>
+
+      <div class="bd-body">
+        <div class="bd-main">
+          <div class="bd-section">
+            <h3>Transfer Markup Configuration</h3>
+            <div class="bd-service-card">
+              <p style="font-size:14px;color:var(--warm-500);margin-bottom:20px">Set a flat percentage markup to apply on all transfer net prices. The client price shown to your customers will be calculated as: <strong>Net Price + Markup %</strong></p>
+              <div class="modal-form-row">
+                <div class="modal-form-group">
+                  <label>Markup Percentage (%)</label>
+                  <div style="display:flex;align-items:center;gap:12px">
+                    <input type="range" min="0" max="50" value="15" id="markup-slider" class="range-slider" style="flex:1" oninput="updateMarkupPreview()">
+                    <input type="number" min="0" max="50" value="15" id="markup-input" class="form-input" style="width:80px;text-align:center" oninput="syncMarkupSlider(this.value)">
+                    <span style="font-size:14px;font-weight:700;color:var(--warm-600)">%</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="bd-section">
+            <h3>Live Preview — Sample Transfer Prices</h3>
+            <div class="bd-service-card" style="padding:0;overflow:hidden">
+              <table class="cancel-tiers-table" id="markup-preview-table" style="margin:0;border:none">
+                <thead>
+                  <tr><th>Vehicle</th><th>Class</th><th style="text-align:right">Net Price</th><th style="text-align:right">Markup</th><th style="text-align:right">Client Price</th></tr>
+                </thead>
+                <tbody id="markup-preview-body">
+                  <!-- Rendered by JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="bd-section">
+            <button class="btn-primary" style="width:auto;padding:14px 40px" onclick="saveMarkupSettings()">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline;vertical-align:-3px;margin-right:6px"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+              Save Markup Settings
+            </button>
+          </div>
+        </div>
+
+        <div class="bd-sidebar">
+          <div class="bd-action-card">
+            <h3>Current Configuration</h3>
+            <div class="bd-service-card" style="border:none;box-shadow:none;padding:0">
+              <div class="bd-sc-row"><span class="bd-sc-label">Markup Type</span><span>Flat Percentage</span></div>
+              <div class="bd-sc-row"><span class="bd-sc-label">Current Rate</span><span id="markup-current-rate" style="font-weight:700;color:var(--teal)">15%</span></div>
+              <div class="bd-sc-row"><span class="bd-sc-label">Applies To</span><span>All Transfers</span></div>
+              <div class="bd-sc-row"><span class="bd-sc-label">Last Updated</span><span id="markup-last-updated">Not yet saved</span></div>
+            </div>
+          </div>
+
+          <div class="bd-trust-signals">
+            <div class="trust-signal-item">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4 12 14.01l-3-3"/></svg>
+              <span>Markup applies at booking time</span>
+            </div>
+            <div class="trust-signal-item">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              <span>Net prices visible only to agents</span>
+            </div>
+            <div class="trust-signal-item">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+              <span>Changes take effect immediately</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+
+
+
+
+
+
+  <!-- ========== MODAL: MODIFY BOOKING ========== -->
+  <div class="modal-overlay" id="modify-modal" onclick="closeModalOnOverlay(event)">
+    <div class="modal" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <h2>Modify Booking</h2>
+        <button class="modal-close" onclick="closeModal('modify-modal')">&times;</button>
+      </div>
+      <p class="modal-subtitle">The system will automatically handle room additions/cancellations based on your changes.</p>
+
+      <!-- Current Booking Details -->
+      <div class="modal-section">
+        <h4>Current Booking Details</h4>
+        <div class="modal-info-box">
+          <div class="modal-info-row">
+            <div><span class="modal-info-label">Check-in</span><span>Mar 25, 2026</span></div>
+            <div><span class="modal-info-label">Check-out</span><span>Mar 27, 2026</span></div>
+          </div>
+          <div class="modal-info-detail">
+            <span class="modal-info-label">Current Room Details</span>
+            <span>Room: Standard Room | Meal Plan: Bed & Breakfast</span>
+            <span>Total Rooms: 1</span>
+          </div>
+          <div class="change-callout" data-change="codes-modify">
+            <span class="change-badge">CHANGED</span>
+            Shows "Standard Room" and "Bed & Breakfast" instead of vendor codes "STD" and "BAR_LATAM".
+          </div>
+        </div>
+      </div>
+
+      <!-- Guest Information -->
+      <div class="modal-section">
+        <div class="modal-section-divider">Guest Information</div>
+        <h4>Primary Guest Details</h4>
+        <div class="modal-form-row">
+          <div class="modal-form-group">
+            <label>Name</label>
+            <input type="text" value="Testing Guest" class="form-input" readonly>
+          </div>
+          <div class="modal-form-group">
+            <label>Email</label>
+            <input type="email" value="mayankjariwala1994@gmail.com" class="form-input" readonly>
+          </div>
+        </div>
+        <div class="modal-form-row">
+          <div class="modal-form-group">
+            <label>Phone</label>
+            <input type="tel" value="123456789" class="form-input" readonly>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modify Booking Section -->
+      <div class="modal-section">
+        <div class="modal-section-divider">Modify Booking</div>
+        <div class="modal-form-row">
+          <div class="modal-form-group">
+            <label>Check-in</label>
+            <div class="modal-date-input">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6b7280" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+              <input type="date" value="2026-03-25" id="modify-checkin" class="form-input">
+            </div>
+          </div>
+          <div class="modal-form-group">
+            <label>Check-out</label>
+            <div class="modal-date-input">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6b7280" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+              <input type="date" value="2026-03-27" id="modify-checkout" class="form-input">
+            </div>
+          </div>
+          <div class="modal-form-group modal-form-group-sm">
+            <label>&nbsp;</label>
+            <button class="btn-apply">Apply</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Rooms -->
+      <div class="modal-section" id="modify-rooms-section">
+        <div class="modal-rooms-header">
+          <span class="modal-rooms-title" id="modify-rooms-title">Rooms (1)</span>
+          <span class="modal-rooms-note" id="modify-rooms-note">No change in room count</span>
+          <button class="btn-add-room" id="btn-add-room">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+            Add Room
+          </button>
+        </div>
+
+        <div id="modify-rooms-container">
+          <div class="modal-room-card" data-room-index="1">
+            <div class="modal-room-card-header">
+              <h4>Room 1</h4>
+            </div>
+            <div class="modal-form-row">
+              <div class="modal-form-group" style="flex:2">
+                <label>Select Available Room</label>
+                <select class="form-input modify-room-select" onchange="updateModifyTotal()">
+                  <option value="194.40">Standard Room — Bed & Breakfast (USD 194.40)</option>
+                  <option value="294.40">Standard Room — Half Board (USD 294.40)</option>
+                  <option value="394.40">Standard Room — All Inclusive (USD 394.40)</option>
+                  <option value="284.00">Superior Room Ocean View — Bed & Breakfast (USD 284.00)</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="modal-form-row">
+              <div class="modal-form-group">
+                <label>Adults</label>
+                <div class="modal-stepper">
+                  <button class="occ-step-btn" type="button">−</button>
+                  <input type="number" value="2" class="stepper-input" readonly>
+                  <button class="occ-step-btn" type="button">+</button>
+                </div>
+              </div>
+              <div class="modal-form-group">
+                <label>Children</label>
+                <div class="modal-stepper">
+                  <button class="occ-step-btn" type="button">−</button>
+                  <input type="number" value="0" class="stepper-input" readonly>
+                  <button class="occ-step-btn" type="button">+</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Transfer Details (hidden when no transfer) -->
+      <div id="modify-transfer-section" style="display:none">
+        <div class="modal-section-divider" style="margin:20px 0 16px;padding-top:16px;border-top:1px solid #e5e7eb">
+          <h4 style="margin:0 0 12px;font-size:15px;font-weight:600;color:#1a1a4e">Transfer Details</h4>
+        </div>
+        <div class="modal-info-box" style="background:#f0fdfa;border:1px solid #99f6e4;border-radius:8px;padding:12px 14px;margin-bottom:16px;font-size:13px;color:#0f766e">
+          <strong id="modify-tf-vehicle-display"></strong>
+          <div id="modify-tf-route-display" style="margin-top:4px;color:#57534e"></div>
+          <div style="margin-top:6px;font-size:12px;color:#78716c">To change vehicle or route, remove and re-add the transfer from the services tab.</div>
+        </div>
+        <div class="transfer-mode-pills" style="display:flex;gap:8px;margin:0 0 12px">
+          <button type="button" class="mode-pill active" id="modify-mode-oneway" onclick="setModifyTransferMode('oneway')">One Way</button>
+          <button type="button" class="mode-pill" id="modify-mode-roundtrip" onclick="setModifyTransferMode('roundtrip')">Round Trip</button>
+        </div>
+        <div class="modal-form-row">
+          <div class="modal-form-group">
+            <label>Transfer Date</label>
+            <input type="date" id="modify-tf-date" class="form-input" onchange="updateModifyTotal()">
+          </div>
+          <div class="modal-form-group">
+            <label>Pickup Time</label>
+            <input type="time" id="modify-tf-time" class="form-input">
+          </div>
+          <div class="modal-form-group">
+            <label>Passengers</label>
+            <input type="number" id="modify-tf-pax" class="form-input" min="1" max="10" value="2">
+          </div>
+        </div>
+        <div class="modal-form-row" id="modify-return-row" style="display:none;background:#f8f7f5;border-radius:8px;padding:10px 12px;margin-top:8px">
+          <div class="modal-form-group">
+            <label style="font-size:12px;color:#78716c">Return Date</label>
+            <input type="date" id="modify-tf-return-date" class="form-input">
+          </div>
+          <div class="modal-form-group">
+            <label style="font-size:12px;color:#78716c">Return Time</label>
+            <input type="time" id="modify-tf-return-time" class="form-input">
+          </div>
+        </div>
+      </div>
+
+      <!-- Total & Actions -->
+      <div class="modal-footer">
+        <div class="modal-total">
+          <span>Total Client Price</span>
+          <span class="modal-total-amount" id="modify-total-amount">USD 194.40</span>
+          <div class="change-callout" data-change="3.3-modify">
+            <span class="change-badge">CHANGED</span>
+            Price labeled "Total Client Price" instead of ambiguous "Total Amount". Toddlers field removed.
+          </div>
+        </div>
+        <div class="modal-actions">
+          <button class="btn-secondary" onclick="closeModal('modify-modal')">Cancel</button>
+          <button class="btn-primary" onclick="confirmModification()">Confirm Modification</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== MODAL: CANCEL BOOKING ========== -->
+  <div class="modal-overlay" id="cancel-modal" onclick="closeModalOnOverlay(event)">
+    <div class="modal modal-cancel" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <h2>Cancel Booking</h2>
+        <button class="modal-close" onclick="closeModal('cancel-modal')">&times;</button>
+      </div>
+
+      <!-- Step 1: Review Policy -->
+      <div class="cancel-step active" id="cancel-step-1">
+        <!-- Warning Banner -->
+        <div class="cancel-warning">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><path d="M12 9v4M12 17h.01"/></svg>
+          <div>
+            <strong>This action cannot be undone</strong>
+            <p>Please review the cancellation policy carefully before proceeding.</p>
+          </div>
+        </div>
+
+        <!-- Booking Summary -->
+        <div class="modal-section">
+          <h4>Booking Summary</h4>
+          <div class="cancel-summary-grid">
+            <div class="cancel-summary-item">
+              <span class="modal-info-label">Hotel</span>
+              <span>Gran Muthu Habana ★★★★★</span>
+            </div>
+            <div class="cancel-summary-item">
+              <span class="modal-info-label">Booking Reference</span>
+              <span>PTA18G28E7CUANQ</span>
+            </div>
+            <div class="cancel-summary-item">
+              <span class="modal-info-label">Check-in</span>
+              <span>Mar 25, 2026</span>
+            </div>
+            <div class="cancel-summary-item">
+              <span class="modal-info-label">Check-out</span>
+              <span>Mar 27, 2026</span>
+            </div>
+            <div class="cancel-summary-item">
+              <span class="modal-info-label">Room</span>
+              <span>Standard Room — Bed & Breakfast</span>
+            </div>
+            <div class="cancel-summary-item">
+              <span class="modal-info-label">Guests</span>
+              <span>2 Adults</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Cancellation Policy -->
+        <div class="modal-section">
+          <h4>Cancellation Policy</h4>
+          <div class="cancel-policy-banner green">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4 12 14.01l-3-3"/></svg>
+            <div>
+              <strong>Free cancellation</strong>
+              <span>No penalty will be charged. Full refund of <strong id="cancel-policy-refund">USD 194.40</strong> will be issued.</span>
+            </div>
+          </div>
+
+          <div class="cancel-deadline">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6b7280" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+            <span>Free cancellation deadline: <strong>Mar 25, 2026 at 8:00 AM</strong></span>
+          </div>
+        </div>
+
+        <!-- Policy Tiers Table -->
+        <div class="modal-section">
+          <h4>Cancellation Policy Tiers</h4>
+          <table class="cancel-tiers-table">
+            <thead>
+              <tr><th>Deadline</th><th>Penalty</th><th>Type</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Before Mar 25, 2026</td><td>None</td><td class="tier-free">Free Cancellation</td></tr>
+              <tr><td>Mar 25 – Mar 26, 2026</td><td id="cancel-tier-50">USD 97.20 (50%)</td><td class="tier-partial">Partial Penalty</td></tr>
+              <tr><td>After Mar 26, 2026</td><td id="cancel-tier-100">USD 194.40 (100%)</td><td class="tier-full">Full Penalty</td></tr>
+            </tbody>
+          </table>
+          <div class="change-callout" data-change="4.5">
+            <span class="change-badge">CHANGED</span>
+            Full cancellation policy tiers shown with deadline, penalties, and type — per B2B standard (section 4.5). Cancellation only from Booking Details view.
+          </div>
+        </div>
+
+        <!-- Refund Summary -->
+        <div class="cancel-refund-box">
+          <div class="cancel-refund-row">
+            <span>Booking Total</span>
+            <span id="cancel-refund-total">USD 194.40</span>
+          </div>
+          <div class="cancel-refund-row">
+            <span>Cancellation Penalty</span>
+            <span class="text-green" id="cancel-refund-penalty">USD 0.00</span>
+          </div>
+          <div class="cancel-refund-row cancel-refund-total">
+            <span>Refund Amount</span>
+            <span class="text-green" id="cancel-refund-amount">USD 194.40</span>
+          </div>
+        </div>
+
+        <div class="modal-actions">
+          <button class="btn-secondary" onclick="closeModal('cancel-modal')">Back</button>
+          <button class="btn-danger" onclick="goToCancelStep2()">Continue to Cancellation →</button>
+        </div>
+      </div>
+
+      <!-- Step 2: Confirm Cancellation -->
+      <div class="cancel-step" id="cancel-step-2">
+        <div class="cancel-confirm-icon">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="1.5"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><path d="M12 9v4M12 17h.01"/></svg>
+        </div>
+        <h3 class="cancel-confirm-title">Are you sure you want to cancel this booking?</h3>
+        <p class="cancel-confirm-sub">
+          <strong>Gran Muthu Habana</strong> · Mar 25–27, 2026 · Standard Room<br>
+          Refund: <strong class="text-green" id="cancel-step2-refund">USD 194.40</strong> (full refund, no penalty)
+        </p>
+
+        <div class="modal-section">
+          <h4>Cancellation Reason <span class="required">*</span></h4>
+          <textarea class="cancel-reason" id="cancel-reason" placeholder="Please provide a reason for cancellation..." rows="3"></textarea>
+          <p class="cancel-reason-hint">This helps us improve our service and is required to proceed.</p>
+        </div>
+
+        <div class="cancel-confirm-checkbox">
+          <label>
+            <input type="checkbox" id="cancel-confirm-check" onchange="toggleConfirmCancel()">
+            <span>I understand that this cancellation is <strong>irreversible</strong> and I have reviewed the cancellation policy and refund terms.</span>
+          </label>
+        </div>
+
+        <div class="modal-actions">
+          <button class="btn-secondary" onclick="goToCancelStep1()">← Back to Policy Review</button>
+          <button class="btn-danger" id="confirm-cancel-btn" disabled onclick="closeModal('cancel-modal'); showCancelSuccess()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6M9 9l6 6"/></svg>
+            Confirm Cancellation
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+
+  <!-- ========== SEARCH LOADING OVERLAY ========== -->
+  <div class="search-loading-overlay" id="search-loading">
+    <div class="search-loading-content">
+      <div class="search-loading-spinner"></div>
+      <p>Searching 2,500+ hotels...</p>
+    </div>
+  </div>
+
+  <!-- ========== TOAST NOTIFICATION ========== -->
+  <div class="toast" id="toast">
+    <div class="toast-icon" id="toast-icon"></div>
+    <div class="toast-content">
+      <div class="toast-title" id="toast-title"></div>
+      <div class="toast-message" id="toast-message"></div>
+    </div>
+  </div>
+
+  <!-- Floating Help Button -->
+  <button class="floating-help-btn" id="floating-help" onclick="showToast('info','Help & Support','Live chat with our support team or call +1-800-ERGOS-24/7.')">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+    <span>Need help?</span>
+  </button>
+
+  <script src="app.js"></script>
+</body>
+</html>

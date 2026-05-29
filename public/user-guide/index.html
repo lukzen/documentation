@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ergos User Guides</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="_styles.css">
+<style>
+  body { overflow: auto; }
+  .hub-wrap {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 40px 24px 80px;
+  }
+</style>
+</head>
+<body>
+
+<button class="lang-toggle" type="button" onclick="toggleLang()"
+        aria-label="Switch language between English and Spanish"
+        title="Switch language">
+  <span class="globe" aria-hidden="true"></span>
+  <span class="lang-en">
+    <span class="lang-active">EN</span>
+    <span class="lang-sep">·</span>
+    <span>Español</span>
+  </span>
+  <span class="lang-es">
+    <span class="lang-active">ES</span>
+    <span class="lang-sep">·</span>
+    <span>English</span>
+  </span>
+</button>
+
+<div class="hub-wrap">
+
+  <div class="hero">
+    <h1 class="lang-en">Ergos User Guides</h1>
+    <h1 class="lang-es">Guías de Usuario de Ergos</h1>
+    <p class="lang-en">Practical, screen-by-screen guides for the two applications that power Ergos Continental.</p>
+    <p class="lang-es">Guías prácticas, pantalla por pantalla, para las dos aplicaciones que impulsan Ergos Continental.</p>
+  </div>
+
+  <div class="guide-cards">
+
+    <a class="guide-card" href="agency-app-user-guide.html">
+      <span class="badge">For travel agencies</span>
+      <h2 class="lang-en">Agency App</h2>
+      <h2 class="lang-es">Aplicación de la Agencia</h2>
+      <p class="lang-en">How travel-agency owners and employees use Ergos to search hotels, quote, book, and manage their customers' reservations. Includes the bookings list, vouchers, invoices, and the agency P&amp;L.</p>
+      <p class="lang-es">Cómo los dueños y empleados de agencias de viajes usan Ergos para buscar hoteles, cotizar, reservar y administrar las reservas de sus clientes. Incluye la lista de reservas, vouchers, facturas y el P&amp;L de la agencia.</p>
+      <span class="arrow lang-en">Open the guide →</span>
+      <span class="arrow lang-es">Abrir la guía →</span>
+    </a>
+
+    <a class="guide-card" href="backoffice-app-user-guide.html">
+      <span class="badge">For Ergos staff</span>
+      <h2 class="lang-en">Backoffice App</h2>
+      <h2 class="lang-es">Aplicación de Backoffice</h2>
+      <p class="lang-en">How Ergos employees and admins manage the platform: travel agencies, sales agents, hotels, reservations, pricing policy, hotel brands, audit logs, and finance.</p>
+      <p class="lang-es">Cómo los empleados y admins de Ergos administran la plataforma: agencias de viajes, agentes comerciales, hoteles, reservas, política de precios, marcas hoteleras, registros de auditoría y finanzas.</p>
+      <span class="arrow lang-en">Open the guide →</span>
+      <span class="arrow lang-es">Abrir la guía →</span>
+    </a>
+
+  </div>
+
+  <div style="margin-top: 40px; text-align: center; color: var(--text-muted); font-size: 13px;">
+    <p class="lang-en">Looking for the technical / cascade-policy reference? See <a href="../pricing-policy-guide.html" style="color: var(--teal-dark);">Pricing Policy &amp; Hotel Brands — How It Works</a>.</p>
+    <p class="lang-es">¿Buscás la referencia técnica / de cascada de política? Mirá <a href="../pricing-policy-guide.html" style="color: var(--teal-dark);">Pricing Policy &amp; Hotel Brands — How It Works</a>.</p>
+  </div>
+
+</div>
+
+<script>
+  (function () {
+    const saved = localStorage.getItem('guide-lang');
+    if (saved === 'es' || saved === 'en') {
+      document.documentElement.lang = saved;
+    }
+  })();
+  function toggleLang() {
+    const cur = document.documentElement.lang === 'es' ? 'es' : 'en';
+    const next = cur === 'es' ? 'en' : 'es';
+    document.documentElement.lang = next;
+    localStorage.setItem('guide-lang', next);
+  }
+</script>
+</body>
+</html>

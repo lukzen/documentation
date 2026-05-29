@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ergos Agency App — User Guide</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="_styles.css">
+</head>
+<body>
+
+<button class="lang-toggle" type="button" onclick="toggleLang()"
+        aria-label="Switch language between English and Spanish" title="Switch language">
+  <span class="globe" aria-hidden="true"></span>
+  <span class="lang-en"><span class="lang-active">EN</span><span class="lang-sep">·</span><span>Español</span></span>
+  <span class="lang-es"><span class="lang-active">ES</span><span class="lang-sep">·</span><span>English</span></span>
+</button>
+
+<div class="layout">
+
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <h1 class="lang-en">Agency App</h1>
+      <h1 class="lang-es">App de la Agencia</h1>
+      <div class="brand-subtitle lang-en">User Guide · Travel Agencies</div>
+      <div class="brand-subtitle lang-es">Guía de Usuario · Agencias de Viajes</div>
+    </div>
+    <nav class="toc">
+      <h3 class="lang-en">Contents</h3>
+      <h3 class="lang-es">Contenidos</h3>
+      <div class="toc-grid lang-en">
+        <a href="#welcome"><span class="toc-num">1.</span><span>Welcome &amp; what the app does</span></a>
+        <a href="#getting-in"><span class="toc-num">2.</span><span>Logging in &amp; account setup</span></a>
+        <a href="#find-hotels"><span class="toc-num">3.</span><span>Finding the right hotel</span></a>
+        <a href="#hotel-detail"><span class="toc-num">4.</span><span>Reviewing a hotel &amp; picking a room</span></a>
+        <a href="#booking-flow"><span class="toc-num">5.</span><span>Making a booking</span></a>
+        <a href="#my-bookings"><span class="toc-num">6.</span><span>Managing your bookings</span></a>
+        <a href="#vouchers-invoices"><span class="toc-num">7.</span><span>Vouchers &amp; invoices</span></a>
+        <a href="#pnl"><span class="toc-num">8.</span><span>Tracking your earnings (P&amp;L)</span></a>
+        <a href="#employees"><span class="toc-num">9.</span><span>Adding employees to your agency</span></a>
+        <a href="#account"><span class="toc-num">10.</span><span>Account &amp; profile settings</span></a>
+        <a href="#troubleshooting"><span class="toc-num">11.</span><span>Common issues &amp; troubleshooting</span></a>
+      </div>
+      <div class="toc-grid lang-es">
+        <a href="#welcome"><span class="toc-num">1.</span><span>Bienvenida y qué hace la app</span></a>
+        <a href="#getting-in"><span class="toc-num">2.</span><span>Ingresar y configurar la cuenta</span></a>
+        <a href="#find-hotels"><span class="toc-num">3.</span><span>Encontrar el hotel adecuado</span></a>
+        <a href="#hotel-detail"><span class="toc-num">4.</span><span>Revisar un hotel y elegir habitación</span></a>
+        <a href="#booking-flow"><span class="toc-num">5.</span><span>Hacer una reserva</span></a>
+        <a href="#my-bookings"><span class="toc-num">6.</span><span>Administrar tus reservas</span></a>
+        <a href="#vouchers-invoices"><span class="toc-num">7.</span><span>Vouchers y facturas</span></a>
+        <a href="#pnl"><span class="toc-num">8.</span><span>Seguir tus ganancias (P&amp;L)</span></a>
+        <a href="#employees"><span class="toc-num">9.</span><span>Sumar empleados a tu agencia</span></a>
+        <a href="#account"><span class="toc-num">10.</span><span>Cuenta y configuración del perfil</span></a>
+        <a href="#troubleshooting"><span class="toc-num">11.</span><span>Problemas comunes y solución</span></a>
+      </div>
+    </nav>
+  </aside>
+
+  <main class="main-content">
+
+  <!-- SECTION 1: WELCOME -->
+  <section id="welcome">
+    <h2 class="lang-en">1. Welcome <span class="label">Start here</span></h2>
+    <h2 class="lang-es">1. Bienvenida <span class="label">Empezar aquí</span></h2>
+
+    <p class="lang-en">The Ergos Agency App is the platform your travel agency uses every day to <strong>find rooms across multiple hotel chains, compare prices, book on behalf of your customers, and manage everything in one place</strong>. It replaces the patchwork of multiple GDS interfaces with a single tool that searches Dingus, Hotetec, Restel, and Juniper inventories at the same time.</p>
+    <p class="lang-es">La App de la Agencia de Ergos es la plataforma que tu agencia de viajes usa cada día para <strong>encontrar habitaciones en múltiples cadenas hoteleras, comparar precios, reservar a nombre de tus clientes y administrar todo en un solo lugar</strong>. Reemplaza el conjunto de interfaces de varios GDS con una única herramienta que busca en los inventarios de Dingus, Hotetec, Restel y Juniper al mismo tiempo.</p>
+
+    <h3 class="lang-en">What you can do here</h3>
+    <h3 class="lang-es">Qué podés hacer acá</h3>
+    <ul class="lang-en">
+      <li><strong>Search</strong> rooms across multiple GDS inventories at once.</li>
+      <li><strong>Quote</strong> prices to your customer using the agency's own markup.</li>
+      <li><strong>Book</strong> a room with full guest details and payment capture.</li>
+      <li><strong>Manage</strong> your active and past bookings from one list.</li>
+      <li><strong>Modify or cancel</strong> bookings according to each property's policy.</li>
+      <li><strong>Download</strong> vouchers and invoices in PDF.</li>
+      <li><strong>See your earnings</strong> per booking and aggregated as P&amp;L.</li>
+      <li><strong>Add team members</strong> so multiple employees can work from the same agency.</li>
+    </ul>
+    <ul class="lang-es">
+      <li><strong>Buscar</strong> habitaciones en múltiples inventarios GDS a la vez.</li>
+      <li><strong>Cotizar</strong> precios para tu cliente usando el markup propio de la agencia.</li>
+      <li><strong>Reservar</strong> una habitación con los datos completos del huésped y captura de pago.</li>
+      <li><strong>Administrar</strong> tus reservas activas y pasadas desde una sola lista.</li>
+      <li><strong>Modificar o cancelar</strong> reservas según la política de cada propiedad.</li>
+      <li><strong>Descargar</strong> vouchers y facturas en PDF.</li>
+      <li><strong>Ver tus ganancias</strong> por reserva y agregadas como P&amp;L.</li>
+      <li><strong>Sumar miembros del equipo</strong> para que varios empleados trabajen desde la misma agencia.</li>
+    </ul>
+
+    <div class="callout callout-info">
+      <strong class="lang-en">What you DON'T need to worry about:</strong>
+      <strong class="lang-es">Lo que NO necesitás preocuparte:</strong>
+      <span class="lang-en"> Ergos handles the connection to all the hotel suppliers, negotiates chain discounts, manages payouts, and provides 24/7 booking support. You just search, quote, and book.</span>
+      <span class="lang-es"> Ergos se encarga de la conexión con todos los proveedores hoteleros, negocia descuentos de cadena, administra los pagos y brinda soporte de reservas 24/7. Vos solo buscás, cotizás y reservás.</span>
+    </div>
+
+    <h3 class="lang-en">How the app is organized</h3>
+    <h3 class="lang-es">Cómo está organizada la app</h3>
+    <p class="lang-en">From the top navigation bar you'll always have access to: <strong>Home</strong> (where you start a new search), <strong>Bookings</strong> (your reservation list), and your <strong>Account menu</strong> (with profile, employees, P&amp;L, language, and logout). Everything else flows from one of these three.</p>
+    <p class="lang-es">Desde la barra de navegación superior siempre vas a tener acceso a: <strong>Inicio</strong> (donde arrancás una búsqueda nueva), <strong>Reservas</strong> (tu lista de reservas) y tu <strong>menú de Cuenta</strong> (con perfil, empleados, P&amp;L, idioma y cerrar sesión). Todo lo demás fluye desde una de estas tres.</p>
+  </section>
+
+  <!-- SECTION 2: LOGGING IN -->
+  <section id="getting-in">
+    <h2 class="lang-en">2. Logging in &amp; account setup</h2>
+    <h2 class="lang-es">2. Ingresar y configurar la cuenta</h2>
+    <span class="audience lang-en">First-time setup</span>
+    <span class="audience lang-es">Configuración inicial</span>
+
+    <h3 class="lang-en">If your agency was invited by Ergos</h3>
+    <h3 class="lang-es">Si tu agencia fue invitada por Ergos</h3>
+    <p class="lang-en">An Ergos representative sends an email to your agency owner with a registration link. Click the link, set your password, and you're in. The owner can later invite teammates from the <em>Employees</em> page (see §9).</p>
+    <p class="lang-es">Un representante de Ergos envía un correo al dueño de tu agencia con un link de registro. Hacé clic en el link, fijá tu contraseña y listo. El dueño puede después invitar al equipo desde la página de <em>Empleados</em> (ver §9).</p>
+
+    <h3 class="lang-en">If you were invited by a teammate (employee invitation)</h3>
+    <h3 class="lang-es">Si te invitó un compañero (invitación a empleado)</h3>
+    <p class="lang-en">You receive an email with a personal link. Open it, set your password, and you'll land directly inside the agency account.</p>
+    <p class="lang-es">Recibís un correo con un link personal. Abrilo, fijá tu contraseña, y vas a aterrizar directamente dentro de la cuenta de la agencia.</p>
+
+    <div class="task">
+      <h4 class="lang-en">Logging in (everyday use)</h4>
+      <h4 class="lang-es">Ingresar (uso diario)</h4>
+      <ol class="lang-en">
+        <li>Go to your agency's URL (your owner has it; usually something like <code>yourname.lukzen-op.com</code>).</li>
+        <li>Enter your email address and password.</li>
+        <li>If you have a <strong>passkey</strong> registered (fingerprint, FaceID, or a hardware key), click "Sign in with passkey" — faster and more secure than a password.</li>
+        <li>You'll land on the <em>Home</em> page with the search panel ready.</li>
+      </ol>
+      <ol class="lang-es">
+        <li>Andá a la URL de tu agencia (tu dueño la tiene; usualmente algo como <code>tunombre.lukzen-op.com</code>).</li>
+        <li>Ingresá tu correo y contraseña.</li>
+        <li>Si tenés un <strong>passkey</strong> registrado (huella digital, FaceID o una llave de hardware), hacé clic en "Iniciar sesión con passkey" — más rápido y seguro que la contraseña.</li>
+        <li>Vas a aterrizar en la página de <em>Inicio</em> con el panel de búsqueda listo.</li>
+      </ol>
+    </div>
+
+    <figure class="screenshot">
+      <div class="screenshot-frame">
+        <img src="qa-01-homepage-with-passkey-modal.png"
+             alt="Home page with the passkey prompt modal visible — option to register a passkey for faster login next time."
+             loading="lazy" onerror="this.style.display='none'" />
+      </div>
+      <figcaption class="lang-en">Home page on first login — you'll see a one-time prompt to register a passkey. Skip it for now if you prefer to use a password; you can register one later from the <em>Passkeys</em> page in your account menu.</figcaption>
+      <figcaption class="lang-es">Página de inicio en el primer ingreso — vas a ver un prompt único para registrar un passkey. Saltealo por ahora si preferís usar contraseña; lo podés registrar después desde la página <em>Passkeys</em> en el menú de cuenta.</figcaption>
+    </figure>
+
+    <div class="callout callout-warning">
+      <strong class="lang-en">Forgot password?</strong>
+      <strong class="lang-es">¿Olvidaste la contraseña?</strong>
+      <span class="lang-en"> Click "Forgot password" on the login screen. You'll receive an email with a reset link. The link is valid for 60 minutes — request a new one if it expires.</span>
+      <span class="lang-es"> Hacé clic en "Olvidé mi contraseña" en la pantalla de login. Vas a recibir un correo con un link para restablecerla. El link vale 60 minutos — pedí uno nuevo si expira.</span>
+    </div>
+  </section>
+
+  <!-- SECTION 3: FIND HOTELS -->
+  <section id="find-hotels">
+    <h2 class="lang-en">3. Finding the right hotel</h2>
+    <h2 class="lang-es">3. Encontrar el hotel adecuado</h2>
+
+    <p class="lang-en">From the <em>Home</em> page, the search panel lets you tell the system <em>where</em> the guest wants to stay, <em>when</em>, and <em>how many</em> rooms/guests they need.</p>
+    <p class="lang-es">Desde la página de <em>Inicio</em>, el panel de búsqueda te permite indicarle al sistema <em>dónde</em> quiere alojarse el huésped, <em>cuándo</em> y <em>cuántas</em> habitaciones/huéspedes necesita.</p>
+
+    <h3 class="lang-en">Building your search</h3>
+    <h3 class="lang-es">Armar tu búsqueda</h3>
+    <ul class="lang-en">
+      <li><strong>Destination:</strong> type a city, region, or hotel name. Suggestions appear as you type.</li>
+      <li><strong>Dates:</strong> pick a check-in and check-out date. The minimum stay is 1 night.</li>
+      <li><strong>Rooms &amp; guests:</strong> click the rooms selector to add multiple rooms; for each room set adults + children + child ages.</li>
+      <li><strong>Click Search.</strong> Results stream in as each supplier responds (Restel and Roibos take ~14 round-trips per search and may take a few seconds longer than Dingus/Hotetec).</li>
+    </ul>
+    <ul class="lang-es">
+      <li><strong>Destino:</strong> escribí una ciudad, región o nombre de hotel. Aparecen sugerencias mientras escribís.</li>
+      <li><strong>Fechas:</strong> elegí una fecha de check-in y check-out. La estadía mínima es de 1 noche.</li>
+      <li><strong>Habitaciones y huéspedes:</strong> hacé clic en el selector de habitaciones para sumar varias; para cada habitación poné adultos + niños + edades de niños.</li>
+      <li><strong>Hacé clic en Buscar.</strong> Los resultados van apareciendo a medida que cada proveedor responde (Restel y Roibos hacen ~14 round-trips por búsqueda y pueden tardar unos segundos más que Dingus/Hotetec).</li>
+    </ul>
+
+    <figure class="screenshot">
+      <div class="screenshot-frame">
+        <img src="qa-02-hotels-list-havana.png"
+             alt="Hotels list view — Havana destination, list of properties with prices and key information per card."
+             loading="lazy" onerror="this.style.display='none'" />
+      </div>
+      <figcaption class="lang-en">Search results for Havana — each card shows hotel name, location, GDS source, star rating, and the lowest available room price for your dates.</figcaption>
+      <figcaption class="lang-es">Resultados de búsqueda para La Habana — cada tarjeta muestra el nombre del hotel, ubicación, fuente GDS, calificación de estrellas y el precio más bajo de habitación disponible para tus fechas.</figcaption>
+    </figure>
+
+    <h3 class="lang-en">Filtering and sorting</h3>
+    <h3 class="lang-es">Filtrar y ordenar</h3>
+    <ul class="lang-en">
+      <li><strong>Star rating</strong> — narrow to e.g. 4★ and 5★ only.</li>
+      <li><strong>Price range</strong> — set a min/max per night.</li>
+      <li><strong>Amenities</strong> — pool, all-inclusive, beachfront, parking, Wi-Fi, etc.</li>
+      <li><strong>Sort:</strong> price (lowest first / highest first), distance from center, or star rating.</li>
+    </ul>
+    <ul class="lang-es">
+      <li><strong>Calificación por estrellas</strong> — limitá a, por ejemplo, solo 4★ y 5★.</li>
+      <li><strong>Rango de precio</strong> — fijá mínimo/máximo por noche.</li>
+      <li><strong>Comodidades</strong> — pileta, all-inclusive, en la playa, estacionamiento, Wi-Fi, etc.</li>
+      <li><strong>Ordenar:</strong> precio (más bajo primero / más alto primero), distancia al centro, o calificación de estrellas.</li>
+    </ul>
+
+    <figure class="screenshot">
+      <div class="screenshot-frame">
+        <img src="qa-03-cuba-may-7-9.png"
+             alt="Cuba search results for May 7-9 dates — multiple hotels with filters applied, price per night visible."
+             loading="lazy" onerror="this.style.display='none'" />
+      </div>
+      <figcaption class="lang-en">Sample search: Cuba, May 7–9. Multiple results across hotel chains, price per night for the date range shown on each card.</figcaption>
+      <figcaption class="lang-es">Búsqueda de ejemplo: Cuba, 7-9 de mayo. Múltiples resultados de cadenas hoteleras, precio por noche para el rango de fechas mostrado en cada tarjeta.</figcaption>
+    </figure>
+
+    <div class="callout callout-teal">
+      <strong class="lang-en">Pro tip:</strong>
+      <strong class="lang-es">Tip pro:</strong>
+      <span class="lang-en"> If a hotel that your customer specifically asked for doesn't appear in the results, check that the dates aren't blocked by the property and that the destination spelling matches what the GDS recognizes (e.g. "Havana" vs "La Habana" — the search box normalizes both).</span>
+      <span class="lang-es"> Si un hotel que tu cliente pidió específicamente no aparece en los resultados, revisá que las fechas no estén bloqueadas por la propiedad y que la ortografía del destino coincida con lo que el GDS reconoce (ej. "Havana" vs "La Habana" — la caja de búsqueda normaliza ambas).</span>
+    </div>
+  </section>
+
+  <!-- SECTION 4: HOTEL DETAIL -->
+  <section id="hotel-detail">
+    <h2 class="lang-en">4. Reviewing a hotel &amp; picking a room</h2>
+    <h2 class="lang-es">4. Revisar un hotel y elegir habitación</h2>
+
+    <p class="lang-en">Clicking a hotel card opens its detail page. You'll see photos, amenities, location, guest reviews when available, and — most important — the list of available room types with their per-night prices.</p>
+    <p class="lang-es">Al hacer clic en una tarjeta de hotel se abre su página de detalle. Vas a ver fotos, comodidades, ubicación, reseñas de huéspedes cuando estén disponibles y — lo más importante — la lista de tipos de habitación disponibles con sus precios por noche.</p>
+
+    <figure class="screenshot">
+      <div class="screenshot-frame">
+        <img src="qa-04-hotel-detail-rooms.png"
+             alt="Hotel detail page showing rooms available — each room with photo, capacity, board type, refundability, price, and Book button."
+             loading="lazy" onerror="this.style.display='none'" />
+      </div>
+      <figcaption class="lang-en">Hotel detail page — each available room shows its photo, occupancy, board type (e.g., All-Inclusive, B&amp;B), refundable / non-refundable badge, total price for the stay, and a Book button.</figcaption>
+      <figcaption class="lang-es">Página de detalle del hotel — cada habitación disponible muestra su foto, ocupación, tipo de régimen (ej. All-Inclusive, B&amp;B), badge de reembolsable / no reembolsable, precio total de la estadía y un botón Reservar.</figcaption>
+    </figure>
+
+    <h3 class="lang-en">What to look at before booking</h3>
+    <h3 class="lang-es">Qué mirar antes de reservar</h3>
+    <ul class="lang-en">
+      <li><strong>Board / régimen:</strong> All-Inclusive, Bed &amp; Breakfast, Half Board, Room Only.</li>
+      <li><strong>Refundable vs non-refundable:</strong> non-refundable rates are cheaper but cannot be cancelled. Communicate this clearly to your customer.</li>
+      <li><strong>Cancellation policy:</strong> hover or tap the policy link — shows the cutoff date and the penalty.</li>
+      <li><strong>Total for stay:</strong> the price shown <em>already</em> includes the nightly rate × nights. Taxes and resort fees, when displayed by the supplier, are itemized.</li>
+    </ul>
+    <ul class="lang-es">
+      <li><strong>Régimen:</strong> All-Inclusive, Bed &amp; Breakfast, Media Pensión, Solo Habitación.</li>
+      <li><strong>Reembolsable vs no reembolsable:</strong> las tarifas no reembolsables son más baratas pero no se pueden cancelar. Comunicale esto claramente a tu cliente.</li>
+      <li><strong>Política de cancelación:</strong> pasá el mouse o tocá el link de política — muestra la fecha límite y la penalización.</li>
+      <li><strong>Total de la estadía:</strong> el precio mostrado <em>ya</em> incluye tarifa por noche × cantidad de noches. Impuestos y fees del resort, cuando los muestra el proveedor, están desglosados.</li>
+    </ul>
+  </section>
+
+  <!-- SECTION 5: BOOKING FLOW -->
+  <section id="booking-flow">
+    <h2 class="lang-en">5. Making a booking</h2>
+    <h2 class="lang-es">5. Hacer una reserva</h2>
+
+    <p class="lang-en">Once you pick a room and click <strong>Book</strong>, the system walks you through three short steps: <em>guest info</em>, <em>payment</em>, and <em>confirmation</em>. The whole flow normally takes under 2 minutes.</p>
+    <p class="lang-es">Una vez que elegís una habitación y hacés clic en <strong>Reservar</strong>, el sistema te guía por tres pasos cortos: <em>datos del huésped</em>, <em>pago</em> y <em>confirmación</em>. El flujo completo normalmente lleva menos de 2 minutos.</p>
+
+    <div class="task">
+      <h4 class="lang-en">The 3-step booking flow</h4>
+      <h4 class="lang-es">El flujo de reserva en 3 pasos</h4>
+      <ol class="lang-en">
+        <li><strong>Guest details:</strong> name(s) of every guest, primary contact email and phone. If multiple rooms, you assign guests to rooms here.</li>
+        <li><strong>Payment:</strong> capture the customer's payment method — credit/debit card or, in supported regions, Tropipay. Your agency markup is added automatically.</li>
+        <li><strong>Confirmation:</strong> a confirmation screen with the locator (booking ID), the hotel's confirmation code (when the supplier returns one immediately), and a link to download the voucher.</li>
+      </ol>
+      <ol class="lang-es">
+        <li><strong>Datos del huésped:</strong> nombre(s) de cada huésped, correo y teléfono de contacto principal. Si son varias habitaciones, asignás huéspedes a cada habitación acá.</li>
+        <li><strong>Pago:</strong> capturás el método de pago del cliente — tarjeta de crédito/débito o, en regiones soportadas, Tropipay. El markup de tu agencia se agrega automáticamente.</li>
+        <li><strong>Confirmación:</strong> una pantalla de confirmación con el locator (ID de reserva), el código de confirmación del hotel (cuando el proveedor lo devuelve en el momento) y un link para descargar el voucher.</li>
+      </ol>
+    </div>
+
+    <div class="callout callout-info">
+      <strong class="lang-en">What the customer pays vs. what Ergos charges:</strong>
+      <strong class="lang-es">Qué paga el cliente vs. qué cobra Ergos:</strong>
+      <span class="lang-en"> The price the customer pays = Ergos sell price + your agency's markup. The agency keeps the markup; Ergos invoices your agency for the Ergos sell price. The <em>rebate</em> that Ergos pays back to your agency (configured in your contract) is settled monthly and visible in the P&amp;L view.</span>
+      <span class="lang-es"> El precio que paga el cliente = precio de venta de Ergos + el markup de tu agencia. La agencia se queda con el markup; Ergos le factura a tu agencia el precio de venta de Ergos. El <em>rebate</em> que Ergos le devuelve a tu agencia (configurado en tu contrato) se liquida mensualmente y se ve en la vista de P&amp;L.</span>
+    </div>
+
+    <h3 class="lang-en">Multi-room bookings</h3>
+    <h3 class="lang-es">Reservas multi-habitación</h3>
+    <p class="lang-en">If your search had more than one room, the guest-info step expands into one block per room. Assign the lead guest of each room — they appear on the voucher per-room. Children's names are also required by most suppliers.</p>
+    <p class="lang-es">Si tu búsqueda tenía más de una habitación, el paso de datos del huésped se expande en un bloque por habitación. Asigná al huésped principal de cada habitación — aparecen en el voucher por habitación. Los nombres de los niños también los requieren la mayoría de los proveedores.</p>
+
+    <h3 class="lang-en">If a booking fails partway through</h3>
+    <h3 class="lang-es">Si una reserva falla a mitad de camino</h3>
+    <p class="lang-en">Occasionally a supplier rejects the booking at the last second (e.g. the room sold out in the seconds since search). When that happens, your card is <strong>not charged</strong> and you'll see a clear error message with the option to pick a different room or retry. Always confirm the customer's email confirmation arrived before considering the booking final.</p>
+    <p class="lang-es">A veces un proveedor rechaza la reserva en el último segundo (ej. la habitación se vendió en los segundos desde la búsqueda). Cuando eso pasa, <strong>no se cobra la tarjeta</strong> y vas a ver un mensaje de error claro con la opción de elegir otra habitación o reintentar. Confirmá siempre que llegó el correo de confirmación al cliente antes de considerar la reserva como final.</p>
+  </section>
+
+  <!-- SECTION 6: MY BOOKINGS -->
+  <section id="my-bookings">
+    <h2 class="lang-en">6. Managing your bookings</h2>
+    <h2 class="lang-es">6. Administrar tus reservas</h2>
+
+    <p class="lang-en">The <strong>Bookings</strong> page lists every reservation your agency has made. Use it to look up a customer, check status, download paperwork, or initiate a modification or cancellation.</p>
+    <p class="lang-es">La página <strong>Reservas</strong> lista cada reserva que hizo tu agencia. Usala para buscar un cliente, revisar el estado, descargar la documentación o iniciar una modificación o cancelación.</p>
+
+    <figure class="screenshot">
+      <div class="screenshot-frame">
+        <img src="qa-05-bookings-page.png"
+             alt="Bookings page showing list of reservations with status, dates, guest, hotel, locator, and action buttons."
+             loading="lazy" onerror="this.style.display='none'" />
+      </div>
+      <figcaption class="lang-en">Bookings list — each row shows the locator, hotel, guest, dates, total, and current status (Confirmed / Pending / Cancelled / Completed).</figcaption>
+      <figcaption class="lang-es">Lista de reservas — cada fila muestra el locator, hotel, huésped, fechas, total y estado actual (Confirmada / Pendiente / Cancelada / Completada).</figcaption>
+    </figure>
+
+    <h3 class="lang-en">Booking status — what each label means</h3>
+    <h3 class="lang-es">Estado de reserva — qué significa cada etiqueta</h3>
+    <table>
+      <thead>
+        <tr><th class="lang-en">Status</th><th class="lang-es">Estado</th><th class="lang-en">Meaning</th><th class="lang-es">Significado</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>Pending</strong> / <strong>Pendiente</strong></td><td><span class="lang-en">Sent to the supplier; awaiting their confirmation. Usually settles within minutes.</span><span class="lang-es">Enviada al proveedor; esperando su confirmación. Usualmente se confirma en minutos.</span></td></tr>
+        <tr><td><strong>Confirmed</strong> / <strong>Confirmada</strong></td><td><span class="lang-en">The supplier returned a confirmation code. The booking is firm.</span><span class="lang-es">El proveedor devolvió un código de confirmación. La reserva está firme.</span></td></tr>
+        <tr><td><strong>Cancelled</strong> / <strong>Cancelada</strong></td><td><span class="lang-en">Cancelled by your agency or by the supplier (sold out, refused). Penalty, if any, is shown.</span><span class="lang-es">Cancelada por tu agencia o por el proveedor (vendida, rechazada). La penalización, si la hay, se muestra.</span></td></tr>
+        <tr><td><strong>Completed</strong> / <strong>Completada</strong></td><td><span class="lang-en">The stay finished. Voucher and invoice are still downloadable.</span><span class="lang-es">La estadía terminó. El voucher y la factura siguen disponibles para descarga.</span></td></tr>
+      </tbody>
+    </table>
+
+    <h3 class="lang-en">Finding a specific booking quickly</h3>
+    <h3 class="lang-es">Encontrar una reserva específica rápidamente</h3>
+    <p class="lang-en">Use the search box at the top of the list. You can search by locator, customer name, hotel name, or email. The filters on the right narrow by date range and status.</p>
+    <p class="lang-es">Usá la caja de búsqueda al tope de la lista. Podés buscar por locator, nombre del cliente, nombre del hotel o correo. Los filtros a la derecha limitan por rango de fechas y estado.</p>
+
+    <h3 class="lang-en">Modifying or cancelling</h3>
+    <h3 class="lang-es">Modificar o cancelar</h3>
+    <p class="lang-en">Click the booking row to open its detail page. The <strong>Modify</strong> and <strong>Cancel</strong> actions appear in the header — both are gated by the supplier's policy (modifications are not supported by all chains, and cancellation may incur a penalty depending on how close to the check-in date you are). The system always tells you the consequence <em>before</em> you confirm.</p>
+    <p class="lang-es">Hacé clic en la fila de la reserva para abrir su página de detalle. Las acciones <strong>Modificar</strong> y <strong>Cancelar</strong> aparecen en el encabezado — ambas están sujetas a la política del proveedor (las modificaciones no las soportan todas las cadenas, y la cancelación puede tener una penalización dependiendo de qué tan cerca del check-in estés). El sistema siempre te dice la consecuencia <em>antes</em> de que confirmes.</p>
+  </section>
+
+  <!-- SECTION 7: VOUCHERS & INVOICES -->
+  <section id="vouchers-invoices">
+    <h2 class="lang-en">7. Vouchers &amp; invoices</h2>
+    <h2 class="lang-es">7. Vouchers y facturas</h2>
+
+    <p class="lang-en">Every confirmed booking produces two documents:</p>
+    <p class="lang-es">Cada reserva confirmada produce dos documentos:</p>
+
+    <ul class="lang-en">
+      <li><strong>Voucher (Bono):</strong> the customer-facing document that proves the reservation. Hand it to the customer; they present it at the hotel.</li>
+      <li><strong>Invoice (Factura):</strong> the agency-facing document — what your agency owes Ergos for this booking, broken down by line item.</li>
+    </ul>
+    <ul class="lang-es">
+      <li><strong>Voucher (Bono):</strong> el documento para el cliente que prueba la reserva. Entregaselo al cliente; lo presenta en el hotel.</li>
+      <li><strong>Invoice (Factura):</strong> el documento para la agencia — lo que tu agencia le debe a Ergos por esta reserva, desglosado por línea.</li>
+    </ul>
+
+    <h3 class="lang-en">Downloading them</h3>
+    <h3 class="lang-es">Descargarlos</h3>
+    <p class="lang-en">From any confirmed booking's detail page, click <strong>Download Voucher</strong> or <strong>Download Invoice</strong>. Both render as PDF and open in a new tab; you can save or email them directly from your browser. Both documents are available indefinitely after the booking is created — you can re-download for completed stays years later.</p>
+    <p class="lang-es">Desde la página de detalle de cualquier reserva confirmada, hacé clic en <strong>Descargar Voucher</strong> o <strong>Descargar Factura</strong>. Ambos se renderizan como PDF y se abren en una pestaña nueva; los podés guardar o enviar por correo directamente desde tu navegador. Ambos documentos están disponibles indefinidamente después de crear la reserva — los podés re-descargar para estadías completadas años después.</p>
+
+    <div class="callout callout-info">
+      <strong class="lang-en">What's on the voucher:</strong>
+      <strong class="lang-es">Qué tiene el voucher:</strong>
+      <span class="lang-en"> guest names, hotel name + address + phone, dates, room type, board, supplier confirmation code, agency contact info, and any special remarks (e.g., "Late check-in confirmed", "Honeymoon"). The price shown is the customer's price, NOT the Ergos sell price.</span>
+      <span class="lang-es"> nombres de los huéspedes, nombre + dirección + teléfono del hotel, fechas, tipo de habitación, régimen, código de confirmación del proveedor, datos de contacto de la agencia y cualquier observación especial (ej. "Check-in tardío confirmado", "Luna de miel"). El precio mostrado es el precio del cliente, NO el precio de venta de Ergos.</span>
+    </div>
+  </section>
+
+  <!-- SECTION 8: P&L -->
+  <section id="pnl">
+    <h2 class="lang-en">8. Tracking your earnings (P&amp;L)</h2>
+    <h2 class="lang-es">8. Seguir tus ganancias (P&amp;L)</h2>
+
+    <p class="lang-en">The <strong>P&amp;L</strong> page (accessed from your account menu, or directly at <code>/pnl</code>) shows you what your agency earned over any date range you choose.</p>
+    <p class="lang-es">La página de <strong>P&amp;L</strong> (accesible desde el menú de cuenta, o directo en <code>/pnl</code>) te muestra lo que ganó tu agencia en cualquier rango de fechas que elijas.</p>
+
+    <h3 class="lang-en">Two sources of income per booking</h3>
+    <h3 class="lang-es">Dos fuentes de ingreso por reserva</h3>
+    <ul class="lang-en">
+      <li><strong>Markup income</strong> — the difference between what your customer paid and what your agency paid Ergos. You set this markup; you keep 100% of it.</li>
+      <li><strong>Rebate income</strong> — the cashback Ergos pays your agency on every booking. The percentage is set in your contract (typical: 4% of Ergos sell). Settled monthly.</li>
+    </ul>
+    <ul class="lang-es">
+      <li><strong>Ingreso por markup</strong> — la diferencia entre lo que pagó tu cliente y lo que tu agencia le pagó a Ergos. Vos fijás este markup; te quedás con el 100%.</li>
+      <li><strong>Ingreso por rebate</strong> — el cashback que Ergos le paga a tu agencia en cada reserva. El porcentaje está fijado en tu contrato (típico: 4% del Ergos sell). Liquidado mensualmente.</li>
+    </ul>
+
+    <h3 class="lang-en">Reading the P&amp;L table</h3>
+    <h3 class="lang-es">Leer la tabla de P&amp;L</h3>
+    <p class="lang-en">Each row is one booking. Columns: locator, customer name, hotel, dates, Ergos cost (what you paid Ergos), customer price (what your customer paid), markup income, rebate income, total profit. At the bottom: aggregate totals for the selected date range.</p>
+    <p class="lang-es">Cada fila es una reserva. Columnas: locator, nombre del cliente, hotel, fechas, costo Ergos (lo que le pagaste a Ergos), precio cliente (lo que pagó tu cliente), ingreso por markup, ingreso por rebate, ganancia total. Al pie: totales agregados para el rango de fechas seleccionado.</p>
+
+    <div class="callout callout-teal">
+      <strong class="lang-en">When the numbers don't add up to what your bookkeeping says:</strong>
+      <strong class="lang-es">Cuando los números no coinciden con lo que dice tu contabilidad:</strong>
+      <span class="lang-en"> the most common reasons are (a) bookings cancelled with penalty (still appear in P&amp;L with the partial cost), (b) modifications that changed the room/dates after the original booking was made, and (c) currency conversion timing if your booking and your bookkeeping use different exchange rates. Contact Ergos support with a specific locator to investigate.</span>
+      <span class="lang-es"> las razones más comunes son (a) reservas canceladas con penalización (siguen apareciendo en el P&amp;L con el costo parcial), (b) modificaciones que cambiaron la habitación/fechas después de hacer la reserva original, y (c) timing de conversión de moneda si tu reserva y tu contabilidad usan tasas de cambio distintas. Contactá al soporte de Ergos con un locator específico para investigar.</span>
+    </div>
+  </section>
+
+  <!-- SECTION 9: EMPLOYEES -->
+  <section id="employees">
+    <h2 class="lang-en">9. Adding employees to your agency</h2>
+    <h2 class="lang-es">9. Sumar empleados a tu agencia</h2>
+    <span class="audience lang-en">Agency owner only</span>
+    <span class="audience lang-es">Solo dueño de la agencia</span>
+
+    <p class="lang-en">The agency owner can invite teammates so several people can share the same agency account. Each invited employee gets their own login and their own activity is tracked separately in the audit log.</p>
+    <p class="lang-es">El dueño de la agencia puede invitar a compañeros para que varias personas compartan la misma cuenta de agencia. Cada empleado invitado obtiene su propio login y su actividad se registra por separado en el log de auditoría.</p>
+
+    <div class="task">
+      <h4 class="lang-en">Inviting an employee</h4>
+      <h4 class="lang-es">Invitar a un empleado</h4>
+      <ol class="lang-en">
+        <li>Click your avatar (top right) → <strong>Employees</strong> (or go directly to <code>/employees</code>).</li>
+        <li>Click <strong>+ Invite employee</strong>.</li>
+        <li>Enter their name, email, and role (typical: <em>Booking agent</em>).</li>
+        <li>Click <strong>Send invitation</strong>. They receive an email with a sign-up link.</li>
+      </ol>
+      <ol class="lang-es">
+        <li>Hacé clic en tu avatar (arriba a la derecha) → <strong>Empleados</strong> (o andá directo a <code>/employees</code>).</li>
+        <li>Hacé clic en <strong>+ Invitar empleado</strong>.</li>
+        <li>Ingresá su nombre, correo y rol (típico: <em>Agente de reservas</em>).</li>
+        <li>Hacé clic en <strong>Enviar invitación</strong>. Recibe un correo con un link de registro.</li>
+      </ol>
+    </div>
+
+    <h3 class="lang-en">Removing or pausing access</h3>
+    <h3 class="lang-es">Quitar o pausar el acceso</h3>
+    <p class="lang-en">From the Employees list, click the three-dot menu on any employee row. You can <strong>Deactivate</strong> (preserves their history, prevents login) or <strong>Delete</strong> (irreversible, removes them entirely). Deactivation is recommended when someone goes on leave.</p>
+    <p class="lang-es">Desde la lista de Empleados, hacé clic en el menú de tres puntos en cualquier fila. Podés <strong>Desactivar</strong> (preserva su historial, evita el login) o <strong>Eliminar</strong> (irreversible, los quita por completo). Se recomienda desactivar cuando alguien se ausenta.</p>
+  </section>
+
+  <!-- SECTION 10: ACCOUNT -->
+  <section id="account">
+    <h2 class="lang-en">10. Account &amp; profile settings</h2>
+    <h2 class="lang-es">10. Cuenta y configuración del perfil</h2>
+
+    <figure class="screenshot">
+      <div class="screenshot-frame">
+        <img src="qa-06-account-info.png"
+             alt="Account info page — agency name, contact info, contracted GDS list, current rebate %, and edit options."
+             loading="lazy" onerror="this.style.display='none'" />
+      </div>
+      <figcaption class="lang-en">Account page — agency profile, contracted GDS sources, current rebate percentage, and links to deeper settings.</figcaption>
+      <figcaption class="lang-es">Página de cuenta — perfil de la agencia, fuentes GDS contratadas, porcentaje actual de rebate y links a configuraciones más detalladas.</figcaption>
+    </figure>
+
+    <h3 class="lang-en">What you can edit yourself</h3>
+    <h3 class="lang-es">Qué podés editar vos</h3>
+    <ul class="lang-en">
+      <li>Your <strong>display name</strong>, contact phone, and notification preferences.</li>
+      <li>Your <strong>password</strong> — changing it requires entering the current password first.</li>
+      <li>Your <strong>passkeys</strong> — register or revoke biometric login devices.</li>
+      <li>Your agency's <strong>default markup percentage</strong> (used by the booking flow to compute the customer's price). Decimal point uses your locale's separator.</li>
+      <li>The agency's <strong>language preference</strong> (English / Spanish) — affects every label across the app.</li>
+    </ul>
+    <ul class="lang-es">
+      <li>Tu <strong>nombre visible</strong>, teléfono de contacto y preferencias de notificación.</li>
+      <li>Tu <strong>contraseña</strong> — cambiarla requiere ingresar la contraseña actual primero.</li>
+      <li>Tus <strong>passkeys</strong> — registrar o revocar dispositivos de login biométrico.</li>
+      <li>El <strong>porcentaje de markup por defecto</strong> de tu agencia (lo usa el flujo de reserva para calcular el precio al cliente). El separador decimal usa el de tu localización.</li>
+      <li>La <strong>preferencia de idioma</strong> de la agencia (Inglés / Español) — afecta cada etiqueta en toda la app.</li>
+    </ul>
+
+    <h3 class="lang-en">What only Ergos can change (contact support)</h3>
+    <h3 class="lang-es">Qué solo Ergos puede cambiar (contactar soporte)</h3>
+    <ul class="lang-en">
+      <li>The legal name on your agency contract.</li>
+      <li>Your <strong>rebate percentage</strong> — set in your master contract.</li>
+      <li>Which <strong>GDS suppliers</strong> your agency has access to (most agencies have all four enabled by default).</li>
+      <li>Per-hotel commission overrides for special partnerships.</li>
+    </ul>
+    <ul class="lang-es">
+      <li>El nombre legal en el contrato de tu agencia.</li>
+      <li>Tu <strong>porcentaje de rebate</strong> — fijado en tu contrato maestro.</li>
+      <li>A qué <strong>proveedores GDS</strong> tiene acceso tu agencia (la mayoría tienen los cuatro habilitados por defecto).</li>
+      <li>Overrides de comisión por hotel para partnerships especiales.</li>
+    </ul>
+  </section>
+
+  <!-- SECTION 11: TROUBLESHOOTING -->
+  <section id="troubleshooting">
+    <h2 class="lang-en">11. Common issues &amp; troubleshooting</h2>
+    <h2 class="lang-es">11. Problemas comunes y solución</h2>
+
+    <h3 class="lang-en">I can't log in</h3>
+    <h3 class="lang-es">No puedo ingresar</h3>
+    <ul class="lang-en">
+      <li>Check the URL — is it your agency's tenant URL? Each agency has its own.</li>
+      <li>Try the password reset link — typing errors in long passwords are common.</li>
+      <li>If you registered a passkey on a device you no longer have, log in with your password instead, then revoke the lost passkey from the <em>Passkeys</em> page.</li>
+      <li>If still stuck, ask your agency owner to verify your account is active.</li>
+    </ul>
+    <ul class="lang-es">
+      <li>Revisá la URL — ¿es la URL del tenant de tu agencia? Cada agencia tiene la suya.</li>
+      <li>Probá el link de reset de contraseña — los errores de tipeo en contraseñas largas son comunes.</li>
+      <li>Si registraste un passkey en un dispositivo que ya no tenés, ingresá con contraseña, después revocá el passkey perdido desde la página de <em>Passkeys</em>.</li>
+      <li>Si seguís atascado, pedile al dueño de la agencia que verifique que tu cuenta esté activa.</li>
+    </ul>
+
+    <h3 class="lang-en">A hotel I'm looking for doesn't appear in search results</h3>
+    <h3 class="lang-es">Un hotel que busco no aparece en los resultados</h3>
+    <ul class="lang-en">
+      <li>Check that your dates are not blocked by the property (some hotels close in low season).</li>
+      <li>Try searching for the destination by city instead of by hotel name.</li>
+      <li>Verify the GDS the hotel belongs to is one your agency has contracted (see your Account page).</li>
+      <li>If the supplier is slow to respond (Restel and Roibos take longer), wait a few extra seconds before assuming no results.</li>
+    </ul>
+    <ul class="lang-es">
+      <li>Revisá que las fechas no estén bloqueadas por la propiedad (algunos hoteles cierran en temporada baja).</li>
+      <li>Probá buscar el destino por ciudad en vez de por nombre del hotel.</li>
+      <li>Verificá que el GDS al que pertenece el hotel sea uno que tu agencia tiene contratado (mirá tu página de Cuenta).</li>
+      <li>Si el proveedor responde lento (Restel y Roibos tardan más), esperá unos segundos extra antes de asumir que no hay resultados.</li>
+    </ul>
+
+    <h3 class="lang-en">A booking is stuck in Pending for more than 1 hour</h3>
+    <h3 class="lang-es">Una reserva está en Pendiente por más de 1 hora</h3>
+    <p class="lang-en">Open the booking detail and look at the status timeline. If the supplier hasn't responded, the booking will auto-cancel after 24 hours and the payment is auto-refunded. To force a re-check, contact Ergos support with the locator — they can ping the supplier directly.</p>
+    <p class="lang-es">Abrí el detalle de la reserva y mirá el timeline de estado. Si el proveedor no respondió, la reserva se auto-cancela después de 24 horas y el pago se reembolsa automáticamente. Para forzar un re-chequeo, contactá al soporte de Ergos con el locator — pueden hacer ping al proveedor directamente.</p>
+
+    <h3 class="lang-en">The voucher / invoice PDF won't download</h3>
+    <h3 class="lang-es">El PDF del voucher / factura no se descarga</h3>
+    <p class="lang-en">It's almost always a popup blocker. Allow popups for the Ergos URL in your browser settings and try again. If you're on iOS Safari, the PDF opens in the same tab — use the share menu to save or email it.</p>
+    <p class="lang-es">Casi siempre es un bloqueador de popups. Permití popups para la URL de Ergos en la configuración de tu navegador y probá de nuevo. Si estás en Safari iOS, el PDF se abre en la misma pestaña — usá el menú de compartir para guardarlo o enviarlo por correo.</p>
+
+    <h3 class="lang-en">Still stuck? Contact support</h3>
+    <h3 class="lang-es">¿Seguís atascado? Contactá al soporte</h3>
+    <p class="lang-en">Email <a href="mailto:support@oneclickadventures.com" style="color: var(--teal-dark);">support@oneclickadventures.com</a> with the booking locator (if applicable), a clear description, and a screenshot. Response time is typically within 2 hours during business hours (08:00–20:00 EST, Monday–Saturday).</p>
+    <p class="lang-es">Escribí a <a href="mailto:support@oneclickadventures.com" style="color: var(--teal-dark);">support@oneclickadventures.com</a> con el locator de la reserva (si aplica), una descripción clara y una captura de pantalla. El tiempo de respuesta es típicamente de menos de 2 horas en horario laboral (08:00–20:00 EST, lunes a sábado).</p>
+  </section>
+
+  </main>
+</div>
+
+<script>
+  (function () {
+    const saved = localStorage.getItem('guide-lang');
+    if (saved === 'es' || saved === 'en') {
+      document.documentElement.lang = saved;
+    }
+  })();
+  function toggleLang() {
+    const cur = document.documentElement.lang === 'es' ? 'es' : 'en';
+    const next = cur === 'es' ? 'en' : 'es';
+    document.documentElement.lang = next;
+    localStorage.setItem('guide-lang', next);
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ergos Continental — Documentation</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #0f0f3d; --navy-mid: #1a1a4e; --navy-light: #2e2e6e;
+    --teal: #0fa89b; --teal-dark: #0d8a7f; --teal-soft: #e0f7f5;
+    --gold: #c4962c; --gold-light: #f3e3b6;
+    --cream: #fdf6ec;
+    --text-primary: #1a1a2e; --text-secondary: #3d3d5c; --text-muted: #5c5c7a;
+    --border-light: #e8e8f0;
+    --bg-white: #ffffff; --bg-gray: #f5f5fa;
+    --shadow-sm: 0 1px 4px rgba(15,15,61,0.06);
+    --shadow: 0 2px 12px rgba(15,15,61,0.08);
+    --shadow-lg: 0 8px 32px rgba(15,15,61,0.14);
+    --radius: 10px; --radius-lg: 14px;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg-gray);
+    color: var(--text-primary);
+    line-height: 1.65;
+    font-size: 15px;
+    min-height: 100vh;
+  }
+  .wrap { max-width: 1100px; margin: 0 auto; padding: 56px 24px 96px; }
+  .hero {
+    background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 100%);
+    color: white;
+    padding: 56px 44px;
+    border-radius: var(--radius-lg);
+    margin-bottom: 36px;
+    text-align: center;
+  }
+  .hero .eyebrow {
+    display: inline-block;
+    background: rgba(255,255,255,0.12);
+    color: rgba(255,255,255,0.85);
+    padding: 5px 14px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    margin-bottom: 18px;
+  }
+  .hero h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 52px;
+    margin-bottom: 14px;
+    font-weight: 400;
+    letter-spacing: 0.3px;
+  }
+  .hero p {
+    font-size: 18px;
+    opacity: 0.88;
+    max-width: 640px;
+    margin: 0 auto;
+    line-height: 1.6;
+  }
+  .section-title {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1.4px;
+    color: var(--text-muted);
+    font-weight: 700;
+    margin: 36px 0 18px;
+    padding-left: 4px;
+  }
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 22px;
+  }
+  .card {
+    display: block;
+    background: var(--bg-white);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-lg);
+    padding: 28px 26px;
+    text-decoration: none;
+    color: inherit;
+    box-shadow: var(--shadow-sm);
+    transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+  }
+  .card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--teal);
+  }
+  .card .pill {
+    display: inline-block;
+    background: var(--teal-soft);
+    color: var(--teal-dark);
+    padding: 4px 12px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+    margin-bottom: 14px;
+  }
+  .card.tag-tech .pill { background: var(--cream); color: var(--gold); }
+  .card.tag-proto .pill { background: #e9e9ff; color: var(--navy-mid); }
+  .card h2 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 22px;
+    color: var(--navy);
+    margin-bottom: 6px;
+    line-height: 1.25;
+  }
+  .card p {
+    color: var(--text-secondary);
+    font-size: 14px;
+    margin-bottom: 14px;
+  }
+  .card .arrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    color: var(--teal-dark);
+    font-weight: 700;
+    font-size: 13px;
+  }
+  .card:hover .arrow { color: var(--teal); }
+  .footer {
+    margin-top: 56px;
+    padding-top: 32px;
+    border-top: 1px solid var(--border-light);
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 13px;
+    line-height: 1.8;
+  }
+  .footer strong { color: var(--text-secondary); }
+  @media (max-width: 600px) {
+    .hero { padding: 40px 24px; }
+    .hero h1 { font-size: 36px; }
+    .hero p { font-size: 15px; }
+    .wrap { padding: 32px 16px 64px; }
+    .cards { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <div class="hero">
+    <div class="eyebrow">Ergos Continental · Documentation Portal</div>
+    <h1>Ergos Continental</h1>
+    <p>Practical guides for travel agencies and Ergos staff, plus the technical reference for the commission &amp; pricing engine and the interactive UX prototypes.</p>
+  </div>
+
+  <div class="section-title">User Guides — how to use the apps</div>
+  <div class="cards">
+
+    <a class="card" href="user-guide/agency-app-user-guide.html">
+      <span class="pill">For travel agencies</span>
+      <h2>Agency App User Guide</h2>
+      <p>Find hotels, quote prices, book, manage reservations, download vouchers, track earnings and remittances. Built for agency owners and their employees.</p>
+      <span class="arrow">Open guide →</span>
+    </a>
+
+    <a class="card" href="user-guide/backoffice-app-user-guide.html">
+      <span class="pill">For Ergos staff</span>
+      <h2>Backoffice User Guide</h2>
+      <p>Manage travel agencies, sales agents, hotel inventory, pricing policy, hotel brands, audit logs, and finance. Built for Ergos admins and employees.</p>
+      <span class="arrow">Open guide →</span>
+    </a>
+
+    <a class="card" href="user-guide/index.html">
+      <span class="pill">Both audiences</span>
+      <h2>User Guides Hub</h2>
+      <p>Combined landing page for both guides — pick the one that matches your role.</p>
+      <span class="arrow">Open hub →</span>
+    </a>
+
+  </div>
+
+  <div class="section-title">Reference — how the pricing engine works</div>
+  <div class="cards">
+
+    <a class="card tag-tech" href="pricing-policy-guide.html">
+      <span class="pill">Technical reference</span>
+      <h2>Pricing Policy &amp; Hotel Brands</h2>
+      <p>How the 5-layer commission cascade resolves, the markup_rules collection, the booking snapshot, the money flow across all 4 parties, and the worked-number scenarios. EN + ES.</p>
+      <span class="arrow">Open reference →</span>
+    </a>
+
+  </div>
+
+  <div class="section-title">Interactive Prototypes — UX exploration</div>
+  <div class="cards">
+
+    <a class="card tag-proto" href="prototypes/agency-app/index.html">
+      <span class="pill">Agency app prototype</span>
+      <h2>Agency App · with Mozio integration</h2>
+      <p>Click-through UX prototype of the agency-facing booking flow with the optional Mozio ground-transportation upsell. Shows the booking funnel, language switcher, voucher preview, and account pages.</p>
+      <span class="arrow">Open prototype →</span>
+    </a>
+
+    <a class="card tag-proto" href="prototypes/backoffice/index.html">
+      <span class="pill">Backoffice prototype</span>
+      <h2>Backoffice · admin workspace</h2>
+      <p>Click-through UX prototype of the backoffice: dashboard, BO users, travel agencies, agency employees, hotels, reservations, sales agents, and pricing policy.</p>
+      <span class="arrow">Open prototype →</span>
+    </a>
+
+  </div>
+
+  <div class="footer">
+    <p><strong>Internal documentation portal</strong> · <a href="https://github.com/lukzen/documentation" style="color: var(--teal-dark);">github.com/lukzen/documentation</a></p>
+    <p>Published via GitHub Pages from <code style="background: var(--bg-gray); padding: 1px 6px; border-radius: 4px;">master /public</code></p>
+  </div>
+
+</div>
+
+</body>
+</html>

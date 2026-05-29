@@ -1,0 +1,1354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ergos Backoffice — Pricing Policy</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+:root{
+  --navy:#0f0f3d; --navy-mid:#1a1a4e; --navy-light:#2e2e6e;
+  --teal:#0fa89b; --teal-bright:#11c4b5; --teal-dark:#0d8a7f;
+  --gold:#c4962c; --gold-light:#f3e3b6;
+  --cream:#faf6f1; --cream-dark:#f0e0c8;
+  --red:#d32f2f; --red-light:#ffebee;
+  --green:#1b8a42; --green-light:#e8f5e9;
+  --orange:#e67e00; --orange-light:#fff3e0;
+  --text-primary:#1a1a2e; --text-secondary:#3d3d5c;
+  --text-muted:#5c5c7a; --text-light:#7a7a96;
+  --border:#d0d0e0; --border-light:#e8e8f0;
+  --bg-white:#fff; --bg-gray:#f5f5fa;
+  --shadow-sm:0 1px 4px rgba(15,15,61,.06);
+  --shadow:0 2px 12px rgba(15,15,61,.08);
+  --shadow-lg:0 8px 32px rgba(15,15,61,.18);
+  --radius:10px; --radius-lg:14px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%}
+body{font-family:'DM Sans',sans-serif;background:var(--bg-gray);color:var(--text-primary);font-size:14px;line-height:1.5;overflow:hidden}
+
+/* Header */
+.app-header{background:linear-gradient(135deg,var(--navy) 0%,var(--navy-light) 100%);color:#fff;padding:14px 24px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 2px 16px rgba(0,0,0,.2);z-index:200}
+body.embedded .app-header{display:none}
+body.embedded .workspace{height:100vh}
+body.embedded{background:#fff}
+.lnk-back{color:rgba(255,255,255,.85);text-decoration:none;border-bottom:1px dashed rgba(255,255,255,.4);padding-bottom:1px;margin-right:6px;font-size:12px}
+.lnk-back:hover{color:#fff;border-bottom-color:#fff}
+.app-header h1{font-family:'DM Serif Display',serif;font-size:20px;font-weight:400;letter-spacing:.3px}
+.header-left{display:flex;align-items:center;gap:20px}
+.logo{width:36px;height:36px;border-radius:8px;background:linear-gradient(135deg,var(--teal) 0%,var(--gold) 100%);display:flex;align-items:center;justify-content:center;font-family:'DM Serif Display',serif;font-size:18px;color:#fff}
+.breadcrumb{font-size:12px;opacity:.85;margin-top:3px}
+.breadcrumb b{color:var(--gold-light)}
+.header-right{display:flex;align-items:center;gap:14px}
+.lang-btns{display:flex;gap:4px}
+.lang-btn{padding:5px 11px;border-radius:14px;border:1.5px solid rgba(255,255,255,.35);background:transparent;color:rgba(255,255,255,.9);font-family:inherit;font-size:11px;font-weight:700;cursor:pointer;transition:.2s;letter-spacing:.3px}
+.lang-btn:hover{background:rgba(255,255,255,.12);color:#fff}
+.lang-btn.active{background:#fff;color:var(--navy);border-color:#fff}
+.btn{padding:8px 16px;border-radius:8px;border:none;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;transition:.2s}
+.btn-primary{background:var(--teal);color:#fff}
+.btn-primary:hover{background:var(--teal-dark)}
+.btn-ghost{background:transparent;color:#fff;border:1.5px solid rgba(255,255,255,.4)}
+.btn-ghost:hover{background:rgba(255,255,255,.1)}
+.btn-outline{background:#fff;color:var(--navy-mid);border:1.5px solid var(--border)}
+.btn-outline:hover{background:var(--bg-gray)}
+.btn-danger{background:var(--red);color:#fff}
+
+/* Layout grid */
+.workspace{display:grid;grid-template-columns:320px 1fr 360px;height:calc(100vh - 64px);overflow:hidden}
+.rail{background:var(--bg-white);border-right:1px solid var(--border-light);overflow-y:auto;padding:20px 18px}
+.rail.right{border-right:none;border-left:1px solid var(--border-light)}
+.center{overflow-y:auto;padding:24px 28px 100px;background:var(--bg-gray)}
+
+/* Rail: scope selector */
+.rail{display:flex;flex-direction:column;padding:16px 14px 0;overflow:hidden}
+.rail-header{font-size:11px;text-transform:uppercase;letter-spacing:1.1px;color:var(--text-muted);font-weight:700;margin-bottom:10px;flex-shrink:0}
+.scope-tabs{display:flex;gap:2px;padding:3px;background:var(--bg-gray);border-radius:8px;margin-bottom:12px;flex-shrink:0}
+.scope-tab{flex:1;padding:7px 0;border:none;background:transparent;font-family:inherit;font-size:12px;font-weight:600;color:var(--text-muted);cursor:pointer;border-radius:6px;transition:.15s}
+.scope-tab.active{background:#fff;color:var(--navy);box-shadow:var(--shadow-sm)}
+.scope-tab .count{font-size:10px;opacity:.7;margin-left:3px}
+.search-wrap{position:relative;margin-bottom:10px;flex-shrink:0}
+.search-box{width:100%;padding:9px 32px 9px 32px;border:1px solid var(--border);border-radius:8px;font-family:inherit;font-size:13px}
+.search-box:focus{outline:none;border-color:var(--teal)}
+.search-icon{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--text-muted);font-size:13px;pointer-events:none}
+.search-spin{position:absolute;right:10px;top:50%;transform:translateY(-50%);font-size:11px;color:var(--teal);display:none}
+.search-spin.on{display:inline}
+.list-meta{font-size:11px;color:var(--text-muted);padding:0 4px 6px;display:flex;justify-content:space-between;flex-shrink:0}
+.list-meta b{color:var(--navy)}
+.section-head{font-size:10px;text-transform:uppercase;font-weight:700;color:var(--text-light);letter-spacing:.8px;padding:8px 4px 4px;flex-shrink:0}
+.virt-list{flex:1;overflow-y:auto;overflow-x:hidden;position:relative;min-height:0}
+.virt-spacer{width:100%;position:relative}
+.tree-item{position:absolute;left:0;right:0;padding:8px 10px;border-radius:6px;cursor:pointer;font-size:13px;color:var(--text-secondary);display:flex;align-items:center;justify-content:space-between;gap:6px;transition:background .12s;height:36px;box-sizing:border-box}
+.tree-item:hover{background:var(--bg-gray);color:var(--text-primary)}
+.tree-item.active{background:var(--teal);color:#fff;font-weight:600}
+.tree-item.active .meta{color:rgba(255,255,255,.75)}
+.tree-item.active .pin{color:#fff}
+.tree-item .label{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1;min-width:0}
+.tree-item .meta{font-size:10px;color:var(--text-muted);white-space:nowrap;flex-shrink:0}
+.tree-item .pin{font-size:12px;color:var(--border);cursor:pointer;padding:0 4px}
+.tree-item .pin:hover,.tree-item .pin.on{color:var(--gold)}
+.tree-item .star{color:var(--gold)}
+.tree-item.static{position:relative;left:auto;right:auto;margin-bottom:2px}
+.empty-state{padding:24px 10px;text-align:center;font-size:12px;color:var(--text-muted)}
+.filter-chips{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:10px;flex-shrink:0}
+.filter-chip{font-size:10px;padding:3px 8px;border-radius:10px;border:1px solid var(--border);background:#fff;cursor:pointer;color:var(--text-secondary);font-family:inherit;font-weight:600}
+.filter-chip.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+
+/* Center: breadcrumb + cards */
+.center-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+.center-breadcrumb{font-size:13px;color:var(--text-muted)}
+.center-breadcrumb b{color:var(--navy-mid)}
+.center-breadcrumb .sep{margin:0 6px;color:var(--border)}
+.bp-card{background:var(--bg-white);border-radius:var(--radius-lg);padding:20px 22px;margin-bottom:14px;box-shadow:var(--shadow-sm);border:1px solid var(--border-light);position:relative}
+.layer-card{position:relative}
+.layer-card::after{content:"";position:absolute;left:30px;bottom:-14px;width:2px;height:14px;border-left:2px dotted var(--border)}
+.layer-card:last-of-type::after{display:none}
+.card-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.card-title{display:flex;align-items:center;gap:10px}
+.card-title .layer-num{width:28px;height:28px;border-radius:50%;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px}
+.card-title h3{font-size:15px;font-weight:700;color:var(--navy-mid)}
+.card-title .src{font-size:11px;color:var(--text-muted);font-weight:500}
+.chip{padding:3px 10px;border-radius:12px;font-size:11px;font-weight:700;letter-spacing:.3px;text-transform:uppercase}
+.chip-inherit{background:var(--border-light);color:var(--text-muted)}
+.chip-override{background:var(--gold-light);color:#6d4e00}
+.chip-active{background:#cdeeea;color:var(--teal-dark)}
+.chip-locked{background:#e8e8f0;color:var(--text-light)}
+.card-actions{display:flex;gap:6px}
+.icon-btn{width:28px;height:28px;border-radius:6px;border:1px solid var(--border);background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--text-muted)}
+.icon-btn:hover{background:var(--bg-gray);color:var(--navy)}
+
+/* Field row */
+.field-row{display:grid;grid-template-columns:1fr auto;gap:14px;align-items:center;margin-bottom:10px;padding:8px 0}
+.field-row + .field-row{border-top:1px solid var(--border-light)}
+.field-label{font-size:13px;font-weight:600;color:var(--text-primary)}
+.field-hint{font-size:11px;color:var(--text-muted);font-weight:400;display:block;margin-top:2px}
+.field-control{display:flex;align-items:center;gap:10px}
+.slider{width:170px;height:6px;-webkit-appearance:none;appearance:none;background:var(--border-light);border-radius:3px;outline:none;cursor:pointer}
+.slider::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--teal);border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.2);cursor:pointer}
+.num-input{width:72px;padding:6px 8px;border:1px solid var(--border);border-radius:6px;font-family:inherit;font-size:13px;text-align:right;font-weight:600;color:var(--navy)}
+.num-input:focus{outline:none;border-color:var(--teal)}
+.inline-warn{margin-top:6px;padding:6px 10px;background:var(--orange-light);border-left:3px solid var(--orange);font-size:11px;color:#5d3a00;border-radius:4px}
+
+/* Effective card */
+.effective-card{background:linear-gradient(135deg,var(--navy) 0%,var(--navy-light) 100%);color:#fff;border:none;margin-top:18px}
+.effective-card h3{color:#fff;font-size:15px;margin-bottom:12px;font-family:'DM Serif Display',serif;font-weight:400;font-size:18px}
+.eff-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px 22px}
+.eff-row{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.1);font-size:13px}
+.eff-row span:first-child{color:rgba(255,255,255,.7)}
+.eff-row span:last-child{font-weight:700;color:#fff;font-variant-numeric:tabular-nums}
+
+/* Right rail preview */
+.preview-head{font-family:'DM Serif Display',serif;font-size:14px;color:var(--navy-mid);margin-bottom:6px}
+.preview-margin{font-family:'DM Serif Display',serif;font-size:46px;line-height:1;margin:4px 0 2px;color:var(--green)}
+.preview-margin.amber{color:var(--orange)}
+.preview-margin.red{color:var(--red)}
+.preview-sub{font-size:12px;color:var(--text-muted);margin-bottom:16px}
+.preview-card{background:var(--bg-white);border:1px solid var(--border-light);border-radius:var(--radius);padding:16px 18px;margin-bottom:14px}
+.waterfall{font-size:12px}
+.waterfall-row{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border-light);font-variant-numeric:tabular-nums}
+.waterfall-row:last-child{border-bottom:none;font-weight:700;color:var(--navy);padding-top:10px;border-top:2px solid var(--border)}
+.waterfall-row.neg{color:var(--red)}
+.waterfall-row.pos{color:var(--text-secondary)}
+.waterfall-row .lbl{color:var(--text-secondary)}
+.guardrails{display:flex;flex-direction:column;gap:10px}
+.grail{display:flex;align-items:center;gap:10px;font-size:12px;color:var(--text-secondary)}
+.dot{width:12px;height:12px;border-radius:50%;flex-shrink:0}
+.dot-ok{background:var(--green);box-shadow:0 0 0 3px rgba(27,138,66,.15)}
+.dot-warn{background:var(--orange);box-shadow:0 0 0 3px rgba(230,126,0,.15)}
+.dot-bad{background:var(--red);box-shadow:0 0 0 3px rgba(211,47,47,.15)}
+.grail b{color:var(--navy);font-weight:700}
+.worst-toggle{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text-secondary);margin:10px 0 14px;padding:10px 12px;background:var(--cream);border-radius:8px;cursor:pointer}
+.worst-toggle input{cursor:pointer}
+.chart-wrap{height:180px;position:relative;margin-top:10px}
+
+/* Footer */
+.footer{position:fixed;left:320px;right:360px;bottom:0;background:#fff;border-top:2px solid var(--gold);padding:14px 28px;align-items:center;justify-content:space-between;box-shadow:0 -4px 16px rgba(0,0,0,.08);z-index:100}
+.footer .dirty-info{font-size:13px;color:var(--text-secondary)}
+.footer .dirty-info b{color:var(--gold);font-weight:700}
+.footer-btns{display:flex;gap:10px}
+
+/* Drawer */
+.drawer-backdrop{position:fixed;inset:0;background:rgba(15,15,61,.4);display:none;z-index:300}
+.drawer-backdrop.show{display:block}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:520px;background:#fff;box-shadow:var(--shadow-lg);z-index:301;transform:translateX(100%);transition:.25s;display:flex;flex-direction:column}
+.drawer.show{transform:translateX(0)}
+.drawer-head{padding:20px 24px;border-bottom:1px solid var(--border-light);display:flex;justify-content:space-between;align-items:center}
+.drawer-head h2{font-family:'DM Serif Display',serif;font-size:20px;color:var(--navy)}
+.drawer-body{flex:1;overflow-y:auto;padding:20px 24px}
+.drawer-foot{padding:16px 24px;border-top:1px solid var(--border-light);display:flex;justify-content:flex-end;gap:10px}
+.close-btn{width:32px;height:32px;border-radius:50%;border:none;background:var(--bg-gray);cursor:pointer;font-size:16px}
+
+/* Modal */
+.modal-backdrop{position:fixed;inset:0;background:rgba(15,15,61,.5);display:none;align-items:center;justify-content:center;z-index:400}
+.modal-backdrop.show{display:flex}
+.modal{background:#fff;border-radius:var(--radius-lg);width:540px;max-width:90vw;max-height:90vh;overflow:hidden;display:flex;flex-direction:column;box-shadow:var(--shadow-lg)}
+.modal-head{padding:20px 24px;border-bottom:1px solid var(--border-light)}
+.modal-head h2{font-family:'DM Serif Display',serif;font-size:22px;color:var(--navy)}
+.modal.danger .modal-head{background:var(--red);color:#fff}
+.modal.danger .modal-head h2{color:#fff}
+.modal-body{padding:20px 24px;overflow-y:auto}
+.modal-foot{padding:16px 24px;border-top:1px solid var(--border-light);display:flex;justify-content:flex-end;gap:10px}
+.diff-list{margin:10px 0;font-size:13px}
+.diff-row{display:flex;justify-content:space-between;padding:8px 12px;background:var(--bg-gray);border-radius:6px;margin-bottom:6px;font-variant-numeric:tabular-nums}
+.diff-row .old{color:var(--text-muted);text-decoration:line-through;margin:0 8px}
+.diff-row .new{color:var(--teal-dark);font-weight:700}
+.reason-input{width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:8px;font-family:inherit;font-size:13px;margin-top:8px;min-height:70px;resize:vertical}
+
+/* audit */
+.audit-row{padding:12px 14px;border-left:3px solid var(--teal);background:var(--bg-gray);border-radius:6px;margin-bottom:10px;font-size:12px}
+.audit-row .when{color:var(--text-muted);font-size:11px}
+.audit-row .who{font-weight:700;color:var(--navy)}
+.audit-row .change{margin-top:4px;color:var(--text-secondary)}
+
+/* filters in bulk */
+.filter-row{display:flex;gap:8px;margin-bottom:10px;align-items:center}
+.filter-row select,.filter-row input{padding:7px 10px;border:1px solid var(--border);border-radius:6px;font-family:inherit;font-size:12px;flex:1}
+
+/* ───────── Transitions & micro-interactions ───────── */
+.bp-card{transition:box-shadow .25s ease, transform .25s ease, border-color .25s ease}
+.bp-card:hover{box-shadow:var(--shadow)}
+.layer-card{animation:slideUp .35s cubic-bezier(.2,.8,.2,1) both}
+.layer-card:nth-child(1){animation-delay:.00s}
+.layer-card:nth-child(2){animation-delay:.04s}
+.layer-card:nth-child(3){animation-delay:.08s}
+.layer-card:nth-child(4){animation-delay:.12s}
+.layer-card:nth-child(5){animation-delay:.16s}
+@keyframes slideUp{
+  from{opacity:0;transform:translateY(10px)}
+  to  {opacity:1;transform:translateY(0)}
+}
+.center.pulse{animation:centerPulse .4s ease}
+@keyframes centerPulse{
+  0%{opacity:.4;transform:translateX(6px)}
+  100%{opacity:1;transform:translateX(0)}
+}
+.chip{transition:background .25s ease, color .25s ease, box-shadow .25s ease}
+.chip.flash{animation:chipFlash .5s ease}
+@keyframes chipFlash{
+  0%  {box-shadow:0 0 0 0 rgba(196,150,44,.6)}
+  50% {box-shadow:0 0 0 8px rgba(196,150,44,0)}
+  100%{box-shadow:0 0 0 0 rgba(196,150,44,0)}
+}
+.tree-item{transition:background .15s ease, color .15s ease, transform .15s ease}
+.tree-item:active{transform:scale(.98)}
+.tree-item.static{animation:fadeIn .25s ease both}
+@keyframes fadeIn{from{opacity:0;transform:translateY(-2px)} to{opacity:1;transform:translateY(0)}}
+.slider::-webkit-slider-thumb{transition:transform .15s ease}
+.slider:active::-webkit-slider-thumb{transform:scale(1.25)}
+.field-row{transition:background .2s ease}
+.field-row.changed{background:rgba(15,168,155,.08);border-radius:6px}
+.num-input{transition:background .3s ease, border-color .2s ease}
+.num-input.flash{background:var(--cream)}
+.waterfall-row{transition:background .2s ease}
+.waterfall-row.flash{background:rgba(15,168,155,.12);animation:flashFade .6s ease}
+@keyframes flashFade{from{background:rgba(15,168,155,.25)} to{background:transparent}}
+.preview-margin{transition:color .35s ease, transform .25s ease}
+.preview-margin.tick{transform:scale(1.06)}
+.dot{transition:background .3s ease, box-shadow .3s ease}
+.grail{transition:color .3s ease}
+.footer{transition:transform .3s ease, opacity .3s ease;transform:translateY(100%);opacity:0;display:flex}
+.footer.show{transform:translateY(0);opacity:1}
+.drawer{transition:transform .3s cubic-bezier(.2,.8,.2,1)}
+.drawer-backdrop{transition:opacity .25s ease;opacity:0;pointer-events:none}
+.drawer-backdrop.show{opacity:1;pointer-events:auto}
+.modal-backdrop{transition:opacity .2s ease;opacity:0;pointer-events:none}
+.modal-backdrop.show{opacity:1;pointer-events:auto}
+.modal{transition:transform .3s cubic-bezier(.2,.8,.2,1), opacity .2s ease;transform:scale(.95) translateY(8px);opacity:0}
+.modal-backdrop.show .modal{transform:scale(1) translateY(0);opacity:1}
+.bp-card .card-head,.bp-card .field-row{will-change:transform}
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms !important;transition-duration:.01ms !important}
+}
+
+/* i18n */
+[lang-content="es"]{display:none}
+body.lang-es [lang-content="en"]{display:none}
+body.lang-es [lang-content="es"]{display:inline}
+
+@media(max-width:1280px){
+  .workspace{grid-template-columns:280px 1fr 320px}
+  .footer{left:280px;right:320px}
+}
+</style>
+</head>
+<body>
+
+<header class="app-header">
+  <div class="header-left">
+    <div class="logo">E</div>
+    <div>
+      <h1>Ergos Backoffice</h1>
+      <div class="breadcrumb">
+        <a href="index.html" class="lnk-back">← Back to Backoffice</a> ·
+        <span lang-content="en">Pricing Policy</span>
+        <span lang-content="es">Política de Comisiones</span>
+      </div>
+    </div>
+  </div>
+  <div class="header-right">
+    <button class="btn btn-ghost" id="bulkBtn">
+      <span lang-content="en">Create Markup Rule</span>
+      <span lang-content="es">Edición en lote</span>
+    </button>
+    <div class="lang-btns">
+      <button class="lang-btn active" data-lang="en">EN</button>
+      <button class="lang-btn" data-lang="es">ES</button>
+    </div>
+  </div>
+</header>
+
+<div class="workspace">
+
+  <!-- LEFT RAIL: Scope selector (scale-ready) -->
+  <aside class="rail">
+    <div class="rail-header">
+      <span lang-content="en">Scope</span><span lang-content="es">Ámbito</span>
+    </div>
+
+    <div class="scope-tabs">
+      <button class="scope-tab active" data-scope="hotel">Hotels <span class="count" id="cntHotel"></span></button>
+      <button class="scope-tab" data-scope="agency">Agencies <span class="count" id="cntAgency"></span></button>
+      <button class="scope-tab" data-scope="agent">Agents <span class="count" id="cntAgent"></span></button>
+    </div>
+
+    <div class="search-wrap">
+      <span class="search-icon">⌕</span>
+      <input type="text" class="search-box" id="scopeSearch" placeholder="Search…">
+      <span class="search-spin" id="searchSpin">…</span>
+    </div>
+
+    <div class="filter-chips" id="filterChips"></div>
+
+    <div class="list-meta">
+      <span id="listCount">—</span>
+      <span id="listHint" style="display:none">Refine search to narrow</span>
+    </div>
+
+    <div class="virt-list" id="virtList">
+      <div class="virt-spacer" id="virtSpacer"></div>
+    </div>
+  </aside>
+
+  <!-- CENTER: Inheritance stack -->
+  <main class="center">
+    <div class="center-head">
+      <div class="center-breadcrumb" id="centerBreadcrumb">
+        <b>Global</b> <span class="sep">›</span> <b>Meliá Barcelona</b> <span class="sep">›</span> <b>Viajes Azul</b> <span class="sep">›</span> <b>M. Ruiz</b>
+      </div>
+      <div style="font-size:11px;color:var(--text-muted)" lang-content="en">Inheritance Stack</div>
+      <div style="font-size:11px;color:var(--text-muted);display:none" lang-content="es">Pila de herencia</div>
+    </div>
+
+    <div id="stack"></div>
+
+    <!-- Effective -->
+    <div class="bp-card effective-card">
+      <h3>
+        <span lang-content="en">Effective Configuration</span>
+        <span lang-content="es">Configuración efectiva</span>
+      </h3>
+      <div class="eff-grid" id="effGrid"></div>
+    </div>
+  </main>
+
+  <!-- RIGHT RAIL: Margin preview / Simulate / Audit -->
+  <aside class="rail right" id="simulate">
+    <div class="preview-head" lang-content="en">Simulate · Live Margin Preview</div>
+    <div class="preview-head" lang-content="es" style="display:none">Vista de margen en vivo</div>
+
+    <div class="preview-margin" id="marginHeadline">8.4%</div>
+    <div class="preview-sub" id="marginSub">Ergos net margin • supplier net $200</div>
+
+    <label class="worst-toggle">
+      <input type="checkbox" id="worstToggle">
+      <span lang-content="en">Worst-case across tiers</span>
+      <span lang-content="es">Peor caso entre niveles</span>
+    </label>
+
+    <div class="preview-card">
+      <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:var(--text-muted);letter-spacing:.8px;margin-bottom:10px">
+        <span lang-content="en">Waterfall</span><span lang-content="es">Cascada</span>
+      </div>
+      <div class="waterfall" id="waterfall"></div>
+    </div>
+
+    <div class="preview-card">
+      <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:var(--text-muted);letter-spacing:.8px;margin-bottom:10px">
+        <span lang-content="en">Guardrails</span><span lang-content="es">Barandillas</span>
+      </div>
+      <div class="guardrails" id="guardrails"></div>
+    </div>
+
+    <div class="preview-card">
+      <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:var(--text-muted);letter-spacing:.8px;margin-bottom:4px">
+        <span lang-content="en">Margin split by agent</span><span lang-content="es">Reparto por agente</span>
+      </div>
+      <div class="chart-wrap"><canvas id="marginChart"></canvas></div>
+    </div>
+  </aside>
+</div>
+
+<!-- Sticky footer -->
+<div class="footer" id="footer">
+  <div class="dirty-info">
+    <b id="dirtyCount">0</b>
+    <span lang-content="en">unsaved change(s)</span>
+    <span lang-content="es">cambio(s) sin guardar</span>
+  </div>
+  <div class="footer-btns">
+    <button class="btn btn-outline" id="discardBtn"><span lang-content="en">Discard</span><span lang-content="es">Descartar</span></button>
+    <button class="btn btn-outline" id="previewBtn"><span lang-content="en">Preview Changes</span><span lang-content="es">Previsualizar</span></button>
+    <button class="btn btn-primary" id="saveBtn"><span lang-content="en">Save</span><span lang-content="es">Guardar</span></button>
+  </div>
+</div>
+
+<!-- Bulk edit drawer -->
+<div class="drawer-backdrop" id="bulkBackdrop"></div>
+<div class="drawer" id="bulkDrawer">
+  <div class="drawer-head">
+    <h2><span lang-content="en">Create Markup Rule</span><span lang-content="es">Edición en lote</span></h2>
+    <button class="close-btn" data-close="bulk">×</button>
+  </div>
+  <div class="drawer-body">
+    <div style="font-size:12px;color:var(--text-muted);margin-bottom:10px" lang-content="en">Filter hotels then apply a common value.</div>
+    <div style="font-size:12px;color:var(--text-muted);margin-bottom:10px;display:none" lang-content="es">Filtra hoteles y aplica un valor común.</div>
+
+    <div class="filter-row">
+      <select id="fStars"><option value="">★ Any stars</option><option value="5">5★</option><option value="4">4★</option><option value="3">3★</option></select>
+      <select id="fVendor"><option value="">Any vendor</option><option>Hoteltec</option><option>Restel</option><option>Juniper</option><option>Dingus</option></select>
+    </div>
+
+    <div style="margin-top:14px">
+      <label style="font-size:12px;font-weight:600">Set baseCommission</label>
+      <input type="number" step="0.01" id="fBaseComm" value="0.15" style="width:100%;padding:8px 10px;margin-top:6px;border:1px solid var(--border);border-radius:6px;font-family:inherit">
+    </div>
+
+    <div style="margin-top:18px">
+      <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:var(--text-muted);margin-bottom:8px">Diff Preview</div>
+      <div id="bulkDiff"></div>
+    </div>
+
+    <div style="margin-top:14px">
+      <label style="font-size:12px;font-weight:600">Type "APPLY" to confirm</label>
+      <input type="text" id="bulkConfirm" style="width:100%;padding:8px 10px;margin-top:6px;border:1px solid var(--border);border-radius:6px;font-family:inherit">
+    </div>
+  </div>
+  <div class="drawer-foot">
+    <button class="btn btn-outline" data-close="bulk">Cancel</button>
+    <button class="btn btn-primary" id="bulkApply">Apply</button>
+  </div>
+</div>
+
+<!-- Audit drawer -->
+<div class="drawer-backdrop" id="auditBackdrop"></div>
+<div class="drawer" id="auditDrawer">
+  <div class="drawer-head">
+    <h2><span lang-content="en">Change History</span><span lang-content="es">Historial</span></h2>
+    <button class="close-btn" data-close="audit">×</button>
+  </div>
+  <div class="drawer-body" id="auditBody"></div>
+</div>
+
+<!-- Save confirm modal -->
+<div class="modal-backdrop" id="saveModal">
+  <div class="modal" id="saveModalBox">
+    <div class="modal-head">
+      <h2 id="saveModalTitle">Confirm Changes</h2>
+    </div>
+    <div class="modal-body">
+      <div id="saveModalBody"></div>
+      <div id="reasonBlock" style="display:none;margin-top:14px">
+        <label style="font-size:12px;font-weight:700;color:var(--red)">
+          <span lang-content="en">Guardrail breach — reason required (logged):</span>
+          <span lang-content="es">Violación de barandilla — razón requerida:</span>
+        </label>
+        <textarea class="reason-input" id="reasonInput" placeholder="Explain override…"></textarea>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-outline" id="cancelSave">Cancel</button>
+      <button class="btn btn-primary" id="confirmSave">Confirm Save</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ───────── MOCK DATA (10k+ seeded) ───────── */
+/* Featured curated records come first so verification scenarios still pass. */
+const FEATURED_HOTELS = [
+  { id:'h1', name:'Meliá Barcelona', vendor:'Hoteltec', gds:'Hoteltec', baseCommission:0.13, priceAdjustment:0.85, city:'Barcelona', stars:5 },
+  { id:'h2', name:'Riu Palace Cancun', vendor:'Restel', gds:'Restel', baseCommission:0.15, priceAdjustment:1.00, city:'Cancun', stars:5 },
+  { id:'h3', name:'NH Collection Madrid', vendor:'Hoteltec', gds:'Hoteltec', baseCommission:0.14, priceAdjustment:0.92, city:'Madrid', stars:5 },
+  { id:'h4', name:'Barceló Maya Palace', vendor:'Restel', gds:'Restel', baseCommission:0.16, priceAdjustment:0.98, city:'Riviera Maya', stars:5 },
+  { id:'h5', name:'Iberostar Selection Lanzarote', vendor:'Juniper', gds:'Juniper', baseCommission:0.15, priceAdjustment:0.95, city:'Lanzarote', stars:5 },
+  { id:'h6', name:'Hotel Arts Barcelona', vendor:'Dingus', gds:'Dingus', baseCommission:0.12, priceAdjustment:0.88, city:'Barcelona', stars:5 }
+];
+const FEATURED_AGENCIES = [
+  { id:'ag1', name:'Ergos Travel (house)', tier:'house', rebatePctPerHotel:{} },
+  { id:'ag2', name:'Viajes Azul', tier:'partner', rebatePctPerHotel:{ h1:0.04, h3:0.03 } },
+  { id:'ag3', name:'Sunset Tours', tier:'partner', rebatePctPerHotel:{ h2:0.05, h4:0.04 } },
+  { id:'ag4', name:'Mediterráneo Travel', tier:'partner', rebatePctPerHotel:{ h1:0.02, h5:0.03 } }
+];
+const FEATURED_AGENTS = [
+  { id:'a1', name:'M. Ruiz', tier:'Elite', earningPct:0.24, opsExpense:0.06, hotelOverrides:{ h1:0.26 } },
+  { id:'a2', name:'J. Pérez', tier:'Growth', earningPct:0.18, opsExpense:0.07, hotelOverrides:{} },
+  { id:'a3', name:'L. Fernández', tier:'Strategic', earningPct:0.30, opsExpense:0.05, hotelOverrides:{ h2:0.31 } },
+  { id:'a4', name:'C. Navarro', tier:'Starter', earningPct:0.12, opsExpense:0.08, hotelOverrides:{} }
+];
+
+const CHAINS = ['Meliá','Riu','NH','Barceló','Iberostar','Hesperia','Catalonia','Vincci','Sol','Playa','Hotel','Gran','Hilton','Marriott','Accor','Best Western','Exe','Silken','Sercotel','Occidental'];
+const DESCRIPTORS = ['Palace','Resort','Suites','Beach','Plaza','Gardens','Collection','Boutique','Premier','Grand','Royal','Park','Center','Lodge','Villa'];
+const CITIES = ['Barcelona','Madrid','Valencia','Seville','Málaga','Bilbao','Tenerife','Mallorca','Ibiza','Cancun','Riviera Maya','Punta Cana','Havana','Lima','Lisboa','Porto','Paris','Rome','Milan','Lanzarote'];
+const VENDORS = ['Hoteltec','Restel','Juniper','Dingus'];
+const AGENCY_PREFIX = ['Viajes','Tours','Travel','Escapes','Journeys','Destinos','Rutas','Mundo','Global','Turismo','Horizonte','Descubre','Aventura'];
+const AGENCY_SUFFIX = ['Azul','Sol','Norte','Sur','Express','Premium','Elite','Plus','Pro','Internacional','Mediterráneo','Atlántico','Ibérico','Continental','Grupo','Partners'];
+const FIRST_NAMES = ['M.','J.','L.','C.','S.','R.','D.','A.','P.','E.','I.','F.','G.','H.','N.','O.','T.','V.','B.','K.'];
+const LAST_NAMES = ['Ruiz','Pérez','Fernández','Navarro','Moreno','Vega','Alonso','García','López','Martínez','Sánchez','Romero','Torres','Jiménez','Gómez','Díaz','Herrera','Castro','Reyes','Ortiz','Silva','Rojas','Mendoza','Vargas','Ramos'];
+const TIERS = ['Starter','Growth','Elite','Strategic'];
+
+/* Seeded PRNG for reproducible mock data */
+function mulberry32(seed){ return function(){ let t = seed += 0x6D2B79F5; t = Math.imul(t ^ t >>> 15, t | 1); t ^= t + Math.imul(t ^ t >>> 7, t | 61); return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+const rand = mulberry32(42);
+const pick = arr => arr[Math.floor(rand()*arr.length)];
+
+function genHotels(n) {
+  const out = FEATURED_HOTELS.slice();
+  for (let i = out.length; i < n; i++) {
+    const stars = 3 + Math.floor(rand()*3);
+    out.push({
+      id:'h'+(i+1),
+      name: `${pick(CHAINS)} ${pick(DESCRIPTORS)} ${pick(CITIES)}`,
+      vendor: pick(VENDORS), gds: pick(VENDORS),
+      baseCommission: +(0.10 + rand()*0.08).toFixed(3),
+      priceAdjustment: +(0.85 + rand()*0.20).toFixed(3),
+      city: pick(CITIES), stars
+    });
+  }
+  return out;
+}
+function genAgencies(n) {
+  const out = FEATURED_AGENCIES.slice();
+  for (let i = out.length; i < n; i++) {
+    out.push({
+      id:'ag'+(i+1),
+      name:`${pick(AGENCY_PREFIX)} ${pick(AGENCY_SUFFIX)}`,
+      tier:'partner',
+      rebatePctPerHotel:{}
+    });
+  }
+  return out;
+}
+function genAgents(n) {
+  const out = FEATURED_AGENTS.slice();
+  for (let i = out.length; i < n; i++) {
+    const tier = pick(TIERS);
+    const range = { Starter:[0.10,0.14], Growth:[0.15,0.20], Elite:[0.21,0.26], Strategic:[0.27,0.32] }[tier];
+    const ops  = { Starter:0.08, Growth:0.07, Elite:0.06, Strategic:0.05 }[tier];
+    out.push({
+      id:'a'+(i+1),
+      name:`${pick(FIRST_NAMES)} ${pick(LAST_NAMES)}`,
+      tier, earningPct:+(range[0]+rand()*(range[1]-range[0])).toFixed(3),
+      opsExpense:ops, hotelOverrides:{}
+    });
+  }
+  return out;
+}
+
+const HOTELS = genHotels(12000);
+const AGENCIES = genAgencies(10500);
+const AGENTS = genAgents(11000);
+
+const TIER_DEFAULTS = {
+  Starter:   { range:[0.10,0.14], ops:0.08, default:0.12 },
+  Growth:    { range:[0.15,0.20], ops:0.07, default:0.18 },
+  Elite:     { range:[0.21,0.26], ops:0.06, default:0.24 },
+  Strategic: { range:[0.27,0.32], ops:0.05, default:0.30 }
+};
+
+const GLOBAL_DEFAULTS = { baseCommission:0.15, priceAdjustment:1.00 };
+const GUARDRAILS = { minErgosNetPct:0.05, maxAgentPctOfGross:0.32, minErgosPctOfGross:0.50 };
+
+const AUDIT = [
+  { ts:'2026-04-05 14:22', who:'admin@ergos', layer:'Hotel', field:'baseCommission', from:0.12, to:0.13, reason:'Negotiated uplift Q2' },
+  { ts:'2026-03-14 09:41', who:'ops@ergos', layer:'Hotel', field:'priceAdjustment', from:0.90, to:0.85, reason:'Contracted rate improvement' },
+  { ts:'2026-02-02 11:08', who:'admin@ergos', layer:'Agency', field:'rebatePct h1', from:0.03, to:0.04, reason:'Viajes Azul volume bonus' }
+];
+
+/* ───────── STATE ───────── */
+const state = {
+  activeHotel: 'h1',
+  activeAgency: 'ag2',
+  activeAgent: 'a1',
+  supplierNet: 200,
+  worstCase: false,
+  dirty: {},
+  lang:'en',
+  scopeTab: 'hotel',               // 'hotel' | 'agency' | 'agent'
+  search: '',
+  pinned: { hotel:['h1','h2'], agency:['ag1','ag2'], agent:['a1'] },
+  recent: { hotel:[], agency:[], agent:[] },
+  filter: { hotelVendor:null, hotelStars:null, agentTier:null },
+  searchDebounce: null,
+  virtScroll: 0
+};
+const PAGE_LIMIT = 200;              // server-style result cap
+const ROW_HEIGHT = 36;
+const OVERSCAN = 6;
+
+/* ───────── CALCULATION ENGINE ───────── */
+function computeMargin({ hotel, agency, agent, supplierNet, overrideEarning }) {
+  const adjustedCost  = supplierNet * hotel.priceAdjustment;
+  const ergosSell     = adjustedCost * (1 + hotel.baseCommission);
+  const rebatePct     = agency.rebatePctPerHotel[hotel.id] || 0;
+  const rebateAmt     = ergosSell * rebatePct;
+  const agencyEffective = ergosSell - rebateAmt;
+  const ergosGross    = agencyEffective - adjustedCost;
+  const earningPct    = overrideEarning ?? (agent.hotelOverrides[hotel.id] ?? agent.earningPct);
+  const agentEarning  = ergosGross * earningPct;
+  const opsAmt        = ergosGross * agent.opsExpense;
+  const ergosNet      = ergosGross - agentEarning - opsAmt;
+  return {
+    supplierNet, adjustedCost, ergosSell, rebatePct, rebateAmt, ergosGross,
+    earningPct, agentEarning, opsAmt, ergosNet,
+    ergosNetPct: ergosSell>0 ? ergosNet/ergosSell : 0,
+    agentPctOfGross: ergosGross>0 ? agentEarning/ergosGross : 0,
+    ergosPctOfGross: ergosGross>0 ? ergosNet/ergosGross : 0
+  };
+}
+
+function evaluateGuardrails(m) {
+  return {
+    minNet: m.ergosNetPct >= GUARDRAILS.minErgosNetPct,
+    agentCap: m.agentPctOfGross <= GUARDRAILS.maxAgentPctOfGross,
+    ergosShare: m.ergosPctOfGross >= GUARDRAILS.minErgosPctOfGross,
+    hardBlock: m.ergosNetPct < GUARDRAILS.minErgosNetPct
+  };
+}
+
+function worstCaseAcrossTiers({ hotel, agency, supplierNet, opsExpense }) {
+  let min = Infinity, minTier = null;
+  Object.entries(TIER_DEFAULTS).forEach(([tier,cfg]) => {
+    const fakeAgent = { earningPct:cfg.range[1], opsExpense:opsExpense || cfg.ops, hotelOverrides:{} };
+    const m = computeMargin({ hotel, agency, agent:fakeAgent, supplierNet });
+    if (m.ergosNetPct < min) { min = m.ergosNetPct; minTier = tier; }
+  });
+  return { pct: min, tier: minTier };
+}
+
+/* ───────── RENDERING ───────── */
+const $ = s => document.querySelector(s);
+const $$ = s => document.querySelectorAll(s);
+const fmtPct = v => (v*100).toFixed(1)+'%';
+const fmtMoney = v => '$'+v.toFixed(2);
+/* priceAdjustment is stored as a multiplier (0.85 = 15% discount, 1.02 = 2% uplift).
+   Display it as a signed delta percentage for clarity. */
+const fmtAdjPct = v => {
+  const d = (v - 1) * 100;
+  return (d >= 0 ? '+' : '') + d.toFixed(1) + '%';
+};
+
+/* ───────── Animation helpers ───────── */
+const prev = { marginPct: null, waterfall: {}, guardrails: {} };
+
+function pulseCenter() {
+  const c = document.querySelector('.center');
+  c.classList.remove('pulse'); void c.offsetWidth;
+  c.classList.add('pulse');
+}
+
+function tweenNumber(el, from, to, durMs, formatter) {
+  const start = performance.now();
+  const delta = to - from;
+  function step(now) {
+    const t = Math.min(1, (now - start) / durMs);
+    const eased = 1 - Math.pow(1 - t, 3); // ease-out cubic
+    el.textContent = formatter(from + delta * eased);
+    if (t < 1) requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+
+function flashEl(el, cls='flash', dur=600) {
+  if (!el) return;
+  el.classList.remove(cls); void el.offsetWidth;
+  el.classList.add(cls);
+  setTimeout(() => el.classList.remove(cls), dur);
+}
+
+function getActive() {
+  return {
+    hotel: HOTELS.find(h=>h.id===state.activeHotel),
+    agency: AGENCIES.find(a=>a.id===state.activeAgency),
+    agent: AGENTS.find(a=>a.id===state.activeAgent)
+  };
+}
+
+/* ───── Scale-ready scope selector ─────
+ * 1. Segmented tab (Hotels | Agencies | Agents) — only one list rendered.
+ * 2. Search debounced 180ms, capped at PAGE_LIMIT results (simulates server query).
+ * 3. Virtualized list — only visible rows are in the DOM.
+ * 4. Pinned + Recent sections render above the search results for fast re-access.
+ */
+/* Diacritic-insensitive, case-insensitive normalize.
+   "Meliá Barcelona" → "melia barcelona", "Pérez" → "perez" */
+function norm(s) {
+  return (s || '').toString().normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+}
+function matchScope(item, q, type) {
+  if (!q) return true;
+  const hay = (type==='hotel')
+    ? (item.name + ' ' + item.vendor + ' ' + item.city + ' ' + item.gds)
+    : (type==='agent')
+      ? (item.name + ' ' + item.tier)
+      : (item.name + ' ' + item.tier);
+  return norm(hay).includes(q);
+}
+
+function currentDataset() {
+  return state.scopeTab==='hotel' ? HOTELS
+       : state.scopeTab==='agency' ? AGENCIES
+       : AGENTS;
+}
+function activeId() {
+  return state.scopeTab==='hotel' ? state.activeHotel
+       : state.scopeTab==='agency' ? state.activeAgency
+       : state.activeAgent;
+}
+
+function runSearch() {
+  const q = norm(state.search.trim());
+  const type = state.scopeTab;
+  const ds = currentDataset();
+  const matched = [];
+  let total = 0;
+  for (let i=0; i<ds.length; i++) {
+    const it = ds[i];
+    if (type==='hotel') {
+      if (state.filter.hotelVendor && it.vendor !== state.filter.hotelVendor) continue;
+      if (state.filter.hotelStars && it.stars !== state.filter.hotelStars) continue;
+    }
+    if (type==='agent' && state.filter.agentTier && it.tier !== state.filter.agentTier) continue;
+    if (!matchScope(it, q, type)) continue;
+    total++;
+    if (matched.length < PAGE_LIMIT) matched.push(it);
+  }
+  return { matched, total };
+}
+
+function renderFilterChips() {
+  const wrap = $('#filterChips');
+  if (state.scopeTab==='hotel') {
+    wrap.innerHTML = VENDORS.map(v =>
+      `<button class="filter-chip ${state.filter.hotelVendor===v?'on':''}" data-filter="vendor" data-val="${v}">${v}</button>`
+    ).join('') + [5,4,3].map(s =>
+      `<button class="filter-chip ${state.filter.hotelStars===s?'on':''}" data-filter="stars" data-val="${s}">${s}★</button>`
+    ).join('');
+  } else if (state.scopeTab==='agent') {
+    wrap.innerHTML = TIERS.map(t =>
+      `<button class="filter-chip ${state.filter.agentTier===t?'on':''}" data-filter="tier" data-val="${t}">${t}</button>`
+    ).join('');
+  } else {
+    wrap.innerHTML = '';
+  }
+}
+
+function renderScope() {
+  $('#cntHotel').textContent  = HOTELS.length.toLocaleString();
+  $('#cntAgency').textContent = AGENCIES.length.toLocaleString();
+  $('#cntAgent').textContent  = AGENTS.length.toLocaleString();
+
+  $$('.scope-tab').forEach(t => t.classList.toggle('active', t.dataset.scope===state.scopeTab));
+  renderFilterChips();
+
+  const { matched, total } = runSearch();
+  state.lastMatched = matched;
+  state.lastTotal = total;
+
+  const type = state.scopeTab;
+  const actId = activeId();
+  const pinnedIds = state.pinned[type] || [];
+  const recentIds = (state.recent[type] || []).filter(id => !pinnedIds.includes(id));
+  const ds = currentDataset();
+  const byId = id => ds.find(x => x.id===id);
+
+  // Pinned + Recent only visible when NOT searching
+  const showFav = !state.search.trim();
+  const pinnedItems = showFav ? pinnedIds.map(byId).filter(Boolean) : [];
+  const recentItems = showFav ? recentIds.map(byId).filter(Boolean).slice(0,5) : [];
+
+  // Build section header rows (static) + results (virtual)
+  // For simplicity, pinned/recent render as static rows above the virtual list, and the virtual list holds the matched results.
+  const list = $('#virtList');
+  // Clear static headers (everything except .virt-spacer)
+  [...list.children].forEach(c => { if (!c.classList.contains('virt-spacer')) c.remove(); });
+
+  function mkStatic(item, isPinned) {
+    const row = document.createElement('div');
+    row.className = 'tree-item static' + (item.id===actId?' active':'');
+    row.dataset.type = type; row.dataset.id = item.id;
+    row.innerHTML = rowInner(item, type, true, isPinned);
+    return row;
+  }
+  function mkHead(txt) {
+    const h = document.createElement('div');
+    h.className = 'section-head';
+    h.textContent = txt;
+    return h;
+  }
+
+  const spacer = $('#virtSpacer');
+  if (pinnedItems.length) {
+    list.insertBefore(mkHead('★ Pinned'), spacer);
+    pinnedItems.forEach(it => list.insertBefore(mkStatic(it, true), spacer));
+  }
+  if (recentItems.length) {
+    list.insertBefore(mkHead('Recent'), spacer);
+    recentItems.forEach(it => list.insertBefore(mkStatic(it, false), spacer));
+  }
+  if (showFav && (pinnedItems.length || recentItems.length)) {
+    list.insertBefore(mkHead(type==='hotel'?'All hotels':(type==='agency'?'All agencies':'All agents')), spacer);
+  }
+
+  // Virtualized area
+  spacer.style.height = (matched.length * ROW_HEIGHT) + 'px';
+  spacer.innerHTML = '';
+  renderVirtRows();
+
+  // Meta
+  const cap = total > PAGE_LIMIT;
+  $('#listCount').innerHTML = state.search
+    ? `<b>${matched.length.toLocaleString()}</b> of <b>${total.toLocaleString()}</b>`
+    : `<b>${total.toLocaleString()}</b> total`;
+  $('#listHint').style.display = cap ? 'inline' : 'none';
+
+  if (!matched.length && !pinnedItems.length && !recentItems.length) {
+    spacer.innerHTML = '<div class="empty-state">No matches — try a different search.</div>';
+  }
+}
+
+function rowInner(item, type, showPin, isPinned) {
+  let label, meta;
+  if (type==='hotel') {
+    label = item.name;
+    meta = `${item.vendor} · <span class="star">${'★'.repeat(item.stars)}</span>`;
+  } else if (type==='agency') {
+    label = item.name;
+    meta = item.tier;
+  } else {
+    label = item.name;
+    meta = item.tier;
+  }
+  const pin = `<span class="pin ${isPinned?'on':''}" data-pin="${item.id}">★</span>`;
+  return `<span class="label">${label}</span><span class="meta">${meta}</span>${pin}`;
+}
+
+function renderVirtRows() {
+  const spacer = $('#virtSpacer');
+  const list = $('#virtList');
+  const matched = state.lastMatched || [];
+  // Compute visible window based on scroll position of the *static-offset* start of the virt area.
+  // Because pinned/recent rows shift the spacer down, we measure spacer.offsetTop.
+  const listRect = list.getBoundingClientRect();
+  const spacerTop = spacer.offsetTop;
+  const scroll = list.scrollTop;
+  const viewStart = Math.max(0, scroll - spacerTop);
+  const viewEnd = viewStart + listRect.height;
+  const first = Math.max(0, Math.floor(viewStart / ROW_HEIGHT) - OVERSCAN);
+  const last  = Math.min(matched.length, Math.ceil(viewEnd / ROW_HEIGHT) + OVERSCAN);
+
+  const type = state.scopeTab;
+  const actId = activeId();
+  const pinnedIds = state.pinned[type] || [];
+  let html = '';
+  for (let i = first; i < last; i++) {
+    const it = matched[i];
+    const top = i * ROW_HEIGHT;
+    const isPinned = pinnedIds.includes(it.id);
+    html += `<div class="tree-item ${it.id===actId?'active':''}" style="top:${top}px;height:${ROW_HEIGHT}px" data-type="${type}" data-id="${it.id}">${rowInner(it, type, true, isPinned)}</div>`;
+  }
+  spacer.innerHTML = html;
+}
+
+// Backwards-compat alias used by other parts of the code
+function renderTree() { renderScope(); }
+
+function renderBreadcrumb() {
+  const {hotel,agency,agent} = getActive();
+  $('#centerBreadcrumb').innerHTML =
+    `<b>Global</b><span class="sep">›</span><b>${hotel.name}</b><span class="sep">›</span><b>${agency.name}</b><span class="sep">›</span><b>${agent.name}</b>`;
+}
+
+function renderStack() {
+  const {hotel,agency,agent} = getActive();
+  const tierCfg = TIER_DEFAULTS[agent.tier] || { range:[0,0], ops:0, default:0 };
+  const hasHotelOverride = hotel.baseCommission !== GLOBAL_DEFAULTS.baseCommission || hotel.priceAdjustment !== GLOBAL_DEFAULTS.priceAdjustment;
+  const hasAgencyRebate = (agency.rebatePctPerHotel[hotel.id]||0) > 0;
+  const tierActive = agent.tier !== '—';
+  const hasAgentHotelOverride = agent.hotelOverrides[hotel.id] !== undefined;
+
+  const cards = [
+    {
+      num:1, titleEn:'Global Defaults', titleEs:'Valores globales',
+      src:'System baseline • read-mostly',
+      chip:'inherit', chipLabel:'Inherited',
+      fields:[
+        field('baseCommission', GLOBAL_DEFAULTS.baseCommission, 0, 0.25, true, 'pct'),
+        field('priceAdjustment', GLOBAL_DEFAULTS.priceAdjustment, 0.7, 1.1, true, 'adjPct')
+      ]
+    },
+    {
+      num:2, titleEn:'Hotel • '+hotel.name, titleEs:'Hotel • '+hotel.name,
+      src: hotel.vendor + ' / ' + hotel.gds,
+      chip: hasHotelOverride?'override':'inherit',
+      chipLabel: hasHotelOverride?'Overridden':'Inherited',
+      history:true, layer:'hotel',
+      fields:[
+        field('baseCommission', hotel.baseCommission, 0.05, 0.25, false, 'pct', v => { hotel.baseCommission = v; markDirty('hotel.'+hotel.id+'.baseCommission'); refresh(); }),
+        field('priceAdjustment', hotel.priceAdjustment, 0.70, 1.10, false, 'adjPct', v => { hotel.priceAdjustment = v; markDirty('hotel.'+hotel.id+'.priceAdjustment'); refresh(); })
+      ]
+    },
+    {
+      num:3, titleEn:'Agency • '+agency.name, titleEs:'Agencia • '+agency.name,
+      src: agency.tier==='house'?'In-house agency (no rebate)':'Partner rebate',
+      chip: hasAgencyRebate?'override':'inherit',
+      chipLabel: hasAgencyRebate?'Overridden':'Inherited',
+      history:true, layer:'agency',
+      fields:[
+        field('rebatePct @ '+hotel.name, agency.rebatePctPerHotel[hotel.id]||0, 0, 0.10, agency.tier==='house', 'pct',
+          v => { agency.rebatePctPerHotel[hotel.id] = v; markDirty('agency.'+agency.id+'.rebate.'+hotel.id); refresh(); })
+      ]
+    },
+    {
+      num:4, titleEn:'Agent Tier • '+agent.tier, titleEs:'Nivel • '+agent.tier,
+      src: tierActive ? `Range ${fmtPct(tierCfg.range[0])}–${fmtPct(tierCfg.range[1])} • Ops ${fmtPct(tierCfg.ops)}` : 'No tier',
+      chip:'inherit', chipLabel:'Inherited',
+      fields: tierActive ? [
+        field('tier default', tierCfg.default, tierCfg.range[0], tierCfg.range[1], true, 'pct'),
+        field('opsExpense', tierCfg.ops, 0.03, 0.10, true, 'pct')
+      ] : []
+    },
+    {
+      num:5, titleEn:'Agent-Hotel Override • '+agent.name, titleEs:'Anulación agente-hotel',
+      src: hasAgentHotelOverride ? 'Custom earning for this hotel' : 'Uses tier default',
+      chip: hasAgentHotelOverride?'override':'inherit',
+      chipLabel: hasAgentHotelOverride?'Overridden':'Inherited',
+      history:true, layer:'agent',
+      fields:[
+        field('earningPct @ '+hotel.name, agent.hotelOverrides[hotel.id] ?? agent.earningPct, 0.05, 0.40, false, 'pct',
+          v => { agent.hotelOverrides[hotel.id] = v; markDirty('agent.'+agent.id+'.override.'+hotel.id); refresh(); })
+      ]
+    }
+  ];
+
+  $('#stack').innerHTML = cards.map((c,i) => `
+    <div class="bp-card layer-card">
+      <div class="card-head">
+        <div class="card-title">
+          <div class="layer-num">${c.num}</div>
+          <div>
+            <h3>${c.titleEn}</h3>
+            <div class="src">${c.src}</div>
+          </div>
+        </div>
+        <div class="card-actions">
+          <span class="chip chip-${c.chip}">${c.chipLabel}</span>
+          ${c.history ? `<button class="icon-btn" title="History" data-history="${c.layer}">⟲</button>` : ''}
+        </div>
+      </div>
+      ${c.fields.map((f,j) => `
+        <div class="field-row">
+          <div>
+            <div class="field-label">${f.label}</div>
+            <span class="field-hint">${f.hint || ''}</span>
+          </div>
+          <div class="field-control">
+            <input type="range" class="slider" data-card="${i}" data-field="${j}" min="${f.min}" max="${f.max}" step="0.005" value="${f.value}" ${f.readonly?'disabled':''}>
+            <input type="number" class="num-input" data-card="${i}" data-field="${j}" min="${f.fmt==='adjPct'?-30:(f.min*100).toFixed(0)}" max="${f.fmt==='adjPct'?10:(f.max*100).toFixed(0)}" step="0.1" value="${f.fmt==='pct'?(f.value*100).toFixed(1):f.fmt==='adjPct'?((f.value-1)*100).toFixed(1):f.value.toFixed(2)}" ${f.readonly?'disabled':''}>
+            <span style="font-size:11px;color:var(--text-muted);width:14px">%</span>
+          </div>
+        </div>
+        ${f.warn?`<div class="inline-warn">⚠ ${f.warn}</div>`:''}
+      `).join('')}
+    </div>
+  `).join('');
+
+  // Wire field inputs
+  $$('.slider, .num-input').forEach(el => {
+    el.addEventListener('input', e => {
+      const ci = +el.dataset.card, fi = +el.dataset.field;
+      const card = cards[ci], f = card.fields[fi];
+      if (!f.onChange) return;
+      let v = +el.value;
+      const isNumInput = el.classList.contains('num-input');
+      // Number input stores values in display units — convert to canonical (multiplier/fraction)
+      if (isNumInput) {
+        if (f.fmt === 'pct')    v = v / 100;
+        if (f.fmt === 'adjPct') v = 1 + v / 100;
+      }
+      // sync the sibling back to its own display unit
+      const sibling = isNumInput
+        ? document.querySelector(`.slider[data-card="${ci}"][data-field="${fi}"]`)
+        : document.querySelector(`.num-input[data-card="${ci}"][data-field="${fi}"]`);
+      if (sibling) {
+        if (isNumInput) {
+          sibling.value = v; // slider stores canonical
+        } else {
+          sibling.value = f.fmt==='pct'    ? (v*100).toFixed(1)
+                        : f.fmt==='adjPct' ? ((v-1)*100).toFixed(1)
+                        : v.toFixed(2);
+        }
+      }
+      f.onChange(v);
+    });
+  });
+  $$('[data-history]').forEach(b => b.addEventListener('click', () => openAudit(b.dataset.history)));
+}
+
+const FIELD_HINTS = {
+  baseCommission:  'Markup Ergos applies on top of adjusted cost',
+  priceAdjustment: 'Contracted uplift (+) or discount (−) vs supplier rate',
+  rebatePct:       'Kickback paid to the agency on the sell price',
+  'tier default':  'Midpoint of the tier earning range',
+  opsExpense:      'Ops cost allocated per sale (CC fees, infra, support)',
+  earningPct:      'Agent share of Ergos gross — driven by sales performance tier'
+};
+function field(label, value, min, max, readonly, fmt, onChange) {
+  let warn = null;
+  if (label.startsWith('earningPct') && value > GUARDRAILS.maxAgentPctOfGross) {
+    warn = `Agent earning ${fmtPct(value)} exceeds 32% of gross cap`;
+  }
+  // Resolve a hint by matching the first word of the label
+  const hintKey = Object.keys(FIELD_HINTS).find(k => label.startsWith(k));
+  const hint = hintKey ? FIELD_HINTS[hintKey] : '';
+  return { label, value, min, max, readonly, fmt, onChange, warn, hint };
+}
+
+function renderEffective() {
+  const {hotel,agency,agent} = getActive();
+  const m = computeMargin({ hotel, agency, agent, supplierNet: state.supplierNet });
+  $('#effGrid').innerHTML = `
+    <div class="eff-row"><span>Base commission</span><span>${fmtPct(hotel.baseCommission)}</span></div>
+    <div class="eff-row"><span>Price adjustment</span><span>${fmtAdjPct(hotel.priceAdjustment)}</span></div>
+    <div class="eff-row"><span>Agency rebate</span><span>${fmtPct(m.rebatePct)}</span></div>
+    <div class="eff-row"><span>Agent earning</span><span>${fmtPct(m.earningPct)}</span></div>
+    <div class="eff-row"><span>Ops expense</span><span>${fmtPct(agent.opsExpense)}</span></div>
+    <div class="eff-row"><span>Ergos net margin</span><span>${fmtPct(m.ergosNetPct)}</span></div>
+  `;
+}
+
+function renderPreview() {
+  const {hotel,agency,agent} = getActive();
+  let m = computeMargin({ hotel, agency, agent, supplierNet: state.supplierNet });
+  let displayPct = m.ergosNetPct;
+  let subLabel = `Ergos net margin • supplier $${state.supplierNet}`;
+
+  if (state.worstCase) {
+    const wc = worstCaseAcrossTiers({ hotel, agency, supplierNet: state.supplierNet, opsExpense: agent.opsExpense });
+    displayPct = wc.pct;
+    subLabel = `Worst case: ${wc.tier} tier max earn`;
+  }
+
+  const head = $('#marginHeadline');
+  head.classList.remove('amber','red');
+  if (displayPct < 0.05) head.classList.add('red');
+  else if (displayPct < 0.08) head.classList.add('amber');
+  // Tween the headline number
+  const from = (prev.marginPct == null) ? displayPct : prev.marginPct;
+  if (Math.abs(from - displayPct) > 0.0001) {
+    tweenNumber(head, from, displayPct, 420, v => fmtPct(v));
+    head.classList.add('tick');
+    setTimeout(() => head.classList.remove('tick'), 260);
+  } else {
+    head.textContent = fmtPct(displayPct);
+  }
+  prev.marginPct = displayPct;
+  $('#marginSub').textContent = subLabel;
+
+  // Waterfall — flash if final net changed
+  const wfChanged = prev.waterfall.ergosNet !== undefined && Math.abs(prev.waterfall.ergosNet - m.ergosNet) > 0.001;
+  prev.waterfall = { ergosNet: m.ergosNet };
+  $('#waterfall').innerHTML = `
+    <div class="waterfall-row pos"><span class="lbl">Supplier net</span><span>${fmtMoney(m.supplierNet)}</span></div>
+    <div class="waterfall-row pos"><span class="lbl">Adjustment (${fmtAdjPct(hotel.priceAdjustment)})</span><span>${fmtMoney(m.adjustedCost)}</span></div>
+    <div class="waterfall-row pos"><span class="lbl">+ Commission (${fmtPct(hotel.baseCommission)})</span><span>${fmtMoney(m.ergosSell)}</span></div>
+    <div class="waterfall-row neg"><span class="lbl">− Agency rebate (${fmtPct(m.rebatePct)})</span><span>−${fmtMoney(m.rebateAmt)}</span></div>
+    <div class="waterfall-row pos"><span class="lbl">= Ergos gross</span><span>${fmtMoney(m.ergosGross)}</span></div>
+    <div class="waterfall-row neg"><span class="lbl">− Agent earning (${fmtPct(m.earningPct)})</span><span>−${fmtMoney(m.agentEarning)}</span></div>
+    <div class="waterfall-row neg"><span class="lbl">− Ops (${fmtPct(agent.opsExpense)})</span><span>−${fmtMoney(m.opsAmt)}</span></div>
+    <div class="waterfall-row"><span class="lbl">Ergos net</span><span>${fmtMoney(m.ergosNet)}</span></div>
+  `;
+  if (wfChanged) {
+    const lastRow = $('#waterfall').lastElementChild;
+    flashEl(lastRow, 'flash', 600);
+  }
+
+  const g = evaluateGuardrails(m);
+  const dot = ok => ok ? 'dot-ok' : 'dot-bad';
+  $('#guardrails').innerHTML = `
+    <div class="grail"><span class="dot ${dot(g.minNet)}"></span><span>Ergos ≥5% net <b>(${fmtPct(m.ergosNetPct)})</b></span></div>
+    <div class="grail"><span class="dot ${dot(g.agentCap)}"></span><span>Agent ≤32% of gross <b>(${fmtPct(m.agentPctOfGross)})</b></span></div>
+    <div class="grail"><span class="dot ${dot(g.ergosShare)}"></span><span>Ergos ≥50% of gross <b>(${fmtPct(m.ergosPctOfGross)})</b></span></div>
+  `;
+
+  renderChart();
+}
+
+let chart = null;
+function renderChart() {
+  const {hotel,agency} = getActive();
+  const agents = AGENTS.filter(a => a.id !== 'a0');
+  const labels = agents.map(a => a.name);
+  const earn = [], ops = [], net = [];
+  agents.forEach(a => {
+    const m = computeMargin({ hotel, agency, agent:a, supplierNet: state.supplierNet });
+    earn.push(+m.agentEarning.toFixed(2));
+    ops.push(+m.opsAmt.toFixed(2));
+    net.push(+m.ergosNet.toFixed(2));
+  });
+  const ctx = $('#marginChart');
+  if (chart) chart.destroy();
+  chart = new Chart(ctx, {
+    type:'bar',
+    data:{ labels, datasets:[
+      { label:'Agent earn', data:earn, backgroundColor:'#c4962c' },
+      { label:'Ops', data:ops, backgroundColor:'#e67e00' },
+      { label:'Ergos net', data:net, backgroundColor:'#0fa89b' }
+    ]},
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{ position:'bottom', labels:{ font:{size:10}, boxWidth:10 }}},
+      scales:{
+        x:{ stacked:true, ticks:{ font:{size:9} }},
+        y:{ stacked:true, ticks:{ font:{size:9} }}
+      }
+    }
+  });
+}
+
+/* ───────── Dirty / save ───────── */
+function markDirty(key) {
+  state.dirty[key] = true;
+  const count = Object.keys(state.dirty).length;
+  $('#dirtyCount').textContent = count;
+  $('#footer').classList.toggle('show', count>0);
+}
+
+function refresh() {
+  renderStack();
+  renderEffective();
+  renderPreview();
+}
+
+function fullRefresh() {
+  renderTree();
+  renderBreadcrumb();
+  refresh();
+}
+
+/* ───────── Events ───────── */
+document.addEventListener('click', e => {
+  // Pin toggle (stop propagation into tree-item selection)
+  if (e.target.dataset.pin) {
+    e.stopPropagation();
+    const type = state.scopeTab, id = e.target.dataset.pin;
+    const arr = state.pinned[type];
+    const i = arr.indexOf(id);
+    if (i>=0) arr.splice(i,1); else arr.push(id);
+    renderScope();
+    return;
+  }
+  // Tree item click
+  const ti = e.target.closest('.tree-item');
+  if (ti && ti.dataset.type) {
+    const t = ti.dataset.type, id = ti.dataset.id;
+    if (t==='hotel') state.activeHotel = id;
+    else if (t==='agency') state.activeAgency = id;
+    else if (t==='agent') state.activeAgent = id;
+    // update recent
+    const r = state.recent[t];
+    const idx = r.indexOf(id); if (idx>=0) r.splice(idx,1);
+    r.unshift(id); if (r.length>8) r.length = 8;
+    pulseCenter();
+    fullRefresh();
+    return;
+  }
+  // Scope tab click
+  const st = e.target.closest('.scope-tab');
+  if (st) {
+    state.scopeTab = st.dataset.scope;
+    state.search = ''; $('#scopeSearch').value = '';
+    renderScope();
+    return;
+  }
+  // Filter chip
+  const fc = e.target.closest('.filter-chip');
+  if (fc) {
+    const k = fc.dataset.filter, v = fc.dataset.val;
+    if (k==='vendor') state.filter.hotelVendor = state.filter.hotelVendor===v ? null : v;
+    if (k==='stars')  state.filter.hotelStars  = state.filter.hotelStars===+v ? null : +v;
+    if (k==='tier')   state.filter.agentTier   = state.filter.agentTier===v ? null : v;
+    renderScope();
+    return;
+  }
+  // Close drawer
+  if (e.target.dataset.close==='bulk') closeDrawer('bulk');
+  if (e.target.dataset.close==='audit') closeDrawer('audit');
+});
+
+$('#scopeSearch').addEventListener('input', e => {
+  $('#searchSpin').classList.add('on');
+  clearTimeout(state.searchDebounce);
+  state.searchDebounce = setTimeout(() => {
+    state.search = e.target.value;
+    renderScope();
+    $('#searchSpin').classList.remove('on');
+  }, 180);
+});
+
+$('#virtList').addEventListener('scroll', () => {
+  // requestAnimationFrame keeps virtual scroll smooth
+  if (state._raf) return;
+  state._raf = requestAnimationFrame(() => { state._raf = null; renderVirtRows(); });
+});
+window.addEventListener('resize', () => renderVirtRows());
+
+$$('.lang-btn').forEach(b => b.addEventListener('click', () => {
+  $$('.lang-btn').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active');
+  state.lang = b.dataset.lang;
+  document.body.classList.toggle('lang-es', state.lang==='es');
+}));
+
+$('#worstToggle').addEventListener('change', e => {
+  state.worstCase = e.target.checked;
+  renderPreview();
+});
+
+$('#discardBtn').addEventListener('click', () => {
+  if (confirm('Discard all unsaved changes?')) {
+    state.dirty = {};
+    $('#footer').classList.remove('show');
+  }
+});
+
+$('#previewBtn').addEventListener('click', openSaveModal);
+$('#saveBtn').addEventListener('click', openSaveModal);
+
+function openSaveModal() {
+  const {hotel,agency,agent} = getActive();
+  const m = computeMargin({ hotel, agency, agent, supplierNet: state.supplierNet });
+  const g = evaluateGuardrails(m);
+  const hardBlock = g.hardBlock;
+  const anyBreach = !g.minNet || !g.agentCap || !g.ergosShare;
+
+  const box = $('#saveModalBox');
+  box.classList.toggle('danger', anyBreach);
+  $('#saveModalTitle').textContent = hardBlock ? '⛔ Hard guardrail breach' : (anyBreach ? '⚠ Guardrail breach — override required' : 'Confirm Changes');
+
+  const changes = Object.keys(state.dirty);
+  $('#saveModalBody').innerHTML = `
+    <p style="font-size:13px;color:var(--text-secondary);margin-bottom:10px">
+      ${changes.length} field(s) will be updated. Post-save margin:
+    </p>
+    <div class="diff-list">
+      ${changes.map(k => `<div class="diff-row"><span>${k}</span><span class="new">✓ modified</span></div>`).join('') || '<em style="color:var(--text-muted)">No changes</em>'}
+    </div>
+    <div style="padding:12px;background:${anyBreach?'var(--red-light)':'var(--green-light)'};border-radius:8px;font-size:13px;color:${anyBreach?'#7a1a1a':'#0d4a1f'}">
+      <b>Ergos net margin: ${fmtPct(m.ergosNetPct)}</b> •
+      Agent share: ${fmtPct(m.agentPctOfGross)} •
+      Ergos share: ${fmtPct(m.ergosPctOfGross)}
+      ${hardBlock ? '<br><b>⛔ BLOCKING: Ergos net &lt;5% is a hard block. Cannot save.</b>' : ''}
+    </div>
+  `;
+  $('#reasonBlock').style.display = (anyBreach && !hardBlock) ? 'block' : 'none';
+  $('#confirmSave').disabled = hardBlock;
+  $('#confirmSave').classList.toggle('btn-danger', anyBreach);
+  $('#confirmSave').classList.toggle('btn-primary', !anyBreach);
+  $('#saveModal').classList.add('show');
+}
+
+$('#cancelSave').addEventListener('click', () => $('#saveModal').classList.remove('show'));
+$('#confirmSave').addEventListener('click', () => {
+  const reasonReq = $('#reasonBlock').style.display==='block';
+  if (reasonReq && !$('#reasonInput').value.trim()) { alert('Reason required'); return; }
+  if (reasonReq) {
+    AUDIT.unshift({ ts:new Date().toISOString().slice(0,16).replace('T',' '), who:'admin@ergos', layer:'override', field:'breach', from:'-', to:'-', reason:$('#reasonInput').value });
+  }
+  state.dirty = {};
+  $('#footer').classList.remove('show');
+  $('#saveModal').classList.remove('show');
+  $('#reasonInput').value = '';
+});
+
+/* Bulk edit */
+$('#bulkBtn').addEventListener('click', () => {
+  $('#bulkBackdrop').classList.add('show');
+  $('#bulkDrawer').classList.add('show');
+  renderBulkDiff();
+});
+$('#fStars, #fVendor, #fBaseComm'.split(', ')).forEach(id => { $(id).addEventListener('input', renderBulkDiff); });
+
+function bulkFiltered() {
+  const s = $('#fStars').value, v = $('#fVendor').value;
+  return HOTELS.filter(h => (!s || h.stars===+s) && (!v || h.vendor===v));
+}
+function renderBulkDiff() {
+  const list = bulkFiltered();
+  const newVal = +$('#fBaseComm').value;
+  $('#bulkDiff').innerHTML = list.length ? list.map(h =>
+    `<div class="diff-row"><span>${h.name}</span><span><span class="old">${(h.baseCommission*100).toFixed(1)}%</span> → <span class="new">${(newVal*100).toFixed(1)}%</span></span></div>`
+  ).join('') : '<em style="color:var(--text-muted)">No hotels match</em>';
+}
+$('#bulkApply').addEventListener('click', () => {
+  if ($('#bulkConfirm').value.trim() !== 'APPLY') { alert('Type APPLY to confirm'); return; }
+  const list = bulkFiltered(); const newVal = +$('#fBaseComm').value;
+  list.forEach(h => { h.baseCommission = newVal; markDirty('hotel.'+h.id+'.baseCommission'); });
+  closeDrawer('bulk');
+  $('#bulkConfirm').value = '';
+  refresh();
+});
+
+function closeDrawer(name) {
+  $('#'+name+'Backdrop').classList.remove('show');
+  $('#'+name+'Drawer').classList.remove('show');
+}
+
+/* Audit */
+function openAudit(layer) {
+  const rows = AUDIT.filter(a => a.layer.toLowerCase()===layer || layer==='override');
+  $('#auditBody').innerHTML = (rows.length?rows:AUDIT).map(a => `
+    <div class="audit-row">
+      <div class="when">${a.ts}</div>
+      <div class="who">${a.who} — <span style="font-weight:500">${a.layer} / ${a.field}</span></div>
+      <div class="change">${a.from} → <b>${a.to}</b> · <em>${a.reason}</em></div>
+    </div>
+  `).join('');
+  $('#auditBackdrop').classList.add('show');
+  $('#auditDrawer').classList.add('show');
+}
+
+/* Embedded mode (when loaded inside the backoffice iframe via ?embed=1) */
+if(new URLSearchParams(location.search).get('embed')==='1'){
+  document.body.classList.add('embedded');
+}
+
+/* Init */
+fullRefresh();
+
+/* Deep-link support: #simulate scrolls to the right rail, #audit opens the audit drawer.
+   Lets the backoffice sidebar (Network → Pricing Policy → Simulate / Audit) land in context. */
+function handleHash(){
+  const h = location.hash;
+  if(h==='#simulate'){
+    const el = document.getElementById('simulate');
+    if(el) el.scrollIntoView({behavior:'smooth', block:'start'});
+  } else if(h==='#audit'){
+    if(typeof openAudit === 'function') openAudit();
+    else { $('#auditBackdrop')?.classList.add('show'); $('#auditDrawer')?.classList.add('show'); }
+  }
+}
+window.addEventListener('hashchange', handleHash);
+handleHash();
+</script>
+</body>
+</html>

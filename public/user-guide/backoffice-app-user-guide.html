@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ergos Backoffice — User Guide</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="_styles.css">
+</head>
+<body>
+
+<button class="lang-toggle" type="button" onclick="toggleLang()"
+        aria-label="Switch language between English and Spanish" title="Switch language">
+  <span class="globe" aria-hidden="true"></span>
+  <span class="lang-en"><span class="lang-active">EN</span><span class="lang-sep">·</span><span>Español</span></span>
+  <span class="lang-es"><span class="lang-active">ES</span><span class="lang-sep">·</span><span>English</span></span>
+</button>
+
+<div class="layout">
+
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <h1 class="lang-en">Backoffice</h1>
+      <h1 class="lang-es">Backoffice</h1>
+      <div class="brand-subtitle lang-en">User Guide · Ergos Staff</div>
+      <div class="brand-subtitle lang-es">Guía de Usuario · Personal de Ergos</div>
+    </div>
+    <nav class="toc">
+      <h3 class="lang-en">Contents</h3>
+      <h3 class="lang-es">Contenidos</h3>
+      <div class="toc-grid lang-en">
+        <a href="#welcome"><span class="toc-num">1.</span><span>Welcome &amp; roles overview</span></a>
+        <a href="#dashboard"><span class="toc-num">2.</span><span>Dashboard &amp; navigation</span></a>
+        <a href="#users-roles"><span class="toc-num">3.</span><span>Backoffice users &amp; roles</span></a>
+        <a href="#travel-agencies"><span class="toc-num">4.</span><span>Managing travel agencies</span></a>
+        <a href="#sales-agents"><span class="toc-num">5.</span><span>Managing sales agents &amp; tiers</span></a>
+        <a href="#hotels"><span class="toc-num">6.</span><span>Hotel catalog</span></a>
+        <a href="#reservations"><span class="toc-num">7.</span><span>Reservations &amp; bookings</span></a>
+        <a href="#pricing-policy"><span class="toc-num">8.</span><span>Pricing Policy (commission)</span></a>
+        <a href="#hotel-brands"><span class="toc-num">9.</span><span>Hotel Brands (chains)</span></a>
+        <a href="#finance"><span class="toc-num">10.</span><span>Finance &amp; booking breakdown</span></a>
+        <a href="#audit-log"><span class="toc-num">11.</span><span>Audit logs &amp; compliance</span></a>
+        <a href="#vendor-management"><span class="toc-num">12.</span><span>Hotel Suppliers</span></a>
+        <a href="#troubleshooting"><span class="toc-num">13.</span><span>Common tasks &amp; troubleshooting</span></a>
+      </div>
+      <div class="toc-grid lang-es">
+        <a href="#welcome"><span class="toc-num">1.</span><span>Bienvenida y vista de roles</span></a>
+        <a href="#dashboard"><span class="toc-num">2.</span><span>Dashboard y navegación</span></a>
+        <a href="#users-roles"><span class="toc-num">3.</span><span>Usuarios de Backoffice y roles</span></a>
+        <a href="#travel-agencies"><span class="toc-num">4.</span><span>Administrar agencias de viajes</span></a>
+        <a href="#sales-agents"><span class="toc-num">5.</span><span>Administrar agentes comerciales y tiers</span></a>
+        <a href="#hotels"><span class="toc-num">6.</span><span>Catálogo de hoteles</span></a>
+        <a href="#reservations"><span class="toc-num">7.</span><span>Reservas</span></a>
+        <a href="#pricing-policy"><span class="toc-num">8.</span><span>Política de Precios (comisión)</span></a>
+        <a href="#hotel-brands"><span class="toc-num">9.</span><span>Marcas Hoteleras (cadenas)</span></a>
+        <a href="#finance"><span class="toc-num">10.</span><span>Finanzas y desglose de reservas</span></a>
+        <a href="#audit-log"><span class="toc-num">11.</span><span>Registros de auditoría y cumplimiento</span></a>
+        <a href="#vendor-management"><span class="toc-num">12.</span><span>Proveedores Hoteleros</span></a>
+        <a href="#troubleshooting"><span class="toc-num">13.</span><span>Tareas comunes y solución</span></a>
+      </div>
+    </nav>
+  </aside>
+
+  <main class="main-content">
+
+  <!-- SECTION 1: WELCOME -->
+  <section id="welcome">
+    <h2 class="lang-en">1. Welcome <span class="label">Start here</span></h2>
+    <h2 class="lang-es">1. Bienvenida <span class="label">Empezar aquí</span></h2>
+
+    <p class="lang-en">The Backoffice is the internal admin console where Ergos staff manage every aspect of the platform: the travel agencies that use Ergos, the sales agents who recruit and support them, the hotel inventory, every reservation, the pricing policy that controls commissions, and the audit trail that records every change.</p>
+    <p class="lang-es">El Backoffice es la consola interna de administración donde el personal de Ergos administra cada aspecto de la plataforma: las agencias de viajes que usan Ergos, los agentes comerciales que las reclutan y dan soporte, el inventario de hoteles, cada reserva, la política de precios que controla las comisiones, y el rastro de auditoría que registra cada cambio.</p>
+
+    <h3 class="lang-en">Who uses this app</h3>
+    <h3 class="lang-es">Quién usa esta app</h3>
+    <table>
+      <thead><tr><th class="lang-en">Role</th><th class="lang-es">Rol</th><th class="lang-en">Sees / does</th><th class="lang-es">Ve / hace</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>Admin</strong></td>
+          <td><span class="lang-en">Everything. Manages backoffice users, roles, pricing policy, hotel brands, vendor configuration, and runs migrations. Highest-privilege role.</span><span class="lang-es">Todo. Administra usuarios de backoffice, roles, política de precios, marcas hoteleras, configuración de vendors y corre migraciones. Rol de máximo privilegio.</span></td>
+        </tr>
+        <tr>
+          <td><strong>Ergos employee</strong> / <strong>Empleado de Ergos</strong></td>
+          <td><span class="lang-en">Daily operations. Manages travel agencies, onboards sales agents, investigates reservations, downloads audit reports. Cannot change pricing policy.</span><span class="lang-es">Operaciones diarias. Administra agencias de viajes, onboardea agentes comerciales, investiga reservas, descarga reportes de auditoría. No puede cambiar la política de precios.</span></td>
+        </tr>
+        <tr>
+          <td><strong>Sales agent</strong> / <strong>Agente comercial</strong></td>
+          <td><span class="lang-en">Read-only view of their own recruited agencies, their bookings, and their own commission earnings. (Sales agents may have a separate portal in the future.)</span><span class="lang-es">Vista solo-lectura de sus propias agencias reclutadas, sus reservas y sus propias ganancias por comisión. (Los agentes comerciales podrían tener un portal separado en el futuro.)</span></td>
+        </tr>
+        <tr>
+          <td><strong>Travel Agency</strong> (limited access)</td>
+          <td><span class="lang-en">Some agency owners get a restricted backoffice view to manage their agency profile, but the everyday booking work happens in the Agency App, not here.</span><span class="lang-es">Algunos dueños de agencia obtienen una vista restringida de backoffice para administrar el perfil de su agencia, pero el trabajo diario de reservas ocurre en la App de la Agencia, no acá.</span></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="callout callout-info">
+      <strong class="lang-en">If you're a travel agency owner:</strong>
+      <strong class="lang-es">Si sos dueño de una agencia de viajes:</strong>
+      <span class="lang-en"> you probably want the <a href="agency-app-user-guide.html" style="color: var(--teal-dark);">Agency App user guide</a> instead. The Backoffice is for Ergos staff who manage the platform behind the scenes.</span>
+      <span class="lang-es"> probablemente querés la <a href="agency-app-user-guide.html" style="color: var(--teal-dark);">guía de usuario de la App de la Agencia</a>. El Backoffice es para el personal de Ergos que administra la plataforma desde atrás.</span>
+    </div>
+  </section>
+
+  <!-- SECTION 2: DASHBOARD -->
+  <section id="dashboard">
+    <h2 class="lang-en">2. Dashboard &amp; navigation</h2>
+    <h2 class="lang-es">2. Dashboard y navegación</h2>
+
+    <p class="lang-en">When you log in, you land on the <strong>Dashboard</strong>. The left sidebar is your primary navigation; the modules visible to you depend on your role.</p>
+    <p class="lang-es">Cuando ingresás, aterrizás en el <strong>Dashboard</strong>. El panel izquierdo es tu navegación principal; los módulos visibles dependen de tu rol.</p>
+
+    <h3 class="lang-en">Sidebar layout</h3>
+    <h3 class="lang-es">Estructura del panel</h3>
+    <ul class="lang-en">
+      <li><strong>Dashboard</strong> — at-a-glance metrics: today's bookings, monthly revenue, active agencies, top-performing sales agents.</li>
+      <li><strong>BackOffice Module</strong> — BackOffice users, Roles Management.</li>
+      <li><strong>Hotel Module</strong> — Hotels list, Reservations.</li>
+      <li><strong>Finance &amp; Audit</strong> — Pricing Policy, Hotel Brands, Booking Breakdown, Booking Audit Log. Everything that controls or records the money flow lives here.</li>
+      <li><strong>Partners</strong> — Travel Agencies, Employment (employee invitations), Sales Agents, Hotel Suppliers. One umbrella for every party Ergos has a contractual + financial relationship with — distribution side, internal team, and supply side.</li>
+    </ul>
+    <ul class="lang-es">
+      <li><strong>Dashboard</strong> — métricas de un vistazo: reservas de hoy, ingresos mensuales, agencias activas, agentes comerciales destacados.</li>
+      <li><strong>Módulo BackOffice</strong> — Usuarios BackOffice, Administración de Roles.</li>
+      <li><strong>Módulo Hotel</strong> — Lista de Hoteles, Reservas.</li>
+      <li><strong>Finanzas &amp; Auditoría</strong> — Política de Precios, Marcas Hoteleras, Desglose de Reservas, Log de Auditoría de Reservas. Todo lo que controla o registra el flujo del dinero vive acá.</li>
+      <li><strong>Socios (Partners)</strong> — Agencias de Viajes, Empleos (invitaciones a empleados), Agentes Comerciales, Proveedores Hoteleros (Hotel Suppliers). Un solo paraguas para cada parte con la que Ergos tiene una relación contractual y financiera — lado distribución, equipo interno y lado proveedor.</li>
+    </ul>
+
+    <div class="callout callout-teal">
+      <strong class="lang-en">Don't see a module that should be there?</strong>
+      <strong class="lang-es">¿No ves un módulo que debería estar?</strong>
+      <span class="lang-en"> Your role doesn't include it. Ask an admin to update your role assignment from BackOffice → Roles Management.</span>
+      <span class="lang-es"> Tu rol no lo incluye. Pedile a un admin que actualice la asignación de tu rol desde BackOffice → Administración de Roles.</span>
+    </div>
+  </section>
+
+  <!-- SECTION 3: USERS & ROLES -->
+  <section id="users-roles">
+    <h2 class="lang-en">3. Backoffice users &amp; roles</h2>
+    <h2 class="lang-es">3. Usuarios de Backoffice y roles</h2>
+    <span class="audience lang-en">Admin only</span>
+    <span class="audience lang-es">Solo Admin</span>
+
+    <p class="lang-en">The <strong>BackOffice Users</strong> page lists every person who has access to the Backoffice. From here you can invite new staff, change roles, deactivate accounts, and review activity.</p>
+    <p class="lang-es">La página <strong>Usuarios BackOffice</strong> lista a cada persona que tiene acceso al Backoffice. Desde acá podés invitar nuevo personal, cambiar roles, desactivar cuentas y revisar actividad.</p>
+
+    <div class="task">
+      <h4 class="lang-en">Adding a new backoffice user</h4>
+      <h4 class="lang-es">Agregar un nuevo usuario de backoffice</h4>
+      <ol class="lang-en">
+        <li>Click <strong>BackOffice → BackOffice</strong> in the sidebar to see the list.</li>
+        <li>Click <strong>Add User</strong> (top right).</li>
+        <li>Fill in: full name, email, phone, role (Admin / Ergos Employee / Sales Agent / Travel Agency).</li>
+        <li>Click <strong>Save</strong>. The new user receives an invitation email with a link to set their password.</li>
+      </ol>
+      <ol class="lang-es">
+        <li>Hacé clic en <strong>BackOffice → BackOffice</strong> en el panel para ver la lista.</li>
+        <li>Hacé clic en <strong>Agregar Usuario</strong> (arriba a la derecha).</li>
+        <li>Completá: nombre completo, correo, teléfono, rol (Admin / Empleado de Ergos / Agente Comercial / Agencia de Viajes).</li>
+        <li>Hacé clic en <strong>Guardar</strong>. El nuevo usuario recibe un correo de invitación con un link para fijar su contraseña.</li>
+      </ol>
+    </div>
+
+    <h3 class="lang-en">Editing a user's role</h3>
+    <h3 class="lang-es">Editar el rol de un usuario</h3>
+    <p class="lang-en">From the BackOffice Users list, click <strong>Edit Role</strong> next to any user. Select the new role from the dropdown and save. The change takes effect the next time the user signs in (their existing session continues with the old role until they re-authenticate).</p>
+    <p class="lang-es">Desde la lista de Usuarios BackOffice, hacé clic en <strong>Editar Rol</strong> al lado de cualquier usuario. Seleccioná el nuevo rol del dropdown y guardá. El cambio toma efecto la próxima vez que el usuario ingrese (su sesión actual continúa con el rol anterior hasta que se re-autentica).</p>
+
+    <h3 class="lang-en">Deactivating an account</h3>
+    <h3 class="lang-es">Desactivar una cuenta</h3>
+    <p class="lang-en">Toggle the Active switch in the row. Deactivated accounts can't sign in but their historical activity stays in audit logs. Re-activate by toggling the switch back on.</p>
+    <p class="lang-es">Conmutá el switch Activo en la fila. Las cuentas desactivadas no pueden ingresar pero su actividad histórica queda en los logs de auditoría. Reactivá conmutando el switch de vuelta a encendido.</p>
+  </section>
+
+  <!-- SECTION 4: TRAVEL AGENCIES -->
+  <section id="travel-agencies">
+    <h2 class="lang-en">4. Managing travel agencies</h2>
+    <h2 class="lang-es">4. Administrar agencias de viajes</h2>
+
+    <p class="lang-en">The <strong>Travel Agencies</strong> page is where Ergos onboards and administers every agency that uses the platform. Click the menu item in the sidebar (under <em>Partners</em>) to open the list.</p>
+    <p class="lang-es">La página <strong>Agencias de Viajes</strong> es donde Ergos onboardea y administra cada agencia que usa la plataforma. Hacé clic en el ítem del panel (bajo <em>Socios</em>) para abrir la lista.</p>
+
+    <div class="task">
+      <h4 class="lang-en">Onboarding a new travel agency</h4>
+      <h4 class="lang-es">Onboardear una nueva agencia de viajes</h4>
+      <ol class="lang-en">
+        <li>Go to <strong>Travel Agencies → + Create</strong>.</li>
+        <li>Fill in the agency profile: name, legal name, contact info, country, contracted GDS suppliers (Dingus / Hotetec / Restel / Roibos / Juniper).</li>
+        <li>Set the <strong>defaultRebatePct</strong> if known — this is the percentage Ergos pays back to the agency on every booking. Edited later from the Pricing Policy → Travel Agencies tab.</li>
+        <li>Set the <strong>defaultMarkupPct</strong> the agency will use by default when quoting customers (typical: 15%). Optional.</li>
+        <li>Save. The agency is created in <em>Pending</em> status. Send the owner an invitation email from this screen.</li>
+      </ol>
+      <ol class="lang-es">
+        <li>Andá a <strong>Agencias de Viajes → + Crear</strong>.</li>
+        <li>Completá el perfil de la agencia: nombre, nombre legal, datos de contacto, país, proveedores GDS contratados (Dingus / Hotetec / Restel / Roibos / Juniper).</li>
+        <li>Fijá el <strong>defaultRebatePct</strong> si lo sabés — es el porcentaje que Ergos devuelve a la agencia en cada reserva. Se edita después desde la pestaña Política de Precios → Agencias de Viajes.</li>
+        <li>Fijá el <strong>defaultMarkupPct</strong> que usará la agencia por defecto al cotizar (típico: 15%). Opcional.</li>
+        <li>Guardá. La agencia se crea en estado <em>Pendiente</em>. Envialé al dueño un correo de invitación desde esta pantalla.</li>
+      </ol>
+    </div>
+
+    <h3 class="lang-en">The Hotel Commission Overrides tab</h3>
+    <h3 class="lang-es">La pestaña Hotel Commission Overrides</h3>
+    <p class="lang-en">When you open a specific agency's detail page, one of the tabs is <strong>Hotel Commission Overrides</strong>. This is where you set per-(agency, hotel) rebate overrides — useful when an agency negotiates a special rate at one particular property without changing their default rebate. Click <strong>Add override</strong>, search for the hotel, enter the override percentage, and save.</p>
+    <p class="lang-es">Cuando abrís la página de detalle de una agencia específica, una de las pestañas es <strong>Hotel Commission Overrides</strong>. Acá fijás overrides de rebate por (agencia, hotel) — útil cuando una agencia negocia una tarifa especial en una propiedad particular sin cambiar su rebate por defecto. Hacé clic en <strong>Agregar override</strong>, buscá el hotel, ingresá el porcentaje del override y guardá.</p>
+
+    <figure class="screenshot">
+      <div class="screenshot-frame">
+        <img src="01-agencies-tab-selected.png"
+             alt="Pricing Policy page with the Agencies tab selected — left rail shows agencies, center panel shows Global Defaults (read-only) and Agency Rebate (editable)."
+             loading="lazy" onerror="this.style.display='none'" />
+      </div>
+      <figcaption class="lang-en">Setting an agency's default rebate from the Pricing Policy → Agencies tab. The agency's name shows in the breadcrumb; the rebate input is the only editable field on this view.</figcaption>
+      <figcaption class="lang-es">Fijando el rebate por defecto de una agencia desde Política de Precios → pestaña Agencias. El nombre de la agencia aparece en el breadcrumb; el input de rebate es el único campo editable en esta vista.</figcaption>
+    </figure>
+  </section>
+
+  <!-- SECTION 5: SALES AGENTS -->
+  <section id="sales-agents">
+    <h2 class="lang-en">5. Managing sales agents &amp; tiers</h2>
+    <h2 class="lang-es">5. Administrar agentes comerciales y tiers</h2>
+
+    <p class="lang-en">Sales agents are the Ergos team members who recruit and support travel agencies. Each agent belongs to one of four tiers (Starter, Growth, Elite, Strategic) which controls their commission percentage range.</p>
+    <p class="lang-es">Los agentes comerciales son los miembros del equipo de Ergos que reclutan y dan soporte a las agencias de viajes. Cada agente pertenece a uno de cuatro tiers (Starter, Growth, Elite, Strategic) que controla el rango de su porcentaje de comisión.</p>
+
+    <h3 class="lang-en">The 4 tiers</h3>
+    <h3 class="lang-es">Los 4 tiers</h3>
+    <table>
+      <thead><tr><th>Tier</th><th class="lang-en">Earning range</th><th class="lang-es">Rango de earning</th><th class="lang-en">Default earningPct</th><th class="lang-en">Default ops</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Starter</strong></td><td>10–14%</td><td>12%</td><td>8%</td></tr>
+        <tr><td><strong>Growth</strong></td><td>15–20%</td><td>18%</td><td>7%</td></tr>
+        <tr><td><strong>Elite</strong></td><td>21–26%</td><td>24%</td><td>6%</td></tr>
+        <tr><td><strong>Strategic</strong></td><td>27–32%</td><td>30%</td><td>5%</td></tr>
+      </tbody>
+    </table>
+
+    <div class="task">
+      <h4 class="lang-en">Promoting an agent to a higher tier</h4>
+      <h4 class="lang-es">Promover un agente a un tier más alto</h4>
+      <ol class="lang-en">
+        <li>Go to <strong>Sales Agents</strong> in the sidebar.</li>
+        <li>Find the agent and click <strong>Edit</strong>.</li>
+        <li>Change the <em>Commission Tier</em> dropdown to the new tier.</li>
+        <li>The <em>Earning Percentage</em> and <em>Operational Expense</em> fields auto-fill with the new tier's defaults; adjust if needed (must stay within the tier's range).</li>
+        <li>Save. The change applies to all <em>future</em> bookings only — past bookings keep their original commission snapshot.</li>
+      </ol>
+      <ol class="lang-es">
+        <li>Andá a <strong>Agentes Comerciales</strong> en el panel.</li>
+        <li>Encontrá al agente y hacé clic en <strong>Editar</strong>.</li>
+        <li>Cambiá el dropdown <em>Tier de Comisión</em> al nuevo tier.</li>
+        <li>Los campos <em>Porcentaje de Earning</em> y <em>Gasto Operacional</em> se autocompletan con los defaults del nuevo tier; ajustá si es necesario (deben quedar dentro del rango del tier).</li>
+        <li>Guardá. El cambio aplica solo a reservas <em>futuras</em> — las reservas pasadas mantienen su instantánea de comisión original.</li>
+      </ol>
+    </div>
+
+    <figure class="screenshot">
+      <div class="screenshot-frame">
+        <img src="07-agent-edit-tier-select.png"
+             alt="Sales Agent edit form showing Commission Tier dropdown (Elite selected), Earning Percentage input with range hint, and Operational Expense."
+             loading="lazy" onerror="this.style.display='none'" />
+      </div>
+      <figcaption class="lang-en">Sales Agent edit form — picking Elite tier auto-fills the earning (24%) and ops (6%) defaults and shows the allowed range hint (21–26%).</figcaption>
+      <figcaption class="lang-es">Formulario de edición del Agente Comercial — elegir el tier Elite autocompleta los defaults de earning (24%) y ops (6%) y muestra el hint del rango permitido (21–26%).</figcaption>
+    </figure>
+
+    <h3 class="lang-en">Per-(agent, hotel) overrides</h3>
+    <h3 class="lang-es">Overrides por (agente, hotel)</h3>
+    <p class="lang-en">For special relationships (e.g., an agent who personally handles support for one chain), you can set a per-hotel earning percentage or ops cost that beats the tier default. Set this from <strong>Pricing Policy → Agents tab → select agent → Layer 5</strong>.</p>
+    <p class="lang-es">Para relaciones especiales (ej. un agente que maneja personalmente el soporte de una cadena), podés fijar un earning o costo de ops por hotel que le gane al default del tier. Fijá esto desde <strong>Política de Precios → pestaña Agents → seleccionar agente → Capa 5</strong>.</p>
+  </section>
+
+  <!-- SECTION 6: HOTELS -->
+  <section id="hotels">
+    <h2 class="lang-en">6. Hotel catalog</h2>
+    <h2 class="lang-es">6. Catálogo de hoteles</h2>
+
+    <p class="lang-en">The <strong>Hotels</strong> page shows the entire hotel catalog Ergos has synced from its GDS suppliers. There are over 100,000 hotels across all four GDS — the list is paginated and filterable.</p>
+    <p class="lang-es">La página <strong>Hoteles</strong> muestra el catálogo completo de hoteles que Ergos sincronizó desde sus proveedores GDS. Hay más de 100,000 hoteles entre los cuatro GDS — la lista es paginada y filtrable.</p>
+
+    <h3 class="lang-en">Searching and filtering</h3>
+    <h3 class="lang-es">Buscar y filtrar</h3>
+    <ul class="lang-en">
+      <li>Search by name, city, or country in the search box.</li>
+      <li>Filter by <strong>GDS source</strong> (Dingus / Hotetec / Restel / Roibos / Juniper).</li>
+      <li>Filter by <strong>star rating</strong>.</li>
+      <li>Filter by <strong>chain</strong> (Meliá, Iberostar, Domina, etc.).</li>
+      <li>Pagination is lazy — the next 200 hotels load automatically as you scroll near the bottom of the list.</li>
+    </ul>
+    <ul class="lang-es">
+      <li>Buscá por nombre, ciudad o país en la caja de búsqueda.</li>
+      <li>Filtrá por <strong>fuente GDS</strong> (Dingus / Hotetec / Restel / Roibos / Juniper).</li>
+      <li>Filtrá por <strong>calificación de estrellas</strong>.</li>
+      <li>Filtrá por <strong>cadena</strong> (Meliá, Iberostar, Domina, etc.).</li>
+      <li>La paginación es lazy — los próximos 200 hoteles se cargan automáticamente al hacer scroll cerca del final de la lista.</li>
+    </ul>
+
+    <h3 class="lang-en">What you can edit per hotel</h3>
+    <h3 class="lang-es">Qué podés editar por hotel</h3>
+    <p class="lang-en">Hotels come from the supplier feeds, so the core data (name, address, photos, room types) is read-only — those changes have to happen at the supplier. What Ergos staff <em>can</em> edit per hotel:</p>
+    <p class="lang-es">Los hoteles vienen de los feeds del proveedor, así que los datos centrales (nombre, dirección, fotos, tipos de habitación) son solo lectura — esos cambios tienen que hacerse en el proveedor. Lo que el personal de Ergos <em>sí</em> puede editar por hotel:</p>
+    <ul class="lang-en">
+      <li><strong>Chain link</strong> — manually associate a hotel with a chain in the registry (when auto-link missed it).</li>
+      <li><strong>baseCommission</strong> — per-hotel Ergos markup override (rarely used; prefer markup_rules for groups of hotels).</li>
+      <li><strong>chainDiscountPct</strong> — per-hotel chain discount override.</li>
+    </ul>
+    <ul class="lang-es">
+      <li><strong>Vínculo con cadena</strong> — asociar manualmente un hotel con una cadena del registro (cuando el auto-link no lo detectó).</li>
+      <li><strong>baseCommission</strong> — override del markup de Ergos por hotel (raramente usado; preferí markup_rules para grupos de hoteles).</li>
+      <li><strong>chainDiscountPct</strong> — override del descuento de cadena por hotel.</li>
+    </ul>
+  </section>
+
+  <!-- SECTION 7: RESERVATIONS -->
+  <section id="reservations">
+    <h2 class="lang-en">7. Reservations &amp; bookings</h2>
+    <h2 class="lang-es">7. Reservas</h2>
+
+    <p class="lang-en">The <strong>Reservations</strong> page is your forensic tool for any booking-related question. Every reservation made through any agency is here, with its full audit trail.</p>
+    <p class="lang-es">La página <strong>Reservas</strong> es tu herramienta forense para cualquier pregunta relacionada con reservas. Cada reserva hecha a través de cualquier agencia está acá, con su rastro de auditoría completo.</p>
+
+    <h3 class="lang-en">Finding a specific booking</h3>
+    <h3 class="lang-es">Encontrar una reserva específica</h3>
+    <p class="lang-en">Search by locator, guest name, hotel, agency name, or agent. Filter by date range and status (Confirmed / Pending / Cancelled / Completed). Click any row to open the booking detail page.</p>
+    <p class="lang-es">Buscá por locator, nombre del huésped, hotel, nombre de la agencia o agente. Filtrá por rango de fechas y estado (Confirmada / Pendiente / Cancelada / Completada). Hacé clic en cualquier fila para abrir la página de detalle.</p>
+
+    <h3 class="lang-en">Booking detail — what you can see</h3>
+    <h3 class="lang-es">Detalle de reserva — qué podés ver</h3>
+    <ul class="lang-en">
+      <li><strong>Guest info</strong> — full names of every guest, contact details.</li>
+      <li><strong>Price distribution</strong> — supplier net, Ergos sell, agency markup, customer price; the whole waterfall.</li>
+      <li><strong>Commission Snapshot</strong> — the frozen-at-booking-time commission policy (baseCommission, chainDiscountPct, rebatePct, earningPct, opsExpense). Used for dispute resolution.</li>
+      <li><strong>Supplier confirmation</strong> — the code returned by the GDS, plus the timestamp.</li>
+      <li><strong>Audit timeline</strong> — every status change with timestamp and actor.</li>
+    </ul>
+    <ul class="lang-es">
+      <li><strong>Datos del huésped</strong> — nombres completos de cada huésped, datos de contacto.</li>
+      <li><strong>Distribución de precio</strong> — supplier net, Ergos sell, markup de agencia, precio cliente; toda la cascada.</li>
+      <li><strong>Commission Snapshot</strong> — la política de comisión congelada al momento de la reserva (baseCommission, chainDiscountPct, rebatePct, earningPct, opsExpense). Usada para resolver disputas.</li>
+      <li><strong>Confirmación del proveedor</strong> — el código devuelto por el GDS, más el timestamp.</li>
+      <li><strong>Timeline de auditoría</strong> — cada cambio de estado con timestamp y actor.</li>
+    </ul>
+
+    <div class="callout callout-info">
+      <strong class="lang-en">Investigating a dispute:</strong>
+      <strong class="lang-es">Investigar una disputa:</strong>
+      <span class="lang-en"> when an agency disputes commission on a past booking, open the booking detail and reference the Commission Snapshot. The 5 values frozen there are what was agreed at quote time — independent of how policy may have changed since.</span>
+      <span class="lang-es"> cuando una agencia disputa la comisión de una reserva pasada, abrí el detalle y referenciá el Commission Snapshot. Los 5 valores congelados ahí son lo que se acordó al momento de cotizar — independiente de cómo pueda haber cambiado la política desde entonces.</span>
+    </div>
+  </section>
+
+  <!-- SECTION 8: PRICING POLICY -->
+  <section id="pricing-policy">
+    <h2 class="lang-en">8. Pricing Policy <span class="label">/pricing-policy</span></h2>
+    <h2 class="lang-es">8. Política de Precios <span class="label">/pricing-policy</span></h2>
+
+    <p class="lang-en">The Pricing Policy page is where Ergos sets the commission rules that determine what each booking earns the platform, the agency, and the sales agent. It uses a 5-layer cascade — see the technical reference <a href="../pricing-policy-guide.html" style="color: var(--teal-dark);">Pricing Policy &amp; Hotel Brands — How It Works</a> for the full math. This section covers the everyday user actions.</p>
+    <p class="lang-es">La página de Política de Precios es donde Ergos fija las reglas de comisión que determinan lo que cada reserva le da a la plataforma, a la agencia y al agente comercial. Usa una cascada de 5 capas — ver la referencia técnica <a href="../pricing-policy-guide.html" style="color: var(--teal-dark);">Pricing Policy &amp; Hotel Brands — How It Works</a> para la matemática completa. Esta sección cubre las acciones diarias del usuario.</p>
+
+    <figure class="screenshot">
+      <div class="screenshot-frame">
+        <img src="01-commission-policy-full.png"
+             alt="Pricing Policy page — 3-panel layout with left scope rail (Hotels/Travel Agencies/Agents tabs), center inheritance stack, right simulate panel with waterfall."
+             loading="lazy" onerror="this.style.display='none'" />
+      </div>
+      <figcaption class="lang-en">Pricing Policy page — 3 panels: left rail (pick what you're configuring), center (the 5 cascade layers), right (live math simulation showing how a $200 booking would land).</figcaption>
+      <figcaption class="lang-es">Página de Política de Precios — 3 paneles: panel izquierdo (elegir qué estás configurando), centro (las 5 capas de la cascada), derecho (simulación matemática en vivo mostrando cómo aterrizaría una reserva de $200).</figcaption>
+    </figure>
+
+    <h3 class="lang-en">The three scope tabs</h3>
+    <h3 class="lang-es">Las tres pestañas de scope</h3>
+    <ul class="lang-en">
+      <li><strong>Hotels</strong> — set per-hotel commission overrides. The most-common adjustment.</li>
+      <li><strong>Travel Agencies</strong> — set per-agency default rebate. Affects every booking that agency makes.</li>
+      <li><strong>Agents</strong> — set per-agent earning overrides on specific hotels.</li>
+    </ul>
+    <ul class="lang-es">
+      <li><strong>Hoteles</strong> — fijar overrides de comisión por hotel. El ajuste más común.</li>
+      <li><strong>Agencias de Viajes</strong> — fijar el rebate por defecto por agencia. Afecta cada reserva que hace esa agencia.</li>
+      <li><strong>Agentes</strong> — fijar overrides de earning del agente en hoteles específicos.</li>
+    </ul>
+
+    <div class="task">
+      <h4 class="lang-en">Setting a new markup rule for a whole GDS (e.g., all Restel hotels)</h4>
+      <h4 class="lang-es">Fijar una nueva regla de markup para todo un GDS (ej. todos los hoteles Restel)</h4>
+      <ol class="lang-en">
+        <li>From the Pricing Policy page, click <strong>Create Markup Rule</strong> (top right).</li>
+        <li>In the Scope selector, choose <strong>GDS</strong>.</li>
+        <li>In the vendor dropdown, select <strong>Restel</strong>.</li>
+        <li>Set the Ergos markup percentage (e.g., 5).</li>
+        <li>Enter a reason (recorded in the audit log).</li>
+        <li>Type <code>APPLY</code> in the confirmation field and click <strong>Save Rule</strong>.</li>
+      </ol>
+      <ol class="lang-es">
+        <li>Desde la página de Política de Precios, hacé clic en <strong>Create Markup Rule</strong> (arriba a la derecha).</li>
+        <li>En el selector de Scope, elegí <strong>GDS</strong>.</li>
+        <li>En el dropdown de vendor, seleccioná <strong>Restel</strong>.</li>
+        <li>Fijá el porcentaje de markup de Ergos (ej. 5).</li>
+        <li>Ingresá una razón (se registra en el log de auditoría).</li>
+        <li>Escribí <code>APPLY</code> en el campo de confirmación y hacé clic en <strong>Save Rule</strong>.</li>
+      </ol>
+    </div>
+
+    <figure class="screenshot">
+      <div class="screenshot-frame">
+        <img src="05-bulk-edit-scope-selector.png"
+             alt="Create Markup Rule drawer — scope selector at top (GDS / Country / Stars / Individual hotels), vendor=Restel selected, markup input below."
+             loading="lazy" onerror="this.style.display='none'" />
+      </div>
+      <figcaption class="lang-en">Create Markup Rule drawer with the scope selector. Choose the scope, pick the value (Restel, ES, 5★, etc.), set the markup, type APPLY, save.</figcaption>
+      <figcaption class="lang-es">Cajón Create Markup Rule con el selector de scope. Elegí el scope, elegí el valor (Restel, ES, 5★, etc.), fijá el markup, escribí APPLY, guardá.</figcaption>
+    </figure>
+
+    <div class="callout callout-warning">
+      <strong class="lang-en">Be careful with broad rules:</strong>
+      <strong class="lang-es">Cuidado con las reglas amplias:</strong>
+      <span class="lang-en"> a GDS-scope rule affects every hotel from that GDS that doesn't already have a more-specific rule. Use Country or Individual hotels scope when you only want a subset. Always read the live preview ("X hotel(s) affected") before clicking Apply.</span>
+      <span class="lang-es"> una regla de scope GDS afecta a cada hotel de ese GDS que no tenga ya una regla más específica. Usá scope Country o Individual hotels cuando solo querés un subconjunto. Siempre leé la vista previa en vivo ("X hotel(s) affected") antes de hacer clic en Apply.</span>
+    </div>
+  </section>
+
+  <!-- SECTION 9: HOTEL BRANDS -->
+  <section id="hotel-brands">
+    <h2 class="lang-en">9. Hotel Brands <span class="label">/hotel-brands</span></h2>
+    <h2 class="lang-es">9. Marcas Hoteleras <span class="label">/hotel-brands</span></h2>
+
+    <p class="lang-en">The Hotel Brands page is the chain registry — where Ergos records the chains it has contracts with (Meliá, Iberostar, Domina, Gran Caribe, HTL Gaviota, etc.), the negotiated discount per chain, and which hotels belong to each chain.</p>
+    <p class="lang-es">La página Marcas Hoteleras es el registro de cadenas — donde Ergos registra las cadenas con las que tiene contratos (Meliá, Iberostar, Domina, Gran Caribe, HTL Gaviota, etc.), el descuento negociado por cadena y qué hoteles pertenecen a cada una.</p>
+
+    <figure class="screenshot">
+      <div class="screenshot-frame">
+        <img src="06-commission-chains-grid.png"
+             alt="Hotel Brands page — grid of chain cards (Domina, Gran Caribe, HTL Gaviota, Iberostar, Meliá) showing discount, linked hotel count, and status badges."
+             loading="lazy" onerror="this.style.display='none'" />
+      </div>
+      <figcaption class="lang-en">Hotel Brands grid. Each card shows the chain name + code, the chain discount, the count of linked hotels, the contract status (SIGNED / PENDING), and 4 actions: Edit Chain, Manage Hotels, Apply discount to linked hotels, Delete.</figcaption>
+      <figcaption class="lang-es">Grilla de Marcas Hoteleras. Cada tarjeta muestra el nombre + código de la cadena, el descuento, la cantidad de hoteles vinculados, el estado del contrato (SIGNED / PENDING) y 4 acciones: Editar Cadena, Administrar Hoteles, Aplicar descuento a hoteles vinculados, Eliminar.</figcaption>
+    </figure>
+
+    <h3 class="lang-en">The 4 actions per chain card</h3>
+    <h3 class="lang-es">Las 4 acciones por tarjeta de cadena</h3>
+    <ol class="lang-en">
+      <li><strong>Edit Chain</strong> — change name, code, discount %, contract status, effective/expiry dates, name match patterns, applicable vendors.</li>
+      <li><strong>Manage Hotels</strong> — open the dialog to link or unlink specific hotels. The "Currently linked" section shows existing members; the "Add hotels" section lets you search and select more.</li>
+      <li><strong>Apply discount to linked hotels</strong> — pushes the chain's <code>chainDiscountPct</code> to every linked hotel's commission record. Required after any discount change. Writes one audit entry per affected hotel.</li>
+      <li><strong>Delete Chain</strong> — removes the chain. Linked hotels are unlinked but not deleted.</li>
+    </ol>
+    <ol class="lang-es">
+      <li><strong>Editar Cadena</strong> — cambiar nombre, código, % de descuento, estado del contrato, fechas effective/expiry, patrones de coincidencia de nombre, vendors aplicables.</li>
+      <li><strong>Administrar Hoteles</strong> — abrir el diálogo para vincular o desvincular hoteles específicos. La sección "Currently linked" muestra los miembros existentes; la sección "Add hotels" te permite buscar y seleccionar más.</li>
+      <li><strong>Aplicar descuento a hoteles vinculados</strong> — empuja el <code>chainDiscountPct</code> de la cadena a cada registro de comisión del hotel vinculado. Requerido después de cualquier cambio de descuento. Escribe una entrada de auditoría por hotel afectado.</li>
+      <li><strong>Eliminar Cadena</strong> — quita la cadena. Los hoteles vinculados se desvinculan pero no se eliminan.</li>
+    </ol>
+
+    <div class="task">
+      <h4 class="lang-en">Onboarding a new chain</h4>
+      <h4 class="lang-es">Onboardear una nueva cadena</h4>
+      <ol class="lang-en">
+        <li>Click <strong>+ Add Chain</strong> (top right).</li>
+        <li>Fill in name, code, hasDiscount ON, chainDiscountPct (e.g., 15 for 15% off), contractStatus = <em>signed</em>, effective date today.</li>
+        <li>Save. The new chain appears with "0 hotels".</li>
+        <li>Click <strong>Manage Hotels</strong>, search for matching hotels, click each to select, click <strong>Link N hotel(s)</strong>.</li>
+        <li>Back on the chain card, click <strong>⚡ Apply discount to linked hotels</strong> to push the discount to every linked hotel.</li>
+      </ol>
+      <ol class="lang-es">
+        <li>Hacé clic en <strong>+ Add Chain</strong> (arriba a la derecha).</li>
+        <li>Completá nombre, código, hasDiscount ON, chainDiscountPct (ej. 15 para 15% off), contractStatus = <em>signed</em>, fecha effective hoy.</li>
+        <li>Guardá. La nueva cadena aparece con "0 hoteles".</li>
+        <li>Hacé clic en <strong>Administrar Hoteles</strong>, buscá los hoteles que coinciden, hacé clic en cada uno para seleccionar, hacé clic en <strong>Link N hotel(s)</strong>.</li>
+        <li>De vuelta en la tarjeta de la cadena, hacé clic en <strong>⚡ Apply discount to linked hotels</strong> para empujar el descuento a cada hotel vinculado.</li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- SECTION 10: FINANCE -->
+  <section id="finance">
+    <h2 class="lang-en">10. Finance &amp; booking breakdown</h2>
+    <h2 class="lang-es">10. Finanzas y desglose de reservas</h2>
+
+    <p class="lang-en">The <strong>Booking Breakdown</strong> page (under Finance in the sidebar) is the per-booking financial waterfall: GDS net → adjusted cost → Ergos sell → Ergos gross → payouts → Ergos net. For any single booking, you can see exactly where every dollar went.</p>
+    <p class="lang-es">La página <strong>Desglose de Reservas</strong> (bajo Finanzas en el panel) es la cascada financiera por reserva: GDS net → costo ajustado → Ergos sell → Ergos gross → payouts → Ergos net. Para una sola reserva, podés ver exactamente adónde fue cada dólar.</p>
+
+    <h3 class="lang-en">What it shows</h3>
+    <h3 class="lang-es">Qué muestra</h3>
+    <ul class="lang-en">
+      <li><strong>Per-booking detail</strong> — type or paste a booking locator to see the full waterfall.</li>
+      <li><strong>Aggregated reporting</strong> — pick a date range to see monthly totals across all bookings.</li>
+      <li><strong>Per-agency revenue</strong> — group by travel agency to see who's bringing in the most volume.</li>
+      <li><strong>Per-agent commission</strong> — group by sales agent to see commission paid.</li>
+    </ul>
+    <ul class="lang-es">
+      <li><strong>Detalle por reserva</strong> — escribí o pegá un locator de reserva para ver la cascada completa.</li>
+      <li><strong>Reporting agregado</strong> — elegí un rango de fechas para ver totales mensuales en todas las reservas.</li>
+      <li><strong>Ingreso por agencia</strong> — agrupá por agencia de viajes para ver quién trae más volumen.</li>
+      <li><strong>Comisión por agente</strong> — agrupá por agente comercial para ver la comisión pagada.</li>
+    </ul>
+
+    <div class="callout callout-teal">
+      <strong class="lang-en">Use the Commission Snapshot, not the current policy:</strong>
+      <strong class="lang-es">Usá el Commission Snapshot, no la política actual:</strong>
+      <span class="lang-en"> when reconciling historical bookings, the breakdown uses the values frozen on each booking — so a policy change last week doesn't retroactively rewrite last month's commissions.</span>
+      <span class="lang-es"> al reconciliar reservas históricas, el desglose usa los valores congelados en cada reserva — así un cambio de política la semana pasada no reescribe retroactivamente las comisiones del mes pasado.</span>
+    </div>
+  </section>
+
+  <!-- SECTION 11: AUDIT LOG -->
+  <section id="audit-log">
+    <h2 class="lang-en">11. Audit logs &amp; compliance</h2>
+    <h2 class="lang-es">11. Registros de auditoría y cumplimiento</h2>
+
+    <p class="lang-en">There are two audit logs in the Backoffice:</p>
+    <p class="lang-es">Hay dos logs de auditoría en el Backoffice:</p>
+    <ul class="lang-en">
+      <li><strong>Pricing Policy audit trail</strong> — accessible from Pricing Policy → Audit Trail button. Every commission policy change.</li>
+      <li><strong>Booking Audit Log</strong> — accessible from the <em>Finance &amp; Audit</em> menu in the sidebar. Every booking status transition + every modification.</li>
+    </ul>
+    <ul class="lang-es">
+      <li><strong>Rastro de auditoría de Política de Precios</strong> — accesible desde el botón Audit Trail en Política de Precios. Cada cambio en la política de comisiones.</li>
+      <li><strong>Log de Auditoría de Reservas</strong> — accesible desde el menú <em>Finanzas &amp; Auditoría</em> en el panel. Cada transición de estado + cada modificación de reservas.</li>
+    </ul>
+
+    <figure class="screenshot">
+      <div class="screenshot-frame">
+        <img src="09-audit-drawer.png"
+             alt="Pricing Policy Audit Trail drawer — date filters, scope filter, changed-by filter, paginated list of audit entries with old → new values."
+             loading="lazy" onerror="this.style.display='none'" />
+      </div>
+      <figcaption class="lang-en">Pricing Policy audit trail. Filter by date range, scope (hotel / agency / agent / global), or changed-by. Each entry shows old → new values inline.</figcaption>
+      <figcaption class="lang-es">Rastro de auditoría de Política de Precios. Filtrá por rango de fechas, scope (hotel / agency / agent / global) o changed-by. Cada entrada muestra los valores old → new inline.</figcaption>
+    </figure>
+
+    <div class="task">
+      <h4 class="lang-en">Quarterly compliance review</h4>
+      <h4 class="lang-es">Revisión de cumplimiento trimestral</h4>
+      <ol class="lang-en">
+        <li>Open Pricing Policy → click <strong>Audit Trail</strong> in the header.</li>
+        <li>Set the date filter to the quarter you're reviewing.</li>
+        <li>(Optional) Filter by scope = <code>hotel</code> to see only hotel-level changes, or by <em>Changed by</em> = an admin's email.</li>
+        <li>Page through the results (25 per page). Each entry shows: timestamp, scope, who, what field, old → new, and reason text (when supplied).</li>
+        <li>Export-ready data is also available via the <code>GET /audit</code> API endpoint if you need CSV/JSON.</li>
+      </ol>
+      <ol class="lang-es">
+        <li>Abrí Política de Precios → hacé clic en <strong>Audit Trail</strong> en el encabezado.</li>
+        <li>Fijá el filtro de fechas al trimestre que revisás.</li>
+        <li>(Opcional) Filtrá por scope = <code>hotel</code> para ver solo cambios a nivel hotel, o por <em>Changed by</em> = el correo de un admin.</li>
+        <li>Recorré los resultados (25 por página). Cada entrada muestra: timestamp, scope, quién, qué campo, old → new y el texto de razón (cuando se proporciona).</li>
+        <li>Datos listos para exportar también están disponibles vía el endpoint API <code>GET /audit</code> si necesitás CSV/JSON.</li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- SECTION 12: VENDOR MANAGEMENT -->
+  <section id="vendor-management">
+    <h2 class="lang-en">12. Hotel Suppliers <span class="label">/vendor-management</span></h2>
+    <h2 class="lang-es">12. Proveedores Hoteleros <span class="label">/vendor-management</span></h2>
+    <span class="audience lang-en">Admin only</span>
+    <span class="audience lang-es">Solo Admin</span>
+
+    <p class="lang-en">The <strong>Hotel Suppliers</strong> page (under <em>Partners</em>) is where Ergos admins control which GDS suppliers are active, configure their API credentials (read-only display; rotation happens through ops), and view per-vendor health metrics. The underlying URL is <code>/vendor-management</code> — the "Vendor Management" name from earlier versions still appears in the URL and in some support docs.</p>
+    <p class="lang-es">La página <strong>Proveedores Hoteleros</strong> (bajo <em>Socios</em>) es donde los admins de Ergos controlan qué proveedores GDS están activos, configuran sus credenciales de API (visualización solo lectura; la rotación ocurre vía ops) y ven métricas de salud por vendor. La URL subyacente es <code>/vendor-management</code> — el nombre "Vendor Management" de versiones anteriores sigue apareciendo en la URL y en algunos docs de soporte.</p>
+
+    <h3 class="lang-en">What you can do here</h3>
+    <h3 class="lang-es">Qué podés hacer acá</h3>
+    <ul class="lang-en">
+      <li>See the status of each vendor (active / paused / failing).</li>
+      <li>View when each vendor's catalog was last synced.</li>
+      <li>Enable/disable a vendor globally (e.g., pause Restel during maintenance).</li>
+      <li>See the per-vendor sub-vendor codes used for chain auto-linking.</li>
+    </ul>
+    <ul class="lang-es">
+      <li>Ver el estado de cada vendor (activo / pausado / fallando).</li>
+      <li>Ver cuándo se sincronizó por última vez el catálogo de cada vendor.</li>
+      <li>Habilitar/deshabilitar un vendor globalmente (ej. pausar Restel durante mantenimiento).</li>
+      <li>Ver los códigos de sub-vendor por vendor usados para el auto-linking de cadenas.</li>
+    </ul>
+
+    <div class="callout callout-warning">
+      <strong class="lang-en">Pausing a vendor:</strong>
+      <strong class="lang-es">Pausar un vendor:</strong>
+      <span class="lang-en"> immediately hides all that vendor's hotels from search results in the Agency App. Bookings already in-flight continue. Only do this in coordination with the supplier / for known maintenance windows.</span>
+      <span class="lang-es"> oculta inmediatamente todos los hoteles de ese vendor de los resultados de búsqueda en la App de la Agencia. Las reservas ya en curso continúan. Solo hacé esto coordinando con el proveedor / para ventanas de mantenimiento conocidas.</span>
+    </div>
+  </section>
+
+  <!-- SECTION 13: TROUBLESHOOTING -->
+  <section id="troubleshooting">
+    <h2 class="lang-en">13. Common tasks &amp; troubleshooting</h2>
+    <h2 class="lang-es">13. Tareas comunes y solución</h2>
+
+    <h3 class="lang-en">An agency's bookings stopped going through</h3>
+    <h3 class="lang-es">Las reservas de una agencia dejaron de pasar</h3>
+    <ul class="lang-en">
+      <li>Check the agency's account status (Travel Agencies → search by name). Active?</li>
+      <li>Check Hotel Suppliers (Partners → Hotel Suppliers) — is the GDS they're booking from active?</li>
+      <li>Open a recent failed booking from Reservations; the supplier error message tells you the cause.</li>
+    </ul>
+    <ul class="lang-es">
+      <li>Revisá el estado de la cuenta de la agencia (Agencias de Viajes → buscar por nombre). ¿Activa?</li>
+      <li>Revisá Administración de Vendors — ¿el GDS desde el que reservan está activo?</li>
+      <li>Abrí una reserva fallida reciente desde Reservas; el mensaje de error del proveedor te dice la causa.</li>
+    </ul>
+
+    <h3 class="lang-en">A sales agent's commission seems wrong</h3>
+    <h3 class="lang-es">La comisión de un agente comercial parece incorrecta</h3>
+    <ul class="lang-en">
+      <li>Open one of their recent bookings from Reservations. Look at the Commission Snapshot's earningPct.</li>
+      <li>Confirm their current tier is correct (Sales Agents → Edit).</li>
+      <li>Check if there's a per-(agent, hotel) override active that's lowering the rate.</li>
+      <li>Cross-reference with the audit log to see if their tier was changed recently.</li>
+    </ul>
+    <ul class="lang-es">
+      <li>Abrí una de sus reservas recientes desde Reservas. Mirá el earningPct del Commission Snapshot.</li>
+      <li>Confirmá que su tier actual sea el correcto (Agentes Comerciales → Editar).</li>
+      <li>Revisá si hay un override por (agente, hotel) activo que esté bajando la tasa.</li>
+      <li>Cruzá con el log de auditoría para ver si su tier se cambió recientemente.</li>
+    </ul>
+
+    <h3 class="lang-en">A chain's discount didn't apply to all its hotels</h3>
+    <h3 class="lang-es">El descuento de una cadena no se aplicó a todos sus hoteles</h3>
+    <p class="lang-en">After editing a chain's discount %, you must explicitly click <strong>⚡ Apply discount to linked hotels</strong> on the chain card. The save alone updates the chain record; the apply action pushes the new value to every linked hotel. Read the audit log entries that result — they confirm how many hotels were updated.</p>
+    <p class="lang-es">Después de editar el % de descuento de una cadena, tenés que hacer clic explícitamente en <strong>⚡ Apply discount to linked hotels</strong> en la tarjeta de la cadena. El save solo actualiza el registro de la cadena; la acción apply empuja el nuevo valor a cada hotel vinculado. Leé las entradas de auditoría que resultan — confirman cuántos hoteles se actualizaron.</p>
+
+    <h3 class="lang-en">I made a mistake on a Create Markup Rule and need to undo it</h3>
+    <h3 class="lang-es">Me equivoqué en un Create Markup Rule y necesito deshacer</h3>
+    <p class="lang-en">Open the markup rule directly via the API or, in the UI, create a NEW rule with the corrected value targeting the same scope+identifier — it overwrites the old one. The audit log preserves the history. If the rule was applied to many hotels with downstream commission effects, contact the engineering team to assist.</p>
+    <p class="lang-es">Abrí la markup rule directamente vía API o, en la UI, creá una NUEVA regla con el valor corregido apuntando al mismo scope+identifier — sobrescribe la anterior. El log de auditoría preserva la historia. Si la regla se aplicó a muchos hoteles con efectos downstream sobre comisiones, contactá al equipo de ingeniería para que te asistan.</p>
+
+    <h3 class="lang-en">Need more help?</h3>
+    <h3 class="lang-es">¿Necesitás más ayuda?</h3>
+    <p class="lang-en">For day-to-day operational questions, contact the Ergos engineering team via internal channels. For the technical reference on the pricing-policy cascade, the formulas, the data model, and the API endpoints, see <a href="../pricing-policy-guide.html" style="color: var(--teal-dark);">Pricing Policy &amp; Hotel Brands — How It Works</a>.</p>
+    <p class="lang-es">Para preguntas operacionales del día a día, contactá al equipo de ingeniería de Ergos por los canales internos. Para la referencia técnica sobre la cascada de política de precios, las fórmulas, el modelo de datos y los endpoints de API, mirá <a href="../pricing-policy-guide.html" style="color: var(--teal-dark);">Pricing Policy &amp; Hotel Brands — How It Works</a>.</p>
+  </section>
+
+  </main>
+</div>
+
+<script>
+  (function () {
+    const saved = localStorage.getItem('guide-lang');
+    if (saved === 'es' || saved === 'en') {
+      document.documentElement.lang = saved;
+    }
+  })();
+  function toggleLang() {
+    const cur = document.documentElement.lang === 'es' ? 'es' : 'en';
+    const next = cur === 'es' ? 'en' : 'es';
+    document.documentElement.lang = next;
+    localStorage.setItem('guide-lang', next);
+  }
+</script>
+</body>
+</html>
