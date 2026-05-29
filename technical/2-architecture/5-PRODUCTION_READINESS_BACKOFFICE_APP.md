@@ -2,9 +2,62 @@
 
 **Repository:** `backoffice-app`
 **Type:** React SPA Admin Application
-**Tech Stack:** React 18.2, TypeScript 5.3, Vite 5.0, Tailwind CSS 3.4, Radix UI
-**Assessment Date:** 2025-11-28
-**Current Status:** ⚠️ Development - Not Production Ready
+**Tech Stack:** React 18.2, TypeScript 5.3, Vite 5.0, Tailwind CSS 3.4, Radix UI, **Vitest** (not Jest), Cypress, i18next, react-i18next, recharts, primereact, @tanstack/react-table, @tanstack/react-virtual
+**Original Assessment Date:** 2025-11-28
+**Drift Audit Date:** 2026-05-29
+**Current Status:** ⚠️ Development - Not Production Ready, BUT significant maintainability work shipped (see drift audit). Most of the prescriptive code (MFA, RBAC, session timeout, CSP, DOMPurify, Sentry) remains unimplemented.
+
+---
+
+## DRIFT AUDIT — 2026-05-29
+
+This document is overwhelmingly a forward-looking implementation plan. Most prescribed gaps (MFA, fine-grained RBAC, httpOnly cookies, session timeout, CSP, DOMPurify, Sentry, Zod env validation) remain valid TODOs. **What the doc misses is substantial parallel work that has shipped** — the entire Pricing Policy module, Hotel Brands feature, booking audit log UI, nav restructure, the Phase 1+2 refactor, and the Cypress E2E coverage that closes some of the testing gap.
+
+### Stale facts to override
+
+1. **Tech stack** — was `React 18.2, TypeScript 5.3, Vite 5.0, Tailwind, Radix UI`. Still accurate, but missing the key recent additions: **Vitest** (not Jest — this affects all test code samples), Cypress (20 E2E specs), i18next + react-i18next, recharts, primereact, @tanstack/react-table 8.21.3, @tanstack/react-virtual 3.13.25.
+2. **Score table (lines 17–25)** — date 2025-11-28 is stale; "Testing: 15/100 — 1 test file" is wrong (see #5 below). After the Phase 1+2 refactor, Maintainability is closer to 85 (was 80).
+3. **Testing claim "1 test file ~15%"** (line 1103) — **stale.** Actual: 6 Vitest unit files (`App.test.tsx`, `authSlice.test.ts`, `i18n.test.ts`, `DataTable.test.tsx`, and under Pricing Policy: `calc.test.ts`, `helpers.test.ts` — 16 passing tests there alone) PLUS **20 Cypress E2E specs**, 8 of which are commission/pricing-related (`commission-policy-cascade`, `commission-policy-effective`, `commission-policy-save-flow`, `commission-dialogs`, `commissions`, `markup-rules-cascade`, `bulk-edit-scope-selector`, `hotel-commission-overrides`). Bump Testing score 15 → 30+.
+4. **Test runner is Vitest, not Jest.** All code samples in §5.1 (lines 1106–1185) use `jest.mock`, `jest.Mock`, `jest.fn()`. Replace with `vi.mock`, `Mock` from `vitest`, `vi.fn()`. `vite.config.ts:47-52` configures the `test:` block + `setupFiles: ['./src/test-setup.ts']`.
+5. **Code splitting** — §7.1 (lines 1247–1276) prescribes `React.lazy()` for routes. **Already shipped.** `src/routes/index.ts` has 21 `React.lazy()` calls covering every admin route. Flip ✅; reframe as "code-splitting shipped — consider per-module chunk hints next".
+6. **Path alias** — all code examples use `@/...` (e.g., `@/hooks/usePermission`). Actual alias is `@app/...` per `vite.config.ts:38`. Replace globally in code snippets (lines 100, 156, 247, 308, 341, 426, 553, 638, 673, 706, 794, 850, 921, 1045, 1072, 1107, 1156, 1224, 1250, 1307, 1372).
+7. **`src/components/ErrorBoundary.tsx` is buggy.** Uses `window.addEventListener('error')` which does NOT catch React render errors — defeats the purpose. Doc §8.1 prescribed pattern (lines 1322–1365) is correct and should replace it. This is an active production-readiness issue, not just a TODO.
+8. **Token security note** — original §1.2 says "Token in localStorage (XSS vulnerable)". Still true; but **partial mitigation exists**: 401 handler in `src/network/axios-config.ts:46-55` dispatches `actionSessionExpired`, clears auth, and redirects. Not full httpOnly migration, but a reactive-logout safety net.
+
+### MAJOR features shipped that are missing from the doc
+
+9. **Pricing Policy module** — the single largest feature surface in the app. `src/modules/pricing-policy/PricingPolicyPage.tsx` (745 LOC after refactor; was 959) + 11 component files + `src/network/pricing-policy/index.ts`. 5-layer cascade engine, audit drawer (`AuditFullDrawer.tsx`), simulate panel, rule editor. Already has 16 passing Vitest tests + 8 Cypress specs. Add a new top-level section "Pricing Policy & Hotel Brands Module".
+10. **Phase 1+2 refactor artifacts** (recent):
+    - `MobileScopeHeader.tsx` (extracted from page)
+    - `useHotelsPagination.ts` (extracted hook for lazy hotel pagination)
+    - `resolveScopeLabel` helper (extracted, with unit tests)
+    - `CreateMarkupRuleDrawer.tsx` (renamed from `BulkEditDrawer`, 627 LOC)
+    - Desktop/tablet render branches deduplicated
+    - `EditedValues` tri-state (`number | string | null`) is **load-bearing** — `null` signals "unlink hotel from chain". Refactors that narrow the type break the chain-unlink path. Documented in `helpers.ts:46-68`. Add as a foot-gun callout.
+    - **Whole-percent integer storage convention** codified in `helpers.ts:121-172`. Every commission/discount/rebate/markup is integer 0–100. Affects §4.2's API typing (`commission: z.number().min(0).max(100)` happens to be right).
+11. **Hotel Brands feature** — renamed from Commission Chains. `src/modules/hotel-brands/ChainsManagementPage.tsx` + `LinkedHotelsDialog.tsx`. Per-vendor brand→hotel link management with per-link audit entries. URL `/hotel-brands` (was `/commission-chains`). Also affects every doc reference to "Commission Chains".
+12. **Booking Audit Log viewer** — `src/modules/booking-audit-log/BookingAuditLogPage.tsx` + `src/network/booking-audit-log/index.ts`. **Closes the §3.3 prescribed gap (lines 918–1034) for bookings.** Doc should reframe to "audit log viewer shipped for bookings; extend to user/role/auth events".
+13. **Finance Booking Breakdown** — `src/modules/finance/BookingBreakdownPage.tsx` (route `/finance/booking-breakdown`).
+14. **Employment module** — `src/modules/employment/` mounted at `/employment/*` (manages travel-agency employees).
+15. **Hotel Suppliers (formerly Vendor Management)** — `src/modules/vendor-management/VendorManagementPage.tsx`. Now labeled "Hotel Suppliers" in nav (URL `/vendor-management` unchanged).
+16. **Per-agency P&L drill-down** — `src/modules/travel-agencies/AgencyBookingsPnLPage.tsx` (route `/travel-agencies/:id/pnl`).
+17. **Sidebar nav restructure** — `src/routes/nav.tsx:133-236`. Admin nav now grouped as: Dashboard / BackOffice Module / Hotel Module / **Finance & Audit** (Pricing Policy, Hotel Brands, Booking Breakdown, Booking Audit Log) / **Partners** (Travel Agencies, Employment, Sales Agents, Hotel Suppliers). Consolidation rationales are inline-commented at lines 162-169 and 200-207. The 3 prior groups (Travel Agency Module / Sales Agent Module / Configuration) merged into Partners; standalone Finance + Audit merged into Finance & Audit.
+18. **`vite-plugin-istanbul` for Cypress coverage** — `vite.config.ts:11-16` conditional on `VITE_COVERAGE=true`. E2E coverage runs are wired.
+
+### Production-readiness gaps that remain valid
+
+MFA (§1.1), httpOnly cookies (§1.2 — full migration), proactive session timeout (§1.3), re-auth modal (§1.4), fine-grained RBAC + `Permission` enum + `usePermission` hook + ProtectedRoute/ProtectedAction (§2.1–§2.2), permission matrix UI (§2.3), client-side admin-action audit logger (§3.1 — pricing-policy + hotel-brands write their own backend audit entries; the *uniform admin-action logger* doc envisions is not implemented), CSP (§6.1), DOMPurify (§6.2), Sentry (§8.2), Alibaba ARMS SDK, Zod env validation (§4.1).
+
+### Cross-reference fixes
+
+19. Lines 1528, 1541-1544 reference sibling docs — verify numeric-prefix naming and update.
+20. **Anywhere the doc references "Commission Policy" / "Commission Chains" / "Bulk Edit"** — update to **Pricing Policy** / **Hotel Brands** / **Create Markup Rule**. URLs `/commission-policy` → `/pricing-policy` and `/commission-chains` → `/hotel-brands`.
+21. **i18n namespaces renamed** — `commissions.*` → `pricingPolicy.*` and `commissionChains.*` → `hotelBrands.*` across en/fr/es locale files.
+
+### Integration guides cross-link
+
+For per-adapter detail (admin-side context):
+[Restel](../3-integration/hotels/restel/restel-integration-guide.md) · [Dingus](../3-integration/hotels/dingus/dingus-integration-guide.md) · [Hotetec](../3-integration/hotels/hotetec/hotetec-integration-guide.md) · [Juniper / Roibos](../3-integration/hotels/juniper/juniper-integration-guide.md) · [Mozio (transfers)](../3-integration/transportation/mozio/mozio-integration-guide.md).
 
 ---
 

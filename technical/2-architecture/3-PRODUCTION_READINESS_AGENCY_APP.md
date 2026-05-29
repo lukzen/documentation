@@ -2,9 +2,56 @@
 
 **Repository:** `agency-app`
 **Type:** React SPA Frontend Application
-**Tech Stack:** React 18.2, TypeScript 4.9, Vite 5.0, Mantine UI, Redux Toolkit
-**Assessment Date:** 2025-11-28
-**Current Status:** ⚠️ Development/Beta - Not Production Ready
+**Tech Stack:** React **19.2**, TypeScript **5.9**, Vite 5.0, Mantine **8.2**, Redux Toolkit **2.11**  *(versions corrected 2026-05-29)*
+**Original Assessment Date:** 2025-11-28
+**Drift Audit Date:** 2026-05-29
+**Current Status:** ⚠️ Development/Beta - Not Production Ready (most prescriptive gaps still hold)
+
+---
+
+## DRIFT AUDIT — 2026-05-29
+
+This section is the punch list of what changed in code since the original 2025-11-28 assessment. The body of this document is preserved as the implementation plan; the corrections below override any conflicting claim.
+
+### Stale facts to override
+
+1. **Tech-stack versions** — original line 5 said React 18.2 / TS 4.9. Actual: React 19.2.4 / TypeScript 5.9.3 / Mantine 8.2.8 / Redux Toolkit 2.11.2 / Vite 5.0.12.
+2. **TypeScript strict mode** — original implies "partial strict mode"; the truth is `tsconfig.json` has `"strict": false`. Only `noFallthroughCasesInSwitch` is enabled.
+3. **Testing claim "1 placeholder test"** (lines ~494–509) — actually **31 test files** exist across `src/utils/__tests__/`, `src/redux/__tests__/`, `src/domains/booking/__tests__/`, `src/domains/hotel-search/__tests__/`, `src/domains/room-selection/__tests__/`. Coverage still estimated < 30%, but utilities, reducers, and booking-domain math are exercised.
+4. **Testing-library** is already installed (`@testing-library/react 16.3.2`, `@testing-library/jest-dom 5.16.5`, `@testing-library/user-event 13.5.0`); only MSW is missing.
+5. **Code splitting** — original §5.1 claims `React.lazy()` is in use. **False.** Zero `React.lazy(` calls anywhere in `src/`. All routes import statically in `src/routers/routes.ts`. Flip the ✅ to ❌.
+6. **Cypress credentials example** — `cypress/cypress.env.example.json` already exists; the bash snippet at lines 366–384 is obsolete.
+7. **Bundle size 645KB** is unverifiable post-Mantine 8 / React 19 / framer-motion / Mozio. Remeasure.
+
+### SEV-1 active issues (not gap, vulnerability)
+
+8. **Secrets in repo.** `agency-app/.env` contains live MongoDB Atlas connection strings, JWT_SECRET, Hotetec/Dingus credentials, Google OAuth refresh token. Rotate ALL of these and remove from git history (`git filter-repo`). The doc currently frames env-vars as a hygiene problem (§1.4); the reality is a SEV-1 secrets-management incident.
+9. **`dangerouslySetInnerHTML` without sanitization** at `src/domains/room-selection/components/HotelInfoHeader.tsx`. Hotel descriptions from GDS feeds (Hotetec, Dingus, Roibos) are rendered as raw HTML. Active stored-XSS vector. Promote §2.3 from "preventive" to "fix-now".
+
+### Features SHIPPED but missing from the doc
+
+10. **AgencyPnL feature** — per-booking P&L report at `src/domains/account/pages/AgencyPnLPage.tsx` + API client `src/api/travel-agency/index.ts`. Mantine v8 `DatePickerInput`. Follows the whole-percent integer convention (commented inline). Add a "Domain: Account" section.
+11. **Full account management suite** — `ProfileInfoPage.tsx`, `ChangePasswordPage.tsx`, `EmployeeManagementPage.tsx`, `PasskeysPage.tsx`, `PageAccount.tsx` — none mentioned. Live in `src/domains/account/pages/`.
+12. **WebAuthn / Passkeys** — `@simplewebauthn/browser 13.0.0` shipped. See `src/api/auth/passkey.ts` + `src/components/PasskeySetupDialog/` (rendered globally in `src/routers/index.tsx`). Add §2.5 "Passkey Authentication".
+13. **Mozio / transportation domain** — fully wired:
+    - API client: `src/api/transportation/index.ts` (`searchTransportation`, `pollTransportationSearch`, `bookTransportation`, `getTransportationBooking`, `cancelTransportationBooking`)
+    - UI: `src/domains/booking/components/transportation/` (4 components: TransportationSection, TransferSearchForm, TransferResultsList, TransferVehicleCard)
+    - Integration in `BookingPage.tsx` (lines 64, 68, 73) and `BookingConfirmationPage.tsx` (line 329)
+    - See the [Mozio integration guide](../3-integration/transportation/mozio/mozio-integration-guide.md) for the async-polling model.
+14. **Whole-percent integer convention** — codified at `src/domains/booking/utils/calculation.ts:1-10`. Markup/commission/rebate fields are stored as integers 0–100; only `pct()` inside the engine divides by 100. Add as §1.5.
+15. **`commissionSnapshot` + `agencyMarkupPctSnapshot`** are captured on every booking — see `src/domains/booking/types.ts` and `BookingDetailsPage.tsx`. New immutable-snapshot pattern.
+16. **Architecturally significant additions** — `react-error-boundary 6.1.1` (use it in the doc's §3.3 examples instead of raw class components), `@tanstack/react-virtual 3.13.18` (virtualization primitive now available for §5 perf section), `framer-motion 12.38.0`, `embla-carousel-react 8.6.0`, `ChatWidget`, `MobileBottomNav`, `AgencyBackground`.
+
+### Cross-reference fixes
+
+17. Lines 27, 1392, 1403–1405 reference sibling docs without numeric prefixes. Update to `1-PRODUCTION_READINESS_ALIBABA_INFRA.md`, `2-PRODUCTION_READINESS_BACKEND_SERVICE.md`, `4-PRODUCTION_READINESS_BACKEND_SERVICE.md`, etc. (verify exact naming).
+18. **Backend admin path renames do NOT affect this doc** — agency-app has zero `/admin/*` calls (grep verified). The `commission-policy → pricing-policy` / `commission-chains → hotel-brands` renames are tracked in `5-PRODUCTION_READINESS_BACKOFFICE_APP.md`. Mention this in the preamble.
+19. **Cypress env example path:** doc says project root; actual is `cypress/cypress.env.example.json`.
+20. **Production URL** at line 221 (`api.lukzen-op.com`) — verify against current infra; backend doc should be authoritative.
+
+### Sections still accurate (no change needed)
+
+CSP (§2.1), DOMPurify (§2.3 — install still required, but bumped to "active vulnerability"), error boundaries beyond app-level (§3.3), API retry logic (§4.1), bundle-size monitoring (§5.2), source-maps-in-prod (§5.2), image optimization (§5.3), Sentry (§6.1), web-vitals integration (§5.4 — package installed but never imported, dead dep), and the `createEntityAdapter`/`createAsyncThunk` recommendations in §7.1 all remain valid.
 
 ---
 

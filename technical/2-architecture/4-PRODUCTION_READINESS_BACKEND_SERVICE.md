@@ -2,9 +2,60 @@
 
 **Repository:** `backend-service`
 **Type:** Node.js/TypeScript REST API
-**Tech Stack:** Express 4.21, TypeScript 5.1, MongoDB 6.20, Mongoose
-**Assessment Date:** 2025-11-28
-**Current Status:** ⚠️ Near Production - Requires Critical Code Improvements
+**Tech Stack:** Express 4.21, TypeScript 5.1, **Mongoose 7.8.7**, Bun runtime *(version corrected 2026-05-29)*
+**Original Assessment Date:** 2025-11-28
+**Drift Audit Date:** 2026-05-29
+**Current Status:** ⚠️ Near Production - Significant infrastructure shipped since original assessment (see drift audit below); several "TODO" items in the body are actually done
+
+---
+
+## DRIFT AUDIT — 2026-05-29
+
+The body of this document is preserved as the implementation plan. The corrections below override any conflicting claim. The biggest single change is that **several infrastructure pieces the doc prescribes as TODO are already shipped** — Swagger/OpenAPI, Winston logging, Zod validation on newer domains, error hierarchy, and 41 test files including 120+ backoffice unit tests.
+
+### Stale "still TODO" claims that have actually shipped
+
+1. **Swagger / OpenAPI** (lines 1713–1796, Phase 4 Week 7 line 1855). **Shipped.** Serving at `/docs` via `@asteasolutions/zod-to-openapi 8.5.0` + `swagger-ui-express 5.0.1`. Implementation at `src/docs/swagger.ts` + `src/docs/spec.ts` + `src/docs/registry.ts` + per-endpoint `src/docs/openapi/*.openapi.ts`. Reframe as "expand coverage", not "build from scratch".
+2. **Winston structured logger** (lines 1033–1041, Phase 1 Week 2 line 1812). **Shipped.** Lives at `src/shared/utils/logger.ts` with structured formatter, optional file transports gated on `LOG_FILE=true`. Used by error middleware at `src/shared/middlewares/error.middleware.ts:12`. Still missing: correlation-id binding, JSON-mode in prod, remote sink (Sentry).
+3. **Zod validation infrastructure** (lines 152–197, Phase 1 Week 1 line 1806). **Partially shipped.** Heavy use in `src/domains/backoffice/schemas/`, `src/domains/hotel/schemas/`, `src/domains/transportation/schemas/`. Newer domains use it consistently; legacy routes still mix manual validation. Reframe as "complete legacy migration".
+4. **Error hierarchy** (lines 367–465, §2.1). **Partially shipped.** `src/shared/errors/http-error.ts` defines `HttpError` + `BadRequestError`/`UnauthorizedError`/`ForbiddenError`/`NotFoundError`/`InternalServerError`. Global handler at `src/shared/middlewares/error.middleware.ts` already handles `HttpError`, `MongooseError`, validation errors, and JWT errors. Doc's proposed `AppError` tree is richer (adds `errorCode`, `details`, `ExternalAPIError`, `DatabaseError`, `ConflictError`, correlation-id fields) — reframe as "extend existing hierarchy".
+5. **Test infrastructure** (lines 676–686, Phase 2 Week 3 line 1825). **Shipped — with Bun, not Jest.** 41 test files in `src/**/__tests__/`. Backoffice domain alone: 120+ test cases across 6 unit test files. Plus `src/domains/transportation/__tests__/`, `src/shared/adapters/mozio/__tests__/`. Jest snippets in §3.2–§3.5 are incompatible — Bun uses `mock.module`, `mock(() => ...)`, `import { mock } from "bun:test"`.
+
+### Stale facts to override
+
+6. **Line 5 tech stack** — was "MongoDB 6.20"; actual `package.json` pins `mongoose: 7.8.7` (server version is infra concern, not code).
+7. **Lines 99–111 adapter inventory** — was Hotetec / Roibos / Dingus (parents). Actual: **5 adapters** including Restel (hotels, new) and Mozio (transportation, new domain). Update the diagram. See [adapter integration guides](../3-integration/) for per-adapter detail.
+8. **Provider enum** at lines 161, 1015, 1376, 1762 — was `['dingus', 'hotetec', 'roibos']`. Actual hotel providers are `dingus | hotetec | restel | roibos`; Mozio is transport-only, not in this enum.
+9. **§8 Line 1715 "Current: No API documentation"** — contradicts B-item-1; remove.
+10. **Line 1873 "Current State table"** — multiple rows ("API Documentation: None", "Input Validation: Manual, inconsistent", "Logging: Console-only") are wrong; replace each with the partial-shipped reality.
+
+### Features shipped that are missing from the doc
+
+11. **Transportation domain (Mozio)** — `src/domains/transportation/{services,routes,repositories,models,schemas}/` + adapter `src/shared/adapters/mozio/`. Route mount `/transportation` at `src/server/routes/index.ts:44`. Async polling model (different from hotel adapters). Add a Transportation section parallel to Hotels. See [Mozio integration guide](../3-integration/transportation/mozio/mozio-integration-guide.md).
+12. **Pricing Policy / Hotel Brands rename** — `commission-policy.service.ts` → `pricing-policy.service.ts`; class `CommissionPolicyService` → `PricingPolicyService` (instance `pricingPolicyService` at line 960). Same for chains: `hotel-brand.service.ts`, `HotelBrandService`, route mounts `/admin/pricing-policy` and `/admin/hotel-brands`. The `CommissionChain` MongoDB model file itself was **not** renamed (only service/route/class layers) — `pricing-policy.service.ts:13` still imports `CommissionChain` from `../models/commission-chain.model`.
+13. **Commission cascade kernel** — `src/domains/backoffice/services/commission-cascade.ts` is new (extracted Phase 1B). Pure functions: `resolveBaseCommission`, `resolveHotelChainDiscount`, `resolveAgencyRebate`, `fetchMarkupRulesForHotel`, types `BaseCommissionSource`, `MarkupRuleMap`. Migration script at `src/scripts/migrate-base-commission-to-conservative.ts:33` imports from it. Add "Pure functional core" architecture note.
+14. **Unified `markup_rules` collection** — `src/domains/backoffice/models/markup-rule.model.ts`. **5 scopes** (`gds | country | stars | chain | hotel`), not 7 — the full cascade reaches 7 steps by including legacy `hotel.baseCommission` + global `CommissionDefaults`. Schema enforces whole-percent integer (lines 52–60).
+15. **Agency markup fields** — `TravelAgency.defaultMarkupPct` + booking-side `agencyMarkupPctSnapshot` and `agencyCustomerPrice`. Captured at `src/domains/booking/services/booking.service.ts:181-185`. Two-axis cascade now exists (Ergos commission via markup_rules + agency retail markup via defaultMarkupPct).
+16. **BullMQ queue infrastructure** — `bullmq 5.67.2`, `ioredis 5.10.0`, `@bull-board/{api,express} 6.16.4`. Queue dashboard at `/admin/queues` (`src/server/app.ts:23`) with basic auth. Doc has zero coverage today.
+17. **Domains absent from doc:** `ai-chat` (Anthropic SDK, route `/ai-chat`), `payment` (TropiPay via `src/shared/services/tropipay.service.ts`, route `/payments`), `passkey` (WebAuthn via `@simplewebauthn/server 13.2.2`), `invitation`, `api-keys`, `user-settings` (route `/user-settings`), `analytics` (route `/analytics`), `vendor-registry` (service + routes), `finance` (route `/admin/finance`), hotel scan routes (`/scan-history`, `/hotels/scan/stream`, `/hotels/integration-test`).
+18. **Migration / probe scripts** at `src/scripts/` — 25+ ops utilities (`migrate-base-commission-to-conservative`, `migrate-decimal-to-integer`, `probe-hotetec`, `probe-dingus-gav`, `resync-hotetec-catalog`, etc.). Operationally significant.
+19. **Whole-percent integer convention** — codified in `MarkupRule` schema validator (#14) and `booking.service.ts:181-185` comment. Every commission/discount/rebate/markup is integer 0–100; conversion via `pct()` helper only inside engine math.
+
+### Production-readiness gaps that remain valid
+
+CSP/sanitize (§2.2), correlation IDs (D6), retry/exponential backoff (D7 — no `src/shared/utils/retry.ts`), env validation via Zod (D8 — `src/shared/config/index.ts` still reads `process.env.*` directly), TS strict-mode-plus profile (D9 — only `"strict": true`, missing `noUncheckedIndexedAccess`, `exactOptionalPropertyTypes`, `noImplicitReturns`, `noUnusedLocals`, `noUnusedParameters`), rate limiting (no `express-rate-limit`), input sanitization (no `express-mongo-sanitize`), RS256 (still HS256), InversifyJS (still singleton-pattern), uniform repository rollout (partial: some domains have `repositories/`, others don't), circuit breaker for vendor APIs, Alibaba SDKs.
+
+### Cross-reference fixes
+
+20. Lines 28, 1952, 1965–1968 reference sibling docs without numeric prefixes. Update to `1-CODE_QUALITY_ASSESSMENT.md`, `2-PRODUCTION_READINESS_ALIBABA_INFRA.md`, `3-PRODUCTION_READINESS_AGENCY_APP.md`, `5-PRODUCTION_READINESS_BACKOFFICE_APP.md`.
+21. **Example paths in body code snippets are misleading.** Doc uses `src/services/`, `src/repositories/`, `src/models/`, `src/middlewares/`, `src/controllers/`, `src/types/`, `src/validators/`. Actual layout is domain-driven: `src/domains/{booking,hotel,backoffice,...}/{services,repositories,models,routes,schemas}/` + `src/shared/{middlewares,errors,utils,services}/`. Either rewrite examples or label as "illustrative — actual paths follow domain-driven layout under `src/domains/*`".
+22. **"Controllers" layer doesn't exist.** Doc references `controllers/` repeatedly (lines 683, 1643–1645, 1660–1663, 1681–1683). Express handlers live inline in route files (e.g., `src/domains/backoffice/routes/pricing-policy.routes.ts`). Either drop or label as "aspirational thin-controller refactor".
+23. **Code-side cleanup ticket worth opening** — stale JSDoc comments still reference `commission-policy.service.ts` in: `src/domains/booking/models/booking.model.ts:233`, `src/domains/backoffice/models/markup-rule.model.ts:10`, `src/domains/backoffice/services/commission-engine.ts:24`, `src/domains/backoffice/services/commission-cascade.ts:10`. Also `src/docs/openapi/pricing-policy.openapi.ts:101` declares path `/admin/commission-policy/defaults` (should be `/admin/pricing-policy/defaults`). Not a doc edit — a code-cleanup ticket.
+
+### Integration guides cross-link
+
+For per-adapter details (auth, certification rules, env vars, common failure modes), see the dedicated guides:
+[Restel](../3-integration/hotels/restel/restel-integration-guide.md) · [Dingus](../3-integration/hotels/dingus/dingus-integration-guide.md) · [Hotetec](../3-integration/hotels/hotetec/hotetec-integration-guide.md) · [Juniper / Roibos](../3-integration/hotels/juniper/juniper-integration-guide.md) · [Mozio (transfers)](../3-integration/transportation/mozio/mozio-integration-guide.md).
 
 ---
 

@@ -1,7 +1,19 @@
 # Reservation System Architecture — Multi-GDS Deep Analysis
 
+> **Last refreshed:** 2026-05-29. Original draft 2026-03-26.
+
 ## Context
-This is a technical architecture analysis (not an implementation plan) of how reservations flow through the Ergos Continental platform across all four GDS adapters: **Dingus**, **Hotetec**, **Roibos (Juniper)**, and **Restel (Hotelbeds)**. The goal is to document the end-to-end booking lifecycle for team onboarding and architectural decision-making.
+This is a technical architecture analysis (not an implementation plan) of how reservations flow through the Ergos Continental platform across **four hotel GDS adapters** — **Dingus**, **Hotetec**, **Roibos (Juniper)**, **Restel (Hotelbeds)** — and one **transportation provider** (**Mozio**, ground transfers). The goal is to document the end-to-end booking lifecycle for team onboarding and architectural decision-making.
+
+### Per-adapter integration guides
+
+Each adapter has a dedicated guide under `documentation/technical/3-integration/`:
+
+- 🏨 [Restel integration guide](../3-integration/hotels/restel/restel-integration-guide.md) — custom XML, `lin`-token flow, three-phase booking
+- 🏨 [Dingus integration guide](../3-integration/hotels/dingus/dingus-integration-guide.md) — SOAP/OTA, multi-vendor sub-feeds (Meliá, Iberostar, Roxa, etc.)
+- 🏨 [Hotetec integration guide](../3-integration/hotels/hotetec/hotetec-integration-guide.md) — REST/JSON, session-token + 30-min auto-refresh
+- 🏨 [Juniper / Roibos integration guide](../3-integration/hotels/juniper/juniper-integration-guide.md) — Juniper XML protocol (Roibos is one tenant; the adapter is reusable for any Juniper-compliant tenant)
+- 🚗 [Mozio integration guide](../3-integration/transportation/mozio/mozio-integration-guide.md) — async polling, transportation domain (not hotels)
 
 ---
 
@@ -27,8 +39,9 @@ Agency App (React) → Backend Service (Express/Bun) → GDS Adapters → Extern
 | Base Adapter | `backend-service/src/shared/adapters/base.adapter.ts` | `VendorAdapter` interface contract |
 | Dingus | `backend-service/src/shared/adapters/dingus/dingus.adapter.ts` | SOAP/OTA XML adapter |
 | Hotetec | `backend-service/src/shared/adapters/hotetec/hotetec.adapter.ts` | REST/JSON adapter |
-| Roibos | `backend-service/src/shared/adapters/roibos/roibos.adapter.ts` | SOAP/Juniper XML adapter |
+| Roibos | `backend-service/src/shared/adapters/roibos/roibos.adapter.ts` | SOAP/Juniper XML adapter — the Juniper protocol implementation is generic; Roibos is the current tenant. See the Juniper guide for adding more |
 | Restel | `backend-service/src/shared/adapters/restel/restel.adapter.ts` | Custom XML adapter |
+| Mozio (transportation) | `backend-service/src/shared/adapters/mozio/mozio.client.ts` + `backend-service/src/domains/transportation/` | REST/JSON ground-transfer integration with async polling. Does NOT implement `VendorAdapter` — has its own `MozioClient` interface |
 | Frontend Booking | `agency-app/src/domains/booking/pages/BookingPage.tsx` | Guest info + payment form |
 | Frontend Confirm | `agency-app/src/domains/booking/pages/BookingConfirmationPage.tsx` | Post-booking confirmation |
 | Frontend Cancel | `agency-app/src/domains/booking/components/CancellationFlow.tsx` | 3-step cancellation modal |
@@ -209,3 +222,17 @@ Stored in `backoffice.bookings` (MongoDB). Key fields:
 - **No modification support for 3 of 4 GDS**: Only Dingus supports `modifyBooking()`. Others require cancel + rebook
 - **Restel credentials in URL**: Query parameter auth is less secure than header-based auth; should be monitored for logging/proxy exposure
 - **Confirm no-op for Roibos**: `confirmBooking()` silently succeeds without actually calling the GDS — could mask issues if the orchestrator assumes confirmation is a real step
+- **Mozio outside `VendorAdapter`**: ground-transportation lives in its own domain with its own interface (`MozioClient`). Orchestration is in `transportation.service.ts`, not `UnifiedBookingService`. Keeping it separate is the right call (different protocol, async polling, different data model) but means features like rollback-on-failure aren't shared across hotel+transfer flows — if we ever want atomic "hotel + transfer" bookings, this seam needs explicit cross-domain coordination
+
+---
+
+## 8. What Has Shipped Since the Original Draft (2026-03-26 → 2026-05-29)
+
+This document originally covered the 4 hotel GDS adapters. Subsequent shipped work that affects this picture:
+
+- **Mozio transportation integration** (Section 1 + Section 7 caveat above) — entire new domain at `backend-service/src/domains/transportation/`.
+- **Commission engine renaming + cascade kernel extraction** — the booking pipeline persists `commissionSnapshot` per booking, computed via the now-renamed `PricingPolicyService` (formerly `CommissionPolicyService`); the pure cascade math lives at `backend-service/src/domains/backoffice/services/commission-cascade.ts`. Booking persistence still works the same way; only the import paths and class names changed.
+- **Pricing Policy / Hotel Brands renames** at the admin-API surface (`/admin/pricing-policy` + `/admin/hotel-brands`). No impact on `/bookings` routes; the reservation flow itself is unchanged.
+- **`agencyMarkupPctSnapshot` + `agencyCustomerPrice`** captured on every booking outside `commissionSnapshot`. This makes the agency-side price visible end-to-end for P&L reporting. See `backend-service/src/domains/booking/services/booking.service.ts:181-185`.
+- **Five integration guides** authored (cross-linked at the top of this document) — they contain the per-adapter implementation rules that used to be tribal knowledge.
+- **138 tests passing in `backend-service/src/domains/backoffice`** including new compile-time + runtime pin tests for "agency markup is out of scope for the commission engine".
