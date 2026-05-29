@@ -269,6 +269,34 @@ body.lang-es [lang-content="es"]{display:inline}
   .workspace{grid-template-columns:280px 1fr 320px}
   .footer{left:280px;right:320px}
 }
+
+/* ===== Refresh additions — 2026-05-29 ===== */
+
+/* Right rail Simulate/Audit tab toggle */
+.rail-tabs{display:flex;gap:4px;padding:3px;background:var(--bg-gray);border-radius:8px;margin-bottom:12px}
+.rail-tab{flex:1;background:transparent;border:0;padding:7px 10px;font-family:'DM Sans',sans-serif;font-weight:700;font-size:12px;color:var(--text-muted);cursor:pointer;border-radius:6px;letter-spacing:0.4px;transition:background 0.15s, color 0.15s}
+.rail-tab:hover{color:var(--navy-mid)}
+.rail-tab.active{background:#fff;color:var(--navy-mid);box-shadow:0 1px 4px rgba(15,15,61,0.08)}
+
+/* Live-preview "reflects unsaved edits" banner */
+.preview-banner{display:flex;align-items:center;gap:8px;background:rgba(196,150,44,0.12);border:1px solid rgba(196,150,44,0.3);border-radius:8px;padding:8px 12px;font-size:12px;color:#946400;font-weight:600;margin-bottom:12px}
+.preview-banner[hidden]{display:none}
+
+/* Supplier Net input row */
+.preview-input-row{margin-bottom:10px}
+.preview-input-row label{display:block;font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.4px;margin-bottom:4px}
+.preview-input-wrap{display:flex;align-items:center;background:#fff;border:1px solid var(--border);border-radius:6px;overflow:hidden}
+.preview-input-wrap span{padding:0 10px;background:var(--bg-gray);font-weight:700;color:var(--navy-mid)}
+.preview-input-wrap input{flex:1;padding:8px 10px;border:0;font-family:inherit;font-size:13px;color:var(--navy-mid);outline:none}
+
+/* Info-tip pill (Ergos Net % tooltip helper) */
+.info-tip{display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;background:rgba(21,101,192,0.12);color:#1565c0;border-radius:50%;font-size:10px;font-weight:700;cursor:help;margin-left:4px}
+
+/* Drawer field group */
+.drawer-field{margin-top:0}
+
+/* Page-header action buttons spacing */
+.header-right{display:flex;gap:8px;align-items:center}
 </style>
 </head>
 <body>
@@ -277,18 +305,23 @@ body.lang-es [lang-content="es"]{display:inline}
   <div class="header-left">
     <div class="logo">E</div>
     <div>
-      <h1>Ergos Backoffice</h1>
+      <h1>
+        <span lang-content="en">Pricing Policy</span>
+        <span lang-content="es">Política de Precios</span>
+      </h1>
       <div class="breadcrumb">
         <a href="index.html" class="lnk-back">← Back to Backoffice</a> ·
-        <span lang-content="en">Pricing Policy</span>
-        <span lang-content="es">Política de Comisiones</span>
+        <span lang-content="en">5-layer commission cascade with markup rules + per-scope overrides</span>
+        <span lang-content="es">Cascada de comisión de 5 capas con reglas de markup + anulaciones por ámbito</span>
       </div>
     </div>
   </div>
   <div class="header-right">
+    <button class="btn btn-ghost" id="auditBtn" onclick="document.getElementById('auditBackdrop').classList.add('open');document.getElementById('auditDrawer').classList.add('open');">
+      🕒 <span lang-content="en">Audit Trail</span><span lang-content="es">Historial de auditoría</span>
+    </button>
     <button class="btn btn-ghost" id="bulkBtn">
-      <span lang-content="en">Create Markup Rule</span>
-      <span lang-content="es">Edición en lote</span>
+      ☰ <span lang-content="en">Create Markup Rule</span><span lang-content="es">Crear Regla de Markup</span>
     </button>
     <div class="lang-btns">
       <button class="lang-btn active" data-lang="en">EN</button>
@@ -353,11 +386,37 @@ body.lang-es [lang-content="es"]{display:inline}
 
   <!-- RIGHT RAIL: Margin preview / Simulate / Audit -->
   <aside class="rail right" id="simulate">
-    <div class="preview-head" lang-content="en">Simulate · Live Margin Preview</div>
-    <div class="preview-head" lang-content="es" style="display:none">Vista de margen en vivo</div>
+    <!-- Simulate / Audit tab toggle (mirrors live RightRail) -->
+    <div class="rail-tabs">
+      <button class="rail-tab active" data-rail-tab="simulate">
+        <span lang-content="en">Simulate</span><span lang-content="es">Simular</span>
+      </button>
+      <button class="rail-tab" data-rail-tab="audit" onclick="document.getElementById('auditBackdrop').classList.add('open');document.getElementById('auditDrawer').classList.add('open');">
+        🕒 <span lang-content="en">Audit</span><span lang-content="es">Auditoría</span>
+      </button>
+    </div>
 
+    <!-- Live-preview banner (shown when there are unsaved edits) -->
+    <div class="preview-banner" id="previewBanner" hidden>
+      <span>⚠</span>
+      <span lang-content="en">Live preview reflects unsaved edits</span>
+      <span lang-content="es">Vista previa con cambios sin guardar</span>
+    </div>
+
+    <!-- Supplier Net input -->
+    <div class="preview-input-row">
+      <label lang-content="en">Supplier Net</label>
+      <label lang-content="es" style="display:none">Coste neto del proveedor</label>
+      <div class="preview-input-wrap"><span>$</span><input type="number" id="supplierNetInput" value="200" step="10"></div>
+    </div>
+
+    <div class="preview-head">
+      <span lang-content="en">Ergos Net %</span>
+      <span lang-content="es" style="display:none">% Neto Ergos</span>
+      <span class="info-tip" title="Ergos's per-booking net after all cascade layers — chain discount, base markup, agency rebate, agent earning, ops expense.">ⓘ</span>
+    </div>
     <div class="preview-margin" id="marginHeadline">8.4%</div>
-    <div class="preview-sub" id="marginSub">Ergos net margin • supplier net $200</div>
+    <div class="preview-sub" id="marginSub">$16.80 net / $200.00 sell</div>
 
     <label class="worst-toggle">
       <input type="checkbox" id="worstToggle">
@@ -402,40 +461,93 @@ body.lang-es [lang-content="es"]{display:inline}
   </div>
 </div>
 
-<!-- Bulk edit drawer -->
+<!-- Create Markup Rule drawer (mirrors CreateMarkupRuleDrawer.tsx) -->
 <div class="drawer-backdrop" id="bulkBackdrop"></div>
 <div class="drawer" id="bulkDrawer">
   <div class="drawer-head">
-    <h2><span lang-content="en">Create Markup Rule</span><span lang-content="es">Edición en lote</span></h2>
+    <h2><span lang-content="en">Create Markup Rule</span><span lang-content="es">Crear Regla de Markup</span></h2>
     <button class="close-btn" data-close="bulk">×</button>
   </div>
   <div class="drawer-body">
-    <div style="font-size:12px;color:var(--text-muted);margin-bottom:10px" lang-content="en">Filter hotels then apply a common value.</div>
-    <div style="font-size:12px;color:var(--text-muted);margin-bottom:10px;display:none" lang-content="es">Filtra hoteles y aplica un valor común.</div>
+    <div style="font-size:12px;color:var(--text-muted);margin-bottom:14px" lang-content="en">Pick a rule scope (GDS, Country, or Stars). The remaining filters narrow the preview but do not become part of the rule key.</div>
+    <div style="font-size:12px;color:var(--text-muted);margin-bottom:14px;display:none" lang-content="es">Elige el ámbito de la regla (GDS, País o Estrellas). Los demás filtros acotan la vista previa pero no forman parte de la clave de la regla.</div>
 
-    <div class="filter-row">
-      <select id="fStars"><option value="">★ Any stars</option><option value="5">5★</option><option value="4">4★</option><option value="3">3★</option></select>
-      <select id="fVendor"><option value="">Any vendor</option><option>Hoteltec</option><option>Restel</option><option>Juniper</option><option>Dingus</option></select>
+    <!-- Scope select — defines the rule key -->
+    <div class="drawer-field">
+      <label style="font-size:12px;font-weight:600"><span lang-content="en">Rule scope (key)</span><span lang-content="es">Ámbito de la regla (clave)</span></label>
+      <select id="fScope" style="width:100%;padding:8px 10px;margin-top:6px;border:1px solid var(--border);border-radius:6px;font-family:inherit">
+        <option value="vendor">GDS</option>
+        <option value="country">Country</option>
+        <option value="stars">Stars</option>
+      </select>
+    </div>
+
+    <!-- Vendor / Country / Stars filters -->
+    <div class="filter-row" style="margin-top:14px">
+      <div>
+        <label style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase">Vendor</label>
+        <select id="fVendor" style="width:100%;padding:8px 10px;margin-top:4px;border:1px solid var(--border);border-radius:6px;font-family:inherit">
+          <option value="">All vendors</option>
+          <option>Dingus</option>
+          <option>Hotetec</option>
+          <option>Restel</option>
+          <option>Roibos</option>
+        </select>
+      </div>
+      <div>
+        <label style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase">Stars</label>
+        <select id="fStars" style="width:100%;padding:8px 10px;margin-top:4px;border:1px solid var(--border);border-radius:6px;font-family:inherit">
+          <option value="">Any</option>
+          <option value="5">5★</option>
+          <option value="4">4★</option>
+          <option value="3">3★</option>
+        </select>
+      </div>
     </div>
 
     <div style="margin-top:14px">
-      <label style="font-size:12px;font-weight:600">Set baseCommission</label>
-      <input type="number" step="0.01" id="fBaseComm" value="0.15" style="width:100%;padding:8px 10px;margin-top:6px;border:1px solid var(--border);border-radius:6px;font-family:inherit">
+      <label style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase">Country</label>
+      <select id="fCountry" style="width:100%;padding:8px 10px;margin-top:4px;border:1px solid var(--border);border-radius:6px;font-family:inherit">
+        <option value="">Any country</option>
+        <option>Cuba</option>
+        <option>Dominican Republic</option>
+        <option>Mexico</option>
+        <option>Spain</option>
+        <option>Colombia</option>
+        <option>Argentina</option>
+      </select>
     </div>
 
+    <!-- baseCommission % -->
+    <div style="margin-top:14px">
+      <label style="font-size:12px;font-weight:600"><span lang-content="en">baseCommission (%)</span><span lang-content="es">comisión base (%)</span></label>
+      <input type="number" step="0.5" min="0" max="100" id="fBaseComm" value="15" style="width:100%;padding:8px 10px;margin-top:6px;border:1px solid var(--border);border-radius:6px;font-family:inherit">
+    </div>
+
+    <!-- Reason (free text — required, persisted into audit log) -->
+    <div style="margin-top:14px">
+      <label style="font-size:12px;font-weight:600"><span lang-content="en">Reason</span><span lang-content="es">Motivo</span> <span style="color:#d32f2f">*</span></label>
+      <textarea id="fReason" rows="3" placeholder="Why are you creating this rule? — required, logged to audit trail." style="width:100%;padding:8px 10px;margin-top:6px;border:1px solid var(--border);border-radius:6px;font-family:inherit;resize:vertical"></textarea>
+    </div>
+
+    <!-- Live preview -->
     <div style="margin-top:18px">
-      <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:var(--text-muted);margin-bottom:8px">Diff Preview</div>
+      <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:var(--text-muted);margin-bottom:8px">
+        <span lang-content="en">Live preview</span><span lang-content="es">Vista previa en vivo</span>
+        <span style="background:rgba(15,168,155,0.14);color:#0d8a7f;font-weight:700;padding:2px 8px;border-radius:999px;margin-left:6px">42 hotels affected</span>
+      </div>
       <div id="bulkDiff"></div>
     </div>
 
+    <!-- Confirm-by-typing safety -->
     <div style="margin-top:14px">
-      <label style="font-size:12px;font-weight:600">Type "APPLY" to confirm</label>
-      <input type="text" id="bulkConfirm" style="width:100%;padding:8px 10px;margin-top:6px;border:1px solid var(--border);border-radius:6px;font-family:inherit">
+      <label style="font-size:12px;font-weight:600"><span lang-content="en">Type</span><span lang-content="es">Escribe</span> <code style="background:#f0f0f5;padding:2px 6px;border-radius:4px;font-family:'JetBrains Mono',monospace">APPLY</code> <span lang-content="en">to confirm</span><span lang-content="es">para confirmar</span></label>
+      <input type="text" id="bulkConfirm" placeholder="APPLY" style="width:100%;padding:8px 10px;margin-top:6px;border:1px solid var(--border);border-radius:6px;font-family:inherit">
     </div>
   </div>
   <div class="drawer-foot">
     <button class="btn btn-outline" data-close="bulk">Cancel</button>
-    <button class="btn btn-primary" id="bulkApply">Apply</button>
+    <button class="btn btn-primary" id="bulkApply"><span lang-content="en">Apply rule</span><span lang-content="es">Aplicar regla</span></button>
   </div>
 </div>
 
