@@ -1,5 +1,9 @@
 name: Deploy /public to GitHub Pages
 
+# Source dropdown in repo Settings -> Pages must be "GitHub Actions"
+# (not "Deploy from a branch"). The legacy `pages build and deployment`
+# job stops auto-triggering once the dropdown is flipped.
+
 on:
   push:
     branches: [master]
