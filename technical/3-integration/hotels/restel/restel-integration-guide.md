@@ -2,7 +2,7 @@
 
 A step-by-step guide for understanding how the Restel GDS adapter was added to the Ergos Continental platform. Written so that a junior developer can follow through and complete the integration once credentials are available.
 
-> **Prerequisites**: Read the [Reservation System Multi-GDS Analysis](../../../../agency-app/docs/1-RESERVATION_SYSTEM_MULTI_GDS_ANALYSIS.md) first to understand the overall adapter pattern and booking lifecycle.
+> **Prerequisites**: Read the [Reservation System Multi-GDS Analysis](../../../2-architecture/6-RESERVATION_SYSTEM_MULTI_GDS_ANALYSIS.md) first to understand the overall adapter pattern and booking lifecycle. Sibling integration guides: [Dingus](../dingus/dingus-integration-guide.md) · [Hotetec](../hotetec/hotetec-integration-guide.md) · [Juniper / Roibos](../juniper/juniper-integration-guide.md) · [Mozio (transfers)](../../transportation/mozio/mozio-integration-guide.md).
 
 ---
 
@@ -430,13 +430,15 @@ Add these to `backend-service/.env`:
 ```bash
 # Restel (Hotelbeds) — credentials provided by Restel account manager
 RESTEL_BASE_URL=https://xml.hotelresb2b.com/xml/listen_xml.jsp
-RESTEL_CODIGOUSU=        # User code (codigousu)
+RESTEL_CODIGOUSU=        # User code (codigousu) — sent on every XML request
+RESTEL_CODUSU=           # Alternate user code (codusu) — required for some XML ops (booking detail/list)
 RESTEL_CLAUSU=           # Password (clausu)
 RESTEL_AFILIACIO=        # Affiliation code (afiliacio)
 RESTEL_SECACC=           # Secondary access credential (secacc)
+RESTEL_AGENCY_NAME=      # Agency display name embedded in vouchers
 ```
 
-> **Note**: These are NOT yet available. The adapter will throw on initialization if any are missing. Once credentials arrive, fill them in and restart the backend.
+> **Note**: The adapter will throw on initialization if `RESTEL_BASE_URL`, `RESTEL_CODIGOUSU`, `RESTEL_CLAUSU`, `RESTEL_AFILIACIO`, or `RESTEL_SECACC` are missing. `RESTEL_CODUSU` and `RESTEL_AGENCY_NAME` are required only for a subset of operations (booking list, voucher rendering) — set them too unless you only need availability search.
 
 ### Redis Requirement
 
