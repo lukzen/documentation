@@ -2152,3 +2152,54 @@ body.modal-open { overflow: hidden; }
 }
 .currency-selector:hover { border-color: var(--teal); color: var(--teal-dark); }
 .currency-selector:focus { outline: 2px solid var(--teal); outline-offset: 1px; }
+
+/* ===== Home marketing sections (drift-closing update — 2026-05-29) ===== */
+.home-section { padding: 64px 0; background: #fafaf7; }
+.home-section.home-benefits { background: var(--cream, #fdf6ec); }
+.home-section.home-howitworks { background: #fff; }
+.home-section.home-contact { background: var(--cream, #fdf6ec); }
+.home-container { max-width: 1180px; margin: 0 auto; padding: 0 24px; text-align: center; }
+.home-eyebrow { font-size: 11px; font-weight: 700; letter-spacing: 1.6px; text-transform: uppercase; color: var(--teal-dark, #0d8a7f); margin-bottom: 8px; }
+.home-title { font-family: 'DM Serif Display', serif; font-size: 36px; color: var(--navy, #0f0f3d); margin-bottom: 8px; font-weight: 400; }
+.home-sub { color: #5c5c7a; font-size: 16px; margin-bottom: 36px; max-width: 600px; margin-left: auto; margin-right: auto; }
+.home-grid { display: grid; gap: 20px; }
+.home-grid-3 { grid-template-columns: repeat(3, 1fr); }
+.home-grid-4 { grid-template-columns: repeat(4, 1fr); }
+.home-card, .home-step { background: #fff; border: 1px solid #e8e8f0; border-radius: 12px; padding: 26px 22px; text-align: left; box-shadow: 0 1px 4px rgba(15,15,61,0.05); position: relative; }
+.home-step { padding-top: 36px; }
+.home-step-num { position: absolute; top: 14px; right: 16px; width: 26px; height: 26px; border-radius: 50%; background: var(--navy, #0f0f3d); color: #fff; display: inline-flex; align-items: center; justify-content: center; font-weight: 700; font-size: 13px; font-family: 'DM Sans', sans-serif; }
+.home-card-icon { width: 44px; height: 44px; border-radius: 12px; background: rgba(15,168,155,0.12); color: var(--teal-dark, #0d8a7f); display: inline-flex; align-items: center; justify-content: center; font-size: 22px; margin-bottom: 14px; }
+.home-card h3, .home-card h4, .home-step h3 { font-family: 'DM Serif Display', serif; font-size: 18px; color: var(--navy, #0f0f3d); margin-bottom: 8px; font-weight: 400; }
+.home-card p, .home-step p { color: #3d3d5c; font-size: 14px; line-height: 1.55; margin: 0; }
+@media (max-width: 900px) {
+  .home-grid-3, .home-grid-4 { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 560px) {
+  .home-grid-3, .home-grid-4 { grid-template-columns: 1fr; }
+  .home-title { font-size: 28px; }
+  .home-section { padding: 44px 0; }
+}
+
+/* ===== Passkey modal (matches live agency-app first-login dialog) ===== */
+.passkey-overlay { position: fixed; inset: 0; background: rgba(15,15,61,0.55); z-index: 2000; display: none; align-items: center; justify-content: center; padding: 20px; }
+.passkey-overlay.open { display: flex; }
+.passkey-dialog { background: #fff; border-radius: 16px; max-width: 440px; width: 100%; padding: 28px; box-shadow: 0 20px 60px rgba(15,15,61,0.3); }
+.passkey-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+.passkey-head h2 { font-family: 'DM Serif Display', serif; font-size: 22px; color: var(--navy, #0f0f3d); font-weight: 400; display: flex; align-items: center; gap: 10px; margin: 0; }
+.passkey-head .passkey-close { background: transparent; border: 0; font-size: 22px; cursor: pointer; color: #5c5c7a; padding: 4px 8px; border-radius: 6px; }
+.passkey-head .passkey-close:hover { background: #f0f0f5; }
+.passkey-lead { color: #3d3d5c; font-size: 14px; line-height: 1.55; margin-bottom: 16px; }
+.passkey-benefits { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
+.passkey-benefit { background: rgba(15,168,155,0.08); border-radius: 10px; padding: 12px; }
+.passkey-benefit-title { font-weight: 700; font-size: 13px; color: var(--navy, #0f0f3d); margin-bottom: 2px; }
+.passkey-benefit-body { font-size: 12px; color: #3d3d5c; }
+.passkey-field { margin-bottom: 16px; }
+.passkey-field label { font-weight: 600; font-size: 13px; color: var(--navy, #0f0f3d); display: block; margin-bottom: 4px; }
+.passkey-field p { font-size: 12px; color: #5c5c7a; margin-bottom: 6px; }
+.passkey-field input { width: 100%; padding: 10px 12px; border: 1px solid #e0e0ea; border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 14px; }
+.passkey-actions { display: flex; gap: 10px; justify-content: flex-end; }
+.passkey-btn { padding: 10px 16px; border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 600; cursor: pointer; border: 0; }
+.passkey-btn-secondary { background: transparent; color: #5c5c7a; border: 1px solid #e0e0ea; }
+.passkey-btn-secondary:hover { background: #f5f5fa; }
+.passkey-btn-primary { background: var(--teal, #0fa89b); color: #fff; }
+.passkey-btn-primary:hover { background: var(--teal-dark, #0d8a7f); }

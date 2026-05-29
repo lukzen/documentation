@@ -121,7 +121,7 @@ function updateVisiblePrices() {
   let greeting = 'Good evening';
   if (hour >= 5 && hour < 12) greeting = 'Good morning';
   else if (hour >= 12 && hour < 17) greeting = 'Good afternoon';
-  el.textContent = greeting + ', Travel Agent';
+  el.textContent = greeting + ', Demo Agency';
 })();
 
 // ========== SCREEN NAVIGATION ==========
