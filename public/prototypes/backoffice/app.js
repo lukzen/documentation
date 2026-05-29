@@ -697,15 +697,26 @@ function toast(msg){
 }
 
 /* ---------- Pricing Policy embedded screen ---------- */
+// Iframe URL auto-bumps on every Pages deploy: document.lastModified of the
+// parent reflects the upload timestamp, so the iframe cache key is unique
+// per deploy without any manual version-bumping.
+const CP_VERSION = encodeURIComponent(document.lastModified || String(Date.now()));
+function buildCpSrc(tab){
+  const f = document.getElementById('cp-frame'); if(!f) return '';
+  const base = f.dataset.src || 'commission-config.html';
+  const hash = (tab && tab !== 'editor') ? '#'+tab : '';
+  return base + '?embed=1&v=' + CP_VERSION + hash;
+}
 RENDERERS['pricing-policy'] = () => {
-  // first-time iframe setup; subsequent visits just keep state
   const f = document.getElementById('cp-frame');
-  if(f && !f.dataset.ready){ f.dataset.ready='1'; }
+  if(f && !f.dataset.ready){
+    f.src = buildCpSrc('editor');
+    f.dataset.ready='1';
+  }
 };
 function setCpTab(tab){
   const f = document.getElementById('cp-frame'); if(!f) return;
-  const hash = tab==='editor' ? '' : '#'+tab;
-  f.src = 'commission-config.html?embed=1'+hash;
+  f.src = buildCpSrc(tab);
   document.querySelectorAll('#cp-tabs .sub-tab').forEach(t=>t.classList.toggle('active', t.dataset.cp===tab));
 }
 document.addEventListener('click', e => {

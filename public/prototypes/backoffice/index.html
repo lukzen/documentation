@@ -706,7 +706,9 @@
           <button class="sub-tab" data-cp="audit">Audit Trail</button>
         </div>
       </div>
-      <iframe id="cp-frame" class="cp-frame-embed" src="commission-config.html?embed=1&v=39f8549" title="Pricing Policy" frameborder="0"></iframe>
+      <!-- src set by JS below using document.lastModified so the cache key
+     auto-busts on every Pages deploy without manual version-bumping. -->
+<iframe id="cp-frame" class="cp-frame-embed" data-src="commission-config.html" title="Pricing Policy" frameborder="0"></iframe>
     </main>
   </div>
 </section>

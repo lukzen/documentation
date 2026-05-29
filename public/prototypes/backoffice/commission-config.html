@@ -358,7 +358,30 @@ body.lang-es [lang-content="es"]{display:inline}
     </div>
 
     <div class="virt-list" id="virtList">
-      <div class="virt-spacer" id="virtSpacer"></div>
+      <!-- Static sample list (JS may augment with virt-render on scroll) -->
+      <div class="tree-item static pinned" style="background:rgba(15,168,155,0.10);border:1px solid rgba(15,168,155,0.3);margin-bottom:8px">
+        <span class="label"><span style="display:inline-block;width:18px">🌐</span><b>Global</b> <span class="meta">— applies when no override</span></span>
+      </div>
+      <div style="font-size:10px;font-weight:700;letter-spacing:0.6px;color:var(--text-muted);text-transform:uppercase;padding:8px 6px 4px">A · <span style="background:#f0f0f5;padding:1px 6px;border-radius:8px;font-weight:600">9</span></div>
+      <div class="tree-item static"><span class="label">Acuña Hotel <span class="meta">Acapulco · hotetec</span></span><span>›</span></div>
+      <div class="tree-item static"><span class="label">Alvarez Plaza <span class="meta">Cancún · dingus</span></span><span>›</span></div>
+      <div style="font-size:10px;font-weight:700;letter-spacing:0.6px;color:var(--text-muted);text-transform:uppercase;padding:8px 6px 4px">H · <span style="background:#f0f0f5;padding:1px 6px;border-radius:8px;font-weight:600">14</span></div>
+      <div class="tree-item static"><span class="label">Hyatt Ziva Cap Cana <span class="meta">Punta Cana · roibos</span></span><span>›</span></div>
+      <div class="tree-item static"><span class="label">Hyatt Zilara Cap Cana <span class="meta">Punta Cana · roibos</span></span><span>›</span></div>
+      <div style="font-size:10px;font-weight:700;letter-spacing:0.6px;color:var(--text-muted);text-transform:uppercase;padding:8px 6px 4px">I · <span style="background:#f0f0f5;padding:1px 6px;border-radius:8px;font-weight:600">18</span></div>
+      <div class="tree-item static"><span class="label">Iberostar Grand Packard <span class="meta">Havana · hotetec</span></span><span>›</span></div>
+      <div class="tree-item static"><span class="label">Iberostar Selection Bávaro <span class="meta">Punta Cana · dingus</span></span><span>›</span></div>
+      <div style="font-size:10px;font-weight:700;letter-spacing:0.6px;color:var(--text-muted);text-transform:uppercase;padding:8px 6px 4px">M · <span style="background:#f0f0f5;padding:1px 6px;border-radius:8px;font-weight:600">23</span></div>
+      <div class="tree-item static active"><span class="label">Meliá Barcelona <span class="meta">Barcelona · hotetec</span></span><span>›</span></div>
+      <div class="tree-item static"><span class="label">Meliá Habana <span class="meta">Havana · hotetec</span></span><span>›</span></div>
+      <div class="tree-item static"><span class="label">Meliá Las Antillas <span class="meta">Varadero · hotetec</span></span><span>›</span></div>
+      <div class="tree-item static"><span class="label">Memories Caribe Beach <span class="meta">Cayo Coco · dingus</span></span><span>›</span></div>
+      <div style="font-size:10px;font-weight:700;letter-spacing:0.6px;color:var(--text-muted);text-transform:uppercase;padding:8px 6px 4px">P · <span style="background:#f0f0f5;padding:1px 6px;border-radius:8px;font-weight:600">7</span></div>
+      <div class="tree-item static"><span class="label">Paradisus Río de Oro <span class="meta">Holguín · restel</span></span><span>›</span></div>
+      <div class="tree-item static"><span class="label">Playa Coco Resort <span class="meta">Cayo Coco · dingus</span></span><span>›</span></div>
+      <div style="font-size:10px;font-weight:700;letter-spacing:0.6px;color:var(--text-muted);text-transform:uppercase;padding:8px 6px 4px">R · <span style="background:#f0f0f5;padding:1px 6px;border-radius:8px;font-weight:600">11</span></div>
+      <div class="tree-item static"><span class="label">RIU Palace Aruba <span class="meta">Oranjestad · hotetec</span></span><span>›</span></div>
+      <div class="tree-item static"><span class="label">Royalton Cuba <span class="meta">Cayo Santa María · restel</span></span><span>›</span></div>
     </div>
   </aside>
 
@@ -372,7 +395,137 @@ body.lang-es [lang-content="es"]{display:inline}
       <div style="font-size:11px;color:var(--text-muted);display:none" lang-content="es">Pila de herencia</div>
     </div>
 
-    <div id="stack"></div>
+    <div id="stack">
+      <!-- Static sample LayerCards (5 cascade layers) — JS may replace if data loads -->
+
+      <!-- Layer 1: Global Defaults — Inherited -->
+      <div class="bp-card layer-card">
+        <div class="card-head">
+          <div class="card-title">
+            <div class="layer-num">1</div>
+            <div>
+              <h3>Global Defaults</h3>
+              <div class="src">Cascade base — applies when no override exists at any layer</div>
+            </div>
+          </div>
+          <div class="card-actions">
+            <span class="chip chip-inherited" style="background:#f0f0f5;color:#5c5c7a;padding:3px 10px;border-radius:999px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.4px">Inherited</span>
+          </div>
+        </div>
+        <div class="field-row">
+          <div><div class="field-label">baseCommission</div><span class="field-hint">Ergos markup over supplier net</span></div>
+          <div class="field-control"><input type="number" value="15" min="0" max="100" step="0.5" style="width:80px;padding:6px 8px;border:1px solid var(--border);border-radius:4px"><span style="font-size:11px;color:var(--text-muted)">%</span></div>
+        </div>
+        <div class="field-row">
+          <div><div class="field-label">chainDiscountPct</div><span class="field-hint">Negotiated chain discount</span></div>
+          <div class="field-control"><input type="number" value="0" min="0" max="100" step="0.5" style="width:80px;padding:6px 8px;border:1px solid var(--border);border-radius:4px"><span style="font-size:11px;color:var(--text-muted)">%</span></div>
+        </div>
+        <div class="field-row">
+          <div><div class="field-label">earningPercentage</div><span class="field-hint">Agent earning share of gross</span></div>
+          <div class="field-control"><input type="number" value="22" min="0" max="100" step="0.5" style="width:80px;padding:6px 8px;border:1px solid var(--border);border-radius:4px"><span style="font-size:11px;color:var(--text-muted)">%</span></div>
+        </div>
+        <div class="field-row">
+          <div><div class="field-label">operationalExpense</div><span class="field-hint">Ops expense deducted from gross</span></div>
+          <div class="field-control"><input type="number" value="7" min="0" max="100" step="0.5" style="width:80px;padding:6px 8px;border:1px solid var(--border);border-radius:4px"><span style="font-size:11px;color:var(--text-muted)">%</span></div>
+        </div>
+        <div class="field-row">
+          <div><div class="field-label">rebatePct</div><span class="field-hint">Agency rebate off sell price</span></div>
+          <div class="field-control"><input type="number" value="3" min="0" max="100" step="0.5" style="width:80px;padding:6px 8px;border:1px solid var(--border);border-radius:4px"><span style="font-size:11px;color:var(--text-muted)">%</span></div>
+        </div>
+      </div>
+
+      <!-- Layer 2: Hotel scope — Override -->
+      <div class="bp-card layer-card" style="border:1px solid rgba(196,150,44,0.3);background:linear-gradient(180deg,rgba(196,150,44,0.04) 0%,#fff 100%)">
+        <div class="card-head">
+          <div class="card-title">
+            <div class="layer-num">2</div>
+            <div>
+              <h3>Hotel · Meliá Barcelona</h3>
+              <div class="src">Hotel-specific override · <span style="background:rgba(15,168,155,0.14);color:#0d8a7f;padding:2px 8px;border-radius:999px;font-size:10px;font-weight:700">🔗 Linked: Meliá Group (chain)</span> · <span style="background:#f3e3b6;color:#946400;padding:2px 8px;border-radius:999px;font-size:10px;font-weight:700">17.5% from chain markup rule</span></div>
+            </div>
+          </div>
+          <div class="card-actions">
+            <span class="chip chip-override" style="background:rgba(196,150,44,0.18);color:#946400;padding:3px 10px;border-radius:999px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.4px">Override</span>
+          </div>
+        </div>
+        <div class="field-row">
+          <div><div class="field-label">baseCommission</div><span class="field-hint">Overrides global (15%) from markup rule</span></div>
+          <div class="field-control"><input type="number" value="17.5" min="0" max="100" step="0.5" style="width:80px;padding:6px 8px;border:1px solid var(--border);border-radius:4px;background:rgba(15,168,155,0.06)"><span style="font-size:11px;color:var(--text-muted)">%</span></div>
+        </div>
+        <div class="field-row">
+          <div><div class="field-label">chainDiscountPct</div><span class="field-hint">From chain "Meliá Group"</span></div>
+          <div class="field-control"><input type="number" value="12.5" min="0" max="100" step="0.5" style="width:80px;padding:6px 8px;border:1px solid var(--border);border-radius:4px;background:rgba(15,168,155,0.06)"><span style="font-size:11px;color:var(--text-muted)">%</span></div>
+        </div>
+        <div class="field-row">
+          <div><div class="field-label">chainId</div><span class="field-hint">Linked chain — set to <code>— None —</code> to unlink</span></div>
+          <div class="field-control"><select style="padding:6px 8px;border:1px solid var(--border);border-radius:4px;background:rgba(15,168,155,0.06)"><option>Meliá Group</option><option>— None —</option><option>Iberostar Group</option></select></div>
+        </div>
+      </div>
+
+      <!-- Layer 3: Agency scope — Inherited (no override) -->
+      <div class="bp-card layer-card">
+        <div class="card-head">
+          <div class="card-title">
+            <div class="layer-num">3</div>
+            <div>
+              <h3>Agency · Viajes Azul</h3>
+              <div class="src">Agency rebate + operational settings</div>
+            </div>
+          </div>
+          <div class="card-actions">
+            <span class="chip chip-inherited" style="background:#f0f0f5;color:#5c5c7a;padding:3px 10px;border-radius:999px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.4px">Inherited</span>
+          </div>
+        </div>
+        <div class="field-row">
+          <div><div class="field-label">rebatePct</div><span class="field-hint">Cashback Ergos rebates to the agency</span></div>
+          <div class="field-control"><input type="number" value="3" min="0" max="100" step="0.5" style="width:80px;padding:6px 8px;border:1px solid var(--border);border-radius:4px"><span style="font-size:11px;color:var(--text-muted)">%</span></div>
+        </div>
+      </div>
+
+      <!-- Layer 4: Agent Tier — Inherited -->
+      <div class="bp-card layer-card">
+        <div class="card-head">
+          <div class="card-title">
+            <div class="layer-num">4</div>
+            <div>
+              <h3>Agent Tier · Growth</h3>
+              <div class="src">Tier-level earning + ops baseline</div>
+            </div>
+          </div>
+          <div class="card-actions">
+            <span class="chip chip-inherited" style="background:#f0f0f5;color:#5c5c7a;padding:3px 10px;border-radius:999px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.4px">Inherited</span>
+          </div>
+        </div>
+        <div class="field-row">
+          <div><div class="field-label">earningPercentage</div><span class="field-hint">Growth tier baseline (15–20% range)</span></div>
+          <div class="field-control"><input type="number" value="22" min="0" max="100" step="0.5" style="width:80px;padding:6px 8px;border:1px solid var(--border);border-radius:4px"><span style="font-size:11px;color:var(--text-muted)">%</span></div>
+        </div>
+        <div class="field-row">
+          <div><div class="field-label">operationalExpense</div><span class="field-hint">Tier ops baseline</span></div>
+          <div class="field-control"><input type="number" value="7" min="0" max="100" step="0.5" style="width:80px;padding:6px 8px;border:1px solid var(--border);border-radius:4px"><span style="font-size:11px;color:var(--text-muted)">%</span></div>
+        </div>
+      </div>
+
+      <!-- Layer 5: Agent-Hotel Override — Inherited (no override for this agent+hotel) -->
+      <div class="bp-card layer-card">
+        <div class="card-head">
+          <div class="card-title">
+            <div class="layer-num">5</div>
+            <div>
+              <h3>Agent-Hotel Override · M. Ruiz × Meliá Barcelona</h3>
+              <div class="src">Per-agent per-hotel override (deepest layer — wins all)</div>
+            </div>
+          </div>
+          <div class="card-actions">
+            <span class="chip chip-inherited" style="background:#f0f0f5;color:#5c5c7a;padding:3px 10px;border-radius:999px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.4px">No override</span>
+          </div>
+        </div>
+        <div class="field-row">
+          <div><div class="field-label">earningPercentage</div><span class="field-hint">Falls back to tier value</span></div>
+          <div class="field-control"><input type="number" value="22" min="0" max="100" step="0.5" disabled style="width:80px;padding:6px 8px;border:1px solid var(--border);border-radius:4px;background:#fafafa;color:#5c5c7a"><span style="font-size:11px;color:var(--text-muted)">%</span></div>
+        </div>
+      </div>
+    </div>
 
     <!-- Effective -->
     <div class="bp-card effective-card">
@@ -380,7 +533,14 @@ body.lang-es [lang-content="es"]{display:inline}
         <span lang-content="en">Effective Configuration</span>
         <span lang-content="es">Configuración efectiva</span>
       </h3>
-      <div class="eff-grid" id="effGrid"></div>
+      <div class="eff-grid" id="effGrid">
+        <div class="eff-row"><span>baseCommission</span><span>17.5%</span></div>
+        <div class="eff-row"><span>chainDiscountPct</span><span>12.5%</span></div>
+        <div class="eff-row"><span>earningPercentage</span><span>22.0%</span></div>
+        <div class="eff-row"><span>operationalExpense</span><span>7.0%</span></div>
+        <div class="eff-row"><span>rebatePct</span><span>3.0%</span></div>
+        <div class="eff-row"><span>chainId</span><span>Meliá Group</span></div>
+      </div>
     </div>
   </main>
 
@@ -428,14 +588,32 @@ body.lang-es [lang-content="es"]{display:inline}
       <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:var(--text-muted);letter-spacing:.8px;margin-bottom:10px">
         <span lang-content="en">Waterfall</span><span lang-content="es">Cascada</span>
       </div>
-      <div class="waterfall" id="waterfall"></div>
+      <div class="waterfall" id="waterfall">
+        <div class="waterfall-row"><span class="lbl">Supplier net</span><span>$200.00</span></div>
+        <div class="waterfall-row"><span class="lbl">× (1 − 12.5% chain disc.)</span><span>× 0.875</span></div>
+        <div class="waterfall-row"><span class="lbl">= Adjusted cost</span><span>$175.00</span></div>
+        <div class="waterfall-row"><span class="lbl">× (1 + 17.5% baseComm.)</span><span>× 1.175</span></div>
+        <div class="waterfall-row pos"><span class="lbl">= Ergos sell</span><span>$205.63</span></div>
+        <div class="waterfall-row neg"><span class="lbl">− Agency rebate (3%)</span><span>− $6.17</span></div>
+        <div class="waterfall-row"><span class="lbl">= Agency effective</span><span>$199.46</span></div>
+        <div class="waterfall-row neg"><span class="lbl">− Adjusted cost</span><span>− $175.00</span></div>
+        <div class="waterfall-row pos"><span class="lbl">= Ergos gross</span><span>$24.46</span></div>
+        <div class="waterfall-row neg"><span class="lbl">− Agent earning (22%)</span><span>− $5.38</span></div>
+        <div class="waterfall-row neg"><span class="lbl">− Ops expense (7%)</span><span>− $1.71</span></div>
+        <div class="waterfall-row"><span class="lbl">= Ergos Net</span><span>$17.37</span></div>
+      </div>
     </div>
 
     <div class="preview-card">
       <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:var(--text-muted);letter-spacing:.8px;margin-bottom:10px">
         <span lang-content="en">Guardrails</span><span lang-content="es">Barandillas</span>
       </div>
-      <div class="guardrails" id="guardrails"></div>
+      <div class="guardrails" id="guardrails">
+        <div style="display:flex;align-items:center;gap:8px;padding:6px 0;font-size:12px;color:var(--text-secondary)"><span style="color:#1b8a42">✓</span> Ergos Net % within 7–12% band <span style="margin-left:auto;font-weight:700;color:#1b8a42">8.7%</span></div>
+        <div style="display:flex;align-items:center;gap:8px;padding:6px 0;font-size:12px;color:var(--text-secondary);border-top:1px solid var(--border-light)"><span style="color:#1b8a42">✓</span> Agent earnings ≥ tier floor (15%) <span style="margin-left:auto;font-weight:700;color:#1b8a42">22%</span></div>
+        <div style="display:flex;align-items:center;gap:8px;padding:6px 0;font-size:12px;color:var(--text-secondary);border-top:1px solid var(--border-light)"><span style="color:#1b8a42">✓</span> Customer price within ±20% of Ergos sell <span style="margin-left:auto;font-weight:700;color:#1b8a42">+0%</span></div>
+        <div style="display:flex;align-items:center;gap:8px;padding:6px 0;font-size:12px;color:var(--text-secondary);border-top:1px solid var(--border-light)"><span style="color:#c4962c">⚠</span> Agency rebate &lt; 5% — verify contract <span style="margin-left:auto;font-weight:700;color:#c4962c">3.0%</span></div>
+      </div>
     </div>
 
     <div class="preview-card">
