@@ -18,20 +18,39 @@
       <!-- Flow switcher -->
       <div class="proto-flow-switcher">
         <button class="proto-flow-btn active" data-flow="hotels">Hotels</button>
+        <button class="proto-flow-btn" data-flow="account">Account</button>
+        <button class="proto-flow-btn" data-flow="auth">Auth</button>
       </div>
-      <!-- Hotel flow tabs -->
+      <!-- Hotels flow tabs -->
       <div class="proto-flow-tabs" data-flow-group="hotels">
         <button class="proto-tab active" data-screen="home">1. Home / Search</button>
         <button class="proto-tab" data-screen="results">2. Search Results</button>
         <button class="proto-tab" data-screen="hotel">3. Hotel Detail</button>
-        <button class="proto-tab" data-screen="guest">4. Guest Info</button>
-        <button class="proto-tab" data-screen="services">5. Add Services</button>
-        <button class="proto-tab" data-screen="payment">6. Payment</button>
-        <button class="proto-tab" data-screen="confirmation">7. Confirmation</button>
-        <button class="proto-tab" data-screen="bookings">8. My Bookings</button>
-        <button class="proto-tab" data-screen="booking-detail">9. Booking Detail</button>
-        <button class="proto-tab" data-screen="voucher">10. Voucher</button>
-        <button class="proto-tab" data-screen="invoice">11. Invoice</button>
+        <button class="proto-tab" data-screen="rooms">4. Room Selection</button>
+        <button class="proto-tab" data-screen="guest">5. Guest Info</button>
+        <button class="proto-tab" data-screen="services">6. Add Services</button>
+        <button class="proto-tab" data-screen="payment">7. Payment</button>
+        <button class="proto-tab" data-screen="confirmation">8. Confirmation</button>
+        <button class="proto-tab" data-screen="bookings">9. My Bookings</button>
+        <button class="proto-tab" data-screen="booking-detail">10. Booking Detail</button>
+        <button class="proto-tab" data-screen="voucher">11. Voucher</button>
+        <button class="proto-tab" data-screen="invoice">12. Invoice</button>
+      </div>
+      <!-- Account flow tabs -->
+      <div class="proto-flow-tabs" data-flow-group="account" hidden>
+        <button class="proto-tab" data-screen="profile-info">1. Profile Info</button>
+        <button class="proto-tab" data-screen="update-password">2. Change Password</button>
+        <button class="proto-tab" data-screen="employees">3. Employees</button>
+        <button class="proto-tab" data-screen="passkeys">4. Passkeys</button>
+        <button class="proto-tab" data-screen="pnl">5. P&amp;L</button>
+      </div>
+      <!-- Auth flow tabs -->
+      <div class="proto-flow-tabs" data-flow-group="auth" hidden>
+        <button class="proto-tab" data-screen="login">1. Login</button>
+        <button class="proto-tab" data-screen="forgot-password">2. Forgot Password</button>
+        <button class="proto-tab" data-screen="set-password">3. Set Password</button>
+        <button class="proto-tab" data-screen="register">4. Register Agency</button>
+        <button class="proto-tab" data-screen="employee-invitation">5. Employee Invite</button>
       </div>
     </div>
     <div class="proto-toolbar-right">
@@ -40,9 +59,8 @@
   </div>
 
   <div style="background:#fff7e0;border-bottom:1px solid #f0d670;padding:8px 18px;font-family:'DM Sans',sans-serif;font-size:12.5px;color:#5c3d00;text-align:center;">
-    <strong>Prototype scope:</strong> the 11 screens above cover the <em>hotel-booking funnel + Mozio transportation upsell</em>.
-    Features in the live app NOT modeled here: agency P&amp;L (<code>/pnl</code>), employee management (<code>/employees</code>), passkey settings (<code>/passkeys</code>), profile/account (<code>/profile</code>, <code>/profile-info</code>).
-    See the <a href="../../user-guide/agency-app-user-guide.html" style="color:#0d8a7f;font-weight:600;">Agency App User Guide</a> for the full live-app surface.
+    <strong>Prototype scope:</strong> all 22 routes from the live agency-app (3 flows above) — <em>Hotels</em> (booking funnel + booking management), <em>Account</em> (profile, employees, passkeys, P&amp;L), <em>Auth</em> (login, register, forgot/set password, employee invite).
+    See the <a href="../../user-guide/agency-app-user-guide.html" style="color:#0d8a7f;font-weight:600;">Agency App User Guide</a> for narrative documentation.
   </div>
 
   <!-- ========== SCREEN: HOME / SEARCH ========== -->
@@ -1871,6 +1889,684 @@
   </div>
 
 
+
+  <!-- ============================================================ -->
+  <!-- ====== NEW SCREENS — built 2026-05-29 from live source ====== -->
+  <!-- ============================================================ -->
+
+  <!-- ========== SCREEN: ROOM SELECTION (/rooms/:hotelId) ========== -->
+  <div class="screen" id="screen-rooms">
+    <nav class="navbar">
+      <div class="nav-left">
+        <div class="brand"><div class="brand-icon">EC</div><span class="brand-name">Ergos Continental</span></div>
+        <a href="#" class="nav-link" onclick="showScreen('home')">Home</a>
+        <a href="#" class="nav-link" onclick="showScreen('bookings')">My Bookings</a>
+      </div>
+      <div class="nav-right">
+        <span class="nav-greeting">Good afternoon, Demo Agency</span>
+        <div class="avatar">DA</div>
+      </div>
+    </nav>
+
+    <div class="page-container">
+      <!-- Results search bar (re-search without leaving rooms page) -->
+      <div class="rs-search-bar">
+        <div class="rs-search-field"><label>Destination</label><div class="rs-search-value">Havana, Cuba</div></div>
+        <div class="rs-search-field"><label>Check-in</label><div class="rs-search-value">Mar 25, 2026</div></div>
+        <div class="rs-search-field"><label>Check-out</label><div class="rs-search-value">Mar 27, 2026 <span class="rs-nights">· 2 Nights</span></div></div>
+        <div class="rs-search-field"><label>Guests</label><div class="rs-search-value">1 Room · 2 Adults</div></div>
+        <button class="rs-search-btn" onclick="showScreen('results')">Modify Search</button>
+      </div>
+
+      <a href="#" class="back-link" onclick="showScreen('hotel')">← Back to Hotel</a>
+
+      <!-- Hotel info header -->
+      <div class="rs-hotel-header">
+        <div class="rs-hotel-thumb" style="background-image:url('https://images.unsplash.com/photo-1564501049412-61c2a3083791?w=200')"></div>
+        <div class="rs-hotel-meta">
+          <div class="rs-hotel-stars">★★★★★</div>
+          <h1 class="rs-hotel-name">Iberostar Grand Packard</h1>
+          <p class="rs-hotel-loc">📍 Paseo del Prado, Old Havana, Cuba</p>
+        </div>
+        <div class="rs-hotel-score">
+          <div class="rs-score-num">4.6</div>
+          <div class="rs-score-label">Excellent</div>
+        </div>
+      </div>
+
+      <!-- Filter row -->
+      <div class="rs-filter-row">
+        <div class="rs-filter-title">Available Rooms <span class="rs-count-badge">12 options</span></div>
+        <div class="rs-filter-controls">
+          <input type="text" class="rs-filter-search" placeholder="🔍 Search rooms by name...">
+          <select class="rs-filter-sort">
+            <option>Price: Low to High</option>
+            <option>Price: High to Low</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Multi-room helper alert (live shows when multi-room search) -->
+      <div class="rs-alert">
+        <span class="rs-alert-icon">ℹ</span>
+        <span>You're booking <strong>1 room for 2 adults</strong>. Select a rate below to continue.</span>
+      </div>
+
+      <!-- Room group: Deluxe Ocean View -->
+      <div class="rs-room-group">
+        <div class="rs-room-group-head">
+          <h3>Deluxe Ocean View Room</h3>
+          <span class="rs-rate-count">3 rate options</span>
+        </div>
+
+        <div class="rs-room-card">
+          <div class="rs-room-thumb" style="background-image:url('https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=240')"></div>
+          <div class="rs-room-body">
+            <div class="rs-room-amenities">
+              <span class="rs-amen">🛏 King Bed</span>
+              <span class="rs-amen">👥 Max 2 guests</span>
+              <span class="rs-amen">✓ Free WiFi</span>
+              <span class="rs-amen">✓ Sea view</span>
+            </div>
+            <div class="rs-rate-row">
+              <div class="rs-rate-meta">
+                <span class="rs-meal-badge">All Inclusive</span>
+                <span class="rs-cancel-badge rs-cancel-ok">✓ Cancellable until Mar 20</span>
+              </div>
+              <div class="rs-rate-price">
+                <div class="rs-price-label">Total Client Price</div>
+                <div class="rs-price-amount">USD 484</div>
+                <div class="rs-price-caption">total for 2 nights</div>
+              </div>
+              <button class="rs-book-btn" onclick="showScreen('guest')">Book →</button>
+            </div>
+            <div class="rs-rate-row">
+              <div class="rs-rate-meta">
+                <span class="rs-meal-badge rs-meal-bb">Breakfast Included</span>
+                <span class="rs-cancel-badge rs-cancel-warn">⊘ Non-refundable</span>
+              </div>
+              <div class="rs-rate-price">
+                <div class="rs-price-label">Total Client Price</div>
+                <div class="rs-price-amount">USD 412</div>
+                <div class="rs-price-caption">total for 2 nights</div>
+              </div>
+              <button class="rs-book-btn" onclick="showScreen('guest')">Book →</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Room group: Junior Suite -->
+      <div class="rs-room-group">
+        <div class="rs-room-group-head">
+          <h3>Junior Suite</h3>
+          <span class="rs-rate-count">2 rate options</span>
+        </div>
+
+        <div class="rs-room-card">
+          <div class="rs-room-thumb" style="background-image:url('https://images.unsplash.com/photo-1591088398332-8a7791972843?w=240')"></div>
+          <div class="rs-room-body">
+            <div class="rs-room-amenities">
+              <span class="rs-amen">🛏 King Bed + Sofa</span>
+              <span class="rs-amen">👥 Max 3 guests</span>
+              <span class="rs-amen">✓ Living area</span>
+              <span class="rs-amen">✓ Balcony</span>
+            </div>
+            <div class="rs-rate-row">
+              <div class="rs-rate-meta">
+                <span class="rs-meal-badge">All Inclusive</span>
+                <span class="rs-cancel-badge rs-cancel-ok">✓ Cancellable until Mar 22</span>
+              </div>
+              <div class="rs-rate-price">
+                <div class="rs-price-label">Total Client Price</div>
+                <div class="rs-price-amount">USD 678</div>
+                <div class="rs-price-caption">total for 2 nights</div>
+              </div>
+              <button class="rs-book-btn" onclick="showScreen('guest')">Book →</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="text-align:center;margin:24px 0">
+        <button class="back-link-btn" onclick="showScreen('results')">← Back to All Hotels</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== ACCOUNT SHELL TEMPLATE (used by 4 screens) ========== -->
+  <!-- Sidebar nav reused via .acct-shell. Active item set per-screen.   -->
+
+  <!-- ========== SCREEN: PROFILE INFO (/profile-info) ========== -->
+  <div class="screen" id="screen-profile-info">
+    <nav class="navbar">
+      <div class="nav-left">
+        <div class="brand"><div class="brand-icon">EC</div><span class="brand-name">Ergos Continental</span></div>
+        <a href="#" class="nav-link" onclick="showScreen('home')">Home</a>
+        <a href="#" class="nav-link" onclick="showScreen('bookings')">My Bookings</a>
+      </div>
+      <div class="nav-right">
+        <span class="nav-greeting">Good afternoon, Demo Agency</span>
+        <div class="avatar">DA</div>
+      </div>
+    </nav>
+
+    <div class="acct-shell">
+      <aside class="acct-sidebar">
+        <div class="acct-sidebar-head">My Account</div>
+        <a class="acct-sidebar-link active" onclick="showScreen('profile-info')">👤 Account Info</a>
+        <a class="acct-sidebar-link" onclick="showScreen('employees')">👥 User Management</a>
+        <a class="acct-sidebar-link" onclick="showScreen('update-password')">🔒 Change Password</a>
+        <a class="acct-sidebar-link" onclick="showScreen('passkeys')">🔑 Passkeys</a>
+        <a class="acct-sidebar-link" onclick="showScreen('bookings')">📚 My Bookings</a>
+        <a class="acct-sidebar-link" onclick="showScreen('pnl')">📊 My Earnings (P&amp;L)</a>
+      </aside>
+
+      <main class="acct-content">
+        <div class="acct-header-row">
+          <div>
+            <h1 class="acct-title">Profile Information</h1>
+            <p class="acct-sub">Your account details and agency preferences.</p>
+          </div>
+          <button class="btn-primary">✎ Edit Profile</button>
+        </div>
+
+        <div class="acct-avatar-block">
+          <div class="acct-big-avatar">👤</div>
+        </div>
+
+        <div class="acct-form-grid">
+          <div class="acct-field">
+            <label>Full Name</label>
+            <input type="text" value="Patria Lukman" readonly>
+          </div>
+          <div class="acct-field">
+            <label>Email Address <span class="acct-readonly">(readonly)</span></label>
+            <input type="email" value="patria@demoagency.com" readonly>
+          </div>
+          <div class="acct-field">
+            <label>Phone Number</label>
+            <input type="tel" value="+34 911 234 567" readonly>
+          </div>
+          <div class="acct-field">
+            <label>Agency Logo URL</label>
+            <input type="url" value="https://demoagency.com/logo.png" readonly>
+            <p class="acct-help">This logo will appear in your agency's header.</p>
+          </div>
+          <div class="acct-field acct-field-full">
+            <label>Home Background Image URL</label>
+            <input type="url" value="https://images.unsplash.com/photo-1542314831-068cd1dbfeeb" readonly>
+          </div>
+        </div>
+
+        <!-- Pricing & Markup card -->
+        <div class="acct-card acct-card-markup">
+          <div class="acct-card-head"><span class="acct-card-icon">💰</span><h3>Pricing &amp; Markup</h3></div>
+          <p class="acct-help">Set the default markup over Ergos's wholesale price that applies to every search result.</p>
+          <div class="acct-markup-row">
+            <div class="acct-field" style="max-width:240px">
+              <label>Default markup over Ergos price (%)</label>
+              <div class="acct-input-suffix">
+                <input type="number" value="12.5" min="0" max="200" step="0.5">
+                <span class="suffix">%</span>
+              </div>
+            </div>
+            <button class="btn-primary">Save markup</button>
+          </div>
+          <div class="acct-help-card">
+            <strong>How your earnings work →</strong>
+            <p>Markup is income earned on top of Ergos's wholesale price. Combined with Ergos rebate, it makes up your total per-booking profit.
+            <a onclick="showScreen('pnl')" style="color:#0d8a7f;cursor:pointer">View P&amp;L breakdown →</a></p>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- ========== SCREEN: CHANGE PASSWORD (/update-password) ========== -->
+  <div class="screen" id="screen-update-password">
+    <nav class="navbar">
+      <div class="nav-left">
+        <div class="brand"><div class="brand-icon">EC</div><span class="brand-name">Ergos Continental</span></div>
+        <a href="#" class="nav-link" onclick="showScreen('home')">Home</a>
+        <a href="#" class="nav-link" onclick="showScreen('bookings')">My Bookings</a>
+      </div>
+      <div class="nav-right">
+        <span class="nav-greeting">Good afternoon, Demo Agency</span>
+        <div class="avatar">DA</div>
+      </div>
+    </nav>
+
+    <div class="acct-shell">
+      <aside class="acct-sidebar">
+        <div class="acct-sidebar-head">My Account</div>
+        <a class="acct-sidebar-link" onclick="showScreen('profile-info')">👤 Account Info</a>
+        <a class="acct-sidebar-link" onclick="showScreen('employees')">👥 User Management</a>
+        <a class="acct-sidebar-link active" onclick="showScreen('update-password')">🔒 Change Password</a>
+        <a class="acct-sidebar-link" onclick="showScreen('passkeys')">🔑 Passkeys</a>
+        <a class="acct-sidebar-link" onclick="showScreen('bookings')">📚 My Bookings</a>
+        <a class="acct-sidebar-link" onclick="showScreen('pnl')">📊 My Earnings (P&amp;L)</a>
+      </aside>
+
+      <main class="acct-content">
+        <div class="acct-header-row">
+          <div>
+            <h1 class="acct-title">Security Settings</h1>
+            <p class="acct-sub">Keep your account secure with a strong, up-to-date password.</p>
+          </div>
+          <div class="acct-icon-circle">🛡</div>
+        </div>
+
+        <div class="cp-grid">
+          <aside class="cp-info">
+            <div class="cp-info-row">
+              <div class="cp-info-icon">🔐</div>
+              <div>
+                <strong>Strong Password</strong>
+                <p>Use at least 8 characters with a mix of letters, numbers, and symbols.</p>
+              </div>
+            </div>
+            <div class="cp-info-row">
+              <div class="cp-info-icon">🔄</div>
+              <div>
+                <strong>Regular Updates</strong>
+                <p>Change your password every 90 days. Never reuse old passwords.</p>
+              </div>
+            </div>
+          </aside>
+
+          <form class="cp-form">
+            <div class="acct-field">
+              <label>Current Password</label>
+              <input type="password" value="••••••••••">
+            </div>
+            <div class="acct-field">
+              <label>New Password</label>
+              <input type="password" value="••••••••••••••">
+              <div class="cp-strength">
+                <div class="cp-strength-bar"><div class="cp-strength-fill" style="width:80%;background:#0fa89b"></div></div>
+                <div class="cp-strength-label">Strong</div>
+              </div>
+            </div>
+            <div class="acct-field">
+              <label>Confirm New Password</label>
+              <input type="password" value="••••••••••••••">
+            </div>
+            <button type="button" class="btn-primary" style="margin-top:8px">Update Password</button>
+          </form>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- ========== SCREEN: EMPLOYEE MANAGEMENT (/employees) ========== -->
+  <div class="screen" id="screen-employees">
+    <nav class="navbar">
+      <div class="nav-left">
+        <div class="brand"><div class="brand-icon">EC</div><span class="brand-name">Ergos Continental</span></div>
+        <a href="#" class="nav-link" onclick="showScreen('home')">Home</a>
+        <a href="#" class="nav-link" onclick="showScreen('bookings')">My Bookings</a>
+      </div>
+      <div class="nav-right">
+        <span class="nav-greeting">Good afternoon, Demo Agency</span>
+        <div class="avatar">DA</div>
+      </div>
+    </nav>
+
+    <div class="acct-shell">
+      <aside class="acct-sidebar">
+        <div class="acct-sidebar-head">My Account</div>
+        <a class="acct-sidebar-link" onclick="showScreen('profile-info')">👤 Account Info</a>
+        <a class="acct-sidebar-link active" onclick="showScreen('employees')">👥 User Management</a>
+        <a class="acct-sidebar-link" onclick="showScreen('update-password')">🔒 Change Password</a>
+        <a class="acct-sidebar-link" onclick="showScreen('passkeys')">🔑 Passkeys</a>
+        <a class="acct-sidebar-link" onclick="showScreen('bookings')">📚 My Bookings</a>
+        <a class="acct-sidebar-link" onclick="showScreen('pnl')">📊 My Earnings (P&amp;L)</a>
+      </aside>
+
+      <main class="acct-content">
+        <div class="acct-header-row">
+          <div>
+            <h1 class="acct-title">User Management</h1>
+            <p class="acct-sub">Manage your agency's team — employees and pending invitations.</p>
+          </div>
+          <button class="btn-primary">+ Invite Employee</button>
+        </div>
+
+        <!-- Stats grid -->
+        <div class="emp-stats">
+          <div class="emp-stat">
+            <div class="emp-stat-icon">👥</div>
+            <div>
+              <div class="emp-stat-label">Active Employees</div>
+              <div class="emp-stat-value">7</div>
+            </div>
+          </div>
+          <div class="emp-stat">
+            <div class="emp-stat-icon">🕒</div>
+            <div>
+              <div class="emp-stat-label">Pending Invitations</div>
+              <div class="emp-stat-value">2</div>
+            </div>
+          </div>
+          <div class="emp-stat">
+            <div class="emp-stat-icon">✓</div>
+            <div>
+              <div class="emp-stat-label">Managers</div>
+              <div class="emp-stat-value">2</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="emp-tabs">
+          <button class="emp-tab active">Employees (7)</button>
+          <button class="emp-tab">Invitations (2)</button>
+        </div>
+
+        <!-- Table -->
+        <table class="emp-table">
+          <thead>
+            <tr><th>Name</th><th>Email</th><th>Role</th><th>Status</th><th>Joined</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Carlos Martínez</td><td>carlos@demoagency.com</td><td><span class="emp-role-pill emp-role-mgr">Manager</span></td><td><span class="emp-status emp-status-active">Active</span></td><td>2025-08-12</td></tr>
+            <tr><td>Lucía Fernández</td><td>lucia@demoagency.com</td><td><span class="emp-role-pill">Employee</span></td><td><span class="emp-status emp-status-active">Active</span></td><td>2025-09-03</td></tr>
+            <tr><td>Diego Suárez</td><td>diego@demoagency.com</td><td><span class="emp-role-pill">Employee</span></td><td><span class="emp-status emp-status-active">Active</span></td><td>2025-09-21</td></tr>
+            <tr><td>María Gómez</td><td>maria@demoagency.com</td><td><span class="emp-role-pill emp-role-mgr">Manager</span></td><td><span class="emp-status emp-status-active">Active</span></td><td>2025-11-15</td></tr>
+            <tr><td>Jorge Castillo</td><td>jorge@demoagency.com</td><td><span class="emp-role-pill">Employee</span></td><td><span class="emp-status emp-status-inactive">Inactive</span></td><td>2025-12-04</td></tr>
+            <tr><td>Sofía Reyes</td><td>sofia@demoagency.com</td><td><span class="emp-role-pill">Employee</span></td><td><span class="emp-status emp-status-active">Active</span></td><td>2026-02-18</td></tr>
+            <tr><td>Andrés Pérez</td><td>andres@demoagency.com</td><td><span class="emp-role-pill">Employee</span></td><td><span class="emp-status emp-status-active">Active</span></td><td>2026-04-09</td></tr>
+          </tbody>
+        </table>
+      </main>
+    </div>
+  </div>
+
+  <!-- ========== SCREEN: PASSKEYS (/passkeys) ========== -->
+  <div class="screen" id="screen-passkeys">
+    <nav class="navbar">
+      <div class="nav-left">
+        <div class="brand"><div class="brand-icon">EC</div><span class="brand-name">Ergos Continental</span></div>
+        <a href="#" class="nav-link" onclick="showScreen('home')">Home</a>
+        <a href="#" class="nav-link" onclick="showScreen('bookings')">My Bookings</a>
+      </div>
+      <div class="nav-right">
+        <span class="nav-greeting">Good afternoon, Demo Agency</span>
+        <div class="avatar">DA</div>
+      </div>
+    </nav>
+
+    <div class="acct-shell">
+      <aside class="acct-sidebar">
+        <div class="acct-sidebar-head">My Account</div>
+        <a class="acct-sidebar-link" onclick="showScreen('profile-info')">👤 Account Info</a>
+        <a class="acct-sidebar-link" onclick="showScreen('employees')">👥 User Management</a>
+        <a class="acct-sidebar-link" onclick="showScreen('update-password')">🔒 Change Password</a>
+        <a class="acct-sidebar-link active" onclick="showScreen('passkeys')">🔑 Passkeys</a>
+        <a class="acct-sidebar-link" onclick="showScreen('bookings')">📚 My Bookings</a>
+        <a class="acct-sidebar-link" onclick="showScreen('pnl')">📊 My Earnings (P&amp;L)</a>
+      </aside>
+
+      <main class="acct-content">
+        <div class="acct-header-row">
+          <div>
+            <h1 class="acct-title">Passkeys</h1>
+            <p class="acct-sub">Manage your passkeys for secure, passwordless sign-in.</p>
+          </div>
+          <button class="btn-primary">+ Add Passkey</button>
+        </div>
+
+        <div class="pk-info-paper">
+          <div class="pk-info-icon">🛡</div>
+          <div>
+            <strong>What are Passkeys?</strong>
+            <p>Passkeys replace passwords with the device's fingerprint, face, or PIN. They can't be phished or reused, and signing in is faster — one tap and you're in.</p>
+          </div>
+        </div>
+
+        <div class="pk-list-card">
+          <h3 class="pk-list-title">Your Passkeys</h3>
+          <table class="emp-table">
+            <thead>
+              <tr><th>Device</th><th>Created</th><th>Last Used</th><th>Actions</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>📱 iPhone 15 Pro</td><td>2026-04-12</td><td>2026-05-29 14:22</td><td><button class="pk-trash">🗑</button></td></tr>
+              <tr><td>💻 MacBook Pro</td><td>2026-03-08</td><td>2026-05-28 09:15</td><td><button class="pk-trash">🗑</button></td></tr>
+              <tr><td>🔑 YubiKey 5C</td><td>2026-02-21</td><td><span class="pk-never">Never used</span></td><td><button class="pk-trash">🗑</button></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- ========== SCREEN: AGENCY P&L (/pnl) — no sidebar shell ========== -->
+  <div class="screen" id="screen-pnl">
+    <nav class="navbar">
+      <div class="nav-left">
+        <div class="brand"><div class="brand-icon">EC</div><span class="brand-name">Ergos Continental</span></div>
+        <a href="#" class="nav-link" onclick="showScreen('home')">Home</a>
+        <a href="#" class="nav-link" onclick="showScreen('bookings')">My Bookings</a>
+      </div>
+      <div class="nav-right">
+        <span class="nav-greeting">Good afternoon, Demo Agency</span>
+        <div class="avatar">DA</div>
+      </div>
+    </nav>
+
+    <div class="page-container">
+      <div class="pnl-header-row">
+        <div>
+          <h1 class="pnl-title">My Earnings (P&amp;L)</h1>
+          <p class="pnl-sub">Markup income (your own pricing) + Ergos rebate income per booking. Updated nightly.</p>
+        </div>
+        <button class="pnl-refresh">↻ Refresh</button>
+      </div>
+
+      <div class="pnl-date-filter">
+        <div class="acct-field" style="max-width:200px">
+          <label>From</label>
+          <input type="date" value="2026-02-28">
+        </div>
+        <div class="acct-field" style="max-width:200px">
+          <label>To</label>
+          <input type="date" value="2026-05-29">
+        </div>
+      </div>
+
+      <div class="pnl-stats">
+        <div class="pnl-stat pnl-stat-positive">
+          <div class="pnl-stat-icon">📊</div>
+          <div>
+            <div class="pnl-stat-label">Total Profit</div>
+            <div class="pnl-stat-value">USD 14,820</div>
+            <div class="pnl-stat-hint">Markup + rebate</div>
+          </div>
+        </div>
+        <div class="pnl-stat">
+          <div class="pnl-stat-icon">💰</div>
+          <div>
+            <div class="pnl-stat-label">Markup Income</div>
+            <div class="pnl-stat-value">USD 9,180</div>
+            <div class="pnl-stat-hint">Your customer-facing price − what you paid Ergos</div>
+          </div>
+        </div>
+        <div class="pnl-stat pnl-stat-info">
+          <div class="pnl-stat-icon">💵</div>
+          <div>
+            <div class="pnl-stat-label">Rebate Income</div>
+            <div class="pnl-stat-value">USD 5,640</div>
+            <div class="pnl-stat-hint">Cashback from Ergos</div>
+          </div>
+        </div>
+        <div class="pnl-stat">
+          <div class="pnl-stat-icon">🧾</div>
+          <div>
+            <div class="pnl-stat-label">Bookings</div>
+            <div class="pnl-stat-value">42</div>
+            <div class="pnl-stat-hint">with full P&amp;L data</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="pnl-table-card">
+        <h3>Per-booking breakdown</h3>
+        <p class="acct-help">Bookings predating the P&amp;L snapshot are marked <span class="pnl-legacy-tag">legacy</span> and may show estimated values.</p>
+        <table class="pnl-table">
+          <thead>
+            <tr><th>Booking</th><th>Hotel</th><th>Check-in</th><th>Ergos cost</th><th>Customer paid</th><th>Markup</th><th>Rebate</th><th>Profit</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><span class="pnl-ref">ERG-014821</span> <span class="emp-status emp-status-active">CONFIRMED</span></td><td>Iberostar Grand Packard</td><td>2026-05-25</td><td>USD 412</td><td>USD 484</td><td class="pnl-up">+ USD 72</td><td class="pnl-info">+ USD 48 <span class="pnl-pct">(11.7%)</span></td><td class="pnl-profit">USD 120</td></tr>
+            <tr><td><span class="pnl-ref">ERG-014754</span> <span class="emp-status emp-status-active">CONFIRMED</span></td><td>Memories Varadero</td><td>2026-05-22</td><td>USD 348</td><td>USD 412</td><td class="pnl-up">+ USD 64</td><td class="pnl-info">+ USD 42 <span class="pnl-pct">(12.1%)</span></td><td class="pnl-profit">USD 106</td></tr>
+            <tr><td><span class="pnl-ref">ERG-014603</span> <span class="emp-status emp-status-active">CONFIRMED</span></td><td>Hyatt Ziva Cap Cana</td><td>2026-05-18</td><td>USD 1,240</td><td>USD 1,480</td><td class="pnl-up">+ USD 240</td><td class="pnl-info">+ USD 148 <span class="pnl-pct">(11.9%)</span></td><td class="pnl-profit">USD 388</td></tr>
+            <tr><td><span class="pnl-ref">ERG-014498</span> <span class="emp-status emp-status-active">CONFIRMED</span></td><td>Iberostar Selection Bávaro</td><td>2026-05-14</td><td>USD 980</td><td>USD 1,176</td><td class="pnl-up">+ USD 196</td><td class="pnl-info">+ USD 117 <span class="pnl-pct">(11.9%)</span></td><td class="pnl-profit">USD 313</td></tr>
+            <tr><td><span class="pnl-ref">ERG-014312</span> <span class="emp-status emp-status-inactive">CANCELLED</span></td><td>Royalton Cuba</td><td>2026-05-09</td><td>USD 540</td><td>USD 0</td><td class="pnl-zero">—</td><td class="pnl-zero">—</td><td class="pnl-zero">USD 0</td></tr>
+            <tr><td><span class="pnl-ref">ERG-014205</span> <span class="emp-status emp-status-active">CONFIRMED</span></td><td>Paradisus Río de Oro</td><td>2026-05-04</td><td>USD 1,820</td><td>USD 2,184</td><td class="pnl-up">+ USD 364</td><td class="pnl-info">+ USD 218 <span class="pnl-pct">(12.0%)</span></td><td class="pnl-profit">USD 582</td></tr>
+            <tr><td><span class="pnl-ref">ERG-014101</span> <span class="emp-status emp-status-active">CONFIRMED</span></td><td>Iberostar Daiquirí <span class="pnl-legacy-tag">legacy</span></td><td>2026-04-28</td><td>USD 680</td><td>USD 760</td><td class="pnl-up">+ USD 80</td><td class="pnl-zero">—</td><td class="pnl-profit">USD 80</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== SCREEN: LOGIN (/login) ========== -->
+  <div class="screen" id="screen-login">
+    <div class="auth-fullscreen auth-login-bg">
+      <div class="auth-overlay"></div>
+      <div class="auth-login-grid">
+        <div class="auth-login-left">
+          <h1 class="auth-login-headline">Your Journey Starts Here</h1>
+          <p class="auth-login-desc">Curate unforgettable stays for your clients from 2,500+ handpicked hotels worldwide — with built-in commission tracking, voucher issuance, and 24/7 booking support.</p>
+          <div class="auth-feature-row"><div class="auth-feature-icon">✈</div><div><strong>Exclusive Destinations</strong><p>Access rates and inventory not available on consumer booking sites.</p></div></div>
+          <div class="auth-feature-row"><div class="auth-feature-icon">🛡</div><div><strong>Secure Booking</strong><p>End-to-end encryption + passkey sign-in. PCI-DSS compliant payment.</p></div></div>
+          <div class="auth-feature-row"><div class="auth-feature-icon">🎧</div><div><strong>24/7 Support</strong><p>Average first-response under 4 minutes, in English or Spanish.</p></div></div>
+        </div>
+        <div class="auth-login-card">
+          <h2 class="auth-card-title">Welcome Back</h2>
+          <p class="auth-card-sub">Sign in to manage bookings, your team, and earnings.</p>
+          <div class="acct-field"><label>Email Address</label><input type="email" placeholder="you@youragency.com"></div>
+          <div class="acct-field"><label>Password</label><input type="password" placeholder="••••••••"></div>
+          <button class="btn-primary auth-submit-btn" onclick="showScreen('home')">Sign In</button>
+          <div class="auth-divider"><span>or</span></div>
+          <button class="btn-secondary auth-submit-btn">🔑 Sign in with Passkey</button>
+          <div class="auth-divider"><span>OR</span></div>
+          <p class="auth-foot">Need access to your account? <a onclick="showScreen('forgot-password')">Forgot your password?</a> Or contact your sales agent.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== SCREEN: FORGOT PASSWORD (/forgot-password) ========== -->
+  <div class="screen" id="screen-forgot-password">
+    <div class="auth-fullscreen auth-simple-bg">
+      <div class="auth-centered-card">
+        <h2 class="auth-card-title">Reset your password</h2>
+        <p class="auth-card-sub">Enter your email, and we'll send you a link to reset your password.</p>
+        <div class="acct-field"><label>Email Address</label><input type="email" placeholder="you@youragency.com"></div>
+        <button class="btn-primary auth-submit-btn" onclick="showScreen('set-password')">Send reset link</button>
+        <p class="auth-foot"><a onclick="showScreen('login')">← Back to sign in</a></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== SCREEN: SET PASSWORD (/set-password) ========== -->
+  <div class="screen" id="screen-set-password">
+    <div class="auth-fullscreen auth-dark-bg">
+      <div class="auth-centered-card auth-card-narrow">
+        <h2 class="auth-card-title">Set Your Password</h2>
+        <p class="auth-card-sub">Create a secure password to finish setting up your account.</p>
+        <div class="acct-field"><label>Email <span class="acct-readonly">(prefilled)</span></label><input type="email" value="patria@demoagency.com" readonly></div>
+        <div class="acct-field">
+          <label>New Password</label>
+          <input type="password" value="••••••••••••">
+          <div class="cp-strength">
+            <div class="cp-strength-bar"><div class="cp-strength-fill" style="width:80%;background:#0fa89b"></div></div>
+            <div class="cp-strength-label">Strong</div>
+          </div>
+          <ul class="pw-reqs">
+            <li class="ok">✓ At least 8 characters</li>
+            <li class="ok">✓ Contains a number</li>
+            <li class="ok">✓ Contains lowercase letter</li>
+            <li class="ok">✓ Contains uppercase letter</li>
+            <li class="ok">✓ Contains special symbol</li>
+          </ul>
+        </div>
+        <div class="acct-field"><label>Confirm Password</label><input type="password" value="••••••••••••"></div>
+        <button class="btn-primary auth-submit-btn auth-btn-dark" onclick="showScreen('login')">Set Password</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== SCREEN: AGENCY REGISTRATION (/register) ========== -->
+  <div class="screen" id="screen-register">
+    <div class="auth-fullscreen auth-blue-bg">
+      <div class="auth-centered-card">
+        <div class="auth-head-icon">🏪</div>
+        <h2 class="auth-card-title">Register Your Travel Agency</h2>
+        <p class="auth-card-sub">Complete your registration to start booking amazing adventures for your clients!</p>
+
+        <div class="auth-invite-panel">
+          <div class="auth-invite-row"><strong>Email</strong> <span>patria@demoagency.com</span></div>
+          <div class="auth-invite-row"><strong>Assigned Sales Agent</strong> <span>Carlos Martínez</span></div>
+          <div class="auth-invite-row"><strong>Status</strong> <span class="emp-status emp-status-active">Pre-approved by Admin</span></div>
+        </div>
+
+        <div class="acct-field"><label>Travel Agency Name</label><input type="text" placeholder="e.g., Demo Agency S.L."></div>
+        <div class="acct-field">
+          <label>Create Password</label>
+          <input type="password" value="••••••••••••">
+          <div class="cp-strength">
+            <div class="cp-strength-bar"><div class="cp-strength-fill" style="width:80%;background:#0fa89b"></div></div>
+            <div class="cp-strength-label">Strong</div>
+          </div>
+        </div>
+        <div class="acct-field"><label>Confirm Password</label><input type="password" value="••••••••••••"></div>
+        <button class="btn-primary auth-submit-btn auth-btn-dark" onclick="showScreen('login')">Complete Registration</button>
+        <p class="auth-foot">By registering you agree to our <a>Terms of Service</a> and <a>Privacy Policy</a>.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== SCREEN: EMPLOYEE INVITATION (/employee-invitation) ========== -->
+  <div class="screen" id="screen-employee-invitation">
+    <div class="auth-fullscreen auth-blue-bg">
+      <div class="auth-centered-card">
+        <div class="auth-head-icon">🏪</div>
+        <h2 class="auth-card-title">Join Demo Agency</h2>
+        <p class="auth-card-sub">Hi Lucía! You've been invited to join <strong>Demo Agency</strong> as an <strong>Employee</strong>. Set a password to finish setting up your account.</p>
+
+        <div class="auth-invite-panel">
+          <div class="auth-invite-row"><strong>Name</strong> <span>Lucía Fernández</span></div>
+          <div class="auth-invite-row"><strong>Email</strong> <span>lucia@demoagency.com</span></div>
+          <div class="auth-invite-row"><strong>Role</strong> <span class="emp-role-pill">Employee</span></div>
+        </div>
+
+        <div class="acct-field">
+          <label>Create Password</label>
+          <input type="password" value="••••••••••••">
+          <div class="cp-strength">
+            <div class="cp-strength-bar"><div class="cp-strength-fill" style="width:80%;background:#0fa89b"></div></div>
+            <div class="cp-strength-label">Strong</div>
+          </div>
+          <ul class="pw-reqs">
+            <li class="ok">✓ At least 8 characters</li>
+            <li class="ok">✓ Contains a number</li>
+            <li class="ok">✓ Contains lowercase letter</li>
+            <li class="ok">✓ Contains uppercase letter</li>
+            <li class="ok">✓ Contains special symbol</li>
+          </ul>
+        </div>
+        <div class="acct-field"><label>Confirm Password</label><input type="password" value="••••••••••••"></div>
+        <button class="btn-primary auth-submit-btn auth-btn-dark" onclick="showScreen('login')">Create Account &amp; Join Demo Agency</button>
+        <p class="auth-foot">By joining you agree to our <a>Terms of Service</a> and <a>Privacy Policy</a>.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== END NEW SCREENS ========== -->
 
   <!-- ========== SEARCH LOADING OVERLAY ========== -->
   <div class="search-loading-overlay" id="search-loading">

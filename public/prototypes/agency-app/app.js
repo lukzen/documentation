@@ -128,7 +128,9 @@ function updateVisiblePrices() {
 
 // Flow definitions — screens that belong to each flow
 const flowScreens = {
-  hotels: ['home', 'results', 'hotel', 'guest', 'services', 'payment', 'confirmation', 'bookings', 'booking-detail', 'voucher', 'invoice', 'markup']
+  hotels: ['home', 'results', 'hotel', 'rooms', 'guest', 'services', 'payment', 'confirmation', 'bookings', 'booking-detail', 'voucher', 'invoice', 'markup'],
+  account: ['profile-info', 'update-password', 'employees', 'passkeys', 'pnl'],
+  auth: ['login', 'forgot-password', 'set-password', 'register', 'employee-invitation']
 };
 let activeFlow = 'hotels';
 
