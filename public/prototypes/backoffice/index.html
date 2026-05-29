@@ -207,6 +207,62 @@
 </section>
 
 
+<!-- Hotel Brands (stub — live nav item, no full proto yet) -->
+<section class="screen" id="screen-hotel-brands">
+  <div class="app-layout">
+    <aside class="sidebar"></aside>
+    <main class="app-main">
+      <div class="topbar"><button class="hamburger" onclick="toggleSidebar()" aria-label="Menu">☰</button><div class="breadcrumb"><span>Finance &amp; Audit</span> / <span>Hotel Brands</span></div><div class="topbar-right"><div class="avatar">AD</div></div></div>
+      <div class="page">
+        <div class="page-head row"><div><h1>Hotel Brands</h1><p class="muted">Group hotels under a brand to apply cascade-level discount rules. Each brand has a per-vendor discount that overrides the default chain logic.</p></div><button class="btn btn-primary" disabled title="Stub screen">+ Create Brand</button></div>
+        <div class="card"><div class="page-head" style="border:none;padding:24px;text-align:center"><p class="muted">Prototype stub — see the live app at <code>/hotel-brands</code> for the current implementation (brand list, linked-hotels dialog, per-vendor discount editor).</p></div></div>
+      </div>
+    </main>
+  </div>
+</section>
+
+<!-- Booking Breakdown (stub — live nav item, no full proto yet) -->
+<section class="screen" id="screen-booking-breakdown">
+  <div class="app-layout">
+    <aside class="sidebar"></aside>
+    <main class="app-main">
+      <div class="topbar"><button class="hamburger" onclick="toggleSidebar()" aria-label="Menu">☰</button><div class="breadcrumb"><span>Finance &amp; Audit</span> / <span>Booking Breakdown</span></div><div class="topbar-right"><div class="avatar">AD</div></div></div>
+      <div class="page">
+        <div class="page-head row"><div><h1>Booking Breakdown</h1><p class="muted">Per-booking money flow across all 4 parties — net, markup, commission, agency rebate, agent earning. Filter by booking ID, agency, or date range.</p></div></div>
+        <div class="card"><div class="page-head" style="border:none;padding:24px;text-align:center"><p class="muted">Prototype stub — see the live app at <code>/finance/booking-breakdown</code> for the current implementation.</p></div></div>
+      </div>
+    </main>
+  </div>
+</section>
+
+<!-- Booking Audit Log (stub — live nav item, no full proto yet) -->
+<section class="screen" id="screen-audit-log">
+  <div class="app-layout">
+    <aside class="sidebar"></aside>
+    <main class="app-main">
+      <div class="topbar"><button class="hamburger" onclick="toggleSidebar()" aria-label="Menu">☰</button><div class="breadcrumb"><span>Finance &amp; Audit</span> / <span>Booking Audit Log</span></div><div class="topbar-right"><div class="avatar">AD</div></div></div>
+      <div class="page">
+        <div class="page-head row"><div><h1>Booking Audit Log</h1><p class="muted">Every booking-level event — created, confirmed, modified, cancelled — with actor, timestamp, and the diff applied. Used by support + finance for incident reconstruction.</p></div></div>
+        <div class="card"><div class="page-head" style="border:none;padding:24px;text-align:center"><p class="muted">Prototype stub — see the live app at <code>/audit-log</code> for the current implementation.</p></div></div>
+      </div>
+    </main>
+  </div>
+</section>
+
+<!-- Hotel Suppliers (stub — live nav item, no full proto yet) -->
+<section class="screen" id="screen-hotel-suppliers">
+  <div class="app-layout">
+    <aside class="sidebar"></aside>
+    <main class="app-main">
+      <div class="topbar"><button class="hamburger" onclick="toggleSidebar()" aria-label="Menu">☰</button><div class="breadcrumb"><span>Partners</span> / <span>Hotel Suppliers</span></div><div class="topbar-right"><div class="avatar">AD</div></div></div>
+      <div class="page">
+        <div class="page-head row"><div><h1>Hotel Suppliers</h1><p class="muted">GDS wholesalers Ergos integrates with — Dingus, Hotetec, Restel, Roibos (Juniper). Per-supplier connection state, last sync time, and credentials reference.</p></div><button class="btn btn-primary" disabled title="Stub screen">+ Add Supplier</button></div>
+        <div class="card"><div class="page-head" style="border:none;padding:24px;text-align:center"><p class="muted">Prototype stub — see the live app at <code>/vendor-management</code> for the current implementation.</p></div></div>
+      </div>
+    </main>
+  </div>
+</section>
+
 <!-- Pricing Policy (embedded in shell, parent rail auto-collapses) -->
 <section class="screen" id="screen-pricing-policy">
   <div class="app-layout">

@@ -41,39 +41,42 @@ const RESERVATIONS = Array.from({length:80},(_,i)=>{const h=pick(HOTELS),ag=pick
 const AGENTS = Array.from({length:54},(_,i)=>{const p=person(i+900),tier=pick(TIERS),ranges={Starter:[0.10,0.14],Growth:[0.15,0.20],Elite:[0.21,0.26],Strategic:[0.27,0.32]}[tier];return{...p,tier,city:pick(CITIES),earningPct:(ranges[0]+rnd()*(ranges[1]-ranges[0])).toFixed(3),opsExpense:({Starter:0.08,Growth:0.07,Elite:0.06,Strategic:0.05})[tier].toFixed(3),oneClickMember:rnd()>0.4,active:rnd()>0.15};});
 
 /* ---------- router ---------- */
+// Mirrors the live backoffice sidebar (Mantine app at localhost:3032).
+// Sections + labels are kept in sync; stub screens were added in the same
+// pass for items that exist in the live nav. Drift policy: when the live
+// nav changes, update both NAV_GROUPS here AND the matching screen blocks
+// in index.html — clicking a nav item with no #screen-{id} is a silent
+// no-op (showScreen() does nothing when getElementById returns null).
 const NAV_GROUPS = [
-  {title:'Overview', items:[
+  {title:'', items:[
     {id:'dashboard',icon:'▦',label:'Dashboard'}
   ]},
-  {title:'Access & Security', items:[
-    {id:'backoffice-users',icon:'◉',label:'BackOffice Users'},
-    {id:'roles',icon:'◈',label:'Roles'}
+  {title:'BackOffice Module', items:[
+    {id:'backoffice-users',icon:'◉',label:'BackOffice'},
+    {id:'roles',icon:'◈',label:'Roles Management'}
   ]},
   {title:'Hotel Module', items:[
     {id:'hotels',icon:'◆',label:'Hotels'},
     {id:'reservations',icon:'▤',label:'Reservations'}
   ]},
-  // Finance & Audit umbrella mirrors the live nav. The proto currently
-  // models only Pricing Policy; Hotel Brands, Booking Breakdown, and
-  // Booking Audit Log exist in the real app but have no proto screens
-  // (linking them here would 404). Add screens before promoting to nav.
   {title:'Finance & Audit', items:[
-    {id:'pricing-policy',icon:'⚙',label:'Pricing Policy'}
+    {id:'pricing-policy',icon:'⚙',label:'Pricing Policy'},
+    {id:'hotel-brands',icon:'⌘',label:'Hotel Brands'},
+    {id:'booking-breakdown',icon:'⊞',label:'Booking Breakdown'},
+    {id:'audit-log',icon:'⊜',label:'Booking Audit Log'}
   ]},
-  // Partners umbrella — every party Ergos has a contractual + financial
-  // relationship with: distribution side (Travel Agencies + Agency
-  // Employees), internal team (Sales Agents), supply side (Hotel
-  // Suppliers — not yet in the proto).
   {title:'Partners', items:[
     {id:'agencies',icon:'◇',label:'Travel Agencies'},
-    {id:'agency-employees',icon:'◎',label:'Agency Employees'},
-    {id:'agents',icon:'◊',label:'Sales Agents'}
+    {id:'agency-employees',icon:'◎',label:'Employment'},
+    {id:'agents',icon:'◊',label:'Sales Agents'},
+    {id:'hotel-suppliers',icon:'☷',label:'Hotel Suppliers'}
   ]}
 ];
 
 function renderSidebars(activeId){
+  // Empty title => no group header (live's Dashboard sits ungrouped at top).
   const groupsHTML = NAV_GROUPS.map(g=>`
-    <div class="nav-group-title">${g.title}</div>
+    ${g.title ? `<div class="nav-group-title">${g.title}</div>` : ''}
     ${g.items.map(n => n.href
       ? `<a class="nav-link" href="${n.href}" data-label="${n.label}"><span class="nav-icon">${n.icon}</span><span>${n.label}</span><span class="nav-ext">↗</span></a>`
       : `<a class="nav-link ${n.id===activeId?'active':''}" data-label="${n.label}" onclick="showScreen('${n.id}');closeSidebar()"><span class="nav-icon">${n.icon}</span><span>${n.label}</span></a>`
