@@ -389,7 +389,12 @@ body.lang-es [lang-content="es"]{display:inline}
   <main class="center">
     <div class="center-head">
       <div class="center-breadcrumb" id="centerBreadcrumb">
-        <b>Global</b> <span class="sep">›</span> <b>Meliá Barcelona</b> <span class="sep">›</span> <b>Viajes Azul</b> <span class="sep">›</span> <b>M. Ruiz</b>
+        <!-- Hotel scope breadcrumb (default) -->
+        <span class="bc-variant" data-bc-scope="hotel"><b>Global</b> <span class="sep">›</span> <b>Meliá Barcelona</b> <span class="sep">›</span> <b>Viajes Azul</b> <span class="sep">›</span> <b>M. Ruiz</b></span>
+        <!-- Agency scope breadcrumb -->
+        <span class="bc-variant" data-bc-scope="agency" hidden><b>Global</b> <span class="sep">›</span> <b>Viajes Azul</b></span>
+        <!-- Agent scope breadcrumb -->
+        <span class="bc-variant" data-bc-scope="agent" hidden><b>Global</b> <span class="sep">›</span> <b>Growth Tier</b> <span class="sep">›</span> <b>M. Ruiz</b></span>
       </div>
       <div style="font-size:11px;color:var(--text-muted)" lang-content="en">Inheritance Stack</div>
       <div style="font-size:11px;color:var(--text-muted);display:none" lang-content="es">Pila de herencia</div>
@@ -397,6 +402,8 @@ body.lang-es [lang-content="es"]{display:inline}
 
     <div id="stack">
       <!-- Static sample LayerCards (5 cascade layers) — JS may replace if data loads -->
+      <!-- ====== HOTEL SCOPE STACK (default) ====== -->
+      <div class="stack-variant" data-stack-scope="hotel">
 
       <!-- Layer 1: Global Defaults — Inherited -->
       <div class="bp-card layer-card">
@@ -525,6 +532,124 @@ body.lang-es [lang-content="es"]{display:inline}
           <div class="field-control"><input type="number" value="22" min="0" max="100" step="0.5" disabled style="width:80px;padding:6px 8px;border:1px solid var(--border);border-radius:4px;background:#fafafa;color:#5c5c7a"><span style="font-size:11px;color:var(--text-muted)">%</span></div>
         </div>
       </div>
+      </div><!-- /stack-variant data-stack-scope="hotel" -->
+
+      <!-- ====== AGENCY SCOPE STACK (Global + Agency only) ====== -->
+      <div class="stack-variant" data-stack-scope="agency" hidden>
+        <!-- Layer 1: Global Defaults — Inherited -->
+        <div class="bp-card layer-card">
+          <div class="card-head">
+            <div class="card-title">
+              <div class="layer-num">1</div>
+              <div>
+                <h3>Global Defaults</h3>
+                <div class="src">Cascade base — agency rebate baseline</div>
+              </div>
+            </div>
+            <div class="card-actions">
+              <span class="chip chip-inherited" style="background:#f0f0f5;color:#5c5c7a;padding:3px 10px;border-radius:999px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.4px">Inherited</span>
+            </div>
+          </div>
+          <div class="field-row">
+            <div><div class="field-label">rebatePct</div><span class="field-hint">Default cashback Ergos returns to agencies</span></div>
+            <div class="field-control"><input type="number" value="3" min="0" max="100" step="0.5" style="width:80px;padding:6px 8px;border:1px solid var(--border);border-radius:4px"><span style="font-size:11px;color:var(--text-muted)">%</span></div>
+          </div>
+        </div>
+
+        <!-- Layer 2: Agency · Viajes Azul — Override -->
+        <div class="bp-card layer-card" style="border:1px solid rgba(196,150,44,0.3);background:linear-gradient(180deg,rgba(196,150,44,0.04) 0%,#fff 100%)">
+          <div class="card-head">
+            <div class="card-title">
+              <div class="layer-num">2</div>
+              <div>
+                <h3>Agency · Viajes Azul</h3>
+                <div class="src">Agency-specific override · negotiated rebate uplift</div>
+              </div>
+            </div>
+            <div class="card-actions">
+              <span class="chip chip-override" style="background:rgba(196,150,44,0.18);color:#946400;padding:3px 10px;border-radius:999px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.4px">Override</span>
+            </div>
+          </div>
+          <div class="field-row">
+            <div><div class="field-label">rebatePct</div><span class="field-hint">Negotiated higher rebate vs global (3% → 4%)</span></div>
+            <div class="field-control"><input type="number" value="4" min="0" max="100" step="0.5" style="width:80px;padding:6px 8px;border:1px solid var(--border);border-radius:4px;background:rgba(15,168,155,0.06)"><span style="font-size:11px;color:var(--text-muted)">%</span></div>
+          </div>
+          <div class="field-row">
+            <div><div class="field-label">contractStatus</div><span class="field-hint">Signed agreement validity</span></div>
+            <div class="field-control"><select style="padding:6px 8px;border:1px solid var(--border);border-radius:4px"><option>Signed (valid through 2027-03)</option><option>Pending</option><option>Expired</option></select></div>
+          </div>
+        </div>
+      </div><!-- /stack-variant data-stack-scope="agency" -->
+
+      <!-- ====== AGENT SCOPE STACK (Global + Tier + Agent-Hotel Override) ====== -->
+      <div class="stack-variant" data-stack-scope="agent" hidden>
+        <!-- Layer 1: Global Defaults — Inherited -->
+        <div class="bp-card layer-card">
+          <div class="card-head">
+            <div class="card-title">
+              <div class="layer-num">1</div>
+              <div>
+                <h3>Global Defaults</h3>
+                <div class="src">Cascade base — earning + ops baselines</div>
+              </div>
+            </div>
+            <div class="card-actions">
+              <span class="chip chip-inherited" style="background:#f0f0f5;color:#5c5c7a;padding:3px 10px;border-radius:999px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.4px">Inherited</span>
+            </div>
+          </div>
+          <div class="field-row">
+            <div><div class="field-label">earningPercentage</div><span class="field-hint">Default agent share of gross</span></div>
+            <div class="field-control"><input type="number" value="22" min="0" max="100" step="0.5" style="width:80px;padding:6px 8px;border:1px solid var(--border);border-radius:4px"><span style="font-size:11px;color:var(--text-muted)">%</span></div>
+          </div>
+          <div class="field-row">
+            <div><div class="field-label">operationalExpense</div><span class="field-hint">Default ops expense deducted from gross</span></div>
+            <div class="field-control"><input type="number" value="7" min="0" max="100" step="0.5" style="width:80px;padding:6px 8px;border:1px solid var(--border);border-radius:4px"><span style="font-size:11px;color:var(--text-muted)">%</span></div>
+          </div>
+        </div>
+
+        <!-- Layer 2: Agent Tier · Growth — Override -->
+        <div class="bp-card layer-card" style="border:1px solid rgba(196,150,44,0.3);background:linear-gradient(180deg,rgba(196,150,44,0.04) 0%,#fff 100%)">
+          <div class="card-head">
+            <div class="card-title">
+              <div class="layer-num">2</div>
+              <div>
+                <h3>Agent Tier · Growth</h3>
+                <div class="src">Tier-level earning baseline (15–20% range) · <span style="background:#f3e3b6;color:#946400;padding:2px 8px;border-radius:999px;font-size:10px;font-weight:700">M. Ruiz qualified Mar 2025</span></div>
+              </div>
+            </div>
+            <div class="card-actions">
+              <span class="chip chip-override" style="background:rgba(196,150,44,0.18);color:#946400;padding:3px 10px;border-radius:999px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.4px">Override</span>
+            </div>
+          </div>
+          <div class="field-row">
+            <div><div class="field-label">earningPercentage</div><span class="field-hint">Growth tier baseline</span></div>
+            <div class="field-control"><input type="number" value="22" min="0" max="100" step="0.5" style="width:80px;padding:6px 8px;border:1px solid var(--border);border-radius:4px;background:rgba(15,168,155,0.06)"><span style="font-size:11px;color:var(--text-muted)">%</span></div>
+          </div>
+          <div class="field-row">
+            <div><div class="field-label">operationalExpense</div><span class="field-hint">Tier ops baseline</span></div>
+            <div class="field-control"><input type="number" value="7" min="0" max="100" step="0.5" style="width:80px;padding:6px 8px;border:1px solid var(--border);border-radius:4px;background:rgba(15,168,155,0.06)"><span style="font-size:11px;color:var(--text-muted)">%</span></div>
+          </div>
+        </div>
+
+        <!-- Layer 3: Agent-Hotel Override — Inherited (no per-hotel override) -->
+        <div class="bp-card layer-card">
+          <div class="card-head">
+            <div class="card-title">
+              <div class="layer-num">3</div>
+              <div>
+                <h3>Agent-Hotel Override · M. Ruiz × any hotel</h3>
+                <div class="src">Per-agent per-hotel override (deepest layer — wins all)</div>
+              </div>
+            </div>
+            <div class="card-actions">
+              <span class="chip chip-inherited" style="background:#f0f0f5;color:#5c5c7a;padding:3px 10px;border-radius:999px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.4px">No override</span>
+            </div>
+          </div>
+          <div class="field-row" style="font-size:12px;color:var(--text-muted);padding:10px 0">
+            No per-hotel override configured for this agent. Pick a specific hotel from the Hotels scope to add one.
+          </div>
+        </div>
+      </div><!-- /stack-variant data-stack-scope="agent" -->
     </div>
 
     <!-- Effective -->
@@ -1048,6 +1173,13 @@ function renderScope() {
   $('#cntAgent').textContent  = AGENTS.length.toLocaleString();
 
   $$('.scope-tab').forEach(t => t.classList.toggle('active', t.dataset.scope===state.scopeTab));
+
+  // Toggle stack-variant + breadcrumb-variant based on active scope tab.
+  // Hotel scope shows the full 5-layer cascade; Agency hides Hotel+Agent
+  // overrides; Agent hides Hotel+Travel-Agency overrides.
+  $$('.stack-variant').forEach(v => { v.hidden = v.dataset.stackScope !== state.scopeTab; });
+  $$('.bc-variant').forEach(v => { v.hidden = v.dataset.bcScope !== state.scopeTab; });
+
   renderFilterChips();
 
   const { matched, total } = runSearch();
@@ -1163,12 +1295,20 @@ function renderVirtRows() {
 function renderTree() { renderScope(); }
 
 function renderBreadcrumb() {
+  // Prototype mode: hardcoded .bc-variant spans live in the DOM. Skip
+  // the JS render so they survive — renderScope() handles which variant
+  // is visible based on the active scope tab.
+  if (document.querySelector('.bc-variant')) return;
   const {hotel,agency,agent} = getActive();
   $('#centerBreadcrumb').innerHTML =
     `<b>Global</b><span class="sep">›</span><b>${hotel.name}</b><span class="sep">›</span><b>${agency.name}</b><span class="sep">›</span><b>${agent.name}</b>`;
 }
 
 function renderStack() {
+  // Prototype mode: hardcoded .stack-variant containers live inside #stack.
+  // Skip the JS render so the variants survive — renderScope() handles
+  // which variant is visible based on the active scope tab.
+  if (document.querySelector('.stack-variant')) return;
   const {hotel,agency,agent} = getActive();
   const tierCfg = TIER_DEFAULTS[agent.tier] || { range:[0,0], ops:0, default:0 };
   const hasHotelOverride = hotel.baseCommission !== GLOBAL_DEFAULTS.baseCommission || hotel.priceAdjustment !== GLOBAL_DEFAULTS.priceAdjustment;
