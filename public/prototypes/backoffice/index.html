@@ -207,57 +207,480 @@
 </section>
 
 
-<!-- Hotel Brands (stub — live nav item, no full proto yet) -->
+<!-- Hotel Brands — rebuilt 2026-05-29 from live (/hotel-brands) -->
 <section class="screen" id="screen-hotel-brands">
   <div class="app-layout">
     <aside class="sidebar"></aside>
     <main class="app-main">
       <div class="topbar"><button class="hamburger" onclick="toggleSidebar()" aria-label="Menu">☰</button><div class="breadcrumb"><span>Finance &amp; Audit</span> / <span>Hotel Brands</span></div><div class="topbar-right"><div class="avatar">AD</div></div></div>
       <div class="page">
-        <div class="page-head row"><div><h1>Hotel Brands</h1><p class="muted">Group hotels under a brand to apply cascade-level discount rules. Each brand has a per-vendor discount that overrides the default chain logic.</p></div><button class="btn btn-primary" disabled title="Stub screen">+ Create Brand</button></div>
-        <div class="card"><div class="page-head" style="border:none;padding:24px;text-align:center"><p class="muted">Prototype stub — see the live app at <code>/hotel-brands</code> for the current implementation (brand list, linked-hotels dialog, per-vendor discount editor).</p></div></div>
+        <div class="page-head row">
+          <div><h1>Hotel Brands</h1><p class="muted">Group hotels under a brand to apply cascade-level discount rules. Each brand has a contract-status badge + an optional per-vendor discount that overrides the default cascade logic.</p></div>
+          <button class="btn btn-primary">+ Add Chain</button>
+        </div>
+
+        <div class="brand-grid">
+          <!-- Card 1: Meliá -->
+          <div class="brand-card">
+            <div class="brand-card-head">
+              <div>
+                <h3>Meliá Hotels International</h3>
+                <div class="brand-card-code">MELIA</div>
+              </div>
+              <span class="badge badge-gold">Signed</span>
+            </div>
+            <div class="brand-card-body">
+              <div class="brand-stat"><span class="brand-stat-label">Chain Discount</span><span class="brand-stat-value brand-stat-discount">12.5% off</span></div>
+              <div class="brand-stat"><span class="brand-stat-label">Linked Hotels</span><span class="brand-stat-value">38</span></div>
+              <p class="brand-card-notes">Effective Mar 2026 – Mar 2027. Applies to all Meliá-branded properties across LATAM and EMEA.</p>
+            </div>
+            <div class="brand-card-actions">
+              <button class="btn-icon" title="Edit Chain">✎</button>
+              <button class="btn-icon" title="Manage Hotels">🏨</button>
+              <button class="btn-icon" title="Auto-link">✨</button>
+              <button class="btn btn-sm btn-primary">⚡ Apply to Hotels</button>
+              <button class="btn-icon btn-icon-danger" title="Delete">🗑</button>
+            </div>
+          </div>
+
+          <!-- Card 2: Iberostar -->
+          <div class="brand-card">
+            <div class="brand-card-head">
+              <div>
+                <h3>Iberostar Group</h3>
+                <div class="brand-card-code">IBEROSTAR</div>
+              </div>
+              <span class="badge badge-gold">Signed</span>
+            </div>
+            <div class="brand-card-body">
+              <div class="brand-stat"><span class="brand-stat-label">Chain Discount</span><span class="brand-stat-value brand-stat-discount">10.0% off</span></div>
+              <div class="brand-stat"><span class="brand-stat-label">Linked Hotels</span><span class="brand-stat-value">27</span></div>
+              <p class="brand-card-notes">Spanish chain. Discount applies to Resort, Selection, and Premium Gold properties.</p>
+            </div>
+            <div class="brand-card-actions">
+              <button class="btn-icon" title="Edit Chain">✎</button>
+              <button class="btn-icon" title="Manage Hotels">🏨</button>
+              <button class="btn-icon" title="Auto-link">✨</button>
+              <button class="btn btn-sm btn-primary">⚡ Apply to Hotels</button>
+              <button class="btn-icon btn-icon-danger" title="Delete">🗑</button>
+            </div>
+          </div>
+
+          <!-- Card 3: RIU -->
+          <div class="brand-card">
+            <div class="brand-card-head">
+              <div>
+                <h3>RIU Hotels &amp; Resorts</h3>
+                <div class="brand-card-code">RIU</div>
+              </div>
+              <span class="badge badge-warning">Pending</span>
+            </div>
+            <div class="brand-card-body">
+              <div class="brand-stat"><span class="brand-stat-label">Chain Discount</span><span class="brand-stat-value brand-stat-discount">8.5% off</span></div>
+              <div class="brand-stat"><span class="brand-stat-label">Linked Hotels</span><span class="brand-stat-value">22</span></div>
+              <p class="brand-card-notes">Contract under legal review. Discount terms not yet active in the cascade.</p>
+            </div>
+            <div class="brand-card-actions">
+              <button class="btn-icon" title="Edit Chain">✎</button>
+              <button class="btn-icon" title="Manage Hotels">🏨</button>
+              <button class="btn-icon" title="Auto-link">✨</button>
+              <button class="btn btn-sm" disabled>⚡ Apply (pending contract)</button>
+              <button class="btn-icon btn-icon-danger" title="Delete">🗑</button>
+            </div>
+          </div>
+
+          <!-- Card 4: Marriott -->
+          <div class="brand-card">
+            <div class="brand-card-head">
+              <div>
+                <h3>Marriott International</h3>
+                <div class="brand-card-code">MARRIOTT</div>
+              </div>
+              <span class="badge badge-grey">No discount</span>
+            </div>
+            <div class="brand-card-body">
+              <div class="brand-stat"><span class="brand-stat-label">Chain Discount</span><span class="brand-stat-value brand-stat-none">— (none)</span></div>
+              <div class="brand-stat"><span class="brand-stat-label">Linked Hotels</span><span class="brand-stat-value">61</span></div>
+              <p class="brand-card-notes">Brand grouping only — Marriott does not currently offer a chain-wide discount; rates use the GDS markup_rules cascade.</p>
+            </div>
+            <div class="brand-card-actions">
+              <button class="btn-icon" title="Edit Chain">✎</button>
+              <button class="btn-icon" title="Manage Hotels">🏨</button>
+              <button class="btn-icon" title="Auto-link">✨</button>
+              <button class="btn-icon btn-icon-danger" title="Delete">🗑</button>
+            </div>
+          </div>
+
+          <!-- Card 5: Hyatt -->
+          <div class="brand-card">
+            <div class="brand-card-head">
+              <div>
+                <h3>Hyatt Hotels Corporation</h3>
+                <div class="brand-card-code">HYATT</div>
+              </div>
+              <span class="badge badge-gold">Signed</span>
+            </div>
+            <div class="brand-card-body">
+              <div class="brand-stat"><span class="brand-stat-label">Chain Discount</span><span class="brand-stat-value brand-stat-discount">7.0% off</span></div>
+              <div class="brand-stat"><span class="brand-stat-label">Linked Hotels</span><span class="brand-stat-value">18</span></div>
+              <p class="brand-card-notes">All-inclusive Ziva and Zilara properties across Mexico and the Caribbean.</p>
+            </div>
+            <div class="brand-card-actions">
+              <button class="btn-icon" title="Edit Chain">✎</button>
+              <button class="btn-icon" title="Manage Hotels">🏨</button>
+              <button class="btn-icon" title="Auto-link">✨</button>
+              <button class="btn btn-sm btn-primary">⚡ Apply to Hotels</button>
+              <button class="btn-icon btn-icon-danger" title="Delete">🗑</button>
+            </div>
+          </div>
+
+          <!-- Card 6: Roibos -->
+          <div class="brand-card">
+            <div class="brand-card-head">
+              <div>
+                <h3>Roibos Independent Hotels</h3>
+                <div class="brand-card-code">ROIBOS-IND</div>
+              </div>
+              <span class="badge badge-destructive">Expired</span>
+            </div>
+            <div class="brand-card-body">
+              <div class="brand-stat"><span class="brand-stat-label">Chain Discount</span><span class="brand-stat-value brand-stat-discount">6.0% off</span></div>
+              <div class="brand-stat"><span class="brand-stat-label">Linked Hotels</span><span class="brand-stat-value">14</span></div>
+              <p class="brand-card-notes">Contract expired Feb 2026 — renewal in progress. Discount currently inactive.</p>
+            </div>
+            <div class="brand-card-actions">
+              <button class="btn-icon" title="Edit Chain">✎</button>
+              <button class="btn-icon" title="Manage Hotels">🏨</button>
+              <button class="btn-icon" title="Auto-link">✨</button>
+              <button class="btn btn-sm" disabled>⚡ Apply (expired)</button>
+              <button class="btn-icon btn-icon-danger" title="Delete">🗑</button>
+            </div>
+          </div>
+        </div>
       </div>
     </main>
   </div>
 </section>
 
-<!-- Booking Breakdown (stub — live nav item, no full proto yet) -->
+<!-- Booking Breakdown — rebuilt 2026-05-29 from live (/finance/booking-breakdown) -->
 <section class="screen" id="screen-booking-breakdown">
   <div class="app-layout">
     <aside class="sidebar"></aside>
     <main class="app-main">
       <div class="topbar"><button class="hamburger" onclick="toggleSidebar()" aria-label="Menu">☰</button><div class="breadcrumb"><span>Finance &amp; Audit</span> / <span>Booking Breakdown</span></div><div class="topbar-right"><div class="avatar">AD</div></div></div>
       <div class="page">
-        <div class="page-head row"><div><h1>Booking Breakdown</h1><p class="muted">Per-booking money flow across all 4 parties — net, markup, commission, agency rebate, agent earning. Filter by booking ID, agency, or date range.</p></div></div>
-        <div class="card"><div class="page-head" style="border:none;padding:24px;text-align:center"><p class="muted">Prototype stub — see the live app at <code>/finance/booking-breakdown</code> for the current implementation.</p></div></div>
+        <div class="page-head row">
+          <div><h1>Booking Breakdown</h1><p class="muted">Cross-agency booking ledger — the per-booking money flow across all 4 parties. Filter by date range, agency, or hotel.</p></div>
+        </div>
+
+        <!-- Filters card -->
+        <div class="card bb-filter-card">
+          <div class="bb-filter-row">
+            <div class="bb-field"><label>From date</label><input type="date" value="2026-04-29"></div>
+            <div class="bb-field"><label>To date</label><input type="date" value="2026-05-29"></div>
+            <div class="bb-field"><label>Agency ID</label><input type="text" placeholder="agency_xxx" value=""></div>
+            <div class="bb-field"><label>Hotel ID / code</label><input type="text" placeholder="HT00342 or hotel_xxx" value=""></div>
+            <button class="btn btn-primary bb-search-btn">🔍 Search</button>
+          </div>
+        </div>
+
+        <!-- Bookings card -->
+        <div class="card">
+          <div class="card-head"><h3>Bookings (12)</h3></div>
+          <table class="tbl bb-tbl">
+            <thead>
+              <tr><th>Booked</th><th>Reference</th><th>Agency</th><th>Hotel</th><th class="text-right">Ergos cost</th><th class="text-right">Markup%</th><th class="text-right">Customer price</th><th class="text-right">Ergos net</th></tr>
+            </thead>
+            <tbody>
+              <tr class="bb-row" onclick="showBookingDetail('ERG-014821')"><td>May 25</td><td class="bb-ref">ERG-014821</td><td>Demo Agency</td><td>Iberostar Grand Packard</td><td class="text-right">$412.00</td><td class="text-right">17.5%</td><td class="text-right">$484.00</td><td class="text-right bb-net-pos">$72.00</td></tr>
+              <tr class="bb-row"><td>May 24</td><td class="bb-ref">ERG-014812</td><td>Caribe Tours</td><td>Memories Varadero</td><td class="text-right">$348.00</td><td class="text-right">18.4%</td><td class="text-right">$412.00</td><td class="text-right bb-net-pos">$64.00</td></tr>
+              <tr class="bb-row"><td>May 23</td><td class="bb-ref">ERG-014798</td><td>Demo Agency</td><td>Hyatt Ziva Cap Cana</td><td class="text-right">$1,240.00</td><td class="text-right">19.4%</td><td class="text-right">$1,480.00</td><td class="text-right bb-net-pos">$240.00</td></tr>
+              <tr class="bb-row"><td>May 22</td><td class="bb-ref">ERG-014774</td><td>Sol Mar Travel</td><td>Iberostar Selection Bávaro</td><td class="text-right">$980.00</td><td class="text-right">20.0%</td><td class="text-right">$1,176.00</td><td class="text-right bb-net-pos">$196.00</td></tr>
+              <tr class="bb-row"><td>May 22</td><td class="bb-ref">ERG-014762</td><td>Caribe Tours</td><td>Meliá Las Antillas</td><td class="text-right">$564.00</td><td class="text-right">17.0%</td><td class="text-right">$660.00</td><td class="text-right bb-net-pos">$96.00</td></tr>
+              <tr class="bb-row"><td>May 21</td><td class="bb-ref">ERG-014749</td><td>Demo Agency</td><td>RIU Palace Aruba</td><td class="text-right">$1,580.00</td><td class="text-right">19.6%</td><td class="text-right">$1,890.00</td><td class="text-right bb-net-pos">$310.00</td></tr>
+              <tr class="bb-row"><td>May 20</td><td class="bb-ref">ERG-014733</td><td>Sol Mar Travel</td><td>Paradisus Río de Oro</td><td class="text-right">$1,820.00</td><td class="text-right">20.0%</td><td class="text-right">$2,184.00</td><td class="text-right bb-net-pos">$364.00</td></tr>
+              <tr class="bb-row"><td>May 19</td><td class="bb-ref">ERG-014718</td><td>Demo Agency</td><td>Marriott Aruba Surf Club</td><td class="text-right">$2,150.00</td><td class="text-right">18.0%</td><td class="text-right">$2,537.00</td><td class="text-right bb-net-pos">$387.00</td></tr>
+              <tr class="bb-row"><td>May 18</td><td class="bb-ref">ERG-014702</td><td>Caribe Tours</td><td>Iberostar Daiquirí</td><td class="text-right">$680.00</td><td class="text-right">17.6%</td><td class="text-right">$800.00</td><td class="text-right bb-net-pos">$120.00</td></tr>
+              <tr class="bb-row"><td>May 17</td><td class="bb-ref">ERG-014689</td><td>Demo Agency</td><td>Royalton Cuba</td><td class="text-right">$540.00</td><td class="text-right">16.7%</td><td class="text-right">$630.00</td><td class="text-right bb-net-pos">$90.00</td></tr>
+              <tr class="bb-row"><td>May 16</td><td class="bb-ref">ERG-014671</td><td>Sol Mar Travel</td><td>Memories Caribe Beach</td><td class="text-right">$420.00</td><td class="text-right">19.0%</td><td class="text-right">$500.00</td><td class="text-right bb-net-pos">$80.00</td></tr>
+              <tr class="bb-row"><td>May 15</td><td class="bb-ref">ERG-014658</td><td>Demo Agency</td><td>Hyatt Zilara Cap Cana</td><td class="text-right">$1,360.00</td><td class="text-right">18.4%</td><td class="text-right">$1,610.00</td><td class="text-right bb-net-pos">$250.00</td></tr>
+            </tbody>
+          </table>
+          <div class="pagination">
+            <span class="muted">Page 1 of 4</span>
+            <div><button class="btn btn-sm">◀ Previous</button><button class="btn btn-sm">Next ▶</button></div>
+          </div>
+        </div>
+
+        <!-- Detail view (shown when row clicked - hidden by default in proto) -->
+        <div class="card bb-detail" id="bb-detail" hidden>
+          <div class="card-head row">
+            <div><h3>Booking ERG-014821</h3><p class="muted">Iberostar Grand Packard · Demo Agency</p></div>
+            <button class="btn btn-sm" onclick="document.getElementById('bb-detail').hidden=true">← Back to list</button>
+          </div>
+          <div class="card-section">
+            <h4>Snapshot at booking time</h4>
+            <div class="snap-grid">
+              <div class="snap-cell"><div class="snap-label">Ergos Markup</div><div class="snap-value">17.5%</div></div>
+              <div class="snap-cell"><div class="snap-label">Chain Discount</div><div class="snap-value">12.5%</div></div>
+              <div class="snap-cell"><div class="snap-label">Agency Rebate</div><div class="snap-value">3.0%</div></div>
+              <div class="snap-cell"><div class="snap-label">Agent Share</div><div class="snap-value">22.0%</div></div>
+              <div class="snap-cell"><div class="snap-label">Agent Ops</div><div class="snap-value">7.0%</div></div>
+            </div>
+          </div>
+          <div class="card-section">
+            <h4>Price waterfall</h4>
+            <table class="tbl bb-waterfall">
+              <tr><td>Supplier net</td><td class="text-right">$412.00</td></tr>
+              <tr><td>× (1 − chain discount)</td><td class="text-right">× 0.875</td></tr>
+              <tr class="bb-sub"><td>= Adjusted cost</td><td class="text-right">$360.50</td></tr>
+              <tr><td>× (1 + Ergos markup)</td><td class="text-right">× 1.175</td></tr>
+              <tr class="bb-sub bb-pos"><td>= Ergos sell</td><td class="text-right">$423.59</td></tr>
+              <tr class="bb-neg"><td>− Agency rebate</td><td class="text-right">− $12.71</td></tr>
+              <tr class="bb-sub"><td>= Agency effective</td><td class="text-right">$410.88</td></tr>
+              <tr class="bb-neg"><td>− Adjusted cost</td><td class="text-right">− $360.50</td></tr>
+              <tr class="bb-sub bb-pos"><td>= Ergos gross</td><td class="text-right">$50.38</td></tr>
+              <tr class="bb-neg"><td>− Agent earning</td><td class="text-right">− $11.08</td></tr>
+              <tr class="bb-neg"><td>− Ops expense</td><td class="text-right">− $3.53</td></tr>
+              <tr class="bb-final"><td>= Ergos net</td><td class="text-right">$35.77</td></tr>
+            </table>
+          </div>
+          <div class="card-section bb-overlay">
+            <h4>Agency overlay (customer-facing)</h4>
+            <div class="snap-grid snap-grid-3">
+              <div class="snap-cell"><div class="snap-label">Agency markup %</div><div class="snap-value">14.2%</div></div>
+              <div class="snap-cell"><div class="snap-label">Markup income</div><div class="snap-value bb-pos">$60.41</div></div>
+              <div class="snap-cell"><div class="snap-label">Customer pays</div><div class="snap-value">$484.00</div></div>
+            </div>
+          </div>
+        </div>
       </div>
     </main>
   </div>
 </section>
 
-<!-- Booking Audit Log (stub — live nav item, no full proto yet) -->
+<!-- Booking Audit Log — rebuilt 2026-05-29 from live (/audit-log) -->
 <section class="screen" id="screen-audit-log">
   <div class="app-layout">
     <aside class="sidebar"></aside>
     <main class="app-main">
       <div class="topbar"><button class="hamburger" onclick="toggleSidebar()" aria-label="Menu">☰</button><div class="breadcrumb"><span>Finance &amp; Audit</span> / <span>Booking Audit Log</span></div><div class="topbar-right"><div class="avatar">AD</div></div></div>
       <div class="page">
-        <div class="page-head row"><div><h1>Booking Audit Log</h1><p class="muted">Every booking-level event — created, confirmed, modified, cancelled — with actor, timestamp, and the diff applied. Used by support + finance for incident reconstruction.</p></div></div>
-        <div class="card"><div class="page-head" style="border:none;padding:24px;text-align:center"><p class="muted">Prototype stub — see the live app at <code>/audit-log</code> for the current implementation.</p></div></div>
+        <div class="page-head row">
+          <div><h1>Booking Audit Log</h1><p class="muted">Immutable record of all booking operations and vendor responses. <strong>1,247 entries</strong>.</p></div>
+        </div>
+
+        <!-- Toolbar -->
+        <div class="card audit-toolbar">
+          <select class="audit-select">
+            <option>All actions</option>
+            <option>Created</option>
+            <option>Cancelled</option>
+            <option>Modified</option>
+            <option>Cancel Attempt</option>
+            <option>Cancel Failed</option>
+            <option>Status Changed</option>
+          </select>
+          <input class="audit-search" placeholder="🔍 Booking ref or ID…">
+          <button class="btn-icon" title="Refresh">↻</button>
+          <span class="muted audit-count">1,247 entries</span>
+        </div>
+
+        <!-- Split view -->
+        <div class="audit-split">
+          <!-- Table -->
+          <div class="card audit-table-card">
+            <table class="tbl audit-tbl">
+              <thead>
+                <tr><th>Timestamp</th><th>Booking Ref</th><th>Action</th><th>Status</th><th>Vendor</th><th>Result</th><th></th></tr>
+              </thead>
+              <tbody>
+                <tr class="audit-row audit-row-selected"><td>14:32:01</td><td class="bb-ref">ERG-014821</td><td><span class="badge badge-success">Created</span></td><td class="bb-mono">— → CONFIRMED</td><td>hotetec</td><td><span class="badge badge-success">OK</span></td><td>👁</td></tr>
+                <tr class="audit-row"><td>14:18:55</td><td class="bb-ref">ERG-014820</td><td><span class="badge badge-warning">Modified</span></td><td class="bb-mono">CONFIRMED → CONFIRMED</td><td>dingus</td><td><span class="badge badge-success">OK</span></td><td>👁</td></tr>
+                <tr class="audit-row"><td>13:55:12</td><td class="bb-ref">ERG-014812</td><td><span class="badge badge-success">Created</span></td><td class="bb-mono">— → CONFIRMED</td><td>dingus</td><td><span class="badge badge-success">OK</span></td><td>👁</td></tr>
+                <tr class="audit-row"><td>13:41:08</td><td class="bb-ref">ERG-014811</td><td><span class="badge badge-warning">Cancel Attempt</span></td><td class="bb-mono">CONFIRMED → CONFIRMED</td><td>roibos</td><td><span class="badge badge-destructive">Failed</span></td><td>👁</td></tr>
+                <tr class="audit-row"><td>13:22:44</td><td class="bb-ref">ERG-014805</td><td><span class="badge badge-destructive">Cancelled</span></td><td class="bb-mono">CONFIRMED → CANCELLED</td><td>hotetec</td><td><span class="badge badge-success">OK</span></td><td>👁</td></tr>
+                <tr class="audit-row"><td>12:58:17</td><td class="bb-ref">ERG-014798</td><td><span class="badge badge-success">Created</span></td><td class="bb-mono">— → CONFIRMED</td><td>dingus</td><td><span class="badge badge-success">OK</span></td><td>👁</td></tr>
+                <tr class="audit-row"><td>12:30:03</td><td class="bb-ref">ERG-014786</td><td><span class="badge badge-warning">Modified</span></td><td class="bb-mono">CONFIRMED → CONFIRMED</td><td>hotetec</td><td><span class="badge badge-success">OK</span></td><td>👁</td></tr>
+                <tr class="audit-row"><td>11:48:31</td><td class="bb-ref">ERG-014774</td><td><span class="badge badge-success">Created</span></td><td class="bb-mono">— → CONFIRMED</td><td>restel</td><td><span class="badge badge-success">OK</span></td><td>👁</td></tr>
+              </tbody>
+            </table>
+            <div class="pagination">
+              <span class="muted">Showing 1–8 of 1,247</span>
+              <div><button class="btn btn-sm">⏮</button><button class="btn btn-sm">◀</button><span class="audit-pageinfo">Page 1</span><button class="btn btn-sm">▶</button><button class="btn btn-sm">⏭</button></div>
+            </div>
+          </div>
+
+          <!-- Detail panel -->
+          <div class="card audit-detail">
+            <div class="card-head row"><h3>Audit Detail · ERG-014821</h3><button class="btn-icon" title="Close">✕</button></div>
+            <div class="audit-detail-grid">
+              <div><div class="audit-d-label">Action</div><span class="badge badge-success">Created</span></div>
+              <div><div class="audit-d-label">Result</div><span class="badge badge-success">OK</span></div>
+              <div><div class="audit-d-label">Status Transition</div><div class="bb-mono">— → CONFIRMED</div></div>
+              <div><div class="audit-d-label">Vendor</div><div>hotetec</div></div>
+            </div>
+            <div class="audit-section">
+              <div class="audit-d-label">Metadata</div>
+              <pre class="audit-pre">{
+  "actor": "agent_carlos@demoagency.com",
+  "ip": "201.244.87.13",
+  "userAgent": "ergos-app/2.3.1",
+  "guestCount": 2,
+  "checkin": "2026-05-25",
+  "nights": 2
+}</pre>
+            </div>
+            <div class="audit-section">
+              <div class="audit-d-label">Vendor Request</div>
+              <pre class="audit-pre">POST /reservations
+{ "hotelCode": "IB-GP-HAV", "rateCode": "AI-DBL",
+  "guests": [...], "checkin": "2026-05-25", "checkout": "2026-05-27" }</pre>
+            </div>
+            <div class="audit-section">
+              <div class="audit-d-label">Vendor Response</div>
+              <pre class="audit-pre">{ "status": "OK", "reservationId": "HT-77821655",
+  "confirmationNumber": "CONF-93481", "total": 484.00 }</pre>
+            </div>
+          </div>
+        </div>
       </div>
     </main>
   </div>
 </section>
 
-<!-- Hotel Suppliers (stub — live nav item, no full proto yet) -->
+<!-- Hotel Suppliers — rebuilt 2026-05-29 from live (/vendor-management) -->
 <section class="screen" id="screen-hotel-suppliers">
   <div class="app-layout">
     <aside class="sidebar"></aside>
     <main class="app-main">
       <div class="topbar"><button class="hamburger" onclick="toggleSidebar()" aria-label="Menu">☰</button><div class="breadcrumb"><span>Partners</span> / <span>Hotel Suppliers</span></div><div class="topbar-right"><div class="avatar">AD</div></div></div>
       <div class="page">
-        <div class="page-head row"><div><h1>Hotel Suppliers</h1><p class="muted">GDS wholesalers Ergos integrates with — Dingus, Hotetec, Restel, Roibos (Juniper). Per-supplier connection state, last sync time, and credentials reference.</p></div><button class="btn btn-primary" disabled title="Stub screen">+ Add Supplier</button></div>
-        <div class="card"><div class="page-head" style="border:none;padding:24px;text-align:center"><p class="muted">Prototype stub — see the live app at <code>/vendor-management</code> for the current implementation.</p></div></div>
+        <div class="page-head row">
+          <div><h1>Hotel Suppliers</h1><p class="muted">GDS wholesalers Ergos integrates with. Dingus is a multi-brand SOAP adapter (sub-vendors per brand); Hotetec, Roibos, Restel are single-vendor adapters configured via environment variables.</p></div>
+          <button class="btn">Show inactive</button>
+        </div>
+
+        <!-- Dingus -->
+        <div class="card supplier-card supplier-card-expanded">
+          <div class="supplier-head">
+            <div class="supplier-icon">🖧</div>
+            <div class="supplier-meta">
+              <div class="supplier-title">Dingus <span class="muted">(SOAP/OTA)</span> <span class="badge badge-grey">4 sub-vendors</span></div>
+              <p class="muted">Multi-brand SOAP adapter — each sub-vendor has its own credentials + base URL stored in the database.</p>
+            </div>
+            <div class="supplier-actions">
+              <button class="btn btn-sm btn-primary">+ Add Chain</button>
+              <span class="supplier-chevron">▼</span>
+            </div>
+          </div>
+          <div class="supplier-children">
+            <div class="supplier-child">
+              <div class="supplier-avatar">DI</div>
+              <div class="supplier-child-meta">
+                <div class="supplier-child-name">Dingus-Iberostar <span class="badge badge-teal">Dynamic</span></div>
+                <div class="supplier-child-url">🌐 https://api-iberostar.dingus.com/ws</div>
+              </div>
+              <div class="supplier-child-actions">
+                <button class="btn-icon" title="Edit">✎</button>
+                <button class="btn-icon" title="Test">🔌</button>
+                <button class="btn-icon" title="Toggle">⏻</button>
+                <button class="btn-icon btn-icon-danger" title="Delete">🗑</button>
+              </div>
+            </div>
+            <div class="supplier-child">
+              <div class="supplier-avatar">DM</div>
+              <div class="supplier-child-meta">
+                <div class="supplier-child-name">Dingus-Meliá <span class="badge badge-teal">Dynamic</span> <span class="badge badge-gold">x1.05</span></div>
+                <div class="supplier-child-url">🌐 https://api-melia.dingus.com/ws</div>
+              </div>
+              <div class="supplier-child-actions">
+                <button class="btn-icon" title="Edit">✎</button>
+                <button class="btn-icon" title="Test">🔌</button>
+                <button class="btn-icon" title="Toggle">⏻</button>
+                <button class="btn-icon btn-icon-danger" title="Delete">🗑</button>
+              </div>
+            </div>
+            <div class="supplier-child">
+              <div class="supplier-avatar">DR</div>
+              <div class="supplier-child-meta">
+                <div class="supplier-child-name">Dingus-RIU <span class="badge badge-teal">Dynamic</span></div>
+                <div class="supplier-child-url">🌐 https://api-riu.dingus.com/ws</div>
+              </div>
+              <div class="supplier-child-actions">
+                <button class="btn-icon" title="Edit">✎</button>
+                <button class="btn-icon" title="Test">🔌</button>
+                <button class="btn-icon" title="Toggle">⏻</button>
+                <button class="btn-icon btn-icon-danger" title="Delete">🗑</button>
+              </div>
+            </div>
+            <div class="supplier-child supplier-child-inactive">
+              <div class="supplier-avatar">DH</div>
+              <div class="supplier-child-meta">
+                <div class="supplier-child-name">Dingus-Hyatt <span class="badge badge-teal">Dynamic</span> <span class="badge badge-destructive">Inactive</span></div>
+                <div class="supplier-child-url">🌐 https://api-hyatt.dingus.com/ws</div>
+              </div>
+              <div class="supplier-child-actions">
+                <button class="btn-icon" title="Edit">✎</button>
+                <button class="btn-icon" title="Test">🔌</button>
+                <button class="btn-icon" title="Toggle">⏻</button>
+                <button class="btn-icon btn-icon-danger" title="Delete">🗑</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Hotetec -->
+        <div class="card supplier-card">
+          <div class="supplier-head">
+            <div class="supplier-icon">🖧</div>
+            <div class="supplier-meta">
+              <div class="supplier-title">Hotetec <span class="muted">(REST/JSON)</span> <span class="badge badge-grey">1 vendor</span></div>
+              <p class="muted">Single-vendor adapter — configured via environment variables (read-only).</p>
+            </div>
+            <div class="supplier-actions">
+              <span class="supplier-chevron">▶</span>
+            </div>
+          </div>
+          <div class="supplier-children" hidden>
+            <div class="supplier-child">
+              <div class="supplier-avatar">HT</div>
+              <div class="supplier-child-meta">
+                <div class="supplier-child-name">hotetec <span class="badge badge-grey">🔒 Static</span></div>
+                <div class="supplier-child-url">🌐 https://api.hotetec.com/v2</div>
+              </div>
+              <div class="supplier-child-actions"><span class="supplier-locked" title="env-configured, read-only">🔒</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Roibos (Juniper) -->
+        <div class="card supplier-card">
+          <div class="supplier-head">
+            <div class="supplier-icon">🖧</div>
+            <div class="supplier-meta">
+              <div class="supplier-title">Roibos <span class="muted">(Juniper XML)</span> <span class="badge badge-grey">1 vendor</span></div>
+              <p class="muted">Single-vendor adapter built on the Juniper XML protocol — env-configured with cert + credentials.</p>
+            </div>
+            <div class="supplier-actions">
+              <span class="supplier-chevron">▶</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Restel -->
+        <div class="card supplier-card">
+          <div class="supplier-head">
+            <div class="supplier-icon">🖧</div>
+            <div class="supplier-meta">
+              <div class="supplier-title">Restel <span class="muted">(custom XML)</span> <span class="badge badge-grey">1 vendor</span></div>
+              <p class="muted">Single-vendor adapter with the Hotelbeds-family <code>lin</code>-token auth model.</p>
+            </div>
+            <div class="supplier-actions">
+              <span class="supplier-chevron">▶</span>
+            </div>
+          </div>
+        </div>
       </div>
     </main>
   </div>
