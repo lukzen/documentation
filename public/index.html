@@ -28,6 +28,51 @@
     font-size: 15px;
     min-height: 100vh;
   }
+
+  /* Language toggle — shared pattern with the rest of /public/.
+     Defaults to EN; flipping html[lang="es"] swaps visibility.
+     !important on .lang-es hide is needed to beat component CSS that
+     sets display values on .arrow (inline-flex) etc. */
+  .lang-es { display: none !important; }
+  html[lang="es"] .lang-en { display: none !important; }
+  html[lang="es"] .lang-es { display: revert !important; }
+
+  .lang-toggle {
+    position: fixed;
+    top: 16px; right: 20px; z-index: 100;
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 8px 14px;
+    background: var(--navy); color: #fff;
+    border: 1px solid var(--navy-mid);
+    border-radius: 999px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px; font-weight: 700; letter-spacing: 0.5px;
+    cursor: pointer;
+    box-shadow: 0 4px 14px rgba(15,15,61,0.18);
+    transition: transform 0.15s, box-shadow 0.15s, background 0.15s;
+  }
+  .lang-toggle:hover {
+    background: var(--navy-mid);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(15,15,61,0.28);
+  }
+  .lang-toggle:active { transform: translateY(0); }
+  .lang-toggle .globe {
+    display: inline-block; width: 14px; height: 14px;
+    border-radius: 50%; background: var(--teal);
+    position: relative; flex-shrink: 0;
+  }
+  .lang-toggle .globe::before, .lang-toggle .globe::after {
+    content: ''; position: absolute; background: var(--navy); pointer-events: none;
+  }
+  .lang-toggle .globe::before { top: 6px; left: 0; right: 0; height: 1px; }
+  .lang-toggle .globe::after { top: 0; bottom: 0; left: 6px; width: 1px; }
+  .lang-toggle .lang-active {
+    background: var(--teal); color: var(--navy);
+    padding: 2px 8px; border-radius: 999px; font-size: 11px;
+  }
+  .lang-toggle .lang-sep { opacity: 0.5; font-weight: 400; }
+
   .wrap { max-width: 1100px; margin: 0 auto; padding: 56px 24px 96px; }
   .hero {
     background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 100%);
@@ -145,75 +190,124 @@
     .hero p { font-size: 15px; }
     .wrap { padding: 32px 16px 64px; }
     .cards { grid-template-columns: 1fr; }
+    .lang-toggle { top: 10px; right: 10px; padding: 6px 12px; font-size: 11px; }
   }
 </style>
 </head>
 <body>
 
+<button class="lang-toggle" type="button" onclick="toggleLang()"
+        aria-label="Switch language between English and Spanish"
+        title="Switch language">
+  <span class="globe" aria-hidden="true"></span>
+  <span class="lang-en"><span class="lang-active">EN</span><span class="lang-sep">·</span><span>Español</span></span>
+  <span class="lang-es"><span class="lang-active">ES</span><span class="lang-sep">·</span><span>English</span></span>
+</button>
+
 <div class="wrap">
 
   <div class="hero">
-    <div class="eyebrow">Ergos Continental · Documentation Portal</div>
+    <div class="eyebrow"><span class="lang-en">Ergos Continental · Documentation Portal</span><span class="lang-es">Ergos Continental · Portal de Documentación</span></div>
     <h1>Ergos Continental</h1>
-    <p>Practical guides for travel agencies and Ergos staff, plus the technical reference for the commission &amp; pricing engine and the interactive UX prototypes.</p>
+    <p class="lang-en">Practical guides for travel agencies and Ergos staff, plus the technical reference for the commission &amp; pricing engine and the interactive UX prototypes.</p>
+    <p class="lang-es">Guías prácticas para agencias de viajes y personal de Ergos, además de la referencia técnica del motor de comisiones y precios y los prototipos UX interactivos.</p>
   </div>
 
-  <div class="section-title">User Guides — how to use the apps</div>
+  <div class="section-title"><span class="lang-en">User Guides — how to use the apps</span><span class="lang-es">Guías de Usuario — cómo usar las aplicaciones</span></div>
   <div class="cards">
 
     <a class="card" href="user-guide/agency-app-user-guide.html">
-      <span class="pill">For travel agencies</span>
-      <h2>Agency App User Guide</h2>
-      <p>Find hotels, quote prices, book, manage reservations, download vouchers, track earnings and remittances. Built for agency owners and their employees.</p>
-      <span class="arrow">Open guide →</span>
+      <span class="pill lang-en">For travel agencies</span>
+      <span class="pill lang-es">Para agencias de viajes</span>
+      <h2 class="lang-en">Agency App User Guide</h2>
+      <h2 class="lang-es">Guía de la Aplicación de Agencia</h2>
+      <p class="lang-en">Find hotels, quote prices, book, manage reservations, download vouchers, track earnings and remittances. Built for agency owners and their employees.</p>
+      <p class="lang-es">Buscá hoteles, cotizá precios, reservá, gestioná reservas, descargá vouchers, hacé seguimiento de ganancias y liquidaciones. Diseñada para los dueños de agencias y sus empleados.</p>
+      <span class="arrow lang-en">Open guide →</span>
+      <span class="arrow lang-es">Abrir guía →</span>
     </a>
 
     <a class="card" href="user-guide/backoffice-app-user-guide.html">
-      <span class="pill">For Ergos staff</span>
-      <h2>Backoffice User Guide</h2>
-      <p>Manage travel agencies, sales agents, hotel inventory, pricing policy, hotel brands, audit logs, and finance. Built for Ergos admins and employees.</p>
-      <span class="arrow">Open guide →</span>
+      <span class="pill lang-en">For Ergos staff</span>
+      <span class="pill lang-es">Para el personal de Ergos</span>
+      <h2 class="lang-en">Backoffice User Guide</h2>
+      <h2 class="lang-es">Guía del Backoffice</h2>
+      <p class="lang-en">Manage travel agencies, sales agents, hotel inventory, pricing policy, hotel brands, audit logs, and finance. Built for Ergos admins and employees.</p>
+      <p class="lang-es">Gestioná agencias de viajes, agentes comerciales, inventario hotelero, política de precios, marcas hoteleras, registros de auditoría y finanzas. Diseñada para administradores y empleados de Ergos.</p>
+      <span class="arrow lang-en">Open guide →</span>
+      <span class="arrow lang-es">Abrir guía →</span>
     </a>
 
   </div>
 
-  <div class="section-title">Reference — how the pricing engine works</div>
+  <div class="section-title"><span class="lang-en">Reference — how the pricing engine works</span><span class="lang-es">Referencia — cómo funciona el motor de precios</span></div>
   <div class="cards">
 
     <a class="card tag-tech" href="pricing-policy-guide.html">
-      <span class="pill">Technical reference</span>
-      <h2>Pricing Policy &amp; Hotel Brands</h2>
-      <p>How the 5-layer commission cascade resolves, the markup_rules collection, the booking snapshot, the money flow across all 4 parties, and the worked-number scenarios. EN + ES.</p>
-      <span class="arrow">Open reference →</span>
+      <span class="pill lang-en">Technical reference</span>
+      <span class="pill lang-es">Referencia técnica</span>
+      <h2 class="lang-en">Pricing Policy &amp; Hotel Brands</h2>
+      <h2 class="lang-es">Política de Precios y Marcas Hoteleras</h2>
+      <p class="lang-en">How the 5-layer commission cascade resolves, the markup_rules collection, the booking snapshot, the money flow across all 4 parties, and the worked-number scenarios. EN + ES.</p>
+      <p class="lang-es">Cómo se resuelve la cascada de comisiones de 5 capas, la colección markup_rules, el snapshot de la reserva, el flujo de dinero entre las 4 partes y los escenarios con números. EN + ES.</p>
+      <span class="arrow lang-en">Open reference →</span>
+      <span class="arrow lang-es">Abrir referencia →</span>
     </a>
 
   </div>
 
-  <div class="section-title">Interactive Prototypes — UX exploration</div>
+  <div class="section-title"><span class="lang-en">Interactive Prototypes — UX exploration</span><span class="lang-es">Prototipos Interactivos — exploración de UX</span></div>
   <div class="cards">
 
     <a class="card tag-proto" href="prototypes/agency-app/index.html">
-      <span class="pill">Agency app prototype</span>
-      <h2>Agency App · with Mozio integration</h2>
-      <p>Click-through UX prototype of the agency-facing booking flow with the optional Mozio ground-transportation upsell. Shows the booking funnel, language switcher, voucher preview, and account pages.</p>
-      <span class="arrow">Open prototype →</span>
+      <span class="pill lang-en">Agency app prototype</span>
+      <span class="pill lang-es">Prototipo de la aplicación de agencia</span>
+      <h2 class="lang-en">Agency App · with Mozio integration</h2>
+      <h2 class="lang-es">Aplicación de Agencia · con integración de Mozio</h2>
+      <p class="lang-en">Click-through UX prototype of the agency-facing booking flow with the optional Mozio ground-transportation upsell. Shows the booking funnel, language switcher, voucher preview, and account pages.</p>
+      <p class="lang-es">Prototipo UX interactivo del flujo de reserva de la agencia con el upsell opcional de transporte terrestre de Mozio. Muestra el embudo de reserva, el conmutador de idioma, la vista previa del voucher y las páginas de cuenta.</p>
+      <span class="arrow lang-en">Open prototype →</span>
+      <span class="arrow lang-es">Abrir prototipo →</span>
     </a>
 
     <a class="card tag-proto" href="prototypes/backoffice/index.html">
-      <span class="pill">Backoffice prototype</span>
-      <h2>Backoffice · admin workspace</h2>
-      <p>Click-through UX prototype of the backoffice: dashboard, BO users, travel agencies, agency employees, hotels, reservations, sales agents, and pricing policy.</p>
-      <span class="arrow">Open prototype →</span>
+      <span class="pill lang-en">Backoffice prototype</span>
+      <span class="pill lang-es">Prototipo de Backoffice</span>
+      <h2 class="lang-en">Backoffice · admin workspace</h2>
+      <h2 class="lang-es">Backoffice · espacio de administración</h2>
+      <p class="lang-en">Click-through UX prototype of the backoffice: dashboard, BO users, travel agencies, agency employees, hotels, reservations, sales agents, and pricing policy.</p>
+      <p class="lang-es">Prototipo UX interactivo del backoffice: panel, usuarios BO, agencias de viajes, empleados de agencia, hoteles, reservas, agentes comerciales y política de precios.</p>
+      <span class="arrow lang-en">Open prototype →</span>
+      <span class="arrow lang-es">Abrir prototipo →</span>
     </a>
 
   </div>
 
   <div class="footer">
-    <p><strong>Internal documentation portal</strong> · <a href="https://github.com/lukzen/documentation" style="color: var(--teal-dark);">github.com/lukzen/documentation</a></p>
-    <p>Published via GitHub Pages from <code style="background: var(--bg-gray); padding: 1px 6px; border-radius: 4px;">master /public</code></p>
+    <p class="lang-en"><strong>Internal documentation portal</strong> · <a href="https://github.com/lukzen/documentation" style="color: var(--teal-dark);">github.com/lukzen/documentation</a></p>
+    <p class="lang-es"><strong>Portal de documentación interno</strong> · <a href="https://github.com/lukzen/documentation" style="color: var(--teal-dark);">github.com/lukzen/documentation</a></p>
+    <p class="lang-en">Published via GitHub Pages from <code style="background: var(--bg-gray); padding: 1px 6px; border-radius: 4px;">master /public</code></p>
+    <p class="lang-es">Publicado vía GitHub Pages desde <code style="background: var(--bg-gray); padding: 1px 6px; border-radius: 4px;">master /public</code></p>
   </div>
 
 </div>
+
+<script>
+  // Restore the saved language before rendering paints — same key as the
+  // rest of /public so flipping here persists to user-guide pages and back.
+  (function () {
+    const saved = localStorage.getItem('guide-lang');
+    if (saved === 'es' || saved === 'en') {
+      document.documentElement.lang = saved;
+    }
+  })();
+  function toggleLang() {
+    const cur = document.documentElement.lang === 'es' ? 'es' : 'en';
+    const next = cur === 'es' ? 'en' : 'es';
+    document.documentElement.lang = next;
+    localStorage.setItem('guide-lang', next);
+  }
+</script>
 
 </body>
 </html>
