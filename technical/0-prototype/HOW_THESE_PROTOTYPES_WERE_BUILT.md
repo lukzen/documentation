@@ -26,7 +26,7 @@ A fully interactive 11-screen hotel booking flow:
 
 Plus: Modify Booking modal (dates, rooms, transfers) and 2-step Cancel flow (policy review, reason, confirmation).
 
-### 2. Backoffice Admin (`backoffice-prototype/`)
+### 2. Backoffice Admin (`/public/prototypes/backoffice/`)
 
 An admin panel with these screens:
 
@@ -229,13 +229,11 @@ After each iteration, open `index.html` in your browser to test. If something lo
 │   ├── 3-prototype.zip                            # Packaged for sharing
 │   └── 3-prototype-v1.1.zip                       # Version with transfers
 │
-├── backoffice-prototype/
-│   ├── index.html                                 # All admin screens
-│   ├── styles.css                                 # Admin styling
-│   ├── app.js                                     # Admin logic + charts
-│   └── commission-config.html                     # Separate commission page
-│
 └── HOW_THESE_PROTOTYPES_WERE_BUILT.md             # This file
+
+# Note: the backoffice prototype + the mozio-integration variant of the
+# agency-app prototype now live under /public/prototypes/ (served by GitHub
+# Pages). See /public/prototypes/backoffice/ and /public/prototypes/agency-app/.
 ```
 
 ---
