@@ -1590,11 +1590,13 @@ NOTE — wireframe reflects 2026-05-28 state:
   <p class="lang-es">Cuando se selecciona un ítem de scope específico, las capas upstream que están fuera de scope para esa vista pasan a solo lectura o se ocultan para reducir ruido y evitar ediciones accidentales:</p>
   <ul class="lang-en">
     <li><strong>Hotels tab + hotel selected:</strong> Layer 1 (Global Defaults) is read-only. Layers 2–5 are editable.</li>
+    <li><strong>Chains tab + chain selected:</strong> Layer 1 (Global) is read-only; a chain-scope <code>baseCommission</code> markup_rule and the chain's <code>chainDiscountPct</code> are editable — these cascade down to every hotel linked to this chain (a per-hotel override on the Hotels tab still wins over the chain value). Layers 3 (Agency Rebate), 4 (Tier), and 5 (Agent-Hotel Override) are hidden — they are irrelevant to chain-level policy.</li>
     <li><strong>Agents tab + agent selected:</strong> Layer 1 (Global) is read-only; Layers 2 (Hotel) and 3 (Agency Rebate) are hidden entirely. Only Layer 4 (Tier, locked) and Layer 5 (Agent-Hotel Override) are shown.</li>
     <li><strong>Agencies tab + agency selected:</strong> Layer 1 (Global) is read-only; Layer 3 (Agency Rebate / <code>defaultRebatePct</code>) is editable; all other layers are hidden.</li>
   </ul>
   <ul class="lang-es">
     <li><strong>Pestaña Hotels + hotel seleccionado:</strong> la Capa 1 (Global Defaults) es solo lectura. Las Capas 2–5 son editables.</li>
+    <li><strong>Pestaña Chains + cadena seleccionada:</strong> la Capa 1 (Global) es solo lectura; son editables una markup_rule de <code>baseCommission</code> a nivel cadena y el <code>chainDiscountPct</code> de la cadena — estos descienden por cascada a cada hotel vinculado a esta cadena (un override por hotel en la pestaña Hotels sigue ganando sobre el valor de la cadena). Las Capas 3 (Agency Rebate), 4 (Tier) y 5 (Agent-Hotel Override) se ocultan — son irrelevantes para la política a nivel cadena.</li>
     <li><strong>Pestaña Agents + agente seleccionado:</strong> la Capa 1 (Global) es solo lectura; las Capas 2 (Hotel) y 3 (Agency Rebate) se ocultan por completo. Solo se muestran la Capa 4 (Tier, bloqueada) y la Capa 5 (Agent-Hotel Override).</li>
     <li><strong>Pestaña Agencies + agencia seleccionada:</strong> la Capa 1 (Global) es solo lectura; la Capa 3 (Agency Rebate / <code>defaultRebatePct</code>) es editable; el resto de las capas se ocultan.</li>
   </ul>
