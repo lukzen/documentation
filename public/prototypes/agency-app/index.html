@@ -7,6 +7,25 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
+  <style>
+    /* Sortable table header affordance (prototype-only, no real sort wiring) */
+    th[data-sortable] { cursor: pointer; user-select: none; }
+    th[data-sortable]::after {
+      content: " \2195"; /* double-chevron ↕ */
+      opacity: 0.4;
+      font-size: 0.85em;
+      margin-left: 4px;
+    }
+    th[data-sortable][data-sort-active="asc"]::after {
+      content: " \2191"; /* up-chevron ↑ */
+      opacity: 1;
+    }
+    th[data-sortable][data-sort-active="desc"]::after {
+      content: " \2193"; /* down-chevron ↓ */
+      opacity: 1;
+    }
+    .pnl-sort-hint { font-size: 12.5px; color: #78716c; margin-top: 4px; }
+  </style>
 </head>
 <body>
   <!-- ========== PROTOTYPE TOOLBAR ========== -->
@@ -1096,6 +1115,10 @@
           </div>
           <span>Total Client Price</span>
           <span class="conf-total-amount" id="conf-price">USD 194.40</span>
+          <p class="conf-price-locked-note" style="margin-top:10px;font-size:12.5px;color:#78716c;line-height:1.45">
+            Customer pays <strong>USD 194.40</strong> — this is the same total they saw at checkout and will see in their booking record.<br>
+            Markup snapshot (<strong>15%</strong>) frozen at booking time.
+          </p>
         </div>
 
         <div class="conf-next-steps">
@@ -2361,6 +2384,7 @@
         <div>
           <h1 class="pnl-title">My Earnings (P&amp;L)</h1>
           <p class="pnl-sub">Markup income (your own pricing) + Ergos rebate income per booking. Updated nightly.</p>
+          <p class="pnl-sub pnl-sort-hint">Click any column header to sort. Sort applies across the full date range.</p>
         </div>
         <button class="pnl-refresh">↻ Refresh</button>
       </div>
@@ -2416,7 +2440,7 @@
         <p class="acct-help">Bookings predating the P&amp;L snapshot are marked <span class="pnl-legacy-tag">legacy</span> and may show estimated values.</p>
         <table class="pnl-table">
           <thead>
-            <tr><th>Booking</th><th>Hotel</th><th>Check-in</th><th>Ergos cost</th><th>Customer paid</th><th>Markup</th><th>Rebate</th><th>Profit</th></tr>
+            <tr><th data-sortable>Booking</th><th data-sortable>Hotel</th><th data-sortable data-sort-active="asc" aria-sort="ascending">Check-in</th><th data-sortable>Ergos cost</th><th data-sortable>Customer paid</th><th data-sortable>Markup</th><th data-sortable>Rebate</th><th data-sortable>Profit</th></tr>
           </thead>
           <tbody>
             <tr><td><span class="pnl-ref">ERG-014821</span> <span class="emp-status emp-status-active">CONFIRMED</span></td><td>Iberostar Grand Packard</td><td>2026-05-25</td><td>USD 412</td><td>USD 484</td><td class="pnl-up">+ USD 72</td><td class="pnl-info">+ USD 48 <span class="pnl-pct">(11.7%)</span></td><td class="pnl-profit">USD 120</td></tr>

@@ -185,6 +185,8 @@ POST /bookings → Validate → Adapter.bookRoom() → Normalize → Persist →
 
 Stored in `backoffice.bookings` (MongoDB). Key fields:
 
+Together with `commissionSnapshot`, the `agencyMarkupPctSnapshot` and `agencyCustomerPrice` fields form the immutable pricing record captured at booking time — ensuring P&L reports and customer-facing prices stay consistent even if upstream policy/rates change.
+
 | Field | Description |
 |---|---|
 | `bookingReference` | Internal platform reference |
@@ -196,6 +198,8 @@ Stored in `backoffice.bookings` (MongoDB). Key fields:
 | `hotelDetails` | Name, address, stars, images |
 | `roomDetails[]` | Room type, rate, board, occupancy per room |
 | `paymentInfo` | Amount, currency, method, card details (masked) |
+| `agencyMarkupPctSnapshot` | Frozen agency markup % at booking time (whole-percent integer convention — 15 = 15%) |
+| `agencyCustomerPrice` | Frozen customer-facing price at booking time (= ergosSell × (1 + agencyMarkupPctSnapshot/100)). Used by agency-app for consistent display across the booking funnel |
 | `cancellationPolicy` | Deadline, penalty rules, free cancellation date |
 | `vendorResponse` | Raw GDS response (only exposed in admin DTO) |
 | `travelAgency` | ObjectId ref to agency |

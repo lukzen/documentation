@@ -486,16 +486,42 @@
     <h3 class="lang-es">Qué muestra</h3>
     <ul class="lang-en">
       <li><strong>Per-booking detail</strong> — type or paste a booking locator to see the full waterfall.</li>
-      <li><strong>Aggregated reporting</strong> — pick a date range to see monthly totals across all bookings.</li>
+      <li><strong>Aggregated reporting</strong> — pick a date range to see monthly totals across all bookings. The "to" date is inclusive of end-of-day (23:59:59 UTC), so same-day bookings created after midnight appear in date-range reports.</li>
       <li><strong>Per-agency revenue</strong> — group by travel agency to see who's bringing in the most volume.</li>
       <li><strong>Per-agent commission</strong> — group by sales agent to see commission paid.</li>
     </ul>
     <ul class="lang-es">
       <li><strong>Detalle por reserva</strong> — escribí o pegá un locator de reserva para ver la cascada completa.</li>
-      <li><strong>Reporting agregado</strong> — elegí un rango de fechas para ver totales mensuales en todas las reservas.</li>
+      <li><strong>Reporting agregado</strong> — elegí un rango de fechas para ver totales mensuales en todas las reservas. La fecha "to" es inclusiva de fin de día (23:59:59 UTC), así las reservas del mismo día creadas después de medianoche aparecen en los reportes por rango de fechas.</li>
       <li><strong>Ingreso por agencia</strong> — agrupá por agencia de viajes para ver quién trae más volumen.</li>
       <li><strong>Comisión por agente</strong> — agrupá por agente comercial para ver la comisión pagada.</li>
     </ul>
+
+    <h3 class="lang-en">Booking Breakdown columns</h3>
+    <h3 class="lang-es">Columnas del Desglose de Reservas</h3>
+    <p class="lang-en">The Booking Breakdown table surfaces five financial columns, in this order, sourced from each booking's frozen commissionSnapshot:</p>
+    <p class="lang-es">La tabla del Desglose de Reservas muestra cinco columnas financieras, en este orden, tomadas del commissionSnapshot congelado de cada reserva:</p>
+    <ol class="lang-en">
+      <li><strong>Ergos markup</strong> — what Ergos earns on top of the supplier net.</li>
+      <li><strong>Agency rebate</strong> — what Ergos pays back to the travel agency.</li>
+      <li><strong>Sales agent earning</strong> — the recruiting agent's commission cut.</li>
+      <li><strong>Agency markup</strong> — what the agency adds on top of the Ergos sell price.</li>
+      <li><strong>Customer price</strong> — the frozen price the customer paid (agencyCustomerPrice).</li>
+    </ol>
+    <ol class="lang-es">
+      <li><strong>Ergos markup</strong> — lo que Ergos gana arriba del net del proveedor.</li>
+      <li><strong>Agency rebate</strong> — lo que Ergos devuelve a la agencia de viajes.</li>
+      <li><strong>Sales agent earning</strong> — el corte de comisión del agente reclutador.</li>
+      <li><strong>Agency markup</strong> — lo que la agencia agrega arriba del precio de venta de Ergos.</li>
+      <li><strong>Customer price</strong> — el precio congelado que pagó el cliente (agencyCustomerPrice).</li>
+    </ol>
+    <p class="lang-en">Each cell renders as <code>$X.XX (Y.Y%)</code> — for example <code>$5.23 (4.0%)</code>. Cells without a frozen commissionSnapshot render <code>—</code>.</p>
+    <p class="lang-es">Cada celda se renderiza como <code>$X.XX (Y.Y%)</code> — por ejemplo <code>$5.23 (4.0%)</code>. Las celdas sin un commissionSnapshot congelado se renderizan como <code>—</code>.</p>
+
+    <h3 class="lang-en">Sortable column headers</h3>
+    <h3 class="lang-es">Encabezados de columna ordenables</h3>
+    <p class="lang-en">Click any column header to sort. The chevron icon shows direction (up = ascending, down = descending; double-chevron at low opacity = sortable but inactive). Sort applies across the full date range, not just the visible page.</p>
+    <p class="lang-es">Hacé clic en cualquier encabezado de columna para ordenar. El ícono de chevron muestra la dirección (arriba = ascendente, abajo = descendente; doble chevron a baja opacidad = ordenable pero inactivo). El orden aplica sobre todo el rango de fechas, no solo la página visible.</p>
 
     <div class="callout callout-teal">
       <strong class="lang-en">Use the Commission Snapshot, not the current policy:</strong>

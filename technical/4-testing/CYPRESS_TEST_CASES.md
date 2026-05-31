@@ -324,6 +324,65 @@ These tests call the backend API directly via `cy.request()` without going throu
 
 ---
 
+## Phase 11: Finance & Sortable Tables (P1 - High)
+
+### 11A. Booking Breakdown 5-Column Table (`cypress/e2e/booking-breakdown.cy.ts`)
+
+| # | Test Case | Steps | Expected Result |
+|---|---|---|---|
+| 11A.1 | Render 5 financial columns in order | Login as admin, visit `/finance/booking-breakdown` | Columns appear left-to-right: Ergos markup, Agency rebate, Sales agent earning, Agency markup, Customer price |
+| 11A.2 | Format `$X.XX (Y.Y%)` on snapshot rows | Stub row with `commissionSnapshot` populated | Each of the 5 cells renders e.g. `$5.23 (4.0%)` — dollar amount + parenthesised percent |
+| 11A.3 | Render `—` on legacy rows | Stub row without `commissionSnapshot` | All 5 financial cells display `—` (em dash), no `$0.00` placeholders |
+| 11A.4 | Customer price matches `agencyCustomerPrice` snapshot | Stub booking with `agencyCustomerPrice=156.42` | Customer price column shows `$156.42`, matches rate-card / confirmation / `/bookings` value |
+| 11A.5 | Mixed rows render correctly | Stub list containing both snapshot + legacy rows | Snapshot rows show numeric values, legacy rows show `—`; no row crashes |
+
+### 11B. SortableTableHead Across Migrated Tables (`cypress/e2e/sortable-tables.cy.ts`)
+
+| # | Test Case | Steps | Expected Result |
+|---|---|---|---|
+| 11B.1 | BookingBreakdownPage — sort by Customer price | Click "Customer price" header twice | First click sets `aria-sort="ascending"` + down chevron disappears / up chevron shows; request fires with `sortBy=agencyCustomerPrice&sortDir=asc`; second click flips to `desc` |
+| 11B.2 | BookingAuditLogPage — sort by timestamp | Click timestamp header | `aria-sort` updates, chevron toggles, table re-orders client-side |
+| 11B.3 | ViewReservations — sort by bookingReference | Click bookingReference header | `aria-sort="ascending"` set, rows re-ordered |
+| 11B.4 | RolesManagement — sort by role name | Click name header | Client-side sort applied, chevron icon updates |
+| 11B.5 | Dashboard summary table — sort by agency | Click agency column header | In-memory sort, totals row remains at bottom unchanged |
+| 11B.6 | modification-history — sort by modifiedAt | Click modifiedAt header | Sort toggles asc/desc, chevron reflects state |
+| 11B.7 | GuestsInfoSection (primary) — sort by guest name | Click name header inside guests panel | Sort applied, `aria-sort` set on clicked header only |
+| 11B.8 | GuestsInfoSection (additional) — sort by age | Click age header in additional-guests table | Numeric sort applied correctly |
+| 11B.9 | ListSalesAgent — sort by earningPercentage | Click earningPercentage header | Sort applied, default chevron (40% opacity double-chevron) replaced with directional chevron |
+| 11B.10 | AgencyBookingsPnL — server-side sort | Click "Net profit" header | Request fires with `sortBy=netProfit&sortDir=desc`; rows re-render from server response |
+| 11B.11 | HotelCommissionOverrides — sort by hotel name | Click hotelName header | Client-side sort, chevron toggles on subsequent clicks |
+| 11B.12 | Inactive headers show default chevron | Inspect any non-sorted header | Renders double-chevron icon at 40% opacity, `aria-sort="none"` |
+
+### 11C. GET `/admin/finance/bookings` API (`cypress/e2e/api-finance-bookings.cy.ts`)
+
+| # | Test Case | Steps | Expected Result |
+|---|---|---|---|
+| 11C.1 | Snapshot fields present | GET `/admin/finance/bookings` for a row created post-snapshot | Each row exposes `ergosMarkupAmount`, `ergosMarkupPct`, `rebateAmount`, `rebatePct`, `agentEarningAmount`, `agentEarningPct`, `agencyMarkupPct`, `markupAmount`, `agencyCustomerPrice` |
+| 11C.2 | Snapshot fields absent on legacy rows | GET endpoint for booking with no `commissionSnapshot` | Fields omitted or `null` — response does not throw |
+| 11C.3 | Sort by `ergosMarkupAmount` desc | GET `?sortBy=ergosMarkupAmount&sortDir=desc` | Rows returned in descending `ergosMarkupAmount` order (in-memory sort post-aggregation) |
+| 11C.4 | Sort by `createdAt` DB-pushed | GET `?sortBy=createdAt&sortDir=asc` | Mongo query receives `{ createdAt: 1 }`; first row has earliest createdAt |
+| 11C.5 | Invalid `sortBy` falls back silently | GET `?sortBy=__bogus__&sortDir=desc` | 200 response, rows returned in default order (no 400, no crash) |
+| 11C.6 | `sortBy=hotelName` DB-pushed | GET `?sortBy=hotelName&sortDir=asc` | Mongo sort key applied, alphabetic order on hotel name |
+
+### 11D. GET `/travel-agency/:id/pnl` Sort (`cypress/e2e/api-agency-pnl.cy.ts`)
+
+| # | Test Case | Steps | Expected Result |
+|---|---|---|---|
+| 11D.1 | All 10 visible columns accept sortBy | GET `?sortBy={col}&sortDir=asc` for each of the 10 PnL columns | 200 for each; rows ordered by the requested column |
+| 11D.2 | Totals row unchanged across sorts | Compare totals row from `?sortBy=netProfit` vs `?sortBy=grossRevenue` | Totals row identical in both responses (sort applies to row order only) |
+| 11D.3 | Invalid sortBy returns 400 | GET `?sortBy=dropTable&sortDir=asc` | 400 response with validation error |
+
+### 11E. End-of-Day "to" Date Filter (`cypress/e2e/api-eod-filter.cy.ts`)
+
+| # | Test Case | Steps | Expected Result |
+|---|---|---|---|
+| 11E.1 | Finance endpoint includes late-day booking | Seed booking at `2026-05-31T18:00:00Z`; GET `/admin/finance/bookings?from=2026-05-31&to=2026-05-31` | Booking present in response (to-date snaps to `23:59:59.999Z`) |
+| 11E.2 | PnL endpoint includes late-day booking | Seed booking at `2026-05-31T18:00:00Z`; GET `/travel-agency/:id/pnl?from=2026-05-31&to=2026-05-31` | Booking counted in PnL totals for that day |
+
+| | | **Phase 11 Total: ~28 test cases** | **~2 days** |
+
+---
+
 ## Summary
 
 | Phase | Suite | Test Cases | Priority | Effort |
@@ -338,7 +397,8 @@ These tests call the backend API directly via `cy.request()` without going throu
 | 8 | Profile Settings | 7 | P2 | 0.5 day |
 | 9 | API Integration Tests | 17 | P1 | 1.5 days |
 | 10 | Error Handling & Edge Cases | 8 | P2 | 0.5 day |
-| | **Total** | **~116 test cases** | | **~13 days** |
+| 11 | Finance & Sortable Tables | 28 | P1 | 2 days |
+| | **Total** | **~144 test cases** | | **~15 days** |
 
 ### Recommended Execution Order
 
@@ -351,7 +411,8 @@ These tests call the backend API directly via `cy.request()` without going throu
 7. **Phase 6** - Hotels
 8. **Phase 7** - Dashboard
 9. **Phase 8** - Profile
-10. **Phase 10** - Error handling (last, covers all modules)
+10. **Phase 11** - Finance & sortable tables (after Phase 5 + 9 are green)
+11. **Phase 10** - Error handling (last, covers all modules)
 
 ### `data-testid` Tagging Requirement
 

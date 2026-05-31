@@ -621,7 +621,7 @@ erDiagram
 | Collection | Purpose | Key Fields |
 |---|---|---|
 | `hotels` | Synced hotel data from all GDS providers | name, provider, providerType, location, rooms, amenities, images, syncedAt |
-| `bookings` | All reservations across the platform | hotelId, agencyId, guestDetails, dates, status, confirmationCode, paymentStatus |
+| `bookings` | All reservations across the platform | hotelId, agencyId, guestDetails, dates, status, confirmationCode, paymentStatus, agencyCustomerPrice, agencyMarkupPctSnapshot |
 | `roles` | RBAC role definitions | name, permissions |
 | `backoffice_users` | Admin and internal users | email, passwordHash, role, passkeys |
 | `scan_history` | Search query audit log | userId, searchCriteria, resultCount, timestamp |
