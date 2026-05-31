@@ -1463,25 +1463,25 @@ sequenceDiagram
   <h2 class="lang-en">2. Screen: Pricing Policy <span class="label">/pricing-policy</span></h2>
   <h2 class="lang-es">2. Pantalla: Política de Precios <span class="label">/pricing-policy</span></h2>
 
-  <p class="lang-en">This is the main workspace where admins view and edit the commission policy for three scopes: a specific <strong>hotel</strong>, a specific <strong>travel agency</strong>, or a specific <strong>agent</strong>. It uses a <strong>3-panel layout</strong>: pick the scope on the left, see the inheritance stack in the center, see the math on the right.</p>
-  <p class="lang-es">Este es el área principal donde los admins ven y editan la política de comisiones para tres scopes: un <strong>hotel</strong> específico, una <strong>agencia de viajes</strong> específica o un <strong>agente</strong> específico. Usa un <strong>layout de 3 paneles</strong>: elegí el scope a la izquierda, mirá la pila de herencia en el centro, mirá la matemática a la derecha.</p>
+  <p class="lang-en">This is the main workspace where admins view and edit the commission policy for four scopes: a specific <strong>hotel</strong>, a specific <strong>chain</strong>, a specific <strong>sales agent</strong>, or a specific <strong>travel agency</strong>. It uses a <strong>3-panel layout</strong>: pick the scope on the left, see the inheritance stack in the center, see the math on the right.</p>
+  <p class="lang-es">Este es el área principal donde los admins ven y editan la política de comisiones para cuatro scopes: un <strong>hotel</strong> específico, una <strong>cadena</strong> específica, un <strong>agente de ventas</strong> específico o una <strong>agencia de viajes</strong> específica. Usa un <strong>layout de 3 paneles</strong>: elegí el scope a la izquierda, mirá la pila de herencia en el centro, mirá la matemática a la derecha.</p>
 
   <div class="callout callout-info lang-en" style="margin-bottom: 12px;">
-    <strong>Three scope tabs as of 2026-05-28.</strong> The left rail now has <strong>Hotels</strong>, <strong>Travel Agencies</strong>, and <strong>Agents</strong> tabs. Each tab shows a different alphabetically-grouped list with accordion letter headers. The Hotels tab previously required loading all 100k+ hotels at once — it now lazily paginates 200 at a time, triggering the next page when the user scrolls within 50 rows of the end.
+    <strong>Four scope tabs as of 2026-05-28.</strong> The left rail now has <strong>Hotels</strong>, <strong>Chains</strong>, <strong>Sales Agents</strong>, and <strong>Travel Agencies</strong> tabs (in that order). Each tab shows a different alphabetically-grouped list with accordion letter headers. The Hotels tab previously required loading all 100k+ hotels at once — it now lazily paginates 200 at a time, triggering the next page when the user scrolls within 50 rows of the end.
   </div>
   <div class="callout callout-info lang-es" style="margin-bottom: 12px;">
-    <strong>Tres pestañas de scope a partir del 2026-05-28.</strong> El panel izquierdo ahora tiene pestañas <strong>Hotels</strong>, <strong>Travel Agencies</strong> y <strong>Agents</strong>. Cada pestaña muestra una lista distinta agrupada alfabéticamente con cabeceras de acordeón por letra. La pestaña Hotels antes requería cargar los más de 100,000 hoteles de una vez — ahora pagina lazy de 200 en 200, disparando la siguiente página cuando el usuario llega a 50 filas del final.
+    <strong>Cuatro pestañas de scope a partir del 2026-05-28.</strong> El panel izquierdo ahora tiene pestañas <strong>Hotels</strong>, <strong>Chains</strong>, <strong>Sales Agents</strong> y <strong>Travel Agencies</strong> (en ese orden). Cada pestaña muestra una lista distinta agrupada alfabéticamente con cabeceras de acordeón por letra. La pestaña Hotels antes requería cargar los más de 100,000 hoteles de una vez — ahora pagina lazy de 200 en 200, disparando la siguiente página cuando el usuario llega a 50 filas del final.
   </div>
 
   <figure class="screenshot">
     <div class="screenshot-frame">
       <img src="../commission-screenshots/01-commission-policy-full.png"
-           alt="Pricing Policy page — full 3-panel layout with left scope rail (Hotels + Agents tabs), center 5 layer cards, and right simulate panel"
+           alt="Pricing Policy page — full 3-panel layout with left scope rail (Hotels, Chains, Sales Agents, Travel Agencies tabs), center 5 layer cards, and right simulate panel"
            loading="lazy"
            onerror="this.style.display='none'" />
     </div>
-    <figcaption class="lang-en">Pricing Policy page (captured 2026-05-28 via Playwright) — Hotels tab active, showing the three-tab left rail (Hotels / Travel Agencies / Agents), accordion letter grouping, and inheritance stack with cascade-source badge in the Effective Configuration card. File: <span class="file">commission-screenshots/01-commission-policy-full.png</span></figcaption>
-    <figcaption class="lang-es">Pantalla de Política de Precios (capturada el 2026-05-28 vía Playwright) — pestaña Hotels activa, mostrando el panel izquierdo de tres pestañas (Hotels / Travel Agencies / Agents), agrupación alfabética por acordeón y la pila de herencia con el badge de cascada en la tarjeta de Effective Configuration. Archivo: <span class="file">commission-screenshots/01-commission-policy-full.png</span></figcaption>
+    <figcaption class="lang-en">Pricing Policy page (captured 2026-05-28 via Playwright) — Hotels tab active, showing the four-tab left rail (Hotels / Chains / Sales Agents / Travel Agencies), accordion letter grouping, and inheritance stack with cascade-source badge in the Effective Configuration card. File: <span class="file">commission-screenshots/01-commission-policy-full.png</span></figcaption>
+    <figcaption class="lang-es">Pantalla de Política de Precios (capturada el 2026-05-28 vía Playwright) — pestaña Hotels activa, mostrando el panel izquierdo de cuatro pestañas (Hotels / Chains / Sales Agents / Travel Agencies), agrupación alfabética por acordeón y la pila de herencia con el badge de cascada en la tarjeta de Effective Configuration. Archivo: <span class="file">commission-screenshots/01-commission-policy-full.png</span></figcaption>
   </figure>
 
   <details class="wireframe-fallback">
@@ -1491,8 +1491,10 @@ sequenceDiagram
 │  scope         │  inheritance stack            │  live margin    │
 │  selector      │  & editor                     │  preview        │
 ├────────────────┼───────────────────────────────┼─────────────────┤
-│ [Hotels] [TAs] │  Breadcrumb: Global › Meliá   │ ─ Simulate ─    │
-│ [Agents]       │                               │ Supplier net    │
+│ [Hotels]       │  Breadcrumb: Global › Meliá   │ ─ Simulate ─    │
+│ [Chains]       │                               │ Supplier net    │
+│ [Sales Agents] │                               │                 │
+│ [Travel Agcys] │                               │                 │
 │                │  ┌─ 1. Global Defaults ──┐    │ [ $200    ]     │
 │ GDS:    ▾      │  │  baseCommission 3%    │    │                 │
 │ Country: ▾     │  │  chainDiscountPct 0    │    │ Ergos net 2.9%  │
@@ -1528,7 +1530,7 @@ sequenceDiagram
             [Audit Trail]  [Create Markup Rule]  ← header actions
 
 NOTE — wireframe reflects 2026-05-28 state:
-  • Left rail: 3 scope tabs (Hotels / Travel Agencies / Agents).
+  • Left rail: 4 scope tabs (Hotels / Chains / Sales Agents / Travel Agencies).
   • Hotels list: lazy-paginated (200 at a time), alphabetical accordion.
   • Agency Rebate layer: editable when Agencies tab + agency selected.
   • Right-rail Simulate label: "Ergos net % off sell" (not % of sell).
@@ -1540,14 +1542,14 @@ NOTE — wireframe reflects 2026-05-28 state:
   <h3 class="lang-en">Left rail — what you're looking at</h3>
   <h3 class="lang-es">Panel izquierdo — qué estás viendo</h3>
   <ul class="lang-en">
-    <li><strong>Three scope tabs:</strong> Hotels / Travel Agencies / Agents. Each tab shows a different list; the active tab drives what the center panel displays.</li>
+    <li><strong>Four scope tabs:</strong> Hotels / Chains / Sales Agents / Travel Agencies (in that order). Each tab shows a different list; the active tab drives what the center panel displays.</li>
     <li><strong>Alphabetical accordion grouping:</strong> items in every tab are grouped under letter-header buttons (A, B, C…; # for non-letter starts). Clicking a letter header collapses or expands all items under it. The header shows the count when collapsed (e.g. "A (4029)").</li>
     <li><strong>Lazy pagination (Hotels only):</strong> fetches 200 hotels at a time. The next page loads automatically when the user scrolls within 50 rows of the end — replacing the previous behavior of loading all 105k+ hotels at once. The <code>/admin/hotels</code> route now honors <code>sortBy=name-asc</code>.</li>
     <li><strong>GDS dropdown + Country dropdown + search box</strong> drive server-side filtering of the hotel list. Type 3+ chars in the search box — after 300ms idle, the server returns matching hotels. The GDS filter narrows the country options.</li>
     <li><strong>★ Global pinned button</strong> at the top — shows the global defaults view regardless of which tab is active.</li>
   </ul>
   <ul class="lang-es">
-    <li><strong>Tres pestañas de scope:</strong> Hotels / Travel Agencies / Agents. Cada pestaña muestra una lista distinta; la pestaña activa determina lo que se ve en el panel central.</li>
+    <li><strong>Cuatro pestañas de scope:</strong> Hotels / Chains / Sales Agents / Travel Agencies (en ese orden). Cada pestaña muestra una lista distinta; la pestaña activa determina lo que se ve en el panel central.</li>
     <li><strong>Agrupación alfabética en acordeón:</strong> los ítems en cada pestaña se agrupan bajo botones de cabecera de letra (A, B, C…; # para los que no empiezan con letra). Hacer clic en una cabecera colapsa o expande todos los ítems debajo. La cabecera muestra el conteo cuando está colapsada (ej. "A (4029)").</li>
     <li><strong>Paginación lazy (solo Hotels):</strong> trae 200 hoteles a la vez. La siguiente página se carga automáticamente cuando el usuario llega a 50 filas del final — reemplazando el comportamiento previo de cargar los más de 105,000 hoteles de una vez. La ruta <code>/admin/hotels</code> ahora respeta <code>sortBy=name-asc</code>.</li>
     <li><strong>Dropdown de GDS + dropdown de país + caja de búsqueda</strong> filtran la lista de hoteles del lado del servidor. Escribí 3+ caracteres en la caja de búsqueda — después de 300ms inactivos, el servidor devuelve los hoteles que coinciden. El filtro de GDS limita las opciones de país.</li>
