@@ -63,6 +63,8 @@ const NAV_GROUPS = [
     {id:'pricing-policy',icon:'⚙',label:'Pricing Policy'},
     {id:'hotel-brands',icon:'⌘',label:'Hotel Brands'},
     {id:'booking-breakdown',icon:'⊞',label:'Booking Breakdown'},
+    {id:'hotel-price-breakdown',icon:'⊟',label:'Hotel Price Composition'},
+    {id:'finance-remittances',icon:'$',label:'Agency Remittances'},
     {id:'audit-log',icon:'⊜',label:'Booking Audit Log'}
   ]},
   {title:'Partners', items:[
@@ -700,12 +702,14 @@ function toast(msg){
 // Iframe URL auto-bumps on every Pages deploy: document.lastModified of the
 // parent reflects the upload timestamp, so the iframe cache key is unique
 // per deploy without any manual version-bumping.
-const CP_VERSION = encodeURIComponent(document.lastModified || String(Date.now()));
 function buildCpSrc(tab){
   const f = document.getElementById('cp-frame'); if(!f) return '';
   const base = f.dataset.src || 'commission-config.html';
   const hash = (tab && tab !== 'editor') ? '#'+tab : '';
-  return base + '?embed=1&v=' + CP_VERSION + hash;
+  // Always-fresh cache-bust during prototype iteration. Switch to
+  // document.lastModified for production deploys to avoid re-fetching
+  // the iframe on every screen visit.
+  return base + '?embed=1&v=' + Date.now() + hash;
 }
 RENDERERS['pricing-policy'] = () => {
   const f = document.getElementById('cp-frame');

@@ -11,6 +11,7 @@
   <title>Ergos Continental — Redesign Prototype</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.47.0/tabler-icons.min.css">
   <link rel="stylesheet" href="styles.css">
   <style>
     /* Sortable table header affordance (prototype-only, no real sort wiring) */
@@ -63,10 +64,11 @@
       <!-- Account flow tabs -->
       <div class="proto-flow-tabs" data-flow-group="account" hidden>
         <button class="proto-tab" data-screen="profile-info">1. Profile Info</button>
-        <button class="proto-tab" data-screen="update-password">2. Change Password</button>
-        <button class="proto-tab" data-screen="employees">3. Employees</button>
-        <button class="proto-tab" data-screen="passkeys">4. Passkeys</button>
-        <button class="proto-tab" data-screen="pnl">5. P&amp;L</button>
+        <button class="proto-tab" data-screen="markup-rules">2. Markup Rules</button>
+        <button class="proto-tab" data-screen="update-password">3. Change Password</button>
+        <button class="proto-tab" data-screen="employees">4. Employees</button>
+        <button class="proto-tab" data-screen="passkeys">5. Passkeys</button>
+        <button class="proto-tab" data-screen="pnl">6. P&amp;L</button>
       </div>
       <!-- Auth flow tabs -->
       <div class="proto-flow-tabs" data-flow-group="auth" hidden>
@@ -192,7 +194,7 @@
             <p>We match any verified lower rate from a competing supplier on the same dates and room type.</p>
           </div>
           <div class="home-card">
-            <div class="home-card-icon">❤</div>
+            <div class="home-card-icon"><i class="ti ti-heart"></i></div>
             <h3>Travellers Love Us</h3>
             <p>4.8/5 average rating across 50,000+ bookings, with on-time check-in support guaranteed.</p>
           </div>
@@ -202,7 +204,7 @@
             <p>Built for agency owners and employees — commission, voucher, and remittance tracking built in.</p>
           </div>
           <div class="home-card">
-            <div class="home-card-icon">⚡</div>
+            <div class="home-card-icon"><i class="ti ti-bolt"></i></div>
             <h3>Our Dedicated Support</h3>
             <p>24/7 booking-desk support in EN and ES, average first-response time under 4 minutes.</p>
           </div>
@@ -218,19 +220,19 @@
         <div class="home-grid home-grid-3">
           <div class="home-step">
             <div class="home-step-num">1</div>
-            <div class="home-card-icon">🔍</div>
+            <div class="home-card-icon"><i class="ti ti-search"></i></div>
             <h3>Search</h3>
             <p>Tell us the destination, dates, and guests. We surface live availability across every GDS supplier.</p>
           </div>
           <div class="home-step">
             <div class="home-step-num">2</div>
-            <div class="home-card-icon">🏨</div>
+            <div class="home-card-icon"><i class="ti ti-bed"></i></div>
             <h3>Choose</h3>
             <p>Compare rates, rooms, and policies side-by-side. See your commission upfront on every option.</p>
           </div>
           <div class="home-step">
             <div class="home-step-num">3</div>
-            <div class="home-card-icon">📄</div>
+            <div class="home-card-icon"><i class="ti ti-file"></i></div>
             <h3>Confirm</h3>
             <p>Capture guest details, charge the customer, and instantly issue a voucher + invoice in EN or ES.</p>
           </div>
@@ -245,22 +247,22 @@
         <p class="home-sub">Ready to plan your next adventure? Contact Ergos Continental today!</p>
         <div class="home-grid home-grid-4">
           <div class="home-card">
-            <div class="home-card-icon">✉</div>
+            <div class="home-card-icon"><i class="ti ti-mail"></i></div>
             <h4>Email Us</h4>
             <a href="mailto:support@ergoscontinental.com" style="color:#0d8a7f;text-decoration:none">support@ergoscontinental.com</a>
           </div>
           <div class="home-card">
-            <div class="home-card-icon">☎</div>
+            <div class="home-card-icon"><i class="ti ti-phone"></i></div>
             <h4>Call Us</h4>
             <a href="tel:+34911234567" style="color:#0d8a7f;text-decoration:none">+34 911 234 567</a>
           </div>
           <div class="home-card">
-            <div class="home-card-icon">📍</div>
+            <div class="home-card-icon"><i class="ti ti-map-pin"></i></div>
             <h4>Visit Us</h4>
             <p>Madrid, Spain</p>
           </div>
           <div class="home-card">
-            <div class="home-card-icon">🕒</div>
+            <div class="home-card-icon"><i class="ti ti-clock"></i></div>
             <h4>Business Hours</h4>
             <p>Mon–Fri 9:00–18:00 CET</p>
           </div>
@@ -534,10 +536,10 @@
           <img src="https://images.unsplash.com/photo-1590490360182-c33d57733427?w=260&h=160&fit=crop" alt="Standard Room" class="room-thumb">
           <h3>Standard Room</h3>
           <div class="room-amenities">
-            <span>🛏 1 Double Bed</span>
-            <span>📐 28 m²</span>
-            <span>❄️ Air Conditioning</span>
-            <span>📶 Free WiFi</span>
+            <span><i class="ti ti-bed"></i> 1 Double Bed</span>
+            <span><i class="ti ti-ruler-2"></i> 28 m²</span>
+            <span><i class="ti ti-snowflake"></i> Air Conditioning</span>
+            <span><i class="ti ti-wifi"></i> Free WiFi</span>
           </div>
           <div class="change-callout" data-change="codes">
             <span class="change-badge">CHANGED</span>
@@ -586,10 +588,10 @@
           <img src="https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=260&h=160&fit=crop" alt="Superior Room" class="room-thumb">
           <h3>Superior Room — Ocean View</h3>
           <div class="room-amenities">
-            <span>🛏 1 King Bed</span>
-            <span>📐 35 m²</span>
-            <span>🌊 Ocean View</span>
-            <span>📶 Free WiFi</span>
+            <span><i class="ti ti-bed"></i> 1 King Bed</span>
+            <span><i class="ti ti-ruler-2"></i> 35 m²</span>
+            <span><i class="ti ti-beach"></i> Ocean View</span>
+            <span><i class="ti ti-wifi"></i> Free WiFi</span>
           </div>
         </div>
         <div class="room-card-right">
@@ -671,7 +673,7 @@
             <div class="os-row"><span>Guests</span><span>2 Adults</span></div>
             <div class="os-row"><span>Meal Plan</span><span>Bed & Breakfast</span></div>
             <div class="os-divider"></div>
-            <div class="os-row os-policy"><span>📗 Free cancellation until Mar 25, 2026</span></div>
+            <div class="os-row os-policy"><span><i class="ti ti-file-check"></i> Free cancellation until Mar 25, 2026</span></div>
             <div class="os-divider"></div>
             <div class="os-row os-total"><span>Total Price</span><span>USD 194.40</span></div>
             <button class="continue-btn" onclick="showScreen('services')">Continue →</button>
@@ -938,7 +940,7 @@
           <div class="order-summary">
             <img src="https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400&h=160&fit=crop" alt="Gran Muthu Habana" class="os-hotel-img">
             <h3>Trip Summary</h3>
-            <div class="os-service-header">🏨 Hotel</div>
+            <div class="os-service-header"><i class="ti ti-bed"></i> Hotel</div>
             <div class="os-hotel">Gran Muthu Habana ★★★★★</div>
             <div class="os-row"><span>Check-in</span><span>Mar 25, 2026</span></div>
             <div class="os-row"><span>Check-out</span><span>Mar 27, 2026</span></div>
@@ -946,7 +948,7 @@
             <div class="os-row"><span>Hotel subtotal</span><span>USD 194.40</span></div>
             <div class="os-divider"></div>
             <div class="os-transfer-section" id="svc-os-transfer" style="display:none">
-              <div class="os-service-header">🚗 Transfer</div>
+              <div class="os-service-header"><i class="ti ti-car"></i> Transfer</div>
               <div class="os-row"><span>Route</span><span id="svc-os-route">HAV → Hotel</span></div>
               <div class="os-row"><span>Vehicle</span><span id="svc-os-vehicle">—</span></div>
               <div class="os-row"><span>Transfer subtotal</span><span id="svc-os-tf-price">USD 0.00</span></div>
@@ -1018,8 +1020,8 @@
             </div>
 
             <div class="trust-badges">
-              <span class="trust-badge">🔒 SSL Encrypted</span>
-              <span class="trust-badge">🛡 PCI DSS Compliant</span>
+              <span class="trust-badge"><i class="ti ti-lock"></i> SSL Encrypted</span>
+              <span class="trust-badge"><i class="ti ti-shield-check"></i>PCI DSS Compliant</span>
               <span class="trust-badge">✓ Verified by Visa</span>
               <div class="change-callout" data-change="trust">
                 <span class="change-badge">NEW</span>
@@ -1033,14 +1035,14 @@
           <div class="order-summary">
             <img src="https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400&h=160&fit=crop" alt="Gran Muthu Habana" class="os-hotel-img">
             <h3 id="pay-summary-title">Booking Summary</h3>
-            <div class="os-service-header">🏨 Hotel</div>
+            <div class="os-service-header"><i class="ti ti-bed"></i> Hotel</div>
             <div class="os-hotel">Gran Muthu Habana ★★★★★</div>
             <div class="os-row"><span>Check-in</span><span>Mar 25, 2026</span></div>
             <div class="os-row"><span>Check-out</span><span>Mar 27, 2026</span></div>
             <div class="os-row"><span>Room (2 nights)</span><span>USD 194.40</span></div>
             <div class="os-divider"></div>
             <div class="os-transfer-section" id="pay-os-transfer" style="display:none">
-              <div class="os-service-header">🚗 Transfer</div>
+              <div class="os-service-header"><i class="ti ti-car"></i> Transfer</div>
               <div class="os-row"><span id="pay-os-route">HAV → Hotel</span><span id="pay-os-tf-price">USD 45.00</span></div>
               <div class="os-divider"></div>
             </div>
@@ -1078,7 +1080,7 @@
         </div>
 
         <div class="conf-section">
-          <h3>🏨 Hotel & Room Details</h3>
+          <h3><i class="ti ti-bed"></i> Hotel & Room Details</h3>
           <div class="conf-detail-grid">
             <div><span class="cdg-label">Hotel</span><span id="conf-hotel">Gran Muthu Habana ★★★★★</span></div>
             <div><span class="cdg-label">Room</span><span id="conf-room">Standard Room</span></div>
@@ -1100,7 +1102,7 @@
 
         <!-- Transfer details (shown when transfer is included) -->
         <div class="conf-section" id="conf-transfer-section" style="display:none">
-          <h3>🚗 Transfer Details</h3>
+          <h3><i class="ti ti-car"></i> Transfer Details</h3>
           <div class="conf-detail-grid">
             <div><span class="cdg-label">Route</span><span id="conf-tf-route">HAV Airport → Gran Muthu Habana</span></div>
             <div><span class="cdg-label">Vehicle</span><span id="conf-tf-vehicle">Mercedes E-Class</span></div>
@@ -1160,58 +1162,53 @@
         <a href="#" class="nav-link" onclick="showScreen('home')">Home</a>
         <a href="#" class="nav-link active">My Bookings</a>
       </div>
-      <div class="nav-right"><div class="avatar">TA</div></div>
+      <div class="nav-right">
+        <span class="nav-greeting">Good afternoon, Demo Agency</span>
+        <div class="avatar">DA</div>
+      </div>
     </nav>
 
-    <div class="bookings-page">
-      <div class="bookings-layout">
-        <!-- Sidebar -->
-        <aside class="bookings-sidebar">
-          <a href="#" class="sidebar-link">Account Info</a>
-          <a href="#" class="sidebar-link">User Management</a>
-          <a href="#" class="sidebar-link">Change Password</a>
-          <a href="#" class="sidebar-link">Passkeys</a>
-          <a href="#" class="sidebar-link active">My Bookings</a>
-        </aside>
+    <div class="acct-shell">
+      <aside class="acct-sidebar">
+        <div class="acct-sidebar-head">My Account</div>
+        <div class="acct-sidebar-group">Personal</div>
+        <a class="acct-sidebar-link" onclick="showScreen('profile-info')"><i class="ti ti-user"></i> Account Info</a>
+        <a class="acct-sidebar-link" onclick="showScreen('update-password')"><i class="ti ti-lock"></i> Change Password</a>
+        <a class="acct-sidebar-link" onclick="showScreen('passkeys')"><i class="ti ti-key"></i> Passkeys</a>
+        <div class="acct-sidebar-group">Workspace</div>
+        <a class="acct-sidebar-link" onclick="showScreen('markup-rules')"><i class="ti ti-adjustments-dollar"></i> Markup Rules</a>
+        <a class="acct-sidebar-link" onclick="showScreen('employees')"><i class="ti ti-users"></i> Team</a>
+        <div class="acct-sidebar-group">Activity</div>
+        <a class="acct-sidebar-link active" onclick="showScreen('bookings')"><i class="ti ti-book"></i> My Bookings</a>
+        <a class="acct-sidebar-link" onclick="showScreen('pnl')"><i class="ti ti-chart-bar"></i> Earnings (P&amp;L)</a>
+      </aside>
 
-        <div class="bookings-main">
-          <div class="bookings-header">
-            <div>
-              <h1>My Bookings</h1>
-              <p class="bookings-subtitle">408 bookings total</p>
-            </div>
-            <div class="bookings-actions-top">
-              <button class="btn-outline">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
-                Export CSV
-              </button>
-              <button class="btn-primary" onclick="showScreen('home')">Browse Hotels</button>
-              <div class="change-callout" data-change="3.6">
-                <span class="change-badge">NEW</span>
-                Export Bookings button added for B2B operations.
-              </div>
-            </div>
+      <main class="acct-content">
+        <div class="acct-header-row">
+          <div>
+            <h1 class="acct-title">My Bookings</h1>
+            <p class="acct-sub">408 bookings total · filter by status, hotel, or date range.</p>
           </div>
-
-          <div class="bookings-filters">
-            <input type="text" placeholder="Search by reference or hotel name..." class="bookings-search">
-            <select class="bookings-filter-select">
-              <option>All Statuses</option>
-              <option>Confirmed</option>
-              <option>Cancelled</option>
-              <option>Pending</option>
-            </select>
-            <input type="date" class="bookings-filter-select" placeholder="Travel date from">
-            <input type="date" class="bookings-filter-select" placeholder="Travel date to">
-            <div class="change-callout" data-change="3.6b">
-              <span class="change-badge">NEW</span>
-              Added travel date filter per review requirements.
-            </div>
+          <div style="display:flex; gap:10px;">
+            <button class="btn-outline" onclick="bookingsExportCsv()"><i class="ti ti-download"></i> Export CSV</button>
+            <button class="btn-primary" onclick="showScreen('home')">Browse Hotels</button>
           </div>
-
-          <div id="bookings-list-container"></div>
         </div>
-      </div>
+
+        <div class="bookings-filters">
+          <input type="text" placeholder="Search by reference or hotel name..." class="bookings-search">
+          <select class="bookings-filter-select">
+            <option>All Statuses</option>
+            <option>Confirmed</option>
+            <option>Cancelled</option>
+            <option>Pending</option>
+          </select>
+          <input type="date" class="bookings-filter-select">
+          <input type="date" class="bookings-filter-select">
+        </div>
+
+        <div id="bookings-list-container"></div>
+      </main>
     </div>
   </div>
 
@@ -1950,7 +1947,7 @@
         <div class="rs-hotel-meta">
           <div class="rs-hotel-stars">★★★★★</div>
           <h1 class="rs-hotel-name">Iberostar Grand Packard</h1>
-          <p class="rs-hotel-loc">📍 Paseo del Prado, Old Havana, Cuba</p>
+          <p class="rs-hotel-loc"><i class="ti ti-map-pin"></i> Paseo del Prado, Old Havana, Cuba</p>
         </div>
         <div class="rs-hotel-score">
           <div class="rs-score-num">4.6</div>
@@ -1962,7 +1959,7 @@
       <div class="rs-filter-row">
         <div class="rs-filter-title">Available Rooms <span class="rs-count-badge">12 options</span></div>
         <div class="rs-filter-controls">
-          <input type="text" class="rs-filter-search" placeholder="🔍 Search rooms by name...">
+          <input type="text" class="rs-filter-search" placeholder="Search rooms by name...">
           <select class="rs-filter-sort">
             <option>Price: Low to High</option>
             <option>Price: High to Low</option>
@@ -1987,8 +1984,8 @@
           <div class="rs-room-thumb" style="background-image:url('https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=240')"></div>
           <div class="rs-room-body">
             <div class="rs-room-amenities">
-              <span class="rs-amen">🛏 King Bed</span>
-              <span class="rs-amen">👥 Max 2 guests</span>
+              <span class="rs-amen"><i class="ti ti-bed"></i> King Bed</span>
+              <span class="rs-amen"><i class="ti ti-users"></i> Max 2 guests</span>
               <span class="rs-amen">✓ Free WiFi</span>
               <span class="rs-amen">✓ Sea view</span>
             </div>
@@ -1998,9 +1995,14 @@
                 <span class="rs-cancel-badge rs-cancel-ok">✓ Cancellable until Mar 20</span>
               </div>
               <div class="rs-rate-price">
+                <div class="rs-ergos-cost" title="What your agency pays Ergos for this room. Your customer pays the price below. Visible to agency staff only.">
+                  <span class="rs-ergos-label">Your cost</span>
+                  <span class="rs-ergos-info" aria-label="cost info">ⓘ</span>
+                  <span class="rs-ergos-amount">USD 412</span>
+                </div>
                 <div class="rs-price-label">Total Client Price</div>
                 <div class="rs-price-amount">USD 484</div>
-                <div class="rs-price-caption">total for 2 nights</div>
+                <div class="rs-price-caption">total for 2 nights · 17.5% markup</div>
               </div>
               <button class="rs-book-btn" onclick="showScreen('guest')">Book →</button>
             </div>
@@ -2010,9 +2012,14 @@
                 <span class="rs-cancel-badge rs-cancel-warn">⊘ Non-refundable</span>
               </div>
               <div class="rs-rate-price">
+                <div class="rs-ergos-cost" title="What your agency pays Ergos for this room. Your customer pays the price below. Visible to agency staff only.">
+                  <span class="rs-ergos-label">Your cost</span>
+                  <span class="rs-ergos-info" aria-label="cost info">ⓘ</span>
+                  <span class="rs-ergos-amount">USD 348</span>
+                </div>
                 <div class="rs-price-label">Total Client Price</div>
                 <div class="rs-price-amount">USD 412</div>
-                <div class="rs-price-caption">total for 2 nights</div>
+                <div class="rs-price-caption">total for 2 nights · 18.4% markup</div>
               </div>
               <button class="rs-book-btn" onclick="showScreen('guest')">Book →</button>
             </div>
@@ -2031,8 +2038,8 @@
           <div class="rs-room-thumb" style="background-image:url('https://images.unsplash.com/photo-1591088398332-8a7791972843?w=240')"></div>
           <div class="rs-room-body">
             <div class="rs-room-amenities">
-              <span class="rs-amen">🛏 King Bed + Sofa</span>
-              <span class="rs-amen">👥 Max 3 guests</span>
+              <span class="rs-amen"><i class="ti ti-bed"></i> King Bed + Sofa</span>
+              <span class="rs-amen"><i class="ti ti-users"></i> Max 3 guests</span>
               <span class="rs-amen">✓ Living area</span>
               <span class="rs-amen">✓ Balcony</span>
             </div>
@@ -2042,9 +2049,14 @@
                 <span class="rs-cancel-badge rs-cancel-ok">✓ Cancellable until Mar 22</span>
               </div>
               <div class="rs-rate-price">
+                <div class="rs-ergos-cost" title="What your agency pays Ergos for this room. Your customer pays the price below. Visible to agency staff only.">
+                  <span class="rs-ergos-label">Your cost</span>
+                  <span class="rs-ergos-info" aria-label="cost info">ⓘ</span>
+                  <span class="rs-ergos-amount">USD 575</span>
+                </div>
                 <div class="rs-price-label">Total Client Price</div>
                 <div class="rs-price-amount">USD 678</div>
-                <div class="rs-price-caption">total for 2 nights</div>
+                <div class="rs-price-caption">total for 2 nights · 17.9% markup</div>
               </div>
               <button class="rs-book-btn" onclick="showScreen('guest')">Book →</button>
             </div>
@@ -2060,6 +2072,189 @@
 
   <!-- ========== ACCOUNT SHELL TEMPLATE (used by 4 screens) ========== -->
   <!-- Sidebar nav reused via .acct-shell. Active item set per-screen.   -->
+
+  <!-- ========== SCREEN: MARKUP RULES (/markup-rules) — A1 ========== -->
+  <div class="screen" id="screen-markup-rules">
+    <nav class="navbar">
+      <div class="nav-left">
+        <div class="brand"><div class="brand-icon">EC</div><span class="brand-name">Ergos Continental</span></div>
+        <a href="#" class="nav-link" onclick="showScreen('home')">Home</a>
+        <a href="#" class="nav-link" onclick="showScreen('bookings')">My Bookings</a>
+      </div>
+      <div class="nav-right">
+        <span class="nav-greeting">Good afternoon, Demo Agency</span>
+        <div class="avatar">DA</div>
+      </div>
+    </nav>
+
+    <div class="acct-shell">
+      <aside class="acct-sidebar">
+        <div class="acct-sidebar-head">My Account</div>
+        <div class="acct-sidebar-group">Personal</div>
+        <a class="acct-sidebar-link" onclick="showScreen('profile-info')"><i class="ti ti-user"></i> Account Info</a>
+        <a class="acct-sidebar-link" onclick="showScreen('update-password')"><i class="ti ti-lock"></i> Change Password</a>
+        <a class="acct-sidebar-link" onclick="showScreen('passkeys')"><i class="ti ti-key"></i> Passkeys</a>
+        <div class="acct-sidebar-group">Workspace</div>
+        <a class="acct-sidebar-link active" onclick="showScreen('markup-rules')"><i class="ti ti-adjustments-dollar"></i> Markup Rules</a>
+        <a class="acct-sidebar-link" onclick="showScreen('employees')"><i class="ti ti-users"></i> Team</a>
+        <div class="acct-sidebar-group">Activity</div>
+        <a class="acct-sidebar-link" onclick="showScreen('bookings')"><i class="ti ti-book"></i> My Bookings</a>
+        <a class="acct-sidebar-link" onclick="showScreen('pnl')"><i class="ti ti-chart-bar"></i> Earnings (P&amp;L)</a>
+      </aside>
+
+      <main class="acct-content">
+        <div class="acct-header-row">
+          <div>
+            <h1 class="acct-title">Markup Rules</h1>
+            <p class="acct-sub">Set markup over Ergos's wholesale price by <strong>chain · country · category</strong> or per individual hotel. The most specific rule for a hotel wins.</p>
+          </div>
+          <button class="btn-primary" onclick="mrOpenDrawer()">+ Add rule</button>
+        </div>
+
+        <!-- Cascade preview widget -->
+        <div class="mr-preview-card">
+          <div class="mr-preview-head">
+            <span class="mr-preview-icon"><i class="ti ti-search"></i></span>
+            <div style="flex:1">
+              <div class="mr-preview-title">Cascade preview</div>
+              <p class="mr-preview-sub">Pick a hotel to see which rule applies and what your customer would pay on a $200 supplier-net booking.</p>
+            </div>
+            <select id="mr-preview-hotel" class="mr-preview-select" onchange="mrPreviewUpdate()">
+              <option value="iberostar-grand-packard">Iberostar Grand Packard · Cuba</option>
+              <option value="melia-las-antillas">Meliá Las Antillas · Cuba</option>
+              <option value="hyatt-ziva-cap-cana">Hyatt Ziva Cap Cana · Dominican Republic</option>
+              <option value="catalonia-royal-bavaro">Catalonia Royal Bávaro · Dominican Republic</option>
+              <option value="paradores-leon">Parador de León · Spain</option>
+            </select>
+          </div>
+          <div class="mr-preview-cascade" id="mr-preview-cascade">
+            <!-- Filled by mrPreviewUpdate() on screen show -->
+          </div>
+        </div>
+
+        <!-- Default markup card -->
+        <div class="acct-card acct-card-markup">
+          <div class="acct-card-head"><span class="acct-card-icon"><i class="ti ti-coin"></i></span><h3>Default markup <span class="mr-tier-badge mr-tier-default"><i class="ti ti-asterisk"></i> Tier 5 — catch-all</span></h3></div>
+          <p class="acct-help">Applied to any hotel not matched by a more-specific rule below. Whole-percent integers, 0–200%.</p>
+          <div class="acct-markup-row">
+            <div class="acct-field" style="max-width:240px">
+              <label>Default markup over Ergos price (%)</label>
+              <div class="acct-input-suffix">
+                <input type="number" id="mr-default-input" value="15" min="0" max="200" step="1">
+                <span class="suffix">%</span>
+              </div>
+            </div>
+            <button class="btn-primary" onclick="mrSaveDefault()">Save default</button>
+          </div>
+        </div>
+
+        <!-- Tier 4: Chain rules -->
+        <div class="mr-tier-card">
+          <div class="mr-tier-head">
+            <div>
+              <h3><i class="ti ti-building-skyscraper tier-icon"></i>Chain rules <span class="mr-tier-badge mr-tier-chain"><i class="ti ti-building-skyscraper"></i> Tier 4 — brand</span></h3>
+              <p class="acct-help" style="margin-top:2px">Applied to every hotel in this brand. Hyatt's full Caribbean portfolio · Iberostar's premium tier · etc.</p>
+            </div>
+            <button class="mr-tier-add" onclick="mrOpenDrawer({type:'chain'})"><i class="ti ti-plus"></i> Chain</button>
+          </div>
+          <table class="mr-table" id="mr-table-chain"><tbody></tbody></table>
+        </div>
+
+        <!-- Tier 3: Country rules -->
+        <div class="mr-tier-card">
+          <div class="mr-tier-head">
+            <div>
+              <h3><i class="ti ti-world tier-icon"></i>Country rules <span class="mr-tier-badge mr-tier-country"><i class="ti ti-world"></i> Tier 3 — geographic</span></h3>
+              <p class="acct-help" style="margin-top:2px">Applied to every hotel in this country. 100% catalog coverage — every hotel has a country.</p>
+            </div>
+            <button class="mr-tier-add" onclick="mrOpenDrawer({type:'country'})"><i class="ti ti-plus"></i> Country</button>
+          </div>
+          <table class="mr-table" id="mr-table-country"><tbody></tbody></table>
+        </div>
+
+        <!-- Tier 2: Category rules -->
+        <div class="mr-tier-card">
+          <div class="mr-tier-head">
+            <div>
+              <h3><i class="ti ti-star tier-icon"></i>Category rules <span class="mr-tier-badge mr-tier-category"><i class="ti ti-star"></i> Tier 2 — property type</span></h3>
+              <p class="acct-help" style="margin-top:2px">Applied by star rating + property attributes. Partial coverage — some hotels haven't been graded yet.</p>
+            </div>
+            <button class="mr-tier-add" onclick="mrOpenDrawer({type:'category'})"><i class="ti ti-plus"></i> Category</button>
+          </div>
+          <table class="mr-table" id="mr-table-category"><tbody></tbody></table>
+        </div>
+
+        <!-- Tier 1: Per-hotel overrides -->
+        <div class="mr-tier-card">
+          <div class="mr-tier-head">
+            <div>
+              <h3><i class="ti ti-bed tier-icon"></i>Per-hotel overrides <span class="mr-tier-badge mr-tier-hotel"><i class="ti ti-bed"></i> Tier 1 — most specific (wins)</span></h3>
+              <p class="acct-help" style="margin-top:2px">Surgical: pin a markup for one specific hotel. Beats every rule above.</p>
+            </div>
+            <button class="mr-tier-add" onclick="mrOpenDrawer({type:'hotel'})"><i class="ti ti-plus"></i> Hotel</button>
+          </div>
+          <input type="text" class="mr-search" placeholder="Filter overrides by hotel name…" oninput="mrFilterRules(this.value)" style="margin-bottom:8px">
+          <table class="mr-table" id="mr-table-hotel"><tbody></tbody></table>
+          <div class="mr-audit-note">
+            <span class="mr-audit-icon"><i class="ti ti-shield-check"></i></span>
+            Every create / edit / delete is audited with timestamp + user. View the full audit trail in <a onclick="showScreen('pnl')" style="color:#0d8a7f;cursor:pointer">P&amp;L → Audit</a>.
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- Drawer: Add / Edit rule (type-aware) -->
+    <div class="mr-drawer" id="mr-create-drawer">
+      <div class="mr-drawer-overlay" onclick="mrCloseDrawer()"></div>
+      <div class="mr-drawer-panel">
+        <div class="mr-drawer-head">
+          <h3 id="mr-drawer-title">Add rule</h3>
+          <button class="mr-icon-btn" onclick="mrCloseDrawer()"><i class="ti ti-x"></i></button>
+        </div>
+        <div class="mr-drawer-body">
+          <div class="acct-field">
+            <label>Rule type</label>
+            <div class="mr-type-toggle" id="mr-type-toggle">
+              <button class="mr-type-btn" data-type="chain" onclick="mrSetType('chain')"><i class="ti ti-building-skyscraper"></i> Chain</button>
+              <button class="mr-type-btn" data-type="country" onclick="mrSetType('country')"><i class="ti ti-world"></i> Country</button>
+              <button class="mr-type-btn" data-type="category" onclick="mrSetType('category')"><i class="ti ti-star"></i> Category</button>
+              <button class="mr-type-btn" data-type="hotel" onclick="mrSetType('hotel')"><i class="ti ti-bed"></i> Hotel</button>
+            </div>
+            <p class="acct-help" id="mr-type-help">Pick the granularity. Hotel beats Category beats Country beats Chain beats Default.</p>
+          </div>
+
+          <div class="acct-field">
+            <label id="mr-target-label">Target</label>
+            <select id="mr-target-select" onchange="mrCoverageUpdate()"></select>
+            <p class="acct-help" id="mr-target-help">Select what this rule applies to.</p>
+          </div>
+
+          <!-- Coverage badge — live "applies to N hotels" -->
+          <div class="mr-coverage" id="mr-coverage">
+            <!-- Filled by mrCoverageUpdate() -->
+          </div>
+
+          <div class="acct-field" style="max-width:240px">
+            <label>Markup %</label>
+            <div class="acct-input-suffix">
+              <input type="number" id="mr-pct-input" value="18" min="0" max="200" step="1">
+              <span class="suffix">%</span>
+            </div>
+            <p class="acct-help">Whole-percent integer 0–200. Compared against your default (<span id="mr-default-ref">15%</span>).</p>
+          </div>
+
+          <div class="acct-field">
+            <label>Note (optional)</label>
+            <textarea id="mr-note-input" rows="3" placeholder="Why this rule? (e.g. premium positioning, partnership rate, brand contract)"></textarea>
+          </div>
+        </div>
+        <div class="mr-drawer-foot">
+          <button class="btn-secondary" onclick="mrCloseDrawer()">Cancel</button>
+          <button class="btn-primary" onclick="mrSaveRule()">Save rule</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <!-- ========== SCREEN: PROFILE INFO (/profile-info) ========== -->
   <div class="screen" id="screen-profile-info">
@@ -2078,12 +2273,16 @@
     <div class="acct-shell">
       <aside class="acct-sidebar">
         <div class="acct-sidebar-head">My Account</div>
-        <a class="acct-sidebar-link active" onclick="showScreen('profile-info')">👤 Account Info</a>
-        <a class="acct-sidebar-link" onclick="showScreen('employees')">👥 User Management</a>
-        <a class="acct-sidebar-link" onclick="showScreen('update-password')">🔒 Change Password</a>
-        <a class="acct-sidebar-link" onclick="showScreen('passkeys')">🔑 Passkeys</a>
-        <a class="acct-sidebar-link" onclick="showScreen('bookings')">📚 My Bookings</a>
-        <a class="acct-sidebar-link" onclick="showScreen('pnl')">📊 My Earnings (P&amp;L)</a>
+        <div class="acct-sidebar-group">Personal</div>
+        <a class="acct-sidebar-link active" onclick="showScreen('profile-info')"><i class="ti ti-user"></i> Account Info</a>
+        <a class="acct-sidebar-link" onclick="showScreen('update-password')"><i class="ti ti-lock"></i> Change Password</a>
+        <a class="acct-sidebar-link" onclick="showScreen('passkeys')"><i class="ti ti-key"></i> Passkeys</a>
+        <div class="acct-sidebar-group">Workspace</div>
+        <a class="acct-sidebar-link" onclick="showScreen('markup-rules')"><i class="ti ti-adjustments-dollar"></i> Markup Rules</a>
+        <a class="acct-sidebar-link" onclick="showScreen('employees')"><i class="ti ti-users"></i> Team</a>
+        <div class="acct-sidebar-group">Activity</div>
+        <a class="acct-sidebar-link" onclick="showScreen('bookings')"><i class="ti ti-book"></i> My Bookings</a>
+        <a class="acct-sidebar-link" onclick="showScreen('pnl')"><i class="ti ti-chart-bar"></i> Earnings (P&amp;L)</a>
       </aside>
 
       <main class="acct-content">
@@ -2092,11 +2291,11 @@
             <h1 class="acct-title">Profile Information</h1>
             <p class="acct-sub">Your account details and agency preferences.</p>
           </div>
-          <button class="btn-primary">✎ Edit Profile</button>
+          <button class="btn-primary" onclick="profileToggleEdit(this)"><i class="ti ti-edit"></i> Edit Profile</button>
         </div>
 
         <div class="acct-avatar-block">
-          <div class="acct-big-avatar">👤</div>
+          <div class="acct-big-avatar"><i class="ti ti-user"></i></div>
         </div>
 
         <div class="acct-form-grid">
@@ -2125,7 +2324,7 @@
 
         <!-- Pricing & Markup card -->
         <div class="acct-card acct-card-markup">
-          <div class="acct-card-head"><span class="acct-card-icon">💰</span><h3>Pricing &amp; Markup</h3></div>
+          <div class="acct-card-head"><span class="acct-card-icon"><i class="ti ti-coin"></i></span><h3>Pricing &amp; Markup</h3></div>
           <p class="acct-help">Set the default markup over Ergos's wholesale price that applies to every search result.</p>
           <div class="acct-markup-row">
             <div class="acct-field" style="max-width:240px">
@@ -2135,7 +2334,7 @@
                 <span class="suffix">%</span>
               </div>
             </div>
-            <button class="btn-primary">Save markup</button>
+            <button class="btn-primary" onclick="profileSaveDefaultMarkup(this)">Save markup</button>
           </div>
           <div class="acct-help-card">
             <strong>How your earnings work →</strong>
@@ -2164,12 +2363,16 @@
     <div class="acct-shell">
       <aside class="acct-sidebar">
         <div class="acct-sidebar-head">My Account</div>
-        <a class="acct-sidebar-link" onclick="showScreen('profile-info')">👤 Account Info</a>
-        <a class="acct-sidebar-link" onclick="showScreen('employees')">👥 User Management</a>
-        <a class="acct-sidebar-link active" onclick="showScreen('update-password')">🔒 Change Password</a>
-        <a class="acct-sidebar-link" onclick="showScreen('passkeys')">🔑 Passkeys</a>
-        <a class="acct-sidebar-link" onclick="showScreen('bookings')">📚 My Bookings</a>
-        <a class="acct-sidebar-link" onclick="showScreen('pnl')">📊 My Earnings (P&amp;L)</a>
+        <div class="acct-sidebar-group">Personal</div>
+        <a class="acct-sidebar-link" onclick="showScreen('profile-info')"><i class="ti ti-user"></i> Account Info</a>
+        <a class="acct-sidebar-link active" onclick="showScreen('update-password')"><i class="ti ti-lock"></i> Change Password</a>
+        <a class="acct-sidebar-link" onclick="showScreen('passkeys')"><i class="ti ti-key"></i> Passkeys</a>
+        <div class="acct-sidebar-group">Workspace</div>
+        <a class="acct-sidebar-link" onclick="showScreen('markup-rules')"><i class="ti ti-adjustments-dollar"></i> Markup Rules</a>
+        <a class="acct-sidebar-link" onclick="showScreen('employees')"><i class="ti ti-users"></i> Team</a>
+        <div class="acct-sidebar-group">Activity</div>
+        <a class="acct-sidebar-link" onclick="showScreen('bookings')"><i class="ti ti-book"></i> My Bookings</a>
+        <a class="acct-sidebar-link" onclick="showScreen('pnl')"><i class="ti ti-chart-bar"></i> Earnings (P&amp;L)</a>
       </aside>
 
       <main class="acct-content">
@@ -2178,20 +2381,20 @@
             <h1 class="acct-title">Security Settings</h1>
             <p class="acct-sub">Keep your account secure with a strong, up-to-date password.</p>
           </div>
-          <div class="acct-icon-circle">🛡</div>
+          <div class="acct-icon-circle"><i class="ti ti-shield-check"></i></div>
         </div>
 
         <div class="cp-grid">
           <aside class="cp-info">
             <div class="cp-info-row">
-              <div class="cp-info-icon">🔐</div>
+              <div class="cp-info-icon"><i class="ti ti-lock-square"></i></div>
               <div>
                 <strong>Strong Password</strong>
                 <p>Use at least 8 characters with a mix of letters, numbers, and symbols.</p>
               </div>
             </div>
             <div class="cp-info-row">
-              <div class="cp-info-icon">🔄</div>
+              <div class="cp-info-icon"><i class="ti ti-refresh"></i></div>
               <div>
                 <strong>Regular Updates</strong>
                 <p>Change your password every 90 days. Never reuse old passwords.</p>
@@ -2216,7 +2419,7 @@
               <label>Confirm New Password</label>
               <input type="password" value="••••••••••••••">
             </div>
-            <button type="button" class="btn-primary" style="margin-top:8px">Update Password</button>
+            <button type="button" class="btn-primary" style="margin-top:8px" onclick="updatePasswordSubmit()">Update Password</button>
           </form>
         </div>
       </main>
@@ -2240,12 +2443,16 @@
     <div class="acct-shell">
       <aside class="acct-sidebar">
         <div class="acct-sidebar-head">My Account</div>
-        <a class="acct-sidebar-link" onclick="showScreen('profile-info')">👤 Account Info</a>
-        <a class="acct-sidebar-link active" onclick="showScreen('employees')">👥 User Management</a>
-        <a class="acct-sidebar-link" onclick="showScreen('update-password')">🔒 Change Password</a>
-        <a class="acct-sidebar-link" onclick="showScreen('passkeys')">🔑 Passkeys</a>
-        <a class="acct-sidebar-link" onclick="showScreen('bookings')">📚 My Bookings</a>
-        <a class="acct-sidebar-link" onclick="showScreen('pnl')">📊 My Earnings (P&amp;L)</a>
+        <div class="acct-sidebar-group">Personal</div>
+        <a class="acct-sidebar-link" onclick="showScreen('profile-info')"><i class="ti ti-user"></i> Account Info</a>
+        <a class="acct-sidebar-link" onclick="showScreen('update-password')"><i class="ti ti-lock"></i> Change Password</a>
+        <a class="acct-sidebar-link" onclick="showScreen('passkeys')"><i class="ti ti-key"></i> Passkeys</a>
+        <div class="acct-sidebar-group">Workspace</div>
+        <a class="acct-sidebar-link" onclick="showScreen('markup-rules')"><i class="ti ti-adjustments-dollar"></i> Markup Rules</a>
+        <a class="acct-sidebar-link active" onclick="showScreen('employees')"><i class="ti ti-users"></i> Team</a>
+        <div class="acct-sidebar-group">Activity</div>
+        <a class="acct-sidebar-link" onclick="showScreen('bookings')"><i class="ti ti-book"></i> My Bookings</a>
+        <a class="acct-sidebar-link" onclick="showScreen('pnl')"><i class="ti ti-chart-bar"></i> Earnings (P&amp;L)</a>
       </aside>
 
       <main class="acct-content">
@@ -2254,20 +2461,20 @@
             <h1 class="acct-title">User Management</h1>
             <p class="acct-sub">Manage your agency's team — employees and pending invitations.</p>
           </div>
-          <button class="btn-primary">+ Invite Employee</button>
+          <button class="btn-primary" onclick="inviteEmployee()">+ Invite Employee</button>
         </div>
 
         <!-- Stats grid -->
         <div class="emp-stats">
           <div class="emp-stat">
-            <div class="emp-stat-icon">👥</div>
+            <div class="emp-stat-icon"><i class="ti ti-users"></i></div>
             <div>
               <div class="emp-stat-label">Active Employees</div>
               <div class="emp-stat-value">7</div>
             </div>
           </div>
           <div class="emp-stat">
-            <div class="emp-stat-icon">🕒</div>
+            <div class="emp-stat-icon"><i class="ti ti-clock"></i></div>
             <div>
               <div class="emp-stat-label">Pending Invitations</div>
               <div class="emp-stat-value">2</div>
@@ -2284,8 +2491,8 @@
 
         <!-- Tabs -->
         <div class="emp-tabs">
-          <button class="emp-tab active">Employees (7)</button>
-          <button class="emp-tab">Invitations (2)</button>
+          <button class="emp-tab active" onclick="empSwitchTab(this, 'employees')">Employees (7)</button>
+          <button class="emp-tab" onclick="empSwitchTab(this, 'invitations')">Invitations (2)</button>
         </div>
 
         <!-- Table -->
@@ -2324,12 +2531,16 @@
     <div class="acct-shell">
       <aside class="acct-sidebar">
         <div class="acct-sidebar-head">My Account</div>
-        <a class="acct-sidebar-link" onclick="showScreen('profile-info')">👤 Account Info</a>
-        <a class="acct-sidebar-link" onclick="showScreen('employees')">👥 User Management</a>
-        <a class="acct-sidebar-link" onclick="showScreen('update-password')">🔒 Change Password</a>
-        <a class="acct-sidebar-link active" onclick="showScreen('passkeys')">🔑 Passkeys</a>
-        <a class="acct-sidebar-link" onclick="showScreen('bookings')">📚 My Bookings</a>
-        <a class="acct-sidebar-link" onclick="showScreen('pnl')">📊 My Earnings (P&amp;L)</a>
+        <div class="acct-sidebar-group">Personal</div>
+        <a class="acct-sidebar-link" onclick="showScreen('profile-info')"><i class="ti ti-user"></i> Account Info</a>
+        <a class="acct-sidebar-link" onclick="showScreen('update-password')"><i class="ti ti-lock"></i> Change Password</a>
+        <a class="acct-sidebar-link active" onclick="showScreen('passkeys')"><i class="ti ti-key"></i> Passkeys</a>
+        <div class="acct-sidebar-group">Workspace</div>
+        <a class="acct-sidebar-link" onclick="showScreen('markup-rules')"><i class="ti ti-adjustments-dollar"></i> Markup Rules</a>
+        <a class="acct-sidebar-link" onclick="showScreen('employees')"><i class="ti ti-users"></i> Team</a>
+        <div class="acct-sidebar-group">Activity</div>
+        <a class="acct-sidebar-link" onclick="showScreen('bookings')"><i class="ti ti-book"></i> My Bookings</a>
+        <a class="acct-sidebar-link" onclick="showScreen('pnl')"><i class="ti ti-chart-bar"></i> Earnings (P&amp;L)</a>
       </aside>
 
       <main class="acct-content">
@@ -2338,11 +2549,11 @@
             <h1 class="acct-title">Passkeys</h1>
             <p class="acct-sub">Manage your passkeys for secure, passwordless sign-in.</p>
           </div>
-          <button class="btn-primary">+ Add Passkey</button>
+          <button class="btn-primary" onclick="addPasskey()">+ Add Passkey</button>
         </div>
 
         <div class="pk-info-paper">
-          <div class="pk-info-icon">🛡</div>
+          <div class="pk-info-icon"><i class="ti ti-shield-check"></i></div>
           <div>
             <strong>What are Passkeys?</strong>
             <p>Passkeys replace passwords with the device's fingerprint, face, or PIN. They can't be phished or reused, and signing in is faster — one tap and you're in.</p>
@@ -2356,9 +2567,9 @@
               <tr><th>Device</th><th>Created</th><th>Last Used</th><th>Actions</th></tr>
             </thead>
             <tbody>
-              <tr><td>📱 iPhone 15 Pro</td><td>2026-04-12</td><td>2026-05-29 14:22</td><td><button class="pk-trash">🗑</button></td></tr>
-              <tr><td>💻 MacBook Pro</td><td>2026-03-08</td><td>2026-05-28 09:15</td><td><button class="pk-trash">🗑</button></td></tr>
-              <tr><td>🔑 YubiKey 5C</td><td>2026-02-21</td><td><span class="pk-never">Never used</span></td><td><button class="pk-trash">🗑</button></td></tr>
+              <tr><td><i class="ti ti-device-mobile"></i> iPhone 15 Pro</td><td>2026-04-12</td><td>2026-05-29 14:22</td><td><button class="pk-trash" onclick="deletePasskey(this)"><i class="ti ti-trash"></i></button></td></tr>
+              <tr><td><i class="ti ti-device-laptop"></i> MacBook Pro</td><td>2026-03-08</td><td>2026-05-28 09:15</td><td><button class="pk-trash" onclick="deletePasskey(this)"><i class="ti ti-trash"></i></button></td></tr>
+              <tr><td><i class="ti ti-key"></i> YubiKey 5C</td><td>2026-02-21</td><td><span class="pk-never">Never used</span></td><td><button class="pk-trash" onclick="deletePasskey(this)"><i class="ti ti-trash"></i></button></td></tr>
             </tbody>
           </table>
         </div>
@@ -2380,14 +2591,42 @@
       </div>
     </nav>
 
-    <div class="page-container">
+    <div class="acct-shell">
+      <aside class="acct-sidebar">
+        <div class="acct-sidebar-head">My Account</div>
+        <div class="acct-sidebar-group">Personal</div>
+        <a class="acct-sidebar-link" onclick="showScreen('profile-info')"><i class="ti ti-user"></i> Account Info</a>
+        <a class="acct-sidebar-link" onclick="showScreen('update-password')"><i class="ti ti-lock"></i> Change Password</a>
+        <a class="acct-sidebar-link" onclick="showScreen('passkeys')"><i class="ti ti-key"></i> Passkeys</a>
+        <div class="acct-sidebar-group">Workspace</div>
+        <a class="acct-sidebar-link" onclick="showScreen('markup-rules')"><i class="ti ti-adjustments-dollar"></i> Markup Rules</a>
+        <a class="acct-sidebar-link" onclick="showScreen('employees')"><i class="ti ti-users"></i> Team</a>
+        <div class="acct-sidebar-group">Activity</div>
+        <a class="acct-sidebar-link" onclick="showScreen('bookings')"><i class="ti ti-book"></i> My Bookings</a>
+        <a class="acct-sidebar-link active" onclick="showScreen('pnl')"><i class="ti ti-chart-bar"></i> Earnings (P&amp;L)</a>
+      </aside>
+
+      <main class="acct-content">
+      <!-- B2: Monthly remittance banner -->
+      <div class="rem-banner">
+        <div class="rem-banner-icon"><i class="ti ti-clock-hour-4"></i></div>
+        <div class="rem-banner-body">
+          <div class="rem-banner-title">Remit <strong>USD 4,820</strong> to Ergos by <strong>Jun 15, 2026</strong></div>
+          <div class="rem-banner-sub">For closed period May 1 – May 31. <a onclick="document.getElementById('rem-history').scrollIntoView({behavior:'smooth'})" style="color:#0d8a7f;cursor:pointer;font-weight:600">View remittance history ↓</a></div>
+        </div>
+        <span class="rem-banner-status rem-banner-status-pending">Pending</span>
+      </div>
+
       <div class="pnl-header-row">
         <div>
           <h1 class="pnl-title">My Earnings (P&amp;L)</h1>
           <p class="pnl-sub">Markup income (your own pricing) + Ergos rebate income per booking. Updated nightly.</p>
           <p class="pnl-sub pnl-sort-hint">Click any column header to sort. Sort applies across the full date range.</p>
         </div>
-        <button class="pnl-refresh">↻ Refresh</button>
+        <div class="pnl-header-actions">
+          <button class="pnl-refresh" onclick="pnlRefresh()">↻ Refresh</button>
+          <button class="pnl-csv" title="Export current view as CSV" onclick="pnlExportCsv()">⬇ Export CSV</button>
+        </div>
       </div>
 
       <div class="pnl-date-filter">
@@ -2403,7 +2642,7 @@
 
       <div class="pnl-stats">
         <div class="pnl-stat pnl-stat-positive">
-          <div class="pnl-stat-icon">📊</div>
+          <div class="pnl-stat-icon"><i class="ti ti-chart-bar"></i></div>
           <div>
             <div class="pnl-stat-label">Total Profit</div>
             <div class="pnl-stat-value">USD 14,820</div>
@@ -2411,7 +2650,7 @@
           </div>
         </div>
         <div class="pnl-stat">
-          <div class="pnl-stat-icon">💰</div>
+          <div class="pnl-stat-icon"><i class="ti ti-coin"></i></div>
           <div>
             <div class="pnl-stat-label">Markup Income</div>
             <div class="pnl-stat-value">USD 9,180</div>
@@ -2419,7 +2658,7 @@
           </div>
         </div>
         <div class="pnl-stat pnl-stat-info">
-          <div class="pnl-stat-icon">💵</div>
+          <div class="pnl-stat-icon"><i class="ti ti-cash"></i></div>
           <div>
             <div class="pnl-stat-label">Rebate Income</div>
             <div class="pnl-stat-value">USD 5,640</div>
@@ -2427,12 +2666,111 @@
           </div>
         </div>
         <div class="pnl-stat">
-          <div class="pnl-stat-icon">🧾</div>
+          <div class="pnl-stat-icon"><i class="ti ti-receipt-2"></i></div>
           <div>
             <div class="pnl-stat-label">Bookings</div>
             <div class="pnl-stat-value">42</div>
             <div class="pnl-stat-hint">with full P&amp;L data</div>
           </div>
+        </div>
+      </div>
+
+      <!-- B1: Earnings charts -->
+      <div class="pnl-charts">
+        <div class="pnl-chart-card">
+          <div class="pnl-chart-head">
+            <h3>Daily earnings</h3>
+            <span class="pnl-chart-sub">Profit per check-in date, in the selected range</span>
+          </div>
+          <div class="pnl-chart-bars">
+            <div class="pnl-bar" style="--h:35%" data-label="Mar 5" data-val="USD 188"></div>
+            <div class="pnl-bar" style="--h:48%" data-label="Mar 12" data-val="USD 262"></div>
+            <div class="pnl-bar" style="--h:62%" data-label="Mar 19" data-val="USD 340"></div>
+            <div class="pnl-bar" style="--h:42%" data-label="Mar 26" data-val="USD 230"></div>
+            <div class="pnl-bar" style="--h:58%" data-label="Apr 2" data-val="USD 318"></div>
+            <div class="pnl-bar" style="--h:72%" data-label="Apr 9" data-val="USD 395"></div>
+            <div class="pnl-bar" style="--h:55%" data-label="Apr 16" data-val="USD 302"></div>
+            <div class="pnl-bar" style="--h:68%" data-label="Apr 23" data-val="USD 373"></div>
+            <div class="pnl-bar" style="--h:88%" data-label="Apr 30" data-val="USD 482"></div>
+            <div class="pnl-bar" style="--h:76%" data-label="May 7" data-val="USD 416"></div>
+            <div class="pnl-bar" style="--h:95%" data-label="May 14" data-val="USD 522"></div>
+            <div class="pnl-bar" style="--h:82%" data-label="May 21" data-val="USD 449"></div>
+            <div class="pnl-bar pnl-bar-current" style="--h:100%" data-label="May 28" data-val="USD 548"></div>
+          </div>
+          <div class="pnl-chart-xaxis">
+            <span>Mar 5</span><span>Apr 2</span><span>Apr 30</span><span>May 28</span>
+          </div>
+        </div>
+
+        <div class="pnl-chart-card">
+          <div class="pnl-chart-head">
+            <h3>Top hotels by profit</h3>
+            <span class="pnl-chart-sub">Top 10 + Other rollup</span>
+          </div>
+          <div class="pnl-hbar-list">
+            <div class="pnl-hbar-row"><span class="pnl-hbar-label">Iberostar Grand Packard</span><div class="pnl-hbar-track"><div class="pnl-hbar-fill" style="width:100%"></div></div><span class="pnl-hbar-val">USD 3,420</span></div>
+            <div class="pnl-hbar-row"><span class="pnl-hbar-label">Hyatt Ziva Cap Cana</span><div class="pnl-hbar-track"><div class="pnl-hbar-fill" style="width:84%"></div></div><span class="pnl-hbar-val">USD 2,875</span></div>
+            <div class="pnl-hbar-row"><span class="pnl-hbar-label">Iberostar Selection Bávaro</span><div class="pnl-hbar-track"><div class="pnl-hbar-fill" style="width:65%"></div></div><span class="pnl-hbar-val">USD 2,220</span></div>
+            <div class="pnl-hbar-row"><span class="pnl-hbar-label">Paradisus Río de Oro</span><div class="pnl-hbar-track"><div class="pnl-hbar-fill" style="width:51%"></div></div><span class="pnl-hbar-val">USD 1,748</span></div>
+            <div class="pnl-hbar-row"><span class="pnl-hbar-label">Memories Varadero</span><div class="pnl-hbar-track"><div class="pnl-hbar-fill" style="width:38%"></div></div><span class="pnl-hbar-val">USD 1,300</span></div>
+            <div class="pnl-hbar-row"><span class="pnl-hbar-label">Meliá Las Antillas</span><div class="pnl-hbar-track"><div class="pnl-hbar-fill" style="width:29%"></div></div><span class="pnl-hbar-val">USD 990</span></div>
+            <div class="pnl-hbar-row"><span class="pnl-hbar-label">RIU Palace Aruba</span><div class="pnl-hbar-track"><div class="pnl-hbar-fill" style="width:25%"></div></div><span class="pnl-hbar-val">USD 855</span></div>
+            <div class="pnl-hbar-row pnl-hbar-other"><span class="pnl-hbar-label">Other (12 hotels)</span><div class="pnl-hbar-track"><div class="pnl-hbar-fill pnl-hbar-fill-other" style="width:40%"></div></div><span class="pnl-hbar-val">USD 1,412</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- B2: Remittance history -->
+      <div class="rem-history-card" id="rem-history">
+        <div class="rem-history-head">
+          <div>
+            <h3>Remittance history</h3>
+            <p class="acct-help">What you've paid Ergos each month, and what's outstanding. Updates after each month closes.</p>
+          </div>
+          <button class="pnl-csv" onclick="remExportCsv()">⬇ Export</button>
+        </div>
+        <table class="rem-history-table">
+          <thead>
+            <tr><th>Period</th><th style="text-align:right">Amount</th><th>Due date</th><th>Status</th><th>Paid at</th><th>Reference</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>May 2026</strong><span class="rem-period-sub">May 1 – May 31</span></td>
+              <td style="text-align:right" class="rem-amt">USD 4,820</td>
+              <td>Jun 15, 2026</td>
+              <td><span class="rem-status rem-status-pending"><i class="ti ti-clock-hour-4"></i> Pending</span></td>
+              <td class="rem-mono">—</td>
+              <td class="rem-mono">—</td>
+            </tr>
+            <tr>
+              <td><strong>Apr 2026</strong><span class="rem-period-sub">Apr 1 – Apr 30</span></td>
+              <td style="text-align:right" class="rem-amt">USD 3,612</td>
+              <td>May 15, 2026</td>
+              <td><span class="rem-status rem-status-paid"><i class="ti ti-check"></i> Paid</span></td>
+              <td class="rem-mono">2026-05-12 14:22</td>
+              <td class="rem-mono">WIRE-2026-04-DEMO</td>
+            </tr>
+            <tr>
+              <td><strong>Mar 2026</strong><span class="rem-period-sub">Mar 1 – Mar 31</span></td>
+              <td style="text-align:right" class="rem-amt">USD 2,945</td>
+              <td>Apr 15, 2026</td>
+              <td><span class="rem-status rem-status-paid"><i class="ti ti-check"></i> Paid</span></td>
+              <td class="rem-mono">2026-04-14 09:05</td>
+              <td class="rem-mono">WIRE-2026-03-DEMO</td>
+            </tr>
+            <tr>
+              <td><strong>Feb 2026</strong><span class="rem-period-sub">Feb 1 – Feb 28</span></td>
+              <td style="text-align:right" class="rem-amt">USD 2,116</td>
+              <td>Mar 15, 2026</td>
+              <td><span class="rem-status rem-status-overdue"><i class="ti ti-alert-triangle"></i> Paid late</span></td>
+              <td class="rem-mono">2026-03-22 16:48</td>
+              <td class="rem-mono">WIRE-2026-02-DEMO</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="rem-notice">
+          <span class="rem-notice-icon"><i class="ti ti-bell-ringing"></i></span>
+          We'll email you 7 days before each due date. Mark "Paid" actions are recorded by Ergos staff with a wire reference; you'll see them here the next time you load this page.
         </div>
       </div>
 
@@ -2454,6 +2792,7 @@
           </tbody>
         </table>
       </div>
+      </main>
     </div>
   </div>
 
@@ -2465,9 +2804,9 @@
         <div class="auth-login-left">
           <h1 class="auth-login-headline">Your Journey Starts Here</h1>
           <p class="auth-login-desc">Curate unforgettable stays for your clients from 2,500+ handpicked hotels worldwide — with built-in commission tracking, voucher issuance, and 24/7 booking support.</p>
-          <div class="auth-feature-row"><div class="auth-feature-icon">✈</div><div><strong>Exclusive Destinations</strong><p>Access rates and inventory not available on consumer booking sites.</p></div></div>
-          <div class="auth-feature-row"><div class="auth-feature-icon">🛡</div><div><strong>Secure Booking</strong><p>End-to-end encryption + passkey sign-in. PCI-DSS compliant payment.</p></div></div>
-          <div class="auth-feature-row"><div class="auth-feature-icon">🎧</div><div><strong>24/7 Support</strong><p>Average first-response under 4 minutes, in English or Spanish.</p></div></div>
+          <div class="auth-feature-row"><div class="auth-feature-icon"><i class="ti ti-plane-tilt"></i></div><div><strong>Exclusive Destinations</strong><p>Access rates and inventory not available on consumer booking sites.</p></div></div>
+          <div class="auth-feature-row"><div class="auth-feature-icon"><i class="ti ti-shield-check"></i></div><div><strong>Secure Booking</strong><p>End-to-end encryption + passkey sign-in. PCI-DSS compliant payment.</p></div></div>
+          <div class="auth-feature-row"><div class="auth-feature-icon"><i class="ti ti-headphones"></i></div><div><strong>24/7 Support</strong><p>Average first-response under 4 minutes, in English or Spanish.</p></div></div>
         </div>
         <div class="auth-login-card">
           <h2 class="auth-card-title">Welcome Back</h2>
@@ -2476,7 +2815,7 @@
           <div class="acct-field"><label>Password</label><input type="password" placeholder="••••••••"></div>
           <button class="btn-primary auth-submit-btn" onclick="showScreen('home')">Sign In</button>
           <div class="auth-divider"><span>or</span></div>
-          <button class="btn-secondary auth-submit-btn">🔑 Sign in with Passkey</button>
+          <button class="btn-secondary auth-submit-btn" onclick="loginWithPasskey()"><i class="ti ti-key"></i> Sign in with Passkey</button>
           <div class="auth-divider"><span>OR</span></div>
           <p class="auth-foot">Need access to your account? <a onclick="showScreen('forgot-password')">Forgot your password?</a> Or contact your sales agent.</p>
         </div>
@@ -2529,7 +2868,7 @@
   <div class="screen" id="screen-register">
     <div class="auth-fullscreen auth-blue-bg">
       <div class="auth-centered-card">
-        <div class="auth-head-icon">🏪</div>
+        <div class="auth-head-icon"><i class="ti ti-building-store"></i></div>
         <h2 class="auth-card-title">Register Your Travel Agency</h2>
         <p class="auth-card-sub">Complete your registration to start booking amazing adventures for your clients!</p>
 
@@ -2559,7 +2898,7 @@
   <div class="screen" id="screen-employee-invitation">
     <div class="auth-fullscreen auth-blue-bg">
       <div class="auth-centered-card">
-        <div class="auth-head-icon">🏪</div>
+        <div class="auth-head-icon"><i class="ti ti-building-store"></i></div>
         <h2 class="auth-card-title">Join Demo Agency</h2>
         <p class="auth-card-sub">Hi Lucía! You've been invited to join <strong>Demo Agency</strong> as an <strong>Employee</strong>. Set a password to finish setting up your account.</p>
 
@@ -2620,17 +2959,17 @@
   <div class="passkey-overlay" id="passkey-overlay" role="dialog" aria-modal="true" aria-labelledby="passkey-title">
     <div class="passkey-dialog">
       <div class="passkey-head">
-        <h2 id="passkey-title">🔑 Set Up Passkey</h2>
+        <h2 id="passkey-title"><i class="ti ti-key"></i> Set Up Passkey</h2>
         <button class="passkey-close" aria-label="Close" onclick="closePasskey()">×</button>
       </div>
       <p class="passkey-lead">Passkeys are a more secure and convenient way to sign in. Use your fingerprint, face, or screen lock instead of a password.</p>
       <div class="passkey-benefits">
         <div class="passkey-benefit">
-          <div class="passkey-benefit-title">⚡ Faster Sign-ins</div>
+          <div class="passkey-benefit-title"><i class="ti ti-bolt"></i> Faster Sign-ins</div>
           <div class="passkey-benefit-body">No more typing passwords</div>
         </div>
         <div class="passkey-benefit">
-          <div class="passkey-benefit-title">🛡 Phishing Resistant</div>
+          <div class="passkey-benefit-title"><i class="ti ti-shield-check"></i>Phishing Resistant</div>
           <div class="passkey-benefit-body">Can't be stolen or reused</div>
         </div>
       </div>
@@ -2666,6 +3005,17 @@
     })();
   </script>
 
-  <script src="app.js"></script>
+  <script>
+    // Cache-bust app.js + proto-stories.js so prototype iterations don't
+    // get stuck on stale cached scripts (browsers ignore Cache-Control
+    // headers from Python's http.server, and the prototype iterates fast).
+    (function () {
+      var stamp = Date.now();
+      var s1 = document.createElement('script'); s1.src = 'app.js?v=' + stamp;
+      var s2 = document.createElement('script'); s2.src = 'proto-stories.js?v=' + stamp;
+      document.body.appendChild(s1);
+      s1.onload = function () { document.body.appendChild(s2); };
+    })();
+  </script>
 </body>
 </html>

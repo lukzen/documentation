@@ -1659,7 +1659,7 @@ $('#bulkBtn').addEventListener('click', () => {
   $('#bulkDrawer').classList.add('show');
   renderBulkDiff();
 });
-$('#fStars, #fVendor, #fBaseComm'.split(', ')).forEach(id => { $(id).addEventListener('input', renderBulkDiff); });
+'#fStars, #fVendor, #fBaseComm'.split(', ').forEach(id => { $(id).addEventListener('input', renderBulkDiff); });
 
 function bulkFiltered() {
   const s = $('#fStars').value, v = $('#fVendor').value;
