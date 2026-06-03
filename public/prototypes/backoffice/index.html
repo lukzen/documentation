@@ -7,6 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.47.0/tabler-icons.min.css">
 <link rel="stylesheet" href="styles.css">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <style>
@@ -47,6 +48,8 @@
     <button class="proto-tab" data-screen="reservations">Reservations</button>
     <button class="proto-tab" data-screen="agents">Sales Agents</button>
     <button class="proto-tab" data-screen="pricing-policy">Pricing Policy</button>
+    <button class="proto-tab" data-screen="hotel-price-breakdown">Hotel Price</button>
+    <button class="proto-tab" data-screen="finance-remittances">Remittances</button>
   </div>
   <div class="proto-toolbar-right"></div>
 </div>
@@ -78,7 +81,7 @@
         <button class="btn btn-primary btn-lg btn-block" onclick="showScreen('dashboard')">Sign in</button>
         <div class="or-sep"><span>or</span></div>
         <button class="passkey-btn" onclick="showScreen('dashboard')">
-          <span class="pk-ico">🔑</span> Sign in with passkey
+          <span class="pk-ico"><i class="ti ti-key"></i></span> Sign in with passkey
         </button>
       </div>
     </div>
@@ -204,7 +207,7 @@
     <main class="app-main">
       <div class="topbar"><button class="hamburger" onclick="toggleSidebar()" aria-label="Menu">☰</button><div class="breadcrumb"><span>Operations</span> / <span>Reservations</span></div><div class="topbar-right"><div class="avatar">AD</div></div></div>
       <div class="page">
-        <div class="page-head row"><div><h1>Reservations</h1><p class="muted">All bookings across tenants.</p></div><div class="page-head-actions"><button class="btn btn-outline" onclick="exportReservationsCSV()">⬇ Export CSV</button></div></div>
+        <div class="page-head row"><div><h1>Reservations</h1><p class="muted">All bookings across tenants.</p></div><div class="page-head-actions"><button class="btn btn-outline" onclick="exportReservationsCSV()"><i class="ti ti-download"></i> Export CSV</button></div></div>
         <div class="card"><div class="table-toolbar"><input class="t-search" placeholder="Search locator, guest, hotel…" oninput="filterTable('tbl-reservations', this.value)"><div class="t-filters"><select><option>All status</option><option>Confirmed</option><option>Pending</option><option>Cancelled</option><option>Completed</option></select></div></div><table class="tbl" id="tbl-reservations"></table><div class="pagination" id="pg-reservations"></div></div>
       </div>
     </main>
@@ -255,11 +258,11 @@
               <p class="brand-card-notes">Effective Mar 2026 – Mar 2027. All 38 linked hotels already reflect this discount — edit the chain rate to enable Apply again.</p>
             </div>
             <div class="brand-card-actions">
-              <button class="btn-icon" title="Edit Chain">✎</button>
-              <button class="btn-icon" title="Manage Hotels">🏨</button>
-              <button class="btn-icon" title="Auto-link">✨</button>
-              <button class="btn btn-sm" disabled title="No hotels need updating — all 38 linked hotels already have this discount">⚡ Up to date</button>
-              <button class="btn-icon btn-icon-danger" title="Delete">🗑</button>
+              <button class="btn-icon" title="Edit Chain"><i class="ti ti-edit"></i></button>
+              <button class="btn-icon" title="Manage Hotels"><i class="ti ti-bed"></i></button>
+              <button class="btn-icon" title="Auto-link"><i class="ti ti-sparkles"></i></button>
+              <button class="btn btn-sm" disabled title="No hotels need updating — all 38 linked hotels already have this discount"><i class="ti ti-bolt"></i> Up to date</button>
+              <button class="btn-icon btn-icon-danger" title="Delete"><i class="ti ti-trash"></i></button>
             </div>
           </div>
 
@@ -279,11 +282,11 @@
               <p class="brand-card-notes">Spanish chain. Discount applies to Resort, Selection, and Premium Gold properties. Discount was updated from 8.5% → 10.0% — 12 hotels pending sync.</p>
             </div>
             <div class="brand-card-actions">
-              <button class="btn-icon" title="Edit Chain">✎</button>
-              <button class="btn-icon" title="Manage Hotels">🏨</button>
-              <button class="btn-icon" title="Auto-link">✨</button>
-              <button class="btn btn-sm btn-primary" title="Apply 10.0% to 12 hotels whose chainDiscountPct doesn't match yet">⚡ Apply to 12 hotel(s)</button>
-              <button class="btn-icon btn-icon-danger" title="Delete">🗑</button>
+              <button class="btn-icon" title="Edit Chain"><i class="ti ti-edit"></i></button>
+              <button class="btn-icon" title="Manage Hotels"><i class="ti ti-bed"></i></button>
+              <button class="btn-icon" title="Auto-link"><i class="ti ti-sparkles"></i></button>
+              <button class="btn btn-sm btn-primary" title="Apply 10.0% to 12 hotels whose chainDiscountPct doesn't match yet"><i class="ti ti-bolt"></i> Apply to 12 hotel(s)</button>
+              <button class="btn-icon btn-icon-danger" title="Delete"><i class="ti ti-trash"></i></button>
             </div>
           </div>
 
@@ -302,11 +305,11 @@
               <p class="brand-card-notes">Contract under legal review. Discount terms not yet active in the cascade.</p>
             </div>
             <div class="brand-card-actions">
-              <button class="btn-icon" title="Edit Chain">✎</button>
-              <button class="btn-icon" title="Manage Hotels">🏨</button>
-              <button class="btn-icon" title="Auto-link">✨</button>
-              <button class="btn btn-sm" disabled>⚡ Apply (pending contract)</button>
-              <button class="btn-icon btn-icon-danger" title="Delete">🗑</button>
+              <button class="btn-icon" title="Edit Chain"><i class="ti ti-edit"></i></button>
+              <button class="btn-icon" title="Manage Hotels"><i class="ti ti-bed"></i></button>
+              <button class="btn-icon" title="Auto-link"><i class="ti ti-sparkles"></i></button>
+              <button class="btn btn-sm" disabled><i class="ti ti-bolt"></i> Apply (pending contract)</button>
+              <button class="btn-icon btn-icon-danger" title="Delete"><i class="ti ti-trash"></i></button>
             </div>
           </div>
 
@@ -325,10 +328,10 @@
               <p class="brand-card-notes">Brand grouping only — Marriott does not currently offer a chain-wide discount; rates use the GDS markup_rules cascade.</p>
             </div>
             <div class="brand-card-actions">
-              <button class="btn-icon" title="Edit Chain">✎</button>
-              <button class="btn-icon" title="Manage Hotels">🏨</button>
-              <button class="btn-icon" title="Auto-link">✨</button>
-              <button class="btn-icon btn-icon-danger" title="Delete">🗑</button>
+              <button class="btn-icon" title="Edit Chain"><i class="ti ti-edit"></i></button>
+              <button class="btn-icon" title="Manage Hotels"><i class="ti ti-bed"></i></button>
+              <button class="btn-icon" title="Auto-link"><i class="ti ti-sparkles"></i></button>
+              <button class="btn-icon btn-icon-danger" title="Delete"><i class="ti ti-trash"></i></button>
             </div>
           </div>
 
@@ -348,11 +351,11 @@
               <p class="brand-card-notes">All-inclusive Ziva and Zilara properties across Mexico and the Caribbean. All 18 hotels are in sync.</p>
             </div>
             <div class="brand-card-actions">
-              <button class="btn-icon" title="Edit Chain">✎</button>
-              <button class="btn-icon" title="Manage Hotels">🏨</button>
-              <button class="btn-icon" title="Auto-link">✨</button>
-              <button class="btn btn-sm" disabled title="No hotels need updating — all 18 linked hotels already have this discount">⚡ Up to date</button>
-              <button class="btn-icon btn-icon-danger" title="Delete">🗑</button>
+              <button class="btn-icon" title="Edit Chain"><i class="ti ti-edit"></i></button>
+              <button class="btn-icon" title="Manage Hotels"><i class="ti ti-bed"></i></button>
+              <button class="btn-icon" title="Auto-link"><i class="ti ti-sparkles"></i></button>
+              <button class="btn btn-sm" disabled title="No hotels need updating — all 18 linked hotels already have this discount"><i class="ti ti-bolt"></i> Up to date</button>
+              <button class="btn-icon btn-icon-danger" title="Delete"><i class="ti ti-trash"></i></button>
             </div>
           </div>
 
@@ -371,11 +374,11 @@
               <p class="brand-card-notes">Contract expired Feb 2026 — renewal in progress. Discount currently inactive.</p>
             </div>
             <div class="brand-card-actions">
-              <button class="btn-icon" title="Edit Chain">✎</button>
-              <button class="btn-icon" title="Manage Hotels">🏨</button>
-              <button class="btn-icon" title="Auto-link">✨</button>
-              <button class="btn btn-sm" disabled>⚡ Apply (expired)</button>
-              <button class="btn-icon btn-icon-danger" title="Delete">🗑</button>
+              <button class="btn-icon" title="Edit Chain"><i class="ti ti-edit"></i></button>
+              <button class="btn-icon" title="Manage Hotels"><i class="ti ti-bed"></i></button>
+              <button class="btn-icon" title="Auto-link"><i class="ti ti-sparkles"></i></button>
+              <button class="btn btn-sm" disabled><i class="ti ti-bolt"></i> Apply (expired)</button>
+              <button class="btn-icon btn-icon-danger" title="Delete"><i class="ti ti-trash"></i></button>
             </div>
           </div>
         </div>
@@ -402,7 +405,7 @@
             <div class="bb-field"><label>To date</label><input type="date" value="2026-05-29"></div>
             <div class="bb-field"><label>Agency ID</label><input type="text" placeholder="agency_xxx" value=""></div>
             <div class="bb-field"><label>Hotel ID / code</label><input type="text" placeholder="HT00342 or hotel_xxx" value=""></div>
-            <button class="btn btn-primary bb-search-btn">🔍 Search</button>
+            <button class="btn btn-primary bb-search-btn"><i class="ti ti-search"></i> Search</button>
           </div>
         </div>
 
@@ -503,8 +506,8 @@
             <option>Cancel Failed</option>
             <option>Status Changed</option>
           </select>
-          <input class="audit-search" placeholder="🔍 Booking ref or ID…">
-          <button class="btn-icon" title="Refresh">↻</button>
+          <input class="audit-search" placeholder="Booking ref or ID…">
+          <button class="btn-icon" title="Refresh"><i class="ti ti-refresh"></i></button>
           <span class="muted audit-count">1,247 entries</span>
         </div>
 
@@ -517,14 +520,14 @@
                 <tr><th>Timestamp</th><th>Booking Ref</th><th>Action</th><th>Status</th><th>Vendor</th><th>Result</th><th></th></tr>
               </thead>
               <tbody>
-                <tr class="audit-row audit-row-selected"><td>14:32:01</td><td class="bb-ref">ERG-014821</td><td><span class="badge badge-success">Created</span></td><td class="bb-mono">— → CONFIRMED</td><td>hotetec</td><td><span class="badge badge-success">OK</span></td><td>👁</td></tr>
-                <tr class="audit-row"><td>14:18:55</td><td class="bb-ref">ERG-014820</td><td><span class="badge badge-warning">Modified</span></td><td class="bb-mono">CONFIRMED → CONFIRMED</td><td>dingus</td><td><span class="badge badge-success">OK</span></td><td>👁</td></tr>
-                <tr class="audit-row"><td>13:55:12</td><td class="bb-ref">ERG-014812</td><td><span class="badge badge-success">Created</span></td><td class="bb-mono">— → CONFIRMED</td><td>dingus</td><td><span class="badge badge-success">OK</span></td><td>👁</td></tr>
-                <tr class="audit-row"><td>13:41:08</td><td class="bb-ref">ERG-014811</td><td><span class="badge badge-warning">Cancel Attempt</span></td><td class="bb-mono">CONFIRMED → CONFIRMED</td><td>roibos</td><td><span class="badge badge-destructive">Failed</span></td><td>👁</td></tr>
-                <tr class="audit-row"><td>13:22:44</td><td class="bb-ref">ERG-014805</td><td><span class="badge badge-destructive">Cancelled</span></td><td class="bb-mono">CONFIRMED → CANCELLED</td><td>hotetec</td><td><span class="badge badge-success">OK</span></td><td>👁</td></tr>
-                <tr class="audit-row"><td>12:58:17</td><td class="bb-ref">ERG-014798</td><td><span class="badge badge-success">Created</span></td><td class="bb-mono">— → CONFIRMED</td><td>dingus</td><td><span class="badge badge-success">OK</span></td><td>👁</td></tr>
-                <tr class="audit-row"><td>12:30:03</td><td class="bb-ref">ERG-014786</td><td><span class="badge badge-warning">Modified</span></td><td class="bb-mono">CONFIRMED → CONFIRMED</td><td>hotetec</td><td><span class="badge badge-success">OK</span></td><td>👁</td></tr>
-                <tr class="audit-row"><td>11:48:31</td><td class="bb-ref">ERG-014774</td><td><span class="badge badge-success">Created</span></td><td class="bb-mono">— → CONFIRMED</td><td>restel</td><td><span class="badge badge-success">OK</span></td><td>👁</td></tr>
+                <tr class="audit-row audit-row-selected"><td>14:32:01</td><td class="bb-ref">ERG-014821</td><td><span class="badge badge-success">Created</span></td><td class="bb-mono">— → CONFIRMED</td><td>hotetec</td><td><span class="badge badge-success">OK</span></td><td><i class="ti ti-eye"></i></td></tr>
+                <tr class="audit-row"><td>14:18:55</td><td class="bb-ref">ERG-014820</td><td><span class="badge badge-warning">Modified</span></td><td class="bb-mono">CONFIRMED → CONFIRMED</td><td>dingus</td><td><span class="badge badge-success">OK</span></td><td><i class="ti ti-eye"></i></td></tr>
+                <tr class="audit-row"><td>13:55:12</td><td class="bb-ref">ERG-014812</td><td><span class="badge badge-success">Created</span></td><td class="bb-mono">— → CONFIRMED</td><td>dingus</td><td><span class="badge badge-success">OK</span></td><td><i class="ti ti-eye"></i></td></tr>
+                <tr class="audit-row"><td>13:41:08</td><td class="bb-ref">ERG-014811</td><td><span class="badge badge-warning">Cancel Attempt</span></td><td class="bb-mono">CONFIRMED → CONFIRMED</td><td>roibos</td><td><span class="badge badge-destructive">Failed</span></td><td><i class="ti ti-eye"></i></td></tr>
+                <tr class="audit-row"><td>13:22:44</td><td class="bb-ref">ERG-014805</td><td><span class="badge badge-destructive">Cancelled</span></td><td class="bb-mono">CONFIRMED → CANCELLED</td><td>hotetec</td><td><span class="badge badge-success">OK</span></td><td><i class="ti ti-eye"></i></td></tr>
+                <tr class="audit-row"><td>12:58:17</td><td class="bb-ref">ERG-014798</td><td><span class="badge badge-success">Created</span></td><td class="bb-mono">— → CONFIRMED</td><td>dingus</td><td><span class="badge badge-success">OK</span></td><td><i class="ti ti-eye"></i></td></tr>
+                <tr class="audit-row"><td>12:30:03</td><td class="bb-ref">ERG-014786</td><td><span class="badge badge-warning">Modified</span></td><td class="bb-mono">CONFIRMED → CONFIRMED</td><td>hotetec</td><td><span class="badge badge-success">OK</span></td><td><i class="ti ti-eye"></i></td></tr>
+                <tr class="audit-row"><td>11:48:31</td><td class="bb-ref">ERG-014774</td><td><span class="badge badge-success">Created</span></td><td class="bb-mono">— → CONFIRMED</td><td>restel</td><td><span class="badge badge-success">OK</span></td><td><i class="ti ti-eye"></i></td></tr>
               </tbody>
             </table>
             <div class="pagination">
@@ -535,7 +538,7 @@
 
           <!-- Detail panel -->
           <div class="card audit-detail">
-            <div class="card-head row"><h3>Audit Detail · ERG-014821</h3><button class="btn-icon" title="Close">✕</button></div>
+            <div class="card-head row"><h3>Audit Detail · ERG-014821</h3><button class="btn-icon" title="Close"><i class="ti ti-x"></i></button></div>
             <div class="audit-detail-grid">
               <div><div class="audit-d-label">Action</div><span class="badge badge-success">Created</span></div>
               <div><div class="audit-d-label">Result</div><span class="badge badge-success">OK</span></div>
@@ -586,7 +589,7 @@
         <!-- Dingus -->
         <div class="card supplier-card supplier-card-expanded">
           <div class="supplier-head">
-            <div class="supplier-icon">🖧</div>
+            <div class="supplier-icon"><i class="ti ti-server"></i></div>
             <div class="supplier-meta">
               <div class="supplier-title">Dingus <span class="muted">(SOAP/OTA)</span> <span class="badge badge-grey">4 sub-vendors</span></div>
               <p class="muted">Multi-brand SOAP adapter — each sub-vendor has its own credentials + base URL stored in the database.</p>
@@ -601,52 +604,52 @@
               <div class="supplier-avatar">DI</div>
               <div class="supplier-child-meta">
                 <div class="supplier-child-name">Dingus-Iberostar <span class="badge badge-teal">Dynamic</span></div>
-                <div class="supplier-child-url">🌐 https://api-iberostar.dingus.com/ws</div>
+                <div class="supplier-child-url"><i class="ti ti-world-www"></i> https://api-iberostar.dingus.com/ws</div>
               </div>
               <div class="supplier-child-actions">
-                <button class="btn-icon" title="Edit">✎</button>
-                <button class="btn-icon" title="Test">🔌</button>
+                <button class="btn-icon" title="Edit"><i class="ti ti-edit"></i></button>
+                <button class="btn-icon" title="Test"><i class="ti ti-plug"></i></button>
                 <button class="btn-icon" title="Toggle">⏻</button>
-                <button class="btn-icon btn-icon-danger" title="Delete">🗑</button>
+                <button class="btn-icon btn-icon-danger" title="Delete"><i class="ti ti-trash"></i></button>
               </div>
             </div>
             <div class="supplier-child">
               <div class="supplier-avatar">DM</div>
               <div class="supplier-child-meta">
                 <div class="supplier-child-name">Dingus-Meliá <span class="badge badge-teal">Dynamic</span> <span class="badge badge-gold">x1.05</span></div>
-                <div class="supplier-child-url">🌐 https://api-melia.dingus.com/ws</div>
+                <div class="supplier-child-url"><i class="ti ti-world-www"></i> https://api-melia.dingus.com/ws</div>
               </div>
               <div class="supplier-child-actions">
-                <button class="btn-icon" title="Edit">✎</button>
-                <button class="btn-icon" title="Test">🔌</button>
+                <button class="btn-icon" title="Edit"><i class="ti ti-edit"></i></button>
+                <button class="btn-icon" title="Test"><i class="ti ti-plug"></i></button>
                 <button class="btn-icon" title="Toggle">⏻</button>
-                <button class="btn-icon btn-icon-danger" title="Delete">🗑</button>
+                <button class="btn-icon btn-icon-danger" title="Delete"><i class="ti ti-trash"></i></button>
               </div>
             </div>
             <div class="supplier-child">
               <div class="supplier-avatar">DR</div>
               <div class="supplier-child-meta">
                 <div class="supplier-child-name">Dingus-RIU <span class="badge badge-teal">Dynamic</span></div>
-                <div class="supplier-child-url">🌐 https://api-riu.dingus.com/ws</div>
+                <div class="supplier-child-url"><i class="ti ti-world-www"></i> https://api-riu.dingus.com/ws</div>
               </div>
               <div class="supplier-child-actions">
-                <button class="btn-icon" title="Edit">✎</button>
-                <button class="btn-icon" title="Test">🔌</button>
+                <button class="btn-icon" title="Edit"><i class="ti ti-edit"></i></button>
+                <button class="btn-icon" title="Test"><i class="ti ti-plug"></i></button>
                 <button class="btn-icon" title="Toggle">⏻</button>
-                <button class="btn-icon btn-icon-danger" title="Delete">🗑</button>
+                <button class="btn-icon btn-icon-danger" title="Delete"><i class="ti ti-trash"></i></button>
               </div>
             </div>
             <div class="supplier-child supplier-child-inactive">
               <div class="supplier-avatar">DH</div>
               <div class="supplier-child-meta">
                 <div class="supplier-child-name">Dingus-Hyatt <span class="badge badge-teal">Dynamic</span> <span class="badge badge-destructive">Inactive</span></div>
-                <div class="supplier-child-url">🌐 https://api-hyatt.dingus.com/ws</div>
+                <div class="supplier-child-url"><i class="ti ti-world-www"></i> https://api-hyatt.dingus.com/ws</div>
               </div>
               <div class="supplier-child-actions">
-                <button class="btn-icon" title="Edit">✎</button>
-                <button class="btn-icon" title="Test">🔌</button>
+                <button class="btn-icon" title="Edit"><i class="ti ti-edit"></i></button>
+                <button class="btn-icon" title="Test"><i class="ti ti-plug"></i></button>
                 <button class="btn-icon" title="Toggle">⏻</button>
-                <button class="btn-icon btn-icon-danger" title="Delete">🗑</button>
+                <button class="btn-icon btn-icon-danger" title="Delete"><i class="ti ti-trash"></i></button>
               </div>
             </div>
           </div>
@@ -655,7 +658,7 @@
         <!-- Hotetec -->
         <div class="card supplier-card">
           <div class="supplier-head">
-            <div class="supplier-icon">🖧</div>
+            <div class="supplier-icon"><i class="ti ti-server"></i></div>
             <div class="supplier-meta">
               <div class="supplier-title">Hotetec <span class="muted">(REST/JSON)</span> <span class="badge badge-grey">1 vendor</span></div>
               <p class="muted">Single-vendor adapter — configured via environment variables (read-only).</p>
@@ -668,10 +671,10 @@
             <div class="supplier-child">
               <div class="supplier-avatar">HT</div>
               <div class="supplier-child-meta">
-                <div class="supplier-child-name">hotetec <span class="badge badge-grey">🔒 Static</span></div>
-                <div class="supplier-child-url">🌐 https://api.hotetec.com/v2</div>
+                <div class="supplier-child-name">hotetec <span class="badge badge-grey"><i class="ti ti-lock"></i> Static</span></div>
+                <div class="supplier-child-url"><i class="ti ti-world-www"></i> https://api.hotetec.com/v2</div>
               </div>
-              <div class="supplier-child-actions"><span class="supplier-locked" title="env-configured, read-only">🔒</span></div>
+              <div class="supplier-child-actions"><span class="supplier-locked" title="env-configured, read-only"><i class="ti ti-lock"></i></span></div>
             </div>
           </div>
         </div>
@@ -679,7 +682,7 @@
         <!-- Roibos (Juniper) -->
         <div class="card supplier-card">
           <div class="supplier-head">
-            <div class="supplier-icon">🖧</div>
+            <div class="supplier-icon"><i class="ti ti-server"></i></div>
             <div class="supplier-meta">
               <div class="supplier-title">Roibos <span class="muted">(Juniper XML)</span> <span class="badge badge-grey">1 vendor</span></div>
               <p class="muted">Single-vendor adapter built on the Juniper XML protocol — env-configured with cert + credentials.</p>
@@ -693,7 +696,7 @@
         <!-- Restel -->
         <div class="card supplier-card">
           <div class="supplier-head">
-            <div class="supplier-icon">🖧</div>
+            <div class="supplier-icon"><i class="ti ti-server"></i></div>
             <div class="supplier-meta">
               <div class="supplier-title">Restel <span class="muted">(custom XML)</span> <span class="badge badge-grey">1 vendor</span></div>
               <p class="muted">Single-vendor adapter with the Hotelbeds-family <code>lin</code>-token auth model.</p>
@@ -735,6 +738,446 @@
   </div>
 </section>
 
+<!-- =========================================================
+     D1 — Hotel Price Composition
+     ========================================================= -->
+<section class="screen" id="screen-hotel-price-breakdown">
+  <div class="app-layout">
+    <aside class="sidebar"></aside>
+    <main class="app-main">
+      <div class="topbar">
+        <button class="hamburger" onclick="toggleSidebar()" aria-label="Menu">☰</button>
+        <div class="breadcrumb"><span>Finance &amp; Audit</span> / <span>Hotel Price Composition</span></div>
+        <div class="topbar-right"><div class="avatar">AD</div></div>
+      </div>
+      <div class="page">
+        <div class="page-head row">
+          <div>
+            <h1>Hotel Price Composition</h1>
+            <p class="muted">For a given hotel, see the GDS net rate, every cascade-layer percentage, and each agency's effective customer price. Auditable answer to "why is Agency A's price different from Agency B's for the same room?"</p>
+          </div>
+          <div class="page-head-actions">
+            <button class="btn btn-outline" onclick="hpbExportCsv()"><i class="ti ti-download"></i> Export CSV</button>
+            <button class="btn btn-outline" onclick="hpbExportPdf()"><i class="ti ti-file-type-pdf"></i> Export PDF</button>
+          </div>
+        </div>
+
+        <!-- Hotel + filter row -->
+        <div class="card hpb-filter-card">
+          <div class="hpb-filter-row">
+            <div class="hpb-field hpb-field-grow">
+              <label>Hotel</label>
+              <select class="hpb-select" onchange="hpbRecompute()">
+                <option>Iberostar Grand Packard · IB-GP-HAV · Havana, Cuba</option>
+                <option>Hyatt Ziva Cap Cana · HZ-CC-DOM · Punta Cana, DR</option>
+                <option>Memories Varadero · MM-VAR-CUB · Varadero, Cuba</option>
+              </select>
+            </div>
+            <div class="hpb-field">
+              <label>Sample supplier net (USD)</label>
+              <input type="number" value="200" min="1" step="1">
+            </div>
+            <div class="hpb-field">
+              <label>Agency activity</label>
+              <select>
+                <option>Last 90 days</option>
+                <option>Last 30 days</option>
+                <option>All time</option>
+              </select>
+            </div>
+            <button class="btn btn-primary" onclick="hpbRecompute()">↻ Recompute</button>
+          </div>
+        </div>
+
+        <!-- Cascade waterfall card -->
+        <div class="card hpb-cascade-card">
+          <div class="card-head">
+            <h3>Cascade for <strong>Iberostar Grand Packard</strong></h3>
+            <span class="badge badge-grey">Brand: IBEROSTAR</span>
+          </div>
+          <table class="tbl hpb-cascade">
+            <thead>
+              <tr><th>Layer</th><th>%</th><th>Source</th><th class="text-right">Running cost (USD)</th></tr>
+            </thead>
+            <tbody>
+              <tr class="hpb-row-net"><td><strong>GDS supplier net</strong></td><td>—</td><td class="bb-mono">hotetec / IB-GP-HAV</td><td class="text-right hpb-amt">$200.00</td></tr>
+              <tr><td>Chain discount</td><td class="hpb-neg">−10.0%</td><td><span class="hpb-source-tag">chain_rule</span> Iberostar Group</td><td class="text-right">$180.00</td></tr>
+              <tr><td>Ergos markup</td><td class="hpb-pos">+17.5%</td><td><span class="hpb-source-tag hpb-source-cascade">gds_rule → chain_rule</span></td><td class="text-right">$211.50</td></tr>
+              <tr class="hpb-row-sell"><td><strong>Ergos sell</strong></td><td>—</td><td class="muted">price agencies pay Ergos</td><td class="text-right hpb-amt hpb-amt-bold">$211.50</td></tr>
+              <tr><td>Agency rebate (typical)</td><td class="hpb-neg">−3.0%</td><td><span class="hpb-source-tag">agency_default</span></td><td class="text-right">$205.16</td></tr>
+              <tr><td>Sales agent earning (typical)</td><td class="hpb-neg">−22.0% of gross</td><td><span class="hpb-source-tag">agent_tier_elite</span></td><td class="text-right">—</td></tr>
+              <tr><td>Ops expense</td><td class="hpb-neg">−7.0% of gross</td><td><span class="hpb-source-tag">platform_default</span></td><td class="text-right">—</td></tr>
+            </tbody>
+          </table>
+          <div class="hpb-cascade-foot">
+            <span class="muted">Cascade source links lead to the markup_rule / chain registry / agency profile that produced each percentage.</span>
+          </div>
+        </div>
+
+        <!-- Per-agency effective customer price -->
+        <!-- Hotel-match summary — which tiers this hotel is eligible for -->
+        <div class="card hpb-match-card">
+          <div class="card-head">
+            <h3>This hotel matches…</h3>
+            <span class="muted" style="font-size:12.5px">Which agency-rule tiers can target it</span>
+          </div>
+          <div class="hpb-match-grid" id="hpb-match-grid">
+            <!-- Filled by hpbRecompute() — chain / country / category chips, all clickable -->
+          </div>
+        </div>
+
+        <!-- Tier coverage stats — how many agencies use each tier for this hotel -->
+        <div class="card hpb-tier-coverage-card">
+          <div class="card-head">
+            <h3>Tier coverage across active agencies</h3>
+            <span class="muted" style="font-size:12.5px">Of the agencies with recent activity on this hotel, which tier of their cascade wins</span>
+          </div>
+          <div class="hpb-tier-coverage" id="hpb-tier-coverage">
+            <!-- Filled by hpbRecompute() -->
+          </div>
+        </div>
+
+        <div class="card hpb-agency-card">
+          <div class="card-head row">
+            <div>
+              <h3>Per-agency effective customer price</h3>
+              <p class="muted">Each row shows which tier of the agency's cascade wins for this hotel, the resulting markup, and what their customer pays. <strong id="hpb-agency-count">5 agencies</strong> have booked or quoted this hotel in the last 90 days.</p>
+            </div>
+            <label class="hpb-toggle"><input type="checkbox" checked onchange="hpbFilterActiveAgencies(this.checked)"> Show only agencies with recent bookings</label>
+          </div>
+          <table class="tbl hpb-agencies">
+            <thead>
+              <tr>
+                <th>Agency</th>
+                <th>Applied tier</th>
+                <th>Rule reason</th>
+                <th class="text-right">Markup %</th>
+                <th class="text-right">Customer pays</th>
+                <th class="text-right">Markup income</th>
+                <th class="text-right">Bookings (90d)</th>
+              </tr>
+            </thead>
+            <tbody id="hpb-agencies-tbody">
+              <!-- Filled by hpbRecompute() -->
+            </tbody>
+          </table>
+          <div class="card-section hpb-legend">
+            <strong>Tier legend.</strong>
+            <span class="d1-tier d1-tier-hotel"><i class="ti ti-bed"></i> T1 hotel</span> per-hotel override
+            <span class="d1-tier d1-tier-category"><i class="ti ti-star"></i> T2 category</span> property type
+            <span class="d1-tier d1-tier-country"><i class="ti ti-world"></i> T3 country</span> geographic
+            <span class="d1-tier d1-tier-chain"><i class="ti ti-building-skyscraper"></i> T4 chain</span> brand
+            <span class="d1-tier d1-tier-default"><i class="ti ti-asterisk"></i> T5 default</span> catch-all
+            · Most-specific tier wins.
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</section>
+
+<!-- =========================================================
+     C1 — Agency Remittances (admin list + per-agency drilldown)
+     ========================================================= -->
+<section class="screen" id="screen-finance-remittances">
+  <div class="app-layout">
+    <aside class="sidebar"></aside>
+    <main class="app-main">
+      <div class="topbar">
+        <button class="hamburger" onclick="toggleSidebar()" aria-label="Menu">☰</button>
+        <div class="breadcrumb"><span>Finance &amp; Audit</span> / <span>Agency Remittances</span></div>
+        <div class="topbar-right"><div class="avatar">AD</div></div>
+      </div>
+      <div class="page">
+        <div class="page-head row">
+          <div>
+            <h1>Agency Remittances</h1>
+            <p class="muted">Monthly amounts each agency owes Ergos. Mark Paid records a wire reference + audits the action. Adjusting an amount requires a reason.</p>
+          </div>
+          <button class="btn btn-outline" onclick="frExportCsv()"><i class="ti ti-download"></i> Export CSV</button>
+        </div>
+
+        <!-- KPIs -->
+        <div class="kpi-grid">
+          <div class="kpi kpi-navy"><div class="kpi-label">Outstanding (all agencies)</div><div class="kpi-value">$42,830</div><div class="kpi-delta up">▲ this month</div></div>
+          <div class="kpi kpi-gold"><div class="kpi-label">Overdue</div><div class="kpi-value">$3,205</div><div class="kpi-delta down">2 agencies</div></div>
+          <div class="kpi kpi-green"><div class="kpi-label">Collected (MTD)</div><div class="kpi-value">$28,460</div><div class="kpi-delta up">▲ 18.2%</div></div>
+          <div class="kpi"><div class="kpi-label">Average days to pay</div><div class="kpi-value">6.4 days</div><div class="kpi-delta up">▲ 0.8 d</div></div>
+        </div>
+
+        <!-- Filter + list -->
+        <div class="card fr-list-card">
+          <div class="table-toolbar">
+            <input class="t-search" placeholder="Search agency name or license…" oninput="frFilterRemittances(this.value)">
+            <div class="t-filters">
+              <select id="fr-filter-status" onchange="frApplyFilters()">
+                <option value="all">All status</option>
+                <option value="pending">Pending</option>
+                <option value="paid">Paid</option>
+                <option value="overdue">Overdue</option>
+              </select>
+              <select id="fr-filter-period" onchange="frApplyFilters()">
+                <option value="current">Current month</option>
+                <option value="3mo">Last 3 months</option>
+                <option value="12mo">Last 12 months</option>
+              </select>
+              <select id="fr-sort" onchange="frApplySort()">
+                <option value="overdue-first">Sort: Overdue first</option>
+                <option value="amount-desc">Sort: Amount high → low</option>
+                <option value="agency-asc">Sort: Agency name</option>
+              </select>
+            </div>
+          </div>
+          <table class="tbl fr-table">
+            <thead>
+              <tr>
+                <th>Agency</th>
+                <th>Period</th>
+                <th class="text-right">Amount</th>
+                <th>Due date</th>
+                <th>Status</th>
+                <th>Days late</th>
+                <th class="text-right">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="fr-row fr-row-overdue">
+                <td><strong>Sol Mar Travel</strong><span class="fr-license">ag14 · LIC-31202</span></td>
+                <td>May 2026</td>
+                <td class="text-right fr-amt">$3,205.00</td>
+                <td>Jun 15, 2026</td>
+                <td><span class="badge badge-destructive">Overdue</span></td>
+                <td class="fr-late">+18 days</td>
+                <td class="text-right"><button class="btn btn-sm btn-primary" onclick="frOpenMarkPaid(this)">Mark Paid</button></td>
+              </tr>
+              <tr class="fr-row">
+                <td><strong>Demo Agency</strong><span class="fr-license">ag1 · LIC-12345</span></td>
+                <td>May 2026</td>
+                <td class="text-right fr-amt">$4,820.00</td>
+                <td>Jun 15, 2026</td>
+                <td><span class="badge badge-warning">Pending</span></td>
+                <td>—</td>
+                <td class="text-right"><button class="btn btn-sm btn-primary" onclick="frOpenMarkPaid(this)">Mark Paid</button></td>
+              </tr>
+              <tr class="fr-row">
+                <td><strong>Caribe Tours</strong><span class="fr-license">ag7 · LIC-23488</span></td>
+                <td>May 2026</td>
+                <td class="text-right fr-amt">$2,950.00</td>
+                <td>Jun 15, 2026</td>
+                <td><span class="badge badge-warning">Pending</span></td>
+                <td>—</td>
+                <td class="text-right"><button class="btn btn-sm btn-primary" onclick="frOpenMarkPaid(this)">Mark Paid</button></td>
+              </tr>
+              <tr class="fr-row">
+                <td><strong>Viajes Mediterráneo</strong><span class="fr-license">ag22 · LIC-44120</span></td>
+                <td>May 2026</td>
+                <td class="text-right fr-amt">$1,840.00</td>
+                <td>Jun 15, 2026</td>
+                <td><span class="badge badge-warning">Pending</span></td>
+                <td>—</td>
+                <td class="text-right"><button class="btn btn-sm btn-primary" onclick="frOpenMarkPaid(this)">Mark Paid</button></td>
+              </tr>
+              <tr class="fr-row">
+                <td><strong>Destinos Ibérica</strong><span class="fr-license">ag31 · LIC-55708</span></td>
+                <td>May 2026</td>
+                <td class="text-right fr-amt">$1,420.00</td>
+                <td>Jun 15, 2026</td>
+                <td><span class="badge badge-warning">Pending</span></td>
+                <td>—</td>
+                <td class="text-right"><button class="btn btn-sm btn-primary" onclick="frOpenMarkPaid(this)">Mark Paid</button></td>
+              </tr>
+              <tr class="fr-row fr-row-paid">
+                <td><strong>Demo Agency</strong><span class="fr-license">ag1 · LIC-12345</span></td>
+                <td>Apr 2026</td>
+                <td class="text-right fr-amt">$3,612.00</td>
+                <td>May 15, 2026</td>
+                <td><span class="badge badge-success">Paid</span></td>
+                <td class="muted">on time</td>
+                <td class="text-right"><button class="btn btn-sm" onclick="frOpenDetail(this)">View</button></td>
+              </tr>
+              <tr class="fr-row fr-row-paid">
+                <td><strong>Caribe Tours</strong><span class="fr-license">ag7 · LIC-23488</span></td>
+                <td>Apr 2026</td>
+                <td class="text-right fr-amt">$2,140.00</td>
+                <td>May 15, 2026</td>
+                <td><span class="badge badge-success">Paid</span></td>
+                <td class="muted">+2 d</td>
+                <td class="text-right"><button class="btn btn-sm" onclick="frOpenDetail(this)">View</button></td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="pagination">
+            <span class="muted">Page 1 of 4 · 38 remittances total</span>
+            <div><button class="btn btn-sm">◀ Previous</button><button class="btn btn-sm">Next ▶</button></div>
+          </div>
+        </div>
+
+        <!-- Per-agency drilldown card (visible by default for demo) -->
+        <div class="card fr-detail-card">
+          <div class="card-head row">
+            <div>
+              <h3>Per-agency drilldown — Demo Agency</h3>
+              <p class="muted">All remittances + audit log. Reachable from <code>/travel-agencies/:id</code> → <strong>Remittances</strong> tab as well.</p>
+            </div>
+            <div class="fr-detail-actions">
+              <button class="btn btn-outline" onclick="frAdjustAmount()">Adjust amount</button>
+              <button class="btn btn-primary" onclick="frAddManual()">+ Manual remittance</button>
+            </div>
+          </div>
+          <div class="fr-detail-grid">
+            <div class="fr-detail-stat"><div class="fr-detail-label">Total billed</div><div class="fr-detail-value">$13,517</div><div class="muted">last 6 months</div></div>
+            <div class="fr-detail-stat fr-detail-stat-pos"><div class="fr-detail-label">Total paid</div><div class="fr-detail-value">$8,697</div><div class="muted">5 of 6 cycles settled</div></div>
+            <div class="fr-detail-stat fr-detail-stat-warn"><div class="fr-detail-label">Currently pending</div><div class="fr-detail-value">$4,820</div><div class="muted">due Jun 15</div></div>
+            <div class="fr-detail-stat"><div class="fr-detail-label">Avg days to pay</div><div class="fr-detail-value">3.2 d</div><div class="muted">consistently on-time</div></div>
+          </div>
+          <h4 class="fr-h4">Recent audit trail</h4>
+          <table class="tbl fr-audit">
+            <thead>
+              <tr><th>When</th><th>Actor</th><th>Action</th><th>Detail</th></tr>
+            </thead>
+            <tbody>
+              <tr><td class="bb-mono">2026-05-12 14:22</td><td>finance@ergos.com</td><td><span class="badge badge-success">Marked Paid</span></td><td>Apr 2026 · WIRE-2026-04-DEMO · $3,612.00</td></tr>
+              <tr><td class="bb-mono">2026-05-08 09:00</td><td>system (cron)</td><td><span class="badge badge-grey">Auto-created</span></td><td>May 2026 cycle · $4,820.00 · due Jun 15</td></tr>
+              <tr><td class="bb-mono">2026-04-14 09:05</td><td>finance@ergos.com</td><td><span class="badge badge-success">Marked Paid</span></td><td>Mar 2026 · WIRE-2026-03-DEMO · $2,945.00</td></tr>
+              <tr><td class="bb-mono">2026-04-08 09:00</td><td>system (cron)</td><td><span class="badge badge-grey">Auto-created</span></td><td>Apr 2026 cycle · $3,612.00 · due May 15</td></tr>
+              <tr><td class="bb-mono">2026-04-08 09:01</td><td>admin@ergos.com</td><td><span class="badge badge-warning">Adjusted</span></td><td>Apr 2026 · $3,624.00 → $3,612.00 · reason: "rounding correction per Q1 reconciliation"</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+</section>
+
+<!-- Manual Remittance modal (admin-created entry) -->
+<div class="fr-modal" id="fr-manual-modal">
+  <div class="fr-modal-overlay" onclick="frCloseManual()"></div>
+  <div class="fr-modal-panel">
+    <div class="fr-modal-head">
+      <h3>Add manual remittance</h3>
+      <button class="btn-icon" onclick="frCloseManual()"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="fr-modal-body">
+      <div class="fr-modal-summary">Use this to record a remittance the monthly cron didn't generate — e.g. a back-billed period, an off-cycle settlement, or a manual adjustment cycle. Captured in the audit log.</div>
+      <div class="form-field">
+        <label>Agency <span class="muted">(required)</span></label>
+        <select id="fr-manual-agency">
+          <option value="">— Select an agency —</option>
+          <option>Demo Agency (ag1 · LIC-12345)</option>
+          <option>Caribe Tours (ag7 · LIC-23488)</option>
+          <option>Sol Mar Travel (ag14 · LIC-31202)</option>
+          <option>Viajes Mediterráneo (ag22 · LIC-44120)</option>
+          <option>Destinos Ibérica (ag31 · LIC-55708)</option>
+        </select>
+      </div>
+      <div class="form-field">
+        <label>Period <span class="muted">(required)</span></label>
+        <input type="text" id="fr-manual-period" placeholder="e.g. May 2026 (off-cycle)">
+      </div>
+      <div class="form-field">
+        <label>Amount in USD <span class="muted">(required)</span></label>
+        <input type="number" id="fr-manual-amount" placeholder="e.g. 2450.00" min="0" step="0.01">
+      </div>
+      <div class="form-field">
+        <label>Due date <span class="muted">(required)</span></label>
+        <input type="date" id="fr-manual-due">
+      </div>
+      <div class="form-field">
+        <label>Reason for manual entry <span class="muted">(required, audited)</span></label>
+        <textarea id="fr-manual-reason" rows="2" placeholder="e.g. back-billed Q1 reconciliation; cron missed Mar 2026 cycle"></textarea>
+      </div>
+    </div>
+    <div class="fr-modal-foot">
+      <button class="btn btn-outline" onclick="frCloseManual()">Cancel</button>
+      <button class="btn btn-primary" onclick="frSaveManual()"><i class="ti ti-check"></i> Create remittance</button>
+    </div>
+  </div>
+</div>
+
+<!-- Adjust Amount modal -->
+<div class="fr-modal" id="fr-adjust-modal">
+  <div class="fr-modal-overlay" onclick="frCloseAdjust()"></div>
+  <div class="fr-modal-panel">
+    <div class="fr-modal-head">
+      <h3>Adjust remittance amount</h3>
+      <button class="btn-icon" onclick="frCloseAdjust()"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="fr-modal-body">
+      <div class="fr-modal-summary">Adjustments require a reason and are immutably audited.</div>
+      <div class="form-field">
+        <label>Current amount</label>
+        <input type="text" id="fr-adjust-current" readonly>
+      </div>
+      <div class="form-field">
+        <label>New amount in USD <span class="muted">(required)</span></label>
+        <input type="number" id="fr-adjust-new" min="0" step="0.01">
+      </div>
+      <div class="form-field">
+        <label>Reason <span class="muted">(required, audited)</span></label>
+        <textarea id="fr-adjust-reason" rows="3" placeholder="e.g. rounding correction per Q1 reconciliation"></textarea>
+      </div>
+    </div>
+    <div class="fr-modal-foot">
+      <button class="btn btn-outline" onclick="frCloseAdjust()">Cancel</button>
+      <button class="btn btn-primary" onclick="frSaveAdjust()"><i class="ti ti-check"></i> Apply adjustment</button>
+    </div>
+  </div>
+</div>
+
+<!-- Mark Paid modal -->
+<div class="fr-modal" id="fr-mark-paid-modal">
+  <div class="fr-modal-overlay" onclick="frCloseMarkPaid()"></div>
+  <div class="fr-modal-panel">
+    <div class="fr-modal-head">
+      <h3>Mark remittance as Paid</h3>
+      <button class="btn-icon" onclick="frCloseMarkPaid()"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="fr-modal-body">
+      <div class="fr-modal-summary">
+        <div><strong>Sol Mar Travel</strong></div>
+        <div class="muted">May 2026 · USD 3,205.00 · 18 days overdue</div>
+      </div>
+      <div class="form-field">
+        <label>Wire transaction reference <span class="muted">(required)</span></label>
+        <input type="text" placeholder="e.g. WIRE-2026-05-SMT-9981" autofocus>
+        <p class="muted" style="font-size:11.5px;margin-top:4px">Free text. Captured in the audit log alongside actor + timestamp.</p>
+      </div>
+      <div class="form-field">
+        <label>Notes <span class="muted">(optional)</span></label>
+        <textarea rows="3" placeholder="e.g. payment received via SWIFT, partial offset against credit memo, etc."></textarea>
+      </div>
+    </div>
+    <div class="fr-modal-foot">
+      <button class="btn btn-outline" onclick="frCloseMarkPaid()">Cancel</button>
+      <button class="btn btn-primary" onclick="frConfirmPaid()"><i class="ti ti-check"></i> Confirm Paid</button>
+    </div>
+  </div>
+</div>
+
+<!-- Detail modal (used by "View" on paid rows) -->
+<div class="fr-modal" id="fr-detail-modal">
+  <div class="fr-modal-overlay" onclick="frCloseDetail()"></div>
+  <div class="fr-modal-panel">
+    <div class="fr-modal-head">
+      <h3>Remittance detail · Apr 2026</h3>
+      <button class="btn-icon" onclick="frCloseDetail()"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="fr-modal-body">
+      <div class="fr-detail-grid">
+        <div class="fr-detail-stat"><div class="fr-detail-label">Agency</div><div class="fr-detail-value" style="font-size:18px">Demo Agency</div></div>
+        <div class="fr-detail-stat"><div class="fr-detail-label">Amount</div><div class="fr-detail-value" style="font-size:18px">$3,612.00</div></div>
+        <div class="fr-detail-stat fr-detail-stat-pos"><div class="fr-detail-label">Status</div><div class="fr-detail-value" style="font-size:18px">Paid</div></div>
+        <div class="fr-detail-stat"><div class="fr-detail-label">Paid at</div><div class="fr-detail-value" style="font-size:14px">2026-05-12 14:22</div></div>
+        <div class="fr-detail-stat"><div class="fr-detail-label">Paid by (admin)</div><div class="fr-detail-value" style="font-size:14px">finance@ergos.com</div></div>
+        <div class="fr-detail-stat"><div class="fr-detail-label">Reference</div><div class="fr-detail-value" style="font-size:14px">WIRE-2026-04-DEMO</div></div>
+      </div>
+    </div>
+    <div class="fr-modal-foot">
+      <button class="btn btn-outline" onclick="frCloseDetail()">Close</button>
+    </div>
+  </div>
+</div>
+
 <!-- Sidebar backdrop (mobile) -->
 <div class="sidebar-backdrop" onclick="closeSidebar()"></div>
 
@@ -745,6 +1188,14 @@
 <div id="modal-host"></div>
 <div id="toast-host" class="toast-host"></div>
 
-<script src="app.js"></script>
+<script>
+  (function () {
+    var stamp = Date.now();
+    var s1 = document.createElement('script'); s1.src = 'app.js?v=' + stamp;
+    var s2 = document.createElement('script'); s2.src = 'proto-stories.js?v=' + stamp;
+    document.body.appendChild(s1);
+    s1.onload = function () { document.body.appendChild(s2); };
+  })();
+</script>
 </body>
 </html>

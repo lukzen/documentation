@@ -778,7 +778,7 @@ function renderBookingsList() {
     const refundTag = b.refundable
       ? '<span class="tag tag-refund">Free Cancellation</span>'
       : '<span class="tag tag-nonrefund-sm">Non-Refundable</span>';
-    const rebookBtn = b.status === 'cancelled' ? '<button class="btn-rebook">Book Again</button>' : '';
+    const rebookBtn = b.status === 'cancelled' ? '<button class="btn-rebook" onclick="rebookFromHistory(this)">Book Again</button>' : '';
 
     let typeLabel = '';
     if (b.type === 'trip') {

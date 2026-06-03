@@ -1315,3 +1315,435 @@ body.sidebar-open .sidebar-backdrop { display:block; opacity:1; }
   .bb-filter-row { grid-template-columns: 1fr; }
   .snap-grid, .snap-grid-3 { grid-template-columns: 1fr 1fr; }
 }
+
+/* =================================================================
+   USER STORY ADDITIONS (2026-06-03)
+   C1 Agency Remittances · D1 Hotel Price Composition
+   ================================================================= */
+
+/* ---------- D1: Hotel Price Composition ---------- */
+.hpb-filter-card { margin-bottom: 16px; }
+.hpb-filter-row {
+  display: flex;
+  gap: 14px;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  padding: 14px 16px;
+}
+.hpb-field { display: flex; flex-direction: column; gap: 4px; min-width: 160px; }
+.hpb-field-grow { flex: 1 1 320px; }
+.hpb-field label {
+  font-size: 11.5px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #6b7280;
+}
+.hpb-field input,
+.hpb-field select,
+.hpb-select {
+  padding: 8px 12px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  background: #fff;
+}
+
+.hpb-cascade-card { margin-bottom: 16px; }
+.hpb-cascade { width: 100%; }
+.hpb-cascade th {
+  font-size: 11.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #6b7280;
+  font-weight: 600;
+  border-bottom: 1px solid #e5e7eb;
+  padding: 10px 14px;
+  background: #f9fafb;
+}
+.hpb-cascade td {
+  padding: 12px 14px;
+  border-bottom: 1px solid #f3f4f6;
+  font-size: 13.5px;
+  vertical-align: middle;
+}
+.hpb-cascade tr:last-child td { border-bottom: 0; }
+.hpb-row-net { background: #fdfbf7; }
+.hpb-row-net td { font-size: 14px; }
+.hpb-row-sell { background: #f0fdf4; }
+.hpb-row-sell td { font-weight: 600; }
+.hpb-pos { color: #15803d; font-weight: 600; }
+.hpb-neg { color: #b91c1c; font-weight: 600; }
+.hpb-amt {
+  font-family: 'DM Serif Display', serif;
+  font-size: 16px;
+  font-variant-numeric: tabular-nums;
+}
+.hpb-amt-bold { font-weight: 700; color: #0f0f3d; }
+.hpb-source-tag {
+  display: inline-block;
+  padding: 3px 8px;
+  background: #eef2ff;
+  color: #4338ca;
+  border-radius: 6px;
+  font-family: monospace;
+  font-size: 11.5px;
+  margin-right: 4px;
+}
+.hpb-source-cascade { background: #ecfeff; color: #0e7490; }
+.hpb-source-override { background: #fef3c7; color: #92400e; font-weight: 700; }
+.hpb-cascade-foot {
+  padding: 10px 16px;
+  background: #f9fafb;
+  font-size: 11.5px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.hpb-agency-card .card-head { padding-bottom: 8px; }
+.hpb-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: #6b7280;
+  cursor: pointer;
+}
+.hpb-agencies th {
+  font-size: 11.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #6b7280;
+  font-weight: 600;
+  padding: 10px 14px;
+  background: #f9fafb;
+  border-bottom: 1px solid #e5e7eb;
+}
+.hpb-agencies td {
+  padding: 12px 14px;
+  border-bottom: 1px solid #f3f4f6;
+  font-size: 13.5px;
+  vertical-align: middle;
+}
+.hpb-agency-id {
+  display: block;
+  font-size: 11px;
+  font-family: monospace;
+  color: #9ca3af;
+  margin-top: 2px;
+}
+.hpb-mk-pct {
+  font-family: 'DM Serif Display', serif;
+  font-size: 16px;
+  color: #0f0f3d;
+  font-variant-numeric: tabular-nums;
+}
+.hpb-mk-amt {
+  font-family: 'DM Serif Display', serif;
+  font-size: 15px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+.hpb-legend {
+  padding: 12px 16px;
+  background: #f9fafb;
+  border-top: 1px solid #e5e7eb;
+  font-size: 12px;
+  color: #6b7280;
+  line-height: 1.7;
+}
+
+/* ---------- C1: Agency Remittances ---------- */
+.fr-list-card { margin-bottom: 16px; }
+.fr-table th {
+  font-size: 11.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #6b7280;
+  font-weight: 600;
+  padding: 10px 14px;
+  border-bottom: 1px solid #e5e7eb;
+  background: #f9fafb;
+}
+.fr-table td {
+  padding: 14px 14px;
+  border-bottom: 1px solid #f3f4f6;
+  font-size: 13.5px;
+  vertical-align: middle;
+}
+.fr-row:hover { background: #fafafa; }
+.fr-row-overdue { background: #fef2f2; }
+.fr-row-overdue:hover { background: #fee2e2; }
+.fr-row-paid { opacity: 0.85; }
+.fr-license {
+  display: block;
+  font-size: 11px;
+  font-family: monospace;
+  color: #9ca3af;
+  margin-top: 2px;
+}
+.fr-amt {
+  font-family: 'DM Serif Display', serif;
+  font-size: 16px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+.fr-late {
+  color: #b91c1c;
+  font-weight: 700;
+  font-size: 12px;
+}
+
+.fr-detail-card { margin-bottom: 16px; }
+.fr-detail-actions { display: flex; gap: 10px; }
+.fr-detail-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  padding: 16px;
+}
+.fr-detail-stat {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 14px;
+}
+.fr-detail-stat-pos { background: linear-gradient(180deg, #f0fdf4 0%, #fff 100%); border-color: #bbf7d0; }
+.fr-detail-stat-warn { background: linear-gradient(180deg, #fffbeb 0%, #fff 100%); border-color: #fde68a; }
+.fr-detail-label {
+  font-size: 11.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #6b7280;
+  font-weight: 600;
+}
+.fr-detail-value {
+  font-family: 'DM Serif Display', serif;
+  font-size: 22px;
+  color: #0f0f3d;
+  margin: 4px 0 2px;
+  font-variant-numeric: tabular-nums;
+}
+.fr-h4 {
+  margin: 16px 16px 8px;
+  font-family: 'DM Serif Display', serif;
+  font-size: 16px;
+  color: #0f0f3d;
+}
+.fr-audit th,
+.fr-audit td {
+  padding: 10px 14px;
+  font-size: 12.5px;
+  border-bottom: 1px solid #f3f4f6;
+}
+.fr-audit th {
+  background: #f9fafb;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-weight: 600;
+}
+
+/* ---------- C1: Mark-Paid modal ---------- */
+.fr-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 180ms;
+}
+.fr-modal.open { pointer-events: auto; opacity: 1; }
+.fr-modal-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(15,15,61,0.45);
+}
+.fr-modal-panel {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.95);
+  width: 520px;
+  max-width: 94vw;
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+  transition: transform 180ms ease-out;
+  display: flex;
+  flex-direction: column;
+  max-height: 90vh;
+}
+.fr-modal.open .fr-modal-panel { transform: translate(-50%, -50%) scale(1); }
+.fr-modal-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  border-bottom: 1px solid #e5e7eb;
+}
+.fr-modal-head h3 {
+  margin: 0;
+  font-family: 'DM Serif Display', serif;
+  font-size: 19px;
+}
+.fr-modal-body {
+  padding: 20px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.fr-modal-summary {
+  padding: 12px 14px;
+  background: #fef3c7;
+  border-left: 3px solid #f59e0b;
+  border-radius: 6px;
+  font-size: 13px;
+}
+.fr-modal-foot {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding: 14px 20px;
+  border-top: 1px solid #e5e7eb;
+  background: #f9fafb;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .fr-detail-grid { grid-template-columns: repeat(2, 1fr); }
+  .hpb-filter-row { flex-direction: column; align-items: stretch; }
+  .hpb-field { min-width: 0; }
+}
+
+/* =================================================================
+   D1 — 4-tier cascade enrichment (2026-06-03)
+   ================================================================= */
+
+/* Hotel matches summary (chips for chain/country/categories of THIS hotel) */
+.hpb-match-card { margin-bottom: 12px; }
+.hpb-match-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 14px 16px;
+}
+.hpb-match-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+  border: 1px solid transparent;
+}
+.hpb-match-chip-chain { background: #e0f2fe; color: #075985; border-color: #bae6fd; }
+.hpb-match-chip-country { background: #fef3c7; color: #92400e; border-color: #fde68a; }
+.hpb-match-chip-category { background: #fce7f3; color: #9d174d; border-color: #fbcfe8; }
+.hpb-match-chip-none { background: #f3f4f6; color: #6b7280; font-style: italic; }
+
+/* Tier coverage card — 5 cells showing which tier won for how many agencies */
+.hpb-tier-coverage-card { margin-bottom: 12px; }
+.hpb-tier-coverage {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+  padding: 14px 16px;
+}
+.hpb-tier-cell {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 12px;
+  text-align: center;
+}
+.hpb-tier-cell-count {
+  font-family: 'DM Serif Display', serif;
+  font-size: 26px;
+  color: #0f0f3d;
+  font-variant-numeric: tabular-nums;
+}
+.hpb-tier-cell-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #6b7280;
+  font-weight: 600;
+  margin-top: 4px;
+}
+.hpb-tier-cell-hotel { border-color: #bbf7d0; background: linear-gradient(180deg, #f0fdf4 0%, #fff 100%); }
+.hpb-tier-cell-category { border-color: #fbcfe8; background: linear-gradient(180deg, #fdf2f8 0%, #fff 100%); }
+.hpb-tier-cell-country { border-color: #fde68a; background: linear-gradient(180deg, #fffbeb 0%, #fff 100%); }
+.hpb-tier-cell-chain { border-color: #bae6fd; background: linear-gradient(180deg, #f0f9ff 0%, #fff 100%); }
+.hpb-tier-cell-default { border-color: #e5e7eb; }
+
+/* Per-row tier badge (inside the per-agency table) */
+.d1-tier {
+  display: inline-block;
+  padding: 3px 9px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+.d1-tier-hotel { background: #dcfce7; color: #166534; }
+.d1-tier-category { background: #fce7f3; color: #9d174d; }
+.d1-tier-country { background: #fef3c7; color: #92400e; }
+.d1-tier-chain { background: #e0f2fe; color: #075985; }
+.d1-tier-default { background: #f3f4f6; color: #4b5563; }
+
+.hpb-rule-reason {
+  font-size: 12.5px;
+  color: #4b5563;
+}
+.hpb-rule-reason-target { font-weight: 600; color: #111827; }
+
+/* Responsive */
+@media (max-width: 900px) {
+  .hpb-tier-coverage { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* =================================================================
+   Tabler Icon tweaks for backoffice tier semantics (2026-06-03)
+   ================================================================= */
+.ti { display: inline-block; line-height: 1; vertical-align: -2px; }
+.d1-tier .ti { font-size: 11px; margin-right: 3px; vertical-align: -1px; }
+.hpb-match-chip .ti { font-size: 14px; margin-right: 2px; vertical-align: -2px; }
+.hpb-tier-cell-label .ti { font-size: 11px; margin-right: 3px; vertical-align: -1px; }
+.hpb-legend .ti { font-size: 11px; margin-right: 2px; vertical-align: -1px; }
+
+/* Row-just-changed flash — makes Mark Paid / Adjust / Add-Manual visibly
+   announce themselves so users see the change. 1.8s amber→green glow. */
+@keyframes frRowFlash {
+  0%   { background: #fef3c7; box-shadow: 0 0 0 4px rgba(245,158,11,0.35) inset; }
+  60%  { background: #dcfce7; box-shadow: 0 0 0 4px rgba(34,197,94,0.30) inset; }
+  100% { background: transparent; box-shadow: none; }
+}
+.fr-row-just-changed { animation: frRowFlash 1.8s ease-out 1; }
+
+/* Form-field consistency inside fr-modal (matches login form-field pattern) */
+.fr-modal-body .form-field { display: flex; flex-direction: column; gap: 4px; }
+.fr-modal-body .form-field label {
+  font-size: 12px; font-weight: 600; color: #4b5563;
+  text-transform: uppercase; letter-spacing: 0.04em;
+}
+.fr-modal-body .form-field input,
+.fr-modal-body .form-field select,
+.fr-modal-body .form-field textarea {
+  padding: 8px 12px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+}
+.fr-modal-body .form-field input:focus,
+.fr-modal-body .form-field select:focus,
+.fr-modal-body .form-field textarea:focus {
+  outline: none;
+  border-color: #0d9488;
+  box-shadow: 0 0 0 3px rgba(13,148,136,0.18);
+}
