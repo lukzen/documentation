@@ -241,7 +241,17 @@ Persist with the supplier locator + `externalRef` + raw XML for forensics.
 
 ### 5.5b Multi-room book — `bookMultiRoom()`
 
-**One `HotelBookingRQ`, N `<HotelElement>` blocks** — one per searched room. Each carries its own `<BookingCode>` (that room's rate from `HotelAvail`) and its own `<RelPaxesDist>` block describing which `IdPax` indices belong to that room.
+**One `HotelBookingRQ`, ONE `<HotelElement>`, ONE `<BookingCode>`, N `<RelPaxDist>` siblings** — one per room within the same HotelOption combination.
+
+Quoting the Juniper docs (https://api-edocs.ejuniper.com/en/api/jp/hotel-api) verbatim:
+
+> "RatePlanCode — Encoded data obtained from either the HotelAvail or HotelCheckAvail response. **Identifies a unique combination of rooms from an specific hotel.**"
+
+> "`RelPaxesDist/RelPaxDist` — Distribution list. **Each one of them corresponds to a room.**"
+
+> "Additionally, this transaction also allows for the confirmation of multiple combinations under the same `@Locator`, either by [...] **Simultaneously confirming them through the use of multiple HotelElement nodes** from the same HotelBooking request."
+
+So for a multi-room search (e.g. 2A + 2A on the same hotel), Juniper returns ONE HotelOption whose ONE BookingCode covers ALL rooms. The right XML:
 
 ```xml
 <HotelBookingRQ Version="1.1" Language="en">
@@ -255,22 +265,13 @@ Persist with the supplier locator + `externalRef` + raw XML for forensics.
   <Holder><RelPax IdPax="1"/></Holder>
   <ExternalBookingReference>EC-...</ExternalBookingReference>
   <Elements>
-    <HotelElement>                            <!-- Room A -->
-      <BookingCode>...rate for Room A...</BookingCode>
+    <HotelElement>
+      <BookingCode>...one code for the whole multi-room combination...</BookingCode>
       <RelPaxesDist>
-        <RelPaxDist>
+        <RelPaxDist>                          <!-- Room 1 -->
           <RelPaxes><RelPax IdPax="1"/><RelPax IdPax="2"/></RelPaxes>
         </RelPaxDist>
-      </RelPaxesDist>
-      <HotelBookingInfo Start="..." End="...">
-        <Price><PriceRange Minimum="25%" Maximum="100%" Currency="USD"/></Price>
-        <HotelCode>...</HotelCode>
-      </HotelBookingInfo>
-    </HotelElement>
-    <HotelElement>                            <!-- Room B, same envelope -->
-      <BookingCode>...rate for Room B...</BookingCode>
-      <RelPaxesDist>
-        <RelPaxDist>
+        <RelPaxDist>                          <!-- Room 2 -->
           <RelPaxes><RelPax IdPax="3"/><RelPax IdPax="4"/></RelPaxes>
         </RelPaxDist>
       </RelPaxesDist>
@@ -283,15 +284,19 @@ Persist with the supplier locator + `externalRef` + raw XML for forensics.
 </HotelBookingRQ>
 ```
 
-**Schema reference:** `JP_HotelBooking.Elements` is typed `ArrayOfJP_HotelElement` with `maxOccurs="unbounded"` (see WSDL at `ROIBOS_WSDL_URL`).
+**Multiple `<HotelElement>` siblings ARE allowed by the WSDL but reserved for "multiple combinations under the same @Locator"** — e.g. grouping two separate HotelBookingRules valuations into one booking. Not used for N rooms within one combination.
 
-**Why a SINGLE call, not N parallel ones.** Roibos qualifies each `BookingCode` during `HotelAvail` against the **multi-room distribution** the user originally searched. Sending each `BookingCode` in its own standalone `HotelBookingRQ` (one per room) makes Roibos return:
+**Pax holder rule** — `<Holder><RelPax IdPax="1"/></Holder>`. The first pax is the holder; all paxes across all rooms are listed in one `<Paxes>` block with sequential `IdPax`.
 
-> `400 — "XML seems to be incomplete or wrong. Please check the occupancy consistency"`
+**Failure modes observed during investigation:**
 
-…because the rate "knows" it was qualified for a 2-room search but the standalone call only carries 1 room's paxes. The combined call lets Roibos see the same pax/room mapping the rates were qualified against.
+| Wrong shape | Roibos response |
+|---|---|
+| N standalone single-room `HotelBookingRQ` (per-room loop) | `400 "XML seems to be incomplete or wrong. Please check the occupancy consistency"` |
+| ONE `HotelBookingRQ` with N `<HotelElement>` blocks (one rate per room) | Same `occupancy consistency` |
+| ONE `<HotelElement>` with ONE `<BookingCode>` + N `<RelPaxDist>` (this section's shape) | XML accepted — but `400 "The BookingCode expired"` if the BookingCode was issued for a single-room context |
 
-**Pax holder rule** — `<Holder><RelPax IdPax="1"/></Holder>`. The first pax is the holder; all paxes (across all rooms) are listed in one `<Paxes>` block with sequential `IdPax`.
+**Open question** — how to source the combination-level `RatePlanCode` from the agency-app's room-selection UI: the UI currently flattens rates per room TYPE (each rate card is a single rate plan), so the cypress-picked `rooms[].rateCode` values are single-room rates, not the multi-room combination code Juniper expects in `HotelBookingRules`. This needs either UI work (expose the combination code) or a backend lookup against the HotelAvail cache.
 
 ### 5.6 Cancel — `cancelBooking()`
 
