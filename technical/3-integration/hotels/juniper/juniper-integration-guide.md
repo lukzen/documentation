@@ -239,9 +239,65 @@ const status = mapJuniperStatusToUnified(response.HotelBookingRS["@Status"])  //
 
 Persist with the supplier locator + `externalRef` + raw XML for forensics.
 
+### 5.5b Multi-room book — `bookMultiRoom()`
+
+**One `HotelBookingRQ`, N `<HotelElement>` blocks** — one per searched room. Each carries its own `<BookingCode>` (that room's rate from `HotelAvail`) and its own `<RelPaxesDist>` block describing which `IdPax` indices belong to that room.
+
+```xml
+<HotelBookingRQ Version="1.1" Language="en">
+  <Login Password="..." Email="..." />
+  <Paxes>
+    <Pax IdPax="1">Carlos</Pax>
+    <Pax IdPax="2">Maria</Pax>
+    <Pax IdPax="3">Pedro</Pax>
+    <Pax IdPax="4">Sofia</Pax>
+  </Paxes>
+  <Holder><RelPax IdPax="1"/></Holder>
+  <ExternalBookingReference>EC-...</ExternalBookingReference>
+  <Elements>
+    <HotelElement>                            <!-- Room A -->
+      <BookingCode>...rate for Room A...</BookingCode>
+      <RelPaxesDist>
+        <RelPaxDist>
+          <RelPaxes><RelPax IdPax="1"/><RelPax IdPax="2"/></RelPaxes>
+        </RelPaxDist>
+      </RelPaxesDist>
+      <HotelBookingInfo Start="..." End="...">
+        <Price><PriceRange Minimum="25%" Maximum="100%" Currency="USD"/></Price>
+        <HotelCode>...</HotelCode>
+      </HotelBookingInfo>
+    </HotelElement>
+    <HotelElement>                            <!-- Room B, same envelope -->
+      <BookingCode>...rate for Room B...</BookingCode>
+      <RelPaxesDist>
+        <RelPaxDist>
+          <RelPaxes><RelPax IdPax="3"/><RelPax IdPax="4"/></RelPaxes>
+        </RelPaxDist>
+      </RelPaxesDist>
+      <HotelBookingInfo Start="..." End="...">
+        <Price><PriceRange Minimum="25%" Maximum="100%" Currency="USD"/></Price>
+        <HotelCode>...</HotelCode>
+      </HotelBookingInfo>
+    </HotelElement>
+  </Elements>
+</HotelBookingRQ>
+```
+
+**Schema reference:** `JP_HotelBooking.Elements` is typed `ArrayOfJP_HotelElement` with `maxOccurs="unbounded"` (see WSDL at `ROIBOS_WSDL_URL`).
+
+**Why a SINGLE call, not N parallel ones.** Roibos qualifies each `BookingCode` during `HotelAvail` against the **multi-room distribution** the user originally searched. Sending each `BookingCode` in its own standalone `HotelBookingRQ` (one per room) makes Roibos return:
+
+> `400 — "XML seems to be incomplete or wrong. Please check the occupancy consistency"`
+
+…because the rate "knows" it was qualified for a 2-room search but the standalone call only carries 1 room's paxes. The combined call lets Roibos see the same pax/room mapping the rates were qualified against.
+
+**Pax holder rule** — `<Holder><RelPax IdPax="1"/></Holder>`. The first pax is the holder; all paxes (across all rooms) are listed in one `<Paxes>` block with sequential `IdPax`.
+
 ### 5.6 Cancel — `cancelBooking()`
 
 `HotelBookingCancel` sent with the supplier locator. The cancellation policy (already frozen onto the booking at booking time) determines the penalty.
+
+**Multi-room cancel** — sent ONCE with the multi-room booking's locator. Roibos cancels all rooms in the same transaction.
 
 ---
 
