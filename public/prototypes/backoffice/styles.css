@@ -1747,3 +1747,463 @@ body.sidebar-open .sidebar-backdrop { display:block; opacity:1; }
   border-color: #0d9488;
   box-shadow: 0 0 0 3px rgba(13,148,136,0.18);
 }
+
+/* ============================================================
+   C1 ENHANCEMENTS (2026-06-04)
+   - clickable KPI cards
+   - sortable headers
+   - agency-link in row click → swaps drilldown
+   - per-row Modify status + Adjust amount icon-mini buttons
+   - flash highlight on drilldown swap
+   ============================================================ */
+
+.fr-kpi-clickable {
+  cursor: pointer;
+  transition: transform 120ms ease-out, box-shadow 120ms ease-out;
+}
+.fr-kpi-clickable:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(15,15,61,0.12);
+}
+
+#fr-table th[data-sortable] {
+  cursor: pointer;
+  user-select: none;
+  position: relative;
+  padding-right: 18px;
+}
+#fr-table th[data-sortable]::after {
+  content: " \2195";
+  opacity: 0.4;
+  font-size: 0.85em;
+  margin-left: 4px;
+}
+#fr-table th[data-sortable][data-sort-active="asc"]::after {
+  content: " \2191"; opacity: 1; color: #0d9488;
+}
+#fr-table th[data-sortable][data-sort-active="desc"]::after {
+  content: " \2193"; opacity: 1; color: #0d9488;
+}
+#fr-table th[data-sortable]:hover { background: #f9fafb; }
+
+.fr-agency-link {
+  cursor: pointer;
+  color: #0f0f3d;
+  text-decoration: none;
+}
+.fr-agency-link:hover strong {
+  color: #0d9488;
+  text-decoration: underline;
+}
+
+.fr-actions {
+  display: flex;
+  gap: 6px;
+  justify-content: flex-end;
+  align-items: center;
+}
+.btn-icon-mini {
+  width: 28px; height: 28px;
+  border-radius: 6px;
+  border: 1px solid #e5e7eb;
+  background: #fff;
+  color: #4b5563;
+  cursor: pointer;
+  display: inline-flex; align-items: center; justify-content: center;
+  padding: 0;
+  transition: background 100ms, border-color 100ms;
+}
+.btn-icon-mini:hover { background: #f3f4f6; border-color: #d1d5db; }
+.btn-icon-mini .ti { font-size: 13px; }
+
+/* Drilldown swap animation */
+@keyframes frDetailSwap {
+  0%   { background: rgba(13,148,136,0.12); }
+  100% { background: transparent; }
+}
+.fr-detail-card.fr-detail-just-swapped { animation: frDetailSwap 1.4s ease-out; }
+
+/* Bar/cell flash already exists from earlier work */
+
+/* Selected row indicator (when its agency is loaded in drilldown) */
+.fr-row-selected {
+  background: rgba(13,148,136,0.08) !important;
+  box-shadow: inset 3px 0 0 #0d9488;
+}
+.fr-row-selected td:first-child { padding-left: 12px; }
+
+/* ===== Functionality In Development banner =====
+   Placed on prototype-only screens (features not yet wired into the real app).
+   Red to be unambiguous — stakeholders reviewing the prototype need to know
+   at a glance which flows are aspirational vs already shipping. */
+.in-dev-banner {
+  background: linear-gradient(90deg, #fef2f2 0%, #fee2e2 100%);
+  border: 1px solid #fca5a5;
+  border-left: 4px solid #dc2626;
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin: 0 0 16px 0;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  color: #7f1d1d;
+  font-size: 13px;
+  line-height: 1.45;
+}
+.in-dev-banner .in-dev-icon {
+  flex: 0 0 auto;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #dc2626;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+}
+.in-dev-banner .in-dev-body { flex: 1 1 auto; }
+.in-dev-banner .in-dev-title {
+  font-weight: 700;
+  color: #b91c1c;
+  margin: 0 0 4px;
+  letter-spacing: 0.2px;
+  text-transform: uppercase;
+  font-size: 11px;
+}
+.in-dev-banner .in-dev-msg { color: #7f1d1d; }
+.in-dev-banner .in-dev-msg strong { color: #991b1b; }
+.in-dev-banner ul {
+  margin: 6px 0 0 0;
+  padding-left: 18px;
+}
+.in-dev-banner ul li { margin: 2px 0; }
+
+/* ===== Dashboard refresh — parity with real backoffice-app/src/modules/dashboard =====
+   Real app uses Tailwind + recharts + lucide-react icons inside Card/CardContent
+   shadcn primitives. Here we translate the visual contract to plain CSS so
+   stakeholders see the same shape: greeting header, filter toggle, KPI cards
+   with colored borders + icon tiles, status-breakdown bar, twin charts,
+   sortable recent-bookings table. */
+
+.dash-head { align-items: flex-end; }
+.dash-head h1 { font-family: 'DM Serif Display', serif; font-weight: 400; font-size: 28px; color: #0f0f3d; line-height: 1.15; margin: 0; }
+.dash-head .muted { font-size: 13px; margin-top: 4px; }
+
+/* Filter toggle */
+.dash-filter-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #0d9488;
+  color: white;
+  font-size: 11px;
+  font-weight: 700;
+  margin-left: 4px;
+}
+#dash-filter-caret { transition: transform 200ms; }
+.dash-filter-panel.open #dash-filter-caret { transform: rotate(180deg); }
+
+.dash-filter-panel {
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition: max-height 300ms ease, opacity 300ms ease, margin 300ms ease;
+  margin: 0;
+}
+.dash-filter-panel.open {
+  max-height: 240px;
+  opacity: 1;
+  margin: 0 0 16px;
+}
+.dash-filter-panel .dash-filter-row {
+  background: rgba(15,15,61,0.03);
+  border: 1px dashed #d1d5db;
+  border-radius: 10px;
+  padding: 16px;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 12px;
+}
+.dash-filter-field { display: flex; flex-direction: column; gap: 4px; }
+.dash-filter-field label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #6b7280;
+}
+.dash-filter-field input, .dash-filter-field select {
+  padding: 7px 10px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 13px;
+  font-family: inherit;
+}
+
+/* KPI cards — colored left border + icon tile + trend arrow */
+.dash-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+@media (max-width: 1024px) {
+  .dash-kpi-grid { grid-template-columns: repeat(2, 1fr); }
+  .dash-filter-panel .dash-filter-row { grid-template-columns: repeat(2, 1fr); }
+}
+.kpi-card {
+  background: white;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+  border-left-width: 4px;
+  padding: 18px 20px;
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  transition: all 200ms;
+}
+.kpi-card:hover { transform: translateY(-2px); box-shadow: 0 2px 12px rgba(15,15,61,0.08); }
+.kpi-card-navy { border-left-color: #0f0f3d; }
+.kpi-card-gold { border-left-color: #c4962c; }
+.kpi-card-green { border-left-color: #1b8a42; }
+.kpi-card-teal { border-left-color: #0d9488; }
+.kpi-card-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  flex-shrink: 0;
+}
+.kpi-icon-navy { background: #ebebf5; color: #0f0f3d; }
+.kpi-icon-gold { background: #fef3c7; color: #92400e; }
+.kpi-icon-green { background: #dcfce7; color: #15803d; }
+.kpi-icon-teal { background: #ccfbf1; color: #0d9488; }
+.kpi-card-body { flex: 1; min-width: 0; }
+.kpi-card-label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: #6b7280;
+}
+.kpi-card-value {
+  font-family: 'DM Serif Display', serif;
+  font-size: 28px;
+  color: #0f0f3d;
+  line-height: 1.1;
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin: 4px 0 2px;
+}
+.kpi-trend-up { color: #1b8a42; font-size: 16px; }
+.kpi-card-subtitle { font-size: 11px; color: #6b7280; }
+
+/* Status breakdown bar */
+.dash-status-bar {
+  background: rgba(15,15,61,0.03);
+  border: 1px dashed #d1d5db;
+  border-radius: 10px;
+  padding: 14px 16px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px;
+}
+.dash-status-bar-label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: #6b7280;
+  margin-right: 6px;
+}
+.dash-status-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.dash-status-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.dash-status-count { font-size: 14px; font-weight: 600; color: #0f0f3d; }
+.dash-status-name { font-size: 12px; color: #6b7280; }
+
+/* Card subtitle under chart titles */
+.dash-card-sub { font-size: 12px; margin: 2px 0 0; }
+
+/* Sortable recent-bookings table */
+.dash-sortable-tbl th[data-sort-key] {
+  cursor: pointer;
+  user-select: none;
+  position: relative;
+  padding-right: 18px;
+}
+.dash-sortable-tbl th[data-sort-key]::after {
+  content: " \2195";
+  opacity: 0.4;
+  font-size: 11px;
+  position: absolute;
+  right: 4px;
+}
+.dash-sortable-tbl th[data-sort-active="asc"]::after { content: " ▲"; opacity: 1; color: #0d9488; }
+.dash-sortable-tbl th[data-sort-active="desc"]::after { content: " ▼"; opacity: 1; color: #0d9488; }
+.dash-sortable-tbl tbody tr {
+  cursor: pointer;
+  transition: background 120ms;
+}
+.dash-sortable-tbl tbody tr:hover { background: rgba(13,148,136,0.05); }
+.dash-sortable-tbl .booking-id { color: #0d9488; font-weight: 600; }
+.dash-sortable-tbl tbody tr:hover .booking-id { text-decoration: underline; }
+
+.btn-link {
+  background: none;
+  border: none;
+  color: #0d9488;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+}
+.btn-link:hover { color: #0f766e; }
+
+/* ===== D1 simplified Custom/Default badge (2026-06-03) =====
+   Replaces the 5-tier icon vocabulary in aggregate views. Custom = the
+   agency overrode the default for this hotel; Default = system fallback.
+   Cascade trace (which tier won) stays inline in the "Rule reason" column. */
+.d1-rule-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+}
+.d1-rule-custom { background: #ccfbf1; color: #0f766e; border: 1px solid #99f6e4; }
+.d1-rule-default { background: #f3f4f6; color: #6b7280; border: 1px solid #e5e7eb; }
+
+/* ===== D1 per-agency drilldown (2026-06-03) =====
+   Restores per-agency drill-down lost when the aggregate tier cards were
+   removed. Pattern mirrors C1 Agency Remittances: top table = list, bottom
+   card swaps to show the selected row's full cascade trace + math. */
+.hpb-table-hint {
+  margin: 8px 16px 4px;
+  font-size: 12px;
+  color: #6b7280;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.hpb-table-hint .ti { color: #0d9488; font-size: 14px; }
+
+.hpb-row-selected {
+  background: rgba(13,148,136,0.06) !important;
+  box-shadow: inset 3px 0 0 #0d9488;
+}
+
+.hpb-agencies tbody tr {
+  cursor: pointer;
+  transition: background 120ms;
+}
+.hpb-agencies tbody tr:hover {
+  background: rgba(13,148,136,0.04);
+}
+
+.hpb-agency-drilldown-card { margin-top: 16px; }
+.hpb-agency-drilldown-card .card-head .badge {
+  background: #ccfbf1;
+  color: #0f766e;
+  font-weight: 600;
+}
+
+.hpb-drilldown-body {
+  display: grid;
+  grid-template-columns: 1.6fr 1fr;
+  gap: 24px;
+  padding: 0 16px 16px;
+}
+@media (max-width: 900px) {
+  .hpb-drilldown-body { grid-template-columns: 1fr; }
+}
+
+.hpb-drilldown-trace { display: flex; flex-direction: column; gap: 4px; }
+.hpb-cascade-step {
+  display: grid;
+  grid-template-columns: 28px 90px 1fr auto;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  font-size: 13px;
+  transition: all 120ms;
+}
+.hpb-cascade-indicator {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  font-size: 13px;
+}
+.hpb-cascade-tier { font-weight: 600; color: #1f2937; }
+.hpb-cascade-detail { color: #4b5563; }
+.hpb-cascade-pct { font-variant-numeric: tabular-nums; font-weight: 600; color: #1f2937; }
+
+.hpb-cascade-winner {
+  background: linear-gradient(90deg, #ccfbf1 0%, #f0fdfa 100%);
+  border-color: #14b8a6;
+  box-shadow: 0 1px 3px rgba(13,148,136,0.12);
+}
+.hpb-cascade-winner .hpb-cascade-indicator { background: #14b8a6; color: white; }
+.hpb-cascade-winner .hpb-cascade-tier,
+.hpb-cascade-winner .hpb-cascade-detail,
+.hpb-cascade-winner .hpb-cascade-pct { color: #0f766e; }
+
+.hpb-cascade-matched .hpb-cascade-indicator { background: #fde68a; color: #92400e; }
+.hpb-cascade-skipped {
+  border-style: dashed;
+  opacity: 0.6;
+}
+.hpb-cascade-skipped .hpb-cascade-indicator { background: #f3f4f6; color: #9ca3af; }
+.hpb-cascade-skipped .hpb-cascade-detail { font-style: italic; }
+
+.hpb-drilldown-math {
+  background: #fafafa;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  height: fit-content;
+}
+.hpb-math-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  color: #4b5563;
+}
+.hpb-math-row strong { color: #1f2937; font-variant-numeric: tabular-nums; }
+.hpb-math-op { color: #6b7280; }
+.hpb-math-total {
+  padding-top: 10px;
+  border-top: 1px solid #e5e7eb;
+  font-size: 14px;
+  color: #0f0f3d;
+}
+.hpb-math-total strong { font-size: 16px; color: #0f0f3d; }
+.hpb-math-foot { font-size: 12px; color: #6b7280; padding-top: 4px; }

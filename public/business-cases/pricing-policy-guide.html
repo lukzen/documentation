@@ -1157,6 +1157,7 @@ html[lang="es"] .lang-es { display: revert; }
       <h3 class="lang-es">Índice</h3>
       <div class="toc-grid lang-en">
         <a href="#mental-model"><span class="toc-num">1.</span><span>Mental Model — 5-layer cascade + markup_rules</span></a>
+        <a href="agency-markup-guide.html"><span class="toc-num">1b.</span><span>Agency-side markup → separate guide</span></a>
         <a href="#screen-policy"><span class="toc-num">2.</span><span>Screen: Pricing Policy</span></a>
         <a href="#screen-chains"><span class="toc-num">3.</span><span>Screen: Hotel Brands</span></a>
         <a href="#guardrails"><span class="toc-num">4.</span><span>Save Flow</span></a>
@@ -1170,6 +1171,7 @@ html[lang="es"] .lang-es { display: revert; }
       </div>
       <div class="toc-grid lang-es">
         <a href="#mental-model"><span class="toc-num">1.</span><span>Modelo mental — cascada de 5 capas + markup_rules</span></a>
+        <a href="agency-markup-guide.html"><span class="toc-num">1b.</span><span>Markup del lado de la agencia → guía separada</span></a>
         <a href="#screen-policy"><span class="toc-num">2.</span><span>Pantalla: Política de Precios</span></a>
         <a href="#screen-chains"><span class="toc-num">3.</span><span>Pantalla: Marcas Hoteleras</span></a>
         <a href="#guardrails"><span class="toc-num">4.</span><span>Flujo de guardado</span></a>
@@ -1453,6 +1455,24 @@ sequenceDiagram
 
   <div class="callout callout-info">
     Older API surfaces use the alias <code>commissionPercentage</code> on the TravelAgency model and on the legacy sales-agent endpoint. These are <em>aliases of the same concepts</em>; the canonical names used end-to-end by the commission engine and stored on every booking snapshot are the ones in the table above.
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SECTION 1B: AGENCY-SIDE MARKUP CASCADE -->
+<!-- ============================================================ -->
+<section id="agency-markup">
+  <h2 class="lang-en">1b. Agency-side markup → moved to dedicated guide</h2>
+  <h2 class="lang-es">1b. Markup del lado de la agencia → movido a una guía dedicada</h2>
+
+  <p class="lang-en">Section 1 above covers the <strong>Ergos-side</strong> commission cascade (what Ergos earns and how the policy layers stack). The <strong>agency-side</strong> markup — how each travel agency configures the percentage they add on top of <em>Ergos sell</em> to arrive at <em>customer price</em> — has its own dedicated guide with screenshots, a worked example, and the booking-time snapshot fields:</p>
+  <p class="lang-es">La sección 1 anterior cubre la cascada de comisiones del <strong>lado de Ergos</strong> (lo que Ergos gana y cómo se apilan las capas de política). El <strong>markup del lado de la agencia</strong> — cómo cada agencia de viajes configura el porcentaje que agrega sobre <em>Ergos sell</em> para llegar al <em>precio cliente</em> — tiene su propia guía dedicada con capturas, un ejemplo trabajado y los campos del snapshot al momento de la reserva:</p>
+
+  <div class="callout callout-info" style="margin-top:20px">
+    <strong class="lang-en">📘 Agency Markup Guide</strong>
+    <strong class="lang-es">📘 Guía de markup de la agencia</strong>
+    <span class="lang-en">→ <a href="agency-markup-guide.html"><strong>Read the dedicated guide: How agencies configure markup</strong></a>. Covers the 4-tier cascade (Brand · Country · Category · Hotel), the Markup Rules editor, the cascade preview widget, the backoffice audit view, and the booking-time <code>agencyMarkupSourceSnapshot</code> field.</span>
+    <span class="lang-es">→ <a href="agency-markup-guide.html"><strong>Leer la guía dedicada: cómo configuran las agencias el markup</strong></a>. Cubre la cascada de 4 niveles (Marca · País · Categoría · Hotel), el editor de Markup Rules, el widget de vista previa de la cascada, la vista de auditoría del backoffice y el campo del snapshot al momento de la reserva <code>agencyMarkupSourceSnapshot</code>.</span>
   </div>
 </section>
 

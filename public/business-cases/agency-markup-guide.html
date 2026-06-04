@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ergos — How Agencies Configure Markup</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy: #0f0f3d; --navy-mid: #1a1a4e; --navy-light: #2e2e6e;
+  --teal: #0fa89b; --teal-bright: #11c4b5; --teal-dark: #0d8a7f;
+  --teal-soft: #e0f7f5;
+  --gold: #c4962c; --gold-light: #f3e3b6;
+  --cream: #fdf6ec;
+  --red: #d32f2f; --red-light: #ffebee;
+  --green: #1b8a42; --green-light: #e8f5e9;
+  --amber: #e67e00; --amber-light: #fff3e0;
+  --blue: #1565c0; --blue-light: #e3f2fd;
+  --text-primary: #1a1a2e; --text-secondary: #3d3d5c;
+  --text-muted: #5c5c7a;
+  --border: #d0d0e0; --border-light: #e8e8f0;
+  --bg-white: #ffffff; --bg-gray: #f5f5fa;
+  --shadow-sm: 0 1px 4px rgba(15,15,61,0.06);
+  --shadow: 0 2px 12px rgba(15,15,61,0.08);
+  --shadow-lg: 0 8px 32px rgba(15,15,61,0.12);
+  --radius: 10px; --radius-lg: 14px;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg-gray);
+  color: var(--text-primary);
+  line-height: 1.65;
+  font-size: 15px;
+}
+
+/* Top bar — sticky language toggle + breadcrumb */
+.topbar {
+  position: sticky; top: 0; z-index: 50;
+  background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 100%);
+  color: white;
+  padding: 14px 32px;
+  display: flex; align-items: center; justify-content: space-between;
+  box-shadow: var(--shadow);
+}
+.topbar h1 {
+  font-family: 'DM Serif Display', serif;
+  font-size: 18px;
+  font-weight: 400;
+  letter-spacing: 0.3px;
+  margin: 0;
+}
+.topbar .breadcrumb {
+  font-size: 11px; opacity: 0.7; letter-spacing: 0.5px; text-transform: uppercase;
+  margin-bottom: 4px;
+}
+.topbar .breadcrumb a { color: rgba(255,255,255,0.85); text-decoration: none; }
+.topbar .breadcrumb a:hover { color: white; text-decoration: underline; }
+.lang-switch { display: flex; gap: 6px; }
+.lang-switch button {
+  font-family: inherit; font-size: 12px; font-weight: 600;
+  padding: 6px 14px; border-radius: 16px;
+  background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.7);
+  border: 1px solid rgba(255,255,255,0.2);
+  cursor: pointer; transition: all 0.15s;
+}
+.lang-switch button:hover { background: rgba(255,255,255,0.2); color: white; }
+.lang-switch button.active {
+  background: var(--teal); color: white; border-color: var(--teal-bright);
+}
+
+/* Page container */
+main { max-width: 920px; margin: 0 auto; padding: 40px 32px 80px; }
+
+/* Section card */
+section {
+  background: white;
+  border-radius: var(--radius-lg);
+  padding: 32px 36px;
+  margin-bottom: 24px;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border-light);
+}
+section h2 {
+  font-family: 'DM Serif Display', serif;
+  font-size: 26px; font-weight: 400; color: var(--navy);
+  margin-bottom: 16px;
+  letter-spacing: 0.2px;
+}
+section h3 {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 16px; font-weight: 700; color: var(--navy-mid);
+  margin: 24px 0 10px;
+  letter-spacing: 0.2px;
+}
+section p { margin-bottom: 12px; color: var(--text-secondary); }
+section p strong { color: var(--navy-mid); }
+
+/* Code */
+code {
+  font-family: 'JetBrains Mono', monospace;
+  background: var(--bg-gray);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 13px;
+  color: var(--teal-dark);
+}
+pre {
+  background: #0f0f3d; color: #e0e0f0;
+  padding: 18px 22px;
+  border-radius: var(--radius);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  line-height: 1.6;
+  overflow-x: auto;
+  margin: 12px 0 18px;
+}
+pre code { background: transparent; color: inherit; padding: 0; }
+
+/* Tables */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 14px 0 18px;
+  font-size: 14px;
+}
+table th {
+  background: var(--bg-gray);
+  color: var(--navy);
+  font-weight: 700;
+  text-align: left;
+  padding: 10px 14px;
+  border-bottom: 2px solid var(--border);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+table td {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border-light);
+  vertical-align: top;
+}
+table tbody tr:last-child td { border-bottom: none; }
+
+/* Callouts */
+.callout {
+  border-left: 4px solid;
+  padding: 14px 18px;
+  border-radius: 6px;
+  margin: 18px 0;
+  font-size: 14px;
+}
+.callout strong { display: block; margin-bottom: 4px; font-size: 13px; text-transform: uppercase; letter-spacing: 0.4px; }
+.callout-info { background: var(--blue-light); border-color: var(--blue); color: #0c3d6b; }
+.callout-warn { background: var(--amber-light); border-color: var(--amber); color: #7a4500; }
+.callout-success { background: var(--green-light); border-color: var(--green); color: #134d24; }
+
+/* Lists */
+ul, ol { margin: 8px 0 14px 22px; }
+li { margin-bottom: 4px; color: var(--text-secondary); }
+li strong { color: var(--navy-mid); }
+
+/* Screenshots */
+.shot {
+  margin: 22px 0;
+  border-radius: var(--radius);
+  overflow: hidden;
+  border: 1px solid var(--border);
+  background: var(--bg-gray);
+  box-shadow: var(--shadow);
+}
+.shot img { display: block; width: 100%; height: auto; }
+.shot-caption {
+  padding: 10px 16px;
+  font-size: 12.5px;
+  color: var(--text-muted);
+  background: white;
+  border-top: 1px solid var(--border-light);
+  font-style: italic;
+}
+.shot-caption strong { color: var(--navy-mid); font-style: normal; }
+
+/* Language toggle — pure-CSS show/hide */
+.lang-es { display: none; }
+body.es .lang-en { display: none; }
+body.es .lang-es { display: revert; }
+
+/* Lead block at top */
+.lead {
+  background: linear-gradient(135deg, var(--teal-soft) 0%, white 100%);
+  border: 1px solid var(--teal-bright);
+  border-left: 4px solid var(--teal);
+  padding: 22px 28px;
+  border-radius: var(--radius);
+  margin-bottom: 28px;
+  font-size: 16px;
+  color: var(--navy-mid);
+}
+.lead p { color: inherit; margin-bottom: 8px; }
+.lead p:last-child { margin-bottom: 0; }
+
+/* In-dev pill — references the prototype banner */
+.in-dev-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  background: #fef2f2;
+  border: 1px solid #fca5a5;
+  border-left: 3px solid var(--red);
+  border-radius: 12px;
+  color: #7f1d1d;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  vertical-align: middle;
+  margin-left: 8px;
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div>
+    <div class="breadcrumb">
+      <span class="lang-en">Ergos Docs · Business cases · <a href="pricing-policy-guide.html">Pricing Policy</a></span>
+      <span class="lang-es">Ergos Docs · Casos de negocio · <a href="pricing-policy-guide.html">Política de Precios</a></span>
+    </div>
+    <h1>
+      <span class="lang-en">How Agencies Configure Markup</span>
+      <span class="lang-es">Cómo las agencias configuran el markup</span>
+    </h1>
+  </div>
+  <div class="lang-switch">
+    <button class="active" data-lang="en" onclick="setLang('en')">EN</button>
+    <button data-lang="es" onclick="setLang('es')">ES</button>
+  </div>
+</div>
+
+<main>
+
+  <!-- ============================================================ -->
+  <!-- LEAD -->
+  <!-- ============================================================ -->
+  <div class="lead">
+    <p class="lang-en"><strong>What this document covers.</strong> Travel agencies set the markup they earn over Ergos's wholesale price (the <em>Ergos sell</em>) using a 4-tier cascade: <strong>Brand → Country → Category → Hotel</strong>, with a default catch-all. The most-specific matching rule wins. This guide explains the tiers, the resolver, where it's edited, where it's audited, and the booking-time snapshot. <span class="in-dev-pill">Prototype</span></p>
+    <p class="lang-es"><strong>Qué cubre este documento.</strong> Las agencias de viajes configuran el markup que ganan sobre el precio mayorista de Ergos (el <em>Ergos sell</em>) usando una cascada de 4 niveles: <strong>Marca → País → Categoría → Hotel</strong>, con un valor por defecto como catch-all. La regla más específica que coincida gana. Esta guía explica los niveles, el resolutor, dónde se edita, dónde se audita y la instantánea al momento de la reserva. <span class="in-dev-pill">Prototipo</span></p>
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- 1. WHY A CASCADE -->
+  <!-- ============================================================ -->
+  <section>
+    <h2>
+      <span class="lang-en">1. Why a cascade replaced the single default</span>
+      <span class="lang-es">1. Por qué una cascada reemplazó al valor por defecto único</span>
+    </h2>
+
+    <p class="lang-en">Originally each agency had one number, <code>TravelAgency.defaultMarkupPct</code>, applied uniformly to every booking. That model could not express <em>"12% on Meliá hotels, but 18% on Iberostar in Cuba, and 22% on the specific Iberostar Grand Packard property."</em> Configuring rules per individual hotel across an inventory of approximately 100,000 hotels is not viable. The cascade lets each agency place one rule at the broadest level that fits its commercial strategy, and override more specifically only where needed.</p>
+    <p class="lang-es">Originalmente cada agencia tenía un único número, <code>TravelAgency.defaultMarkupPct</code>, aplicado uniformemente a cada reserva. Ese modelo no podía expresar <em>"12% en hoteles Meliá, pero 18% en Iberostar en Cuba, y 22% en el Iberostar Grand Packard específico."</em> Configurar reglas por cada hotel individual sobre un inventario de aproximadamente 100.000 hoteles no es viable. La cascada permite a cada agencia colocar una regla en el nivel más amplio que se ajuste a su estrategia comercial, y sobrescribirla con más especificidad solo donde sea necesario.</p>
+
+    <div class="callout callout-warn">
+      <strong class="lang-en">Design decision — no GDS axis exposed to agencies</strong>
+      <strong class="lang-es">Decisión de diseño — sin eje GDS expuesto a las agencias</strong>
+      <span class="lang-en">Even though Ergos's internal cascade has a <code>gds</code> scope, the agency UI never exposes vendor identity. Agencies do not see whether a hotel came from Hotetec, Dingus, Restel, or Juniper. Bulk-editing pricing by GDS would leak supplier information and confuse the mental model — the agency thinks in terms of hotels, brands, geography, and property type, not which API the inventory was sourced from.</span>
+      <span class="lang-es">Aunque la cascada interna de Ergos tiene un scope <code>gds</code>, la UI de la agencia nunca expone la identidad del proveedor. Las agencias no ven si un hotel vino de Hotetec, Dingus, Restel o Juniper. Editar precios masivamente por GDS filtraría información del proveedor y confundiría el modelo mental — la agencia piensa en términos de hoteles, marcas, geografía y tipo de propiedad, no en qué API se obtuvo el inventario.</span>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- 2. THE FOUR TIERS -->
+  <!-- ============================================================ -->
+  <section>
+    <h2>
+      <span class="lang-en">2. The four tiers (most specific → least specific)</span>
+      <span class="lang-es">2. Los cuatro niveles (de más específico → menos específico)</span>
+    </h2>
+
+    <table class="lang-en">
+      <thead>
+        <tr><th>Tier</th><th>Targets</th><th>Example</th><th>Typical rule count</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>1. Hotel</strong></td><td>A single hotel by id</td><td>"Iberostar Grand Packard → 22%"</td><td>0–10 (surgical overrides)</td></tr>
+        <tr><td><strong>2. Category</strong></td><td>A property classification (e.g. 5-star All-Inclusive)</td><td>"5-star AI → 20%"</td><td>0–5</td></tr>
+        <tr><td><strong>3. Country</strong></td><td>An ISO country code</td><td>"Cuba → 14%"</td><td>0–20</td></tr>
+        <tr><td><strong>4. Brand</strong></td><td>A hotel chain by id</td><td>"Iberostar → 18%"</td><td>0–50</td></tr>
+        <tr><td><em>Default</em></td><td>Catch-all on the agency profile</td><td><code>defaultMarkupPct</code> = 15%</td><td>Always 1</td></tr>
+      </tbody>
+    </table>
+
+    <table class="lang-es">
+      <thead>
+        <tr><th>Nivel</th><th>Objetivo</th><th>Ejemplo</th><th>Cantidad típica de reglas</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>1. Hotel</strong></td><td>Un único hotel por id</td><td>"Iberostar Grand Packard → 22%"</td><td>0–10 (overrides puntuales)</td></tr>
+        <tr><td><strong>2. Categoría</strong></td><td>Una clasificación de propiedad (ej. 5 estrellas Todo Incluido)</td><td>"5 estrellas AI → 20%"</td><td>0–5</td></tr>
+        <tr><td><strong>3. País</strong></td><td>Un código de país ISO</td><td>"Cuba → 14%"</td><td>0–20</td></tr>
+        <tr><td><strong>4. Marca</strong></td><td>Una cadena hotelera por id</td><td>"Iberostar → 18%"</td><td>0–50</td></tr>
+        <tr><td><em>Por defecto</em></td><td>Catch-all en el perfil de la agencia</td><td><code>defaultMarkupPct</code> = 15%</td><td>Siempre 1</td></tr>
+      </tbody>
+    </table>
+
+    <p class="lang-en">Tier 1 is the most specific — a rule for one hotel beats a rule that targets that hotel's brand. Tiers 2 and 3 are orthogonal at the conceptual level (a hotel can be a 5-star property <em>and</em> in Cuba), but the resolver picks <strong>Category before Country</strong>, on the rule that "what the property is" is a stronger commercial signal than "where the property is." Brand is the broadest tier — it covers a chain's entire inventory.</p>
+    <p class="lang-es">El nivel 1 es el más específico — una regla para un hotel gana a una regla que apunta a la marca de ese hotel. Los niveles 2 y 3 son ortogonales a nivel conceptual (un hotel puede ser una propiedad de 5 estrellas <em>y</em> estar en Cuba), pero el resolutor elige <strong>Categoría antes que País</strong>, bajo la regla de que "qué es la propiedad" es una señal comercial más fuerte que "dónde está la propiedad". Marca es el nivel más amplio — cubre todo el inventario de una cadena.</p>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- 3. THE EDITOR -->
+  <!-- ============================================================ -->
+  <section>
+    <h2>
+      <span class="lang-en">3. The Markup Rules editor (agency-app)</span>
+      <span class="lang-es">3. El editor de Markup Rules (agency-app)</span>
+    </h2>
+
+    <p class="lang-en">Agency staff edit their rules on the agency-app's <code>/markup-rules</code> page, accessed from <em>My Account → Workspace → Markup Rules</em>. The page lists rules grouped by tier and includes a <strong>cascade preview widget</strong> that lets the agency check, before saving, exactly which rule will apply to any given hotel.</p>
+    <p class="lang-es">El personal de la agencia edita sus reglas en la página <code>/markup-rules</code> de la agency-app, accesible desde <em>Mi Cuenta → Workspace → Markup Rules</em>. La página lista las reglas agrupadas por nivel e incluye un <strong>widget de vista previa de la cascada</strong> que permite a la agencia comprobar, antes de guardar, exactamente qué regla aplicará a cualquier hotel dado.</p>
+
+    <div class="shot">
+      <img src="agency-markup-screenshots/01-markup-rules-overview.png" alt="Markup Rules page — overview">
+      <div class="shot-caption">
+        <span class="lang-en"><strong>Markup Rules page (full view).</strong> Red banner at top makes clear this is prototype-only — the real agency-app does not yet ship this page. Below: cascade preview widget, default-markup card, then rule groups (Brand · Country · Category · Hotel) each with a row count and Add button.</span>
+        <span class="lang-es"><strong>Página Markup Rules (vista completa).</strong> El banner rojo en la parte superior deja claro que esto es solo prototipo — la agency-app real todavía no incluye esta página. Abajo: widget de vista previa de la cascada, tarjeta de markup por defecto, luego grupos de reglas (Marca · País · Categoría · Hotel) cada uno con un conteo de filas y un botón Añadir.</span>
+      </div>
+    </div>
+
+    <h3 class="lang-en">Cascade preview widget</h3>
+    <h3 class="lang-es">Widget de vista previa de la cascada</h3>
+
+    <p class="lang-en">The preview widget removes guesswork. The agency picks any hotel from the inventory, and the widget shows: which of their rules wins, the resulting markup percentage, and the customer-facing price on a sample $200 supplier-net booking. Changes save once committed — the preview is a dry run.</p>
+    <p class="lang-es">El widget de vista previa elimina la incertidumbre. La agencia elige cualquier hotel del inventario, y el widget muestra: cuál de sus reglas gana, el porcentaje de markup resultante y el precio cliente sobre una reserva de muestra de $200 net del proveedor. Los cambios se guardan una vez confirmados — la vista previa es una simulación.</p>
+
+    <div class="shot">
+      <img src="agency-markup-screenshots/02-cascade-preview-widget.png" alt="Cascade preview widget close-up">
+      <div class="shot-caption">
+        <span class="lang-en"><strong>Cascade preview widget.</strong> Pick a hotel from the dropdown, see exactly which rule applies, the markup percent, the cascade source, and the customer-facing price.</span>
+        <span class="lang-es"><strong>Widget de vista previa de la cascada.</strong> Elegí un hotel del dropdown, ves exactamente qué regla aplica, el porcentaje de markup, el origen en la cascada y el precio cliente.</span>
+      </div>
+    </div>
+
+    <h3 class="lang-en">Adding a rule</h3>
+    <h3 class="lang-es">Añadir una regla</h3>
+
+    <p class="lang-en">Clicking <strong>+ Add rule</strong> opens a side drawer where the agency picks a tier (Brand / Country / Category / Hotel), then picks the target within that tier (e.g. "Cuba" for Country), and enters the markup percent (whole-percent integer, 0–200). The drawer can also delete or edit existing rules.</p>
+    <p class="lang-es">Al hacer clic en <strong>+ Añadir regla</strong> se abre un cajón lateral donde la agencia elige un nivel (Marca / País / Categoría / Hotel), luego elige el objetivo dentro de ese nivel (ej. "Cuba" para País), e ingresa el porcentaje de markup (entero porcentual, 0–200). El cajón también permite eliminar o editar reglas existentes.</p>
+
+    <div class="shot">
+      <img src="agency-markup-screenshots/03-add-rule-drawer.png" alt="Add rule drawer">
+      <div class="shot-caption">
+        <span class="lang-en"><strong>Add Rule drawer.</strong> Tier picker on the left, target picker dependent on the chosen tier, markup percentage input on the right. Save is disabled until all three are populated.</span>
+        <span class="lang-es"><strong>Cajón de Añadir regla.</strong> Selector de nivel a la izquierda, selector de objetivo dependiente del nivel elegido, input de porcentaje de markup a la derecha. Guardar queda deshabilitado hasta que los tres estén completos.</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- 4. RESOLVER + EXAMPLE -->
+  <!-- ============================================================ -->
+  <section>
+    <h2>
+      <span class="lang-en">4. How the resolver walks the tiers</span>
+      <span class="lang-es">4. Cómo el resolutor recorre los niveles</span>
+    </h2>
+
+    <p class="lang-en">For every booking, the resolver walks the agency's rules in order of specificity. The <strong>first match wins</strong>; remaining tiers are skipped. If no tier matches, the default is used.</p>
+    <p class="lang-es">Para cada reserva, el resolutor recorre las reglas de la agencia en orden de especificidad. <strong>La primera coincidencia gana</strong>; los niveles restantes se omiten. Si ningún nivel coincide, se usa el valor por defecto.</p>
+
+    <pre class="lang-en"><code>// Pseudocode — agency-side resolver (mirrors d1ResolveAgencyTier in the prototype)
+function resolveAgencyMarkupPct(agency, hotel) {
+  // 1. Hotel-specific override
+  const hotelRule = agency.rules.hotel.find(r =&gt; r.targetId === hotel._id);
+  if (hotelRule) return { pct: hotelRule.pct, source: 'hotel', label: hotel.name };
+
+  // 2. Category match (e.g. 5-star AI)
+  const catRule = agency.rules.category.find(r =&gt; hotel.categories.includes(r.targetId));
+  if (catRule) return { pct: catRule.pct, source: 'category', label: categoryName(catRule.targetId) };
+
+  // 3. Country match (ISO code)
+  const countryRule = agency.rules.country.find(r =&gt; r.targetId === hotel.country);
+  if (countryRule) return { pct: countryRule.pct, source: 'country', label: countryName(countryRule.targetId) };
+
+  // 4. Brand / chain match
+  const brandRule = agency.rules.brand.find(r =&gt; r.targetId === hotel.chainId);
+  if (brandRule) return { pct: brandRule.pct, source: 'brand', label: brandName(brandRule.targetId) };
+
+  // 5. Default — always wins if nothing else matched
+  return { pct: agency.defaultMarkupPct, source: 'default', label: 'Agency default' };
+}</code></pre>
+
+    <pre class="lang-es"><code>// Pseudocódigo — resolutor del lado de la agencia (espeja d1ResolveAgencyTier en el prototipo)
+function resolveAgencyMarkupPct(agency, hotel) {
+  // 1. Override por hotel específico
+  const hotelRule = agency.rules.hotel.find(r =&gt; r.targetId === hotel._id);
+  if (hotelRule) return { pct: hotelRule.pct, source: 'hotel', label: hotel.name };
+
+  // 2. Coincidencia por categoría (ej. 5 estrellas AI)
+  const catRule = agency.rules.category.find(r =&gt; hotel.categories.includes(r.targetId));
+  if (catRule) return { pct: catRule.pct, source: 'category', label: categoryName(catRule.targetId) };
+
+  // 3. Coincidencia por país (código ISO)
+  const countryRule = agency.rules.country.find(r =&gt; r.targetId === hotel.country);
+  if (countryRule) return { pct: countryRule.pct, source: 'country', label: countryName(countryRule.targetId) };
+
+  // 4. Coincidencia por marca / cadena
+  const brandRule = agency.rules.brand.find(r =&gt; r.targetId === hotel.chainId);
+  if (brandRule) return { pct: brandRule.pct, source: 'brand', label: brandName(brandRule.targetId) };
+
+  // 5. Por defecto — siempre gana si nada más coincide
+  return { pct: agency.defaultMarkupPct, source: 'default', label: 'Por defecto' };
+}</code></pre>
+
+    <h3 class="lang-en">Worked example — Sol Mar Travel × Iberostar Grand Packard</h3>
+    <h3 class="lang-es">Ejemplo trabajado — Sol Mar Travel × Iberostar Grand Packard</h3>
+
+    <p class="lang-en"><strong>Sol Mar Travel</strong> sells the <strong>Iberostar Grand Packard</strong> in Havana, Cuba. Sol Mar's rules:</p>
+    <p class="lang-es"><strong>Sol Mar Travel</strong> vende el <strong>Iberostar Grand Packard</strong> en La Habana, Cuba. Reglas de Sol Mar:</p>
+
+    <ul class="lang-en">
+      <li><strong>Hotel:</strong> Iberostar Grand Packard → 18%</li>
+      <li><strong>Country:</strong> Cuba → 14%</li>
+      <li><em>Default:</em> 15%</li>
+    </ul>
+    <ul class="lang-es">
+      <li><strong>Hotel:</strong> Iberostar Grand Packard → 18%</li>
+      <li><strong>País:</strong> Cuba → 14%</li>
+      <li><em>Por defecto:</em> 15%</li>
+    </ul>
+
+    <p class="lang-en">The resolver returns <strong>18% from the Hotel tier</strong>. The Country rule (14%) and Default (15%) are skipped because a more-specific match exists. On a $200 Ergos sell, the customer pays $200 × (1 + 0.18) = <strong>$236.00</strong>. Sol Mar earns the $36 markup income.</p>
+    <p class="lang-es">El resolutor devuelve <strong>18% del nivel Hotel</strong>. La regla de País (14%) y el valor por defecto (15%) se omiten porque existe una coincidencia más específica. Sobre $200 de Ergos sell, el cliente paga $200 × (1 + 0.18) = <strong>$236.00</strong>. Sol Mar gana los $36 de ingreso por markup.</p>
+
+    <div class="callout callout-success">
+      <strong class="lang-en">What if Sol Mar deletes the hotel-specific rule?</strong>
+      <strong class="lang-es">¿Qué pasa si Sol Mar elimina la regla específica del hotel?</strong>
+      <span class="lang-en">The next-best match (Country · Cuba → 14%) wins. Customer pays $200 × 1.14 = $228.00. Markup income drops from $36 to $28. The cascade preview widget visualises this drop before save — the agency sees the price change before committing.</span>
+      <span class="lang-es">La siguiente mejor coincidencia (País · Cuba → 14%) gana. El cliente paga $200 × 1,14 = $228,00. El ingreso por markup cae de $36 a $28. El widget de vista previa de la cascada visualiza esta caída antes de guardar — la agencia ve el cambio de precio antes de confirmar.</span>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- 5. AUDIT VIEW -->
+  <!-- ============================================================ -->
+  <section>
+    <h2>
+      <span class="lang-en">5. The backoffice audit view</span>
+      <span class="lang-es">5. La vista de auditoría del backoffice</span>
+    </h2>
+
+    <p class="lang-en">Ergos backoffice admins can audit the resulting price for any hotel × agency pair on the <strong>Hotel Price Composition</strong> screen. The per-agency drilldown walks the same cascade and shows, for the selected agency on the selected hotel, which tier won and which were skipped — using the same precedence as the agency-side resolver.</p>
+    <p class="lang-es">Los admins del backoffice de Ergos pueden auditar el precio resultante para cualquier par hotel × agencia en la pantalla de <strong>Composición de Precio de Hotel</strong>. El drilldown por agencia recorre la misma cascada y muestra, para la agencia seleccionada en el hotel seleccionado, qué nivel ganó y cuáles se omitieron — usando la misma precedencia que el resolutor del lado de la agencia.</p>
+
+    <div class="shot">
+      <img src="agency-markup-screenshots/04-backoffice-audit-drilldown.png" alt="Backoffice Hotel Price Composition with cascade drilldown">
+      <div class="shot-caption">
+        <span class="lang-en"><strong>Backoffice audit view.</strong> Top: cascade waterfall (Ergos-side math). Middle: per-agency effective customer-price table — each row shows whether that agency used a Custom rule or fell to Default, plus inline rule reason. Bottom: cascade-trace drilldown for the selected agency — every tier walked, with skipped (grey dashed) / matched (yellow check) / winner (teal trophy) state. Math block on the right.</span>
+        <span class="lang-es"><strong>Vista de auditoría del backoffice.</strong> Arriba: cascada en cascada (matemática del lado Ergos). Medio: tabla de precio efectivo al cliente por agencia — cada fila muestra si esa agencia usó una regla Custom o cayó al Por defecto, más la razón inline de la regla. Abajo: drilldown de traza de cascada para la agencia seleccionada — cada nivel recorrido, con estado omitido (gris discontinuo) / coincide (verificación amarilla) / ganador (trofeo turquesa). Bloque de matemática a la derecha.</span>
+      </div>
+    </div>
+
+    <p class="lang-en">This dual surface — <em>configuration</em> on the agency side, <em>audit</em> on the backoffice side — lets disputes be reconstructed exactly. The auditor can answer "why is Agency A's price different from Agency B's for the same room?" by clicking through each agency's row and seeing the cascade winner side-by-side.</p>
+    <p class="lang-es">Esta doble superficie — <em>configuración</em> del lado de la agencia, <em>auditoría</em> del lado del backoffice — permite reconstruir las disputas exactamente. El auditor puede responder "¿por qué el precio de la Agencia A es diferente del de la Agencia B para la misma habitación?" haciendo clic en la fila de cada agencia y viendo el ganador de la cascada lado a lado.</p>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- 6. BOOKING-TIME SNAPSHOT -->
+  <!-- ============================================================ -->
+  <section>
+    <h2>
+      <span class="lang-en">6. Booking-time snapshot</span>
+      <span class="lang-es">6. Instantánea al momento de la reserva</span>
+    </h2>
+
+    <p class="lang-en">When a booking freezes, the agency's effective markup is captured as <code>agencyMarkupPctSnapshot</code> on the booking document — same field name as today. The new addition is <code>agencyMarkupSourceSnapshot</code>, which records:</p>
+    <p class="lang-es">Cuando una reserva se congela, el markup efectivo de la agencia se captura como <code>agencyMarkupPctSnapshot</code> en el documento de reserva — mismo nombre de campo que hoy. La nueva adición es <code>agencyMarkupSourceSnapshot</code>, que registra:</p>
+
+    <table class="lang-en">
+      <thead><tr><th>Field</th><th>Type</th><th>Meaning</th></tr></thead>
+      <tbody>
+        <tr><td><code>tier</code></td><td><code>'hotel' | 'category' | 'country' | 'brand' | 'default'</code></td><td>Which tier of the cascade won</td></tr>
+        <tr><td><code>targetId</code></td><td><code>string | null</code></td><td>The id that matched (hotel id, chain id, country code, etc.). <code>null</code> when tier is <code>'default'</code>.</td></tr>
+        <tr><td><code>label</code></td><td><code>string</code></td><td>Human-readable label captured for display ("Iberostar Group", "Cuba", "5-star AI", etc.) — robust against later renames of the source entity.</td></tr>
+      </tbody>
+    </table>
+
+    <table class="lang-es">
+      <thead><tr><th>Campo</th><th>Tipo</th><th>Significado</th></tr></thead>
+      <tbody>
+        <tr><td><code>tier</code></td><td><code>'hotel' | 'category' | 'country' | 'brand' | 'default'</code></td><td>Qué nivel de la cascada ganó</td></tr>
+        <tr><td><code>targetId</code></td><td><code>string | null</code></td><td>El id que coincidió (id de hotel, id de cadena, código de país, etc.). <code>null</code> cuando el nivel es <code>'default'</code>.</td></tr>
+        <tr><td><code>label</code></td><td><code>string</code></td><td>Etiqueta legible capturada para visualización ("Iberostar Group", "Cuba", "5 estrellas AI", etc.) — resistente a renombrados posteriores de la entidad origen.</td></tr>
+      </tbody>
+    </table>
+
+    <p class="lang-en">This makes after-the-fact disputes answerable without re-running the resolver against possibly-different current rules. If Sol Mar changed their Country · Cuba rule from 14% to 10% last week, the bookings that froze before the change still report <code>agencyMarkupPctSnapshot: 18</code> and <code>agencyMarkupSourceSnapshot: { tier: 'hotel', targetId: 'IBE-GP-HAV', label: 'Iberostar Grand Packard' }</code> — the historical truth, not what the resolver would compute today.</p>
+    <p class="lang-es">Esto hace que las disputas posteriores sean respondibles sin tener que volver a ejecutar el resolutor contra reglas actuales posiblemente diferentes. Si Sol Mar cambió su regla País · Cuba de 14% a 10% la semana pasada, las reservas que se congelaron antes del cambio aún reportan <code>agencyMarkupPctSnapshot: 18</code> y <code>agencyMarkupSourceSnapshot: { tier: 'hotel', targetId: 'IBE-GP-HAV', label: 'Iberostar Grand Packard' }</code> — la verdad histórica, no lo que el resolutor calcularía hoy.</p>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- 7. CONVENTIONS + LINKS -->
+  <!-- ============================================================ -->
+  <section>
+    <h2>
+      <span class="lang-en">7. Conventions, status, links</span>
+      <span class="lang-es">7. Convenciones, estado, enlaces</span>
+    </h2>
+
+    <div class="callout callout-info">
+      <strong class="lang-en">Integer-percent convention</strong>
+      <strong class="lang-es">Convención de entero porcentual</strong>
+      <span class="lang-en">All four tier rule values and <code>defaultMarkupPct</code> follow the platform's whole-percent integer convention: <code>15</code> means 15%, min 0, max 200. UI input controls validate this; the backend Zod schema rejects out-of-range or non-integer values at the API boundary. Internal math divides by 100 exactly once via <code>pct(n) = n/100</code>.</span>
+      <span class="lang-es">Los cuatro valores de regla por nivel y <code>defaultMarkupPct</code> siguen la convención de entero porcentual entera de la plataforma: <code>15</code> significa 15%, min 0, max 200. Los controles de input de la UI validan esto; el esquema Zod del backend rechaza valores fuera de rango o no enteros en el borde de la API. La matemática interna divide entre 100 exactamente una vez vía <code>pct(n) = n/100</code>.</span>
+    </div>
+
+    <h3 class="lang-en">Status &amp; implementation</h3>
+    <h3 class="lang-es">Estado e implementación</h3>
+
+    <p class="lang-en"><span class="in-dev-pill">Prototype</span> This page (<code>/markup-rules</code>) is not yet in production. The real agency-app today only stores a single <code>TravelAgency.defaultMarkupPct</code>. Implementation tracked as <strong>USER_STORIES A1</strong> — see <code>documentation/_user_stories_pending/USER_STORIES.md</code>. The simplification decisions captured during prototyping (no GDS axis, tier semantics, snapshot fields) appear in the Design decisions log at the bottom of that file.</p>
+    <p class="lang-es"><span class="in-dev-pill">Prototipo</span> Esta página (<code>/markup-rules</code>) aún no está en producción. La agency-app real hoy solo almacena un único <code>TravelAgency.defaultMarkupPct</code>. La implementación se rastrea como <strong>USER_STORIES A1</strong> — ver <code>documentation/_user_stories_pending/USER_STORIES.md</code>. Las decisiones de simplificación capturadas durante el prototipado (sin eje GDS, semántica de niveles, campos del snapshot) aparecen en el log de decisiones de diseño al final de ese archivo.</p>
+
+    <h3 class="lang-en">Where to click through</h3>
+    <h3 class="lang-es">Por dónde hacer clic</h3>
+
+    <ul class="lang-en">
+      <li><strong>Agency-app prototype:</strong> <a href="../prototypes/agency-app/">/prototypes/agency-app/</a> → <em>My Account → Workspace → Markup Rules</em></li>
+      <li><strong>Backoffice prototype:</strong> <a href="../prototypes/backoffice/">/prototypes/backoffice/</a> → <em>Hotel Price</em> tab</li>
+      <li><strong>Sibling document:</strong> <a href="pricing-policy-guide.html">Ergos-side pricing policy &amp; hotel brands</a> — the backoffice cascade that produces <em>Ergos sell</em>, which this agency cascade then marks up.</li>
+    </ul>
+    <ul class="lang-es">
+      <li><strong>Prototipo agency-app:</strong> <a href="../prototypes/agency-app/">/prototypes/agency-app/</a> → <em>Mi Cuenta → Workspace → Markup Rules</em></li>
+      <li><strong>Prototipo backoffice:</strong> <a href="../prototypes/backoffice/">/prototypes/backoffice/</a> → pestaña <em>Hotel Price</em></li>
+      <li><strong>Documento hermano:</strong> <a href="pricing-policy-guide.html">Política de precios del lado de Ergos y marcas hoteleras</a> — la cascada del backoffice que produce <em>Ergos sell</em>, sobre el cual esta cascada de la agencia luego aplica markup.</li>
+    </ul>
+  </section>
+
+</main>
+
+<script>
+function setLang(lang) {
+  document.body.classList.toggle('es', lang === 'es');
+  document.querySelectorAll('.lang-switch button').forEach(b => {
+    b.classList.toggle('active', b.dataset.lang === lang);
+  });
+  try { localStorage.setItem('agencyMarkupGuideLang', lang); } catch (e) {}
+}
+(function() {
+  try {
+    const saved = localStorage.getItem('agencyMarkupGuideLang');
+    if (saved === 'es') setLang('es');
+  } catch (e) {}
+})();
+</script>
+
+</body>
+</html>

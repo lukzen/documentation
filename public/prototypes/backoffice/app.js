@@ -197,27 +197,261 @@ function filterTable(id){
 /* ---------- screen renderers ---------- */
 const RENDERERS = {};
 
+// Dashboard mock state — kept module-level so sort/filter callbacks
+// don't have to round-trip through DOM. Mirrors AnalyticsData shape from
+// backoffice-app/src/network/analytics.ts.
+window.DASH_STATE = {
+  totalReservations: 8412,
+  totalUsers: 1934,
+  totalSalesAgents: 312,
+  totalTravelAgencies: 0, // set after AGENCIES loaded
+  totalBookingAmount: 1240000,
+  reservationsByStatus: { confirmed: 4120, pending: 1860, cancelled: 680, completed: 1752 },
+  monthlyTrend: [
+    { month: 'Dec 25', count: 1040, revenue: 142000 },
+    { month: 'Jan 26', count: 1180, revenue: 168000 },
+    { month: 'Feb 26', count: 1260, revenue: 184000 },
+    { month: 'Mar 26', count: 1420, revenue: 212000 },
+    { month: 'Apr 26', count: 1530, revenue: 228000 },
+    { month: 'May 26', count: 1612, revenue: 244000 },
+  ],
+  recentBookings: [], // populated from RESERVATIONS
+  sortKey: 'createdAt',
+  sortDir: 'desc',
+  filtersOpen: false,
+};
+
+const DASH_STATUS_COLORS = {
+  Confirmed: '#1b8a42',
+  Pending: '#c4962c',
+  Cancelled: '#d32f2f',
+  Completed: '#1565c0',
+};
+
+function dashGreeting() {
+  const h = new Date().getHours();
+  if (h < 12) return 'Good morning, Admin';
+  if (h < 18) return 'Good afternoon, Admin';
+  return 'Good evening, Admin';
+}
+
+function dashFormatCurrency(n) {
+  return 'USD ' + new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 }).format(n);
+}
+
+function dashFormatCurrencyShort(n) {
+  if (n >= 1_000_000) return '$' + (n / 1_000_000).toFixed(2) + 'M';
+  if (n >= 1_000) return '$' + (n / 1_000).toFixed(0) + 'k';
+  return '$' + n;
+}
+
+function dashStatusBadge(status) {
+  const map = { Confirmed: 'green', Pending: 'gold', Cancelled: 'red', Completed: 'blue' };
+  return `<span class="pill pill-${map[status] || 'gray'}">${status}</span>`;
+}
+
+function dashToggleFilters() {
+  const panel = document.getElementById('dash-filter-panel');
+  if (!panel) return;
+  window.DASH_STATE.filtersOpen = !panel.classList.contains('open');
+  panel.classList.toggle('open');
+}
+
+function dashRefresh() {
+  protoToast && protoToast('Refreshing analytics…');
+  setTimeout(() => RENDERERS['dashboard'](), 350);
+}
+
+function dashSortBy(th, key, type) {
+  const cur = th.getAttribute('data-sort-active');
+  const dir = cur === 'asc' ? 'desc' : 'asc';
+  document.querySelectorAll('#tbl-recent th[data-sort-active]').forEach(o => o.removeAttribute('data-sort-active'));
+  th.setAttribute('data-sort-active', dir);
+  window.DASH_STATE.sortKey = key;
+  window.DASH_STATE.sortDir = dir;
+  dashRenderRecentTable();
+}
+
+function dashRenderRecentTable() {
+  const { recentBookings, sortKey, sortDir } = window.DASH_STATE;
+  const rows = [...recentBookings].sort((a, b) => {
+    let av = a[sortKey], bv = b[sortKey];
+    if (sortKey === 'totalAmount') { av = +av; bv = +bv; }
+    if (sortKey === 'createdAt') { av = new Date(av).getTime(); bv = new Date(bv).getTime(); }
+    if (av < bv) return sortDir === 'asc' ? -1 : 1;
+    if (av > bv) return sortDir === 'asc' ? 1 : -1;
+    return 0;
+  });
+  const tbl = document.getElementById('tbl-recent');
+  if (!tbl) return;
+  tbl.innerHTML = `
+    <thead>
+      <tr>
+        <th data-sort-key="bookingId" onclick="dashSortBy(this,'bookingId','str')">Booking ID</th>
+        <th data-sort-key="agencyName" onclick="dashSortBy(this,'agencyName','str')">Agency</th>
+        <th data-sort-key="totalAmount" onclick="dashSortBy(this,'totalAmount','num')">Amount</th>
+        <th data-sort-key="status" onclick="dashSortBy(this,'status','str')">Status</th>
+        <th data-sort-key="createdAt" onclick="dashSortBy(this,'createdAt','date')" data-sort-active="${sortDir}">Date</th>
+      </tr>
+    </thead>
+    <tbody>
+      ${rows.map(r => `
+        <tr onclick="showScreen('reservations')">
+          <td><span class="booking-id">${r.bookingId.slice(-8)}</span></td>
+          <td>${r.agencyName}</td>
+          <td><strong>${dashFormatCurrency(r.totalAmount)}</strong></td>
+          <td>${dashStatusBadge(r.status)}</td>
+          <td class="muted">${new Date(r.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}</td>
+        </tr>
+      `).join('')}
+    </tbody>
+  `;
+}
+
+function dashRenderStatusBar() {
+  const { reservationsByStatus, totalReservations } = window.DASH_STATE;
+  const bar = document.getElementById('dash-status-bar');
+  if (!bar) return;
+  const items = Object.entries(reservationsByStatus).map(([status, count]) => {
+    const name = status.charAt(0).toUpperCase() + status.slice(1);
+    const pct = ((count / (totalReservations || 1)) * 100).toFixed(0);
+    return `
+      <div class="dash-status-item">
+        <div class="dash-status-dot" style="background:${DASH_STATUS_COLORS[name] || '#888'}"></div>
+        <span class="dash-status-count">${count}</span>
+        <span class="dash-status-name">${name} (${pct}%)</span>
+      </div>
+    `;
+  }).join('');
+  bar.innerHTML = `<span class="dash-status-bar-label">Status breakdown</span>${items}`;
+}
+
 RENDERERS['dashboard'] = () => {
-  document.getElementById('kpi-res').textContent = '8,412';
-  document.getElementById('kpi-users').textContent = '1,934';
-  document.getElementById('kpi-ag').textContent = AGENCIES.length;
-  document.getElementById('kpi-rev').textContent = '$1.24M';
-  renderTable('tbl-recent',[
-    {key:'locator',label:'Locator'},
-    {key:'guest',label:'Guest'},
-    {key:'hotel',label:'Hotel'},
-    {key:'checkin',label:'Check-in'},
-    {key:'total',label:'Total',fmt:r=>'$'+r.total},
-    {label:'Status',fmt:r=>pill(r.status,statusPill(r.status))}
-  ], RESERVATIONS.slice(0,6));
-  // charts
-  if(window._chStatus) window._chStatus.destroy();
-  if(window._chTrend) window._chTrend.destroy();
-  const c1 = document.getElementById('chart-status'); if(c1){
-    window._chStatus = new Chart(c1,{type:'doughnut',data:{labels:STATUSES,datasets:[{data:[4120,1860,680,1752],backgroundColor:['#0fa89b','#c4962c','#dc2626','#2563eb'],borderWidth:0}]},options:{plugins:{legend:{position:'bottom'}},cutout:'62%'}});
+  const s = window.DASH_STATE;
+  s.totalTravelAgencies = AGENCIES.length;
+  s.recentBookings = RESERVATIONS.slice(0, 8).map((r, i) => ({
+    id: r.id || 'b' + i,
+    bookingId: r.locator || `BK-${100000 + i}`,
+    agencyName: r.agencyName || (AGENCIES[i % AGENCIES.length]?.agencyName) || 'Demo Agency',
+    totalAmount: +r.total || (1200 + i * 145),
+    status: r.status || 'Confirmed',
+    createdAt: r.createdAt || new Date(Date.now() - i * 86400000 * 2).toISOString(),
+  }));
+
+  // Header
+  const greet = document.getElementById('dash-greeting');
+  if (greet) greet.textContent = dashGreeting();
+
+  // KPI values
+  document.getElementById('kpi-res').textContent = s.totalReservations.toLocaleString();
+  const pendingEl = document.getElementById('kpi-res-pending');
+  if (pendingEl) pendingEl.textContent = s.reservationsByStatus.pending.toLocaleString();
+  document.getElementById('kpi-users').textContent = s.totalUsers.toLocaleString();
+  const agentsEl = document.getElementById('kpi-agents-count');
+  if (agentsEl) agentsEl.textContent = s.totalSalesAgents.toLocaleString();
+  document.getElementById('kpi-ag').textContent = s.totalTravelAgencies;
+  document.getElementById('kpi-rev').textContent = dashFormatCurrencyShort(s.totalBookingAmount);
+
+  // Status breakdown bar
+  dashRenderStatusBar();
+
+  // Recent bookings table (sortable)
+  dashRenderRecentTable();
+
+  // Charts
+  if (window._chStatus) window._chStatus.destroy();
+  if (window._chTrend) window._chTrend.destroy();
+
+  const c1 = document.getElementById('chart-status');
+  if (c1) {
+    const labels = Object.keys(s.reservationsByStatus).map(k => k.charAt(0).toUpperCase() + k.slice(1));
+    const data = Object.values(s.reservationsByStatus);
+    const ctx = c1.getContext('2d');
+    const gradients = labels.map(name => {
+      const grad = ctx.createLinearGradient(0, 0, 0, 280);
+      const color = DASH_STATUS_COLORS[name] || '#888';
+      grad.addColorStop(0, color);
+      grad.addColorStop(1, color + '99');
+      return grad;
+    });
+    window._chStatus = new Chart(c1, {
+      type: 'bar',
+      data: { labels, datasets: [{ data, backgroundColor: gradients, borderRadius: 8, barThickness: 48 }] },
+      options: {
+        plugins: { legend: { display: false }, tooltip: {
+          callbacks: { label: ctx => {
+            const pct = ((ctx.parsed.y / (s.totalReservations || 1)) * 100).toFixed(1);
+            return `${ctx.parsed.y} (${pct}%)`;
+          } }
+        } },
+        scales: {
+          y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.06)' }, ticks: { font: { size: 11 } } },
+          x: { grid: { display: false }, ticks: { font: { size: 12 } } },
+        },
+      },
+    });
   }
-  const c2 = document.getElementById('chart-trend'); if(c2){
-    window._chTrend = new Chart(c2,{type:'line',data:{labels:['Oct','Nov','Dec','Jan','Feb','Mar','Apr'],datasets:[{label:'Reservations',data:[820,910,1040,1180,1260,1420,1612],borderColor:'#1a1a4e',backgroundColor:'rgba(26,26,78,.08)',fill:true,tension:.35,pointRadius:4}]},options:{plugins:{legend:{display:false}},scales:{y:{beginAtZero:true}}}});
+
+  const c2 = document.getElementById('chart-trend');
+  if (c2) {
+    const ctx2 = c2.getContext('2d');
+    const bookingGrad = ctx2.createLinearGradient(0, 0, 0, 280);
+    bookingGrad.addColorStop(0, 'rgba(13,148,136,0.25)');
+    bookingGrad.addColorStop(1, 'rgba(13,148,136,0)');
+    const revenueGrad = ctx2.createLinearGradient(0, 0, 0, 280);
+    revenueGrad.addColorStop(0, 'rgba(34,197,94,0.25)');
+    revenueGrad.addColorStop(1, 'rgba(34,197,94,0)');
+    window._chTrend = new Chart(c2, {
+      type: 'line',
+      data: {
+        labels: s.monthlyTrend.map(m => m.month),
+        datasets: [
+          {
+            label: 'Bookings',
+            data: s.monthlyTrend.map(m => m.count),
+            borderColor: '#0d9488',
+            backgroundColor: bookingGrad,
+            fill: true,
+            tension: 0.35,
+            yAxisID: 'y',
+            pointRadius: 4,
+            pointBackgroundColor: '#0d9488',
+            pointBorderColor: '#fff',
+            pointBorderWidth: 2,
+          },
+          {
+            label: 'Revenue',
+            data: s.monthlyTrend.map(m => m.revenue),
+            borderColor: '#22c55e',
+            backgroundColor: revenueGrad,
+            fill: true,
+            tension: 0.35,
+            yAxisID: 'y1',
+            pointRadius: 4,
+            pointBackgroundColor: '#22c55e',
+            pointBorderColor: '#fff',
+            pointBorderWidth: 2,
+          },
+        ],
+      },
+      options: {
+        plugins: {
+          legend: { position: 'top', labels: { usePointStyle: true, pointStyle: 'circle', font: { size: 12 } } },
+          tooltip: {
+            callbacks: {
+              label: ctx => ctx.dataset.label === 'Revenue'
+                ? `Revenue: ${dashFormatCurrency(ctx.parsed.y)}`
+                : `Bookings: ${ctx.parsed.y}`,
+            },
+          },
+        },
+        scales: {
+          y: { type: 'linear', position: 'left', grid: { color: 'rgba(0,0,0,0.06)' }, ticks: { font: { size: 11 } } },
+          y1: { type: 'linear', position: 'right', grid: { drawOnChartArea: false }, ticks: { font: { size: 11 }, callback: v => dashFormatCurrencyShort(v) } },
+          x: { grid: { display: false }, ticks: { font: { size: 12 } } },
+        },
+      },
+    });
   }
 };
 

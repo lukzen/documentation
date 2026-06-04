@@ -664,3 +664,208 @@ document.addEventListener('click', function (e) {
   protoToast('Opening your account menu…', 'info');
   setTimeout(() => showScreen('profile-info'), 400);
 });
+
+/* ============================================================
+   P&L ENHANCEMENTS (2026-06-03)
+   - pnlDrilldown(metric): clicking a stat card scrolls to per-booking
+     table + filters/highlights the contributing column
+   - pnlSortBy(thEl, key, type): toggles asc/desc on the clicked
+     column, sorts the per-booking tbody, syncs other th[data-sortable]
+     visual state
+   - remModifyStatus / remSaveModifyStatus: open a modal for the
+     selected remittance row, allow changing status with audit reason
+   ============================================================ */
+
+const PNL_METRIC_COL = {
+  profit: 8,          // Profit
+  markup: 6,          // Markup
+  rebate: 7,          // Rebate
+  bookings: null,     // all bookings — no column highlight
+};
+const PNL_METRIC_LABEL = {
+  profit: 'Total Profit',
+  markup: 'Markup Income',
+  rebate: 'Rebate Income',
+  bookings: 'All Bookings',
+};
+
+function pnlDrilldown(metric) {
+  const tbody = document.getElementById('pnl-tbody');
+  if (!tbody) return;
+  // Read the date range so the chip explains the scope
+  const fromInput = document.querySelector('#screen-pnl .pnl-date-filter input[type="date"]:first-of-type, #screen-pnl .pnl-date-filter input[type="date"]');
+  const dateInputs = document.querySelectorAll('#screen-pnl .pnl-date-filter input[type="date"]');
+  const from = dateInputs[0]?.value || '—';
+  const to = dateInputs[1]?.value || '—';
+
+  // Filter rows: for "rebate" → only rows with rebate > 0 (non-"—"); others show all
+  const rows = Array.from(tbody.querySelectorAll('tr'));
+  let visible = 0;
+  rows.forEach(tr => {
+    const cells = tr.querySelectorAll('td');
+    let show = true;
+    if (metric === 'rebate') {
+      const rebateCell = cells[6];
+      show = rebateCell && !/^—/.test(rebateCell.textContent.trim());
+    } else if (metric === 'markup') {
+      const markupCell = cells[5];
+      show = markupCell && !/^—/.test(markupCell.textContent.trim());
+    } else if (metric === 'profit') {
+      const profitCell = cells[7];
+      show = profitCell && parseFloat(profitCell.textContent.replace(/[^0-9.]/g, '')) > 0;
+    }
+    // 'bookings' shows all
+    tr.style.display = show ? '' : 'none';
+    if (show) visible++;
+    // Highlight the contributing column briefly
+    tr.classList.remove('pnl-row-just-highlighted');
+    void tr.offsetWidth;  // restart animation
+    tr.classList.add('pnl-row-just-highlighted');
+  });
+
+  // Update the filter chip
+  const chip = document.getElementById('pnl-filter-chip');
+  if (chip) {
+    chip.style.display = 'inline-block';
+    chip.innerHTML = `Filtered: <strong>${PNL_METRIC_LABEL[metric]}</strong> · ${from} → ${to} · <strong>${visible}</strong> rows · <a onclick="pnlClearFilter()">Clear</a>`;
+  }
+  // Highlight target column in header
+  document.querySelectorAll('#pnl-table th').forEach(th => th.classList.remove('pnl-th-spotlight'));
+  const idx = PNL_METRIC_COL[metric];
+  if (idx) {
+    document.querySelector('#pnl-table th:nth-child(' + idx + ')')?.classList.add('pnl-th-spotlight');
+  }
+  // Scroll into view
+  document.getElementById('pnl-table-card')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  protoToast(`${PNL_METRIC_LABEL[metric]} — showing ${visible} bookings for selected period`, 'info');
+}
+
+function pnlClearFilter() {
+  const tbody = document.getElementById('pnl-tbody');
+  tbody?.querySelectorAll('tr').forEach(tr => tr.style.display = '');
+  const chip = document.getElementById('pnl-filter-chip');
+  if (chip) { chip.style.display = 'none'; chip.innerHTML = ''; }
+  document.querySelectorAll('#pnl-table th').forEach(th => th.classList.remove('pnl-th-spotlight'));
+  protoToast('Filter cleared', 'info');
+}
+
+function pnlSortBy(th, key, type) {
+  const tbody = document.getElementById('pnl-tbody');
+  if (!tbody) return;
+  // Determine direction: toggle if same column, else asc
+  const current = th.getAttribute('data-sort-active');
+  const next = current === 'asc' ? 'desc' : 'asc';
+  // Reset all headers
+  document.querySelectorAll('#pnl-table th[data-sortable]').forEach(h => {
+    h.removeAttribute('data-sort-active');
+    h.removeAttribute('aria-sort');
+  });
+  th.setAttribute('data-sort-active', next);
+  th.setAttribute('aria-sort', next === 'asc' ? 'ascending' : 'descending');
+
+  const rows = Array.from(tbody.querySelectorAll('tr'));
+  const colIdx = Array.from(th.parentNode.children).indexOf(th);
+  const cellVal = (tr) => {
+    const cell = tr.children[colIdx];
+    if (!cell) return type === 'num' ? -Infinity : '';
+    const text = cell.textContent.trim();
+    if (type === 'num') {
+      if (/^—/.test(text)) return -Infinity;
+      const n = parseFloat(text.replace(/[^0-9.\-]/g, ''));
+      return isNaN(n) ? -Infinity : n;
+    }
+    if (type === 'date') {
+      const t = Date.parse(text);
+      return isNaN(t) ? 0 : t;
+    }
+    return text.toLowerCase();
+  };
+  rows.sort((a, b) => {
+    const av = cellVal(a), bv = cellVal(b);
+    if (av < bv) return next === 'asc' ? -1 : 1;
+    if (av > bv) return next === 'asc' ? 1 : -1;
+    return 0;
+  });
+  rows.forEach(r => tbody.appendChild(r));
+}
+
+/* --- Remittance modify-status modal --- */
+let _remStatusRow = null;
+function remModifyStatus(btn) {
+  _remStatusRow = btn.closest('tr');
+  if (!_remStatusRow) return;
+  const period = _remStatusRow.querySelector('td:first-child strong')?.textContent || '';
+  const amount = _remStatusRow.querySelector('.rem-amt')?.textContent || '';
+  const due = _remStatusRow.querySelector('td:nth-child(3)')?.textContent || '';
+  const currentStatus = _remStatusRow.dataset.status || 'pending';
+  const modal = document.getElementById('rem-status-modal');
+  if (!modal) return;
+  const summary = document.getElementById('rem-status-summary');
+  if (summary) {
+    summary.innerHTML = `<div><strong>${period}</strong> · ${amount} · due ${due}</div>
+      <div style="margin-top:4px; font-size:12px">Currently <strong>${currentStatus}</strong>. Changes are immutably audited.</div>`;
+  }
+  document.getElementById('rem-status-new').value = currentStatus === 'paid' ? 'pending' : 'paid';
+  document.getElementById('rem-status-ref').value = '';
+  document.getElementById('rem-status-reason').value = '';
+  modal.classList.add('open');
+  setTimeout(() => document.getElementById('rem-status-reason').focus(), 80);
+}
+function remCloseModifyStatus() {
+  document.getElementById('rem-status-modal')?.classList.remove('open');
+  _remStatusRow = null;
+}
+function remSaveModifyStatus() {
+  const newStatus = document.getElementById('rem-status-new')?.value;
+  const ref = document.getElementById('rem-status-ref')?.value?.trim();
+  const reason = document.getElementById('rem-status-reason')?.value?.trim();
+  if (!newStatus) { protoToast('Pick a new status', 'error'); return; }
+  if (newStatus === 'paid' && !ref) {
+    protoToast('Wire reference required when marking paid', 'error');
+    return;
+  }
+  if (!reason || reason.length < 6) {
+    protoToast('Reason is required (audited) — please describe what changed', 'error');
+    return;
+  }
+  if (_remStatusRow) {
+    const statusCell = _remStatusRow.querySelector('td:nth-child(4)');
+    const paidAtCell = _remStatusRow.querySelector('td:nth-child(5)');
+    const refCell = _remStatusRow.querySelector('td:nth-child(6)');
+    const oldStatus = _remStatusRow.dataset.status;
+    if (statusCell) {
+      let html;
+      if (newStatus === 'paid') {
+        html = '<span class="rem-status rem-status-paid"><i class="ti ti-check"></i> Paid</span>';
+      } else if (newStatus === 'overdue') {
+        html = '<span class="rem-status rem-status-overdue"><i class="ti ti-alert-triangle"></i> Paid late</span>';
+      } else {
+        html = '<span class="rem-status rem-status-pending"><i class="ti ti-clock-hour-4"></i> Pending</span>';
+      }
+      statusCell.innerHTML = html;
+    }
+    if (newStatus === 'paid' || newStatus === 'overdue') {
+      const ts = new Date().toISOString().slice(0, 16).replace('T', ' ');
+      if (paidAtCell) paidAtCell.textContent = ts;
+      if (refCell) refCell.textContent = ref;
+    } else {
+      // Reverting to pending — clear paid-at + reference
+      if (paidAtCell) paidAtCell.textContent = '—';
+      if (refCell) refCell.textContent = '—';
+    }
+    _remStatusRow.dataset.status = newStatus;
+    _remStatusRow.classList.remove('rem-row-just-changed');
+    void _remStatusRow.offsetWidth;
+    _remStatusRow.classList.add('rem-row-just-changed');
+    _remStatusRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    protoToast(`Status changed: ${oldStatus} → ${newStatus} · "${reason.slice(0, 50)}${reason.length > 50 ? '…' : ''}" logged`, 'success');
+  }
+  remCloseModifyStatus();
+}
+
+/* Esc closes the modify-status modal */
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    document.getElementById('rem-status-modal')?.classList.remove('open');
+  }
+});
