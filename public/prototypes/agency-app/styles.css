@@ -1009,7 +1009,6 @@ body.modal-open { overflow: hidden; }
 #screen-confirmation { background: linear-gradient(160deg, #fdf8ef 0%, var(--warm-50) 50%); }
 #screen-bookings { background: var(--warm-100); }
 #screen-booking-detail { background: var(--warm-100); }
-#screen-markup { background: var(--warm-100); }
 
 /* 6. Navbar accent line on inner pages */
 #screen-results .navbar,
@@ -1018,8 +1017,7 @@ body.modal-open { overflow: hidden; }
 #screen-payment .navbar,
 #screen-confirmation .navbar,
 #screen-bookings .navbar,
-#screen-booking-detail .navbar,
-#screen-markup .navbar {
+#screen-booking-detail .navbar {
   border-bottom: none;
   box-shadow: 0 2px 0 0 var(--accent), var(--shadow-sm);
 }
@@ -3105,3 +3103,250 @@ body.modal-open { overflow: hidden; }
   border-bottom: 1px solid var(--border-soft);
 }
 .acct-sidebar-group:first-of-type { margin-top: 6px; }
+
+/* ============================================================
+   P&L ENHANCEMENTS (2026-06-03)
+   - clickable stat cards (drill-down)
+   - sort indicators on table headers
+   - bar-chart hover values
+   - remittance-status modify modal
+   - status update flash highlight on table rows
+   ============================================================ */
+
+/* --- Clickable stat cards --- */
+.pnl-stat-clickable {
+  cursor: pointer;
+  transition: transform 120ms ease-out, box-shadow 120ms ease-out;
+}
+.pnl-stat-clickable:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(15,15,61,0.08);
+}
+.pnl-stat-clickable:active { transform: translateY(0); }
+
+/* --- Per-booking table sort indicators --- */
+.pnl-table th[data-sortable] {
+  cursor: pointer;
+  user-select: none;
+  position: relative;
+  padding-right: 18px;
+}
+.pnl-table th[data-sortable]::after {
+  content: " \2195";
+  opacity: 0.4;
+  font-size: 0.85em;
+  margin-left: 4px;
+}
+.pnl-table th[data-sortable][data-sort-active="asc"]::after {
+  content: " \2191";
+  opacity: 1;
+  color: var(--teal-dark);
+}
+.pnl-table th[data-sortable][data-sort-active="desc"]::after {
+  content: " \2193";
+  opacity: 1;
+  color: var(--teal-dark);
+}
+.pnl-table th[data-sortable]:hover { background: var(--bg-subtle); }
+
+/* Hint banner when a filter is active */
+#pnl-filter-chip {
+  display: inline-block !important;
+  margin-left: 6px;
+  padding: 2px 10px;
+  background: var(--teal-light);
+  color: var(--teal-dark);
+  border-radius: 999px;
+  font-size: 11.5px;
+  font-weight: 600;
+}
+#pnl-filter-chip a {
+  margin-left: 8px;
+  color: var(--teal-dark);
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+/* Just-changed flash on per-booking row when stat-drilldown highlights */
+@keyframes pnlRowFlash {
+  0%   { background: rgba(196,150,44,0.18); }
+  100% { background: transparent; }
+}
+.pnl-table tr.pnl-row-just-highlighted { animation: pnlRowFlash 1.2s ease-out; }
+
+/* --- Bar chart hover values --- */
+.pnl-bar { position: relative; }
+.pnl-bar:hover::before {
+  content: attr(data-val);
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 4px 10px;
+  background: var(--navy-deep);
+  color: #fff;
+  font-size: 11.5px;
+  font-weight: 700;
+  border-radius: 6px;
+  white-space: nowrap;
+  font-family: 'DM Sans', sans-serif;
+  letter-spacing: 0;
+  z-index: 5;
+  pointer-events: none;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.18);
+}
+.pnl-bar:hover::after {
+  content: attr(data-label);
+  position: absolute;
+  bottom: calc(100% + 30px);
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 2px 8px;
+  background: rgba(15,15,61,0.85);
+  color: #fff;
+  font-size: 10px;
+  border-radius: 4px;
+  white-space: nowrap;
+  font-family: 'DM Sans', sans-serif;
+  z-index: 5;
+  pointer-events: none;
+}
+
+/* --- Remittance modify-status modal --- */
+.rem-action-btn {
+  padding: 5px 10px;
+  background: #fff;
+  color: var(--teal-dark);
+  border: 1px solid var(--teal);
+  border-radius: 6px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.rem-action-btn:hover { background: var(--teal-light); }
+.rem-action-btn .ti { font-size: 12px; }
+
+.rem-status-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 200ms;
+}
+.rem-status-modal.open {
+  pointer-events: auto;
+  opacity: 1;
+}
+.rem-status-modal-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(15,15,61,0.4);
+}
+.rem-status-modal-panel {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%) scale(0.95);
+  width: 520px;
+  max-width: 94vw;
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.18);
+  display: flex; flex-direction: column;
+  max-height: 90vh;
+  transition: transform 180ms ease-out;
+}
+.rem-status-modal.open .rem-status-modal-panel {
+  transform: translate(-50%, -50%) scale(1);
+}
+.rem-status-modal-head {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 18px 22px;
+  border-bottom: 1px solid var(--warm-200);
+}
+.rem-status-modal-head h3 {
+  margin: 0;
+  font-family: 'DM Serif Display', serif;
+  font-size: 19px;
+  color: var(--navy-deep);
+}
+.rem-status-modal-body {
+  flex: 1; overflow-y: auto;
+  padding: 22px;
+  display: flex; flex-direction: column;
+  gap: 16px;
+}
+.rem-status-modal-foot {
+  display: flex; justify-content: flex-end; gap: 12px;
+  padding: 14px 22px;
+  border-top: 1px solid var(--warm-200);
+  background: var(--warm-50);
+}
+.rem-status-summary {
+  padding: 12px 14px;
+  background: var(--warm-50);
+  border-left: 3px solid var(--teal);
+  border-radius: 6px;
+  font-size: 13px;
+  color: var(--warm-700);
+}
+.rem-status-summary strong { color: var(--navy-deep); }
+
+/* Just-changed flash on remittance row */
+@keyframes remRowFlashAmber {
+  0%   { background: #fef3c7; }
+  60%  { background: #dcfce7; }
+  100% { background: transparent; }
+}
+.rem-history-table tr.rem-row-just-changed { animation: remRowFlashAmber 1.8s ease-out; }
+
+/* ===== Functionality In Development banner =====
+   Placed on prototype-only screens (and on real screens where today's
+   prototype enhancements haven't shipped). Red to be unambiguous —
+   stakeholders need to know at a glance which flows are aspirational. */
+.in-dev-banner {
+  background: linear-gradient(90deg, #fef2f2 0%, #fee2e2 100%);
+  border: 1px solid #fca5a5;
+  border-left: 4px solid #dc2626;
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin: 0 0 16px 0;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  color: #7f1d1d;
+  font-size: 13px;
+  line-height: 1.45;
+}
+.in-dev-banner .in-dev-icon {
+  flex: 0 0 auto;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #dc2626;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+}
+.in-dev-banner .in-dev-body { flex: 1 1 auto; }
+.in-dev-banner .in-dev-title {
+  font-weight: 700;
+  color: #b91c1c;
+  margin: 0 0 4px;
+  letter-spacing: 0.2px;
+  text-transform: uppercase;
+  font-size: 11px;
+}
+.in-dev-banner .in-dev-msg { color: #7f1d1d; }
+.in-dev-banner .in-dev-msg strong { color: #991b1b; }
+.in-dev-banner ul {
+  margin: 6px 0 0 0;
+  padding-left: 18px;
+}
+.in-dev-banner ul li { margin: 2px 0; }

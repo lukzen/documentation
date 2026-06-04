@@ -347,13 +347,138 @@ function d1ResolveAgencyTier(agency, hotelMeta) {
   return { tier: 'default', pct: agency.defaultPct, reason: `Default (${agency.defaultPct}%)` };
 }
 
-const D1_TIER_LABELS = {
-  hotel:    { label: '<i class="ti ti-bed"></i> T1 hotel',                  cls: 'd1-tier-hotel' },
-  category: { label: '<i class="ti ti-star"></i> T2 category',              cls: 'd1-tier-category' },
-  country:  { label: '<i class="ti ti-world"></i> T3 country',              cls: 'd1-tier-country' },
-  chain:    { label: '<i class="ti ti-building-skyscraper"></i> T4 chain', cls: 'd1-tier-chain' },
-  default:  { label: '<i class="ti ti-asterisk"></i> T5 default',           cls: 'd1-tier-default' },
-};
+// Simplified per-user-feedback (2026-06-03): the 5-tier vocabulary
+// (Hotel/Category/Country/Chain/Default) was being read in two different
+// contexts — rule placement vs cross-agency coverage — and the icons
+// blurred the two. In aggregate views (this audit page) we collapse to
+// two states: Custom (agency overrode the default) vs Default (system
+// fallback). The "Rule reason" column still carries the cascade trace
+// inline, so the auditor never loses access to which tier won.
+function d1RuleBadge(tier) {
+  return tier === 'default'
+    ? '<span class="d1-rule-badge d1-rule-default">Default</span>'
+    : '<span class="d1-rule-badge d1-rule-custom">Custom</span>';
+}
+
+// Full cascade walk — for the per-agency drilldown. Returns ALL 5 tiers
+// with matched/skipped state + the winner flag. Same precedence as
+// d1ResolveAgencyTier; that one short-circuits on the first match, this
+// one keeps walking so the auditor can see which tiers had rules but
+// were not the most-specific match.
+function d1ResolveAgencyCascade(agency, hotelMeta) {
+  const rules = agency.rules || {};
+  const trace = [];
+
+  const ho = (rules.hotel || []).find(r => r.target === hotelMeta.name);
+  trace.push({
+    tier: 'hotel', label: 'Hotel',
+    matched: !!ho, pct: ho?.pct ?? null,
+    detail: ho ? `Per-hotel override for ${hotelMeta.name}` : 'No per-hotel rule set by this agency',
+  });
+
+  const ct = (rules.category || []).find(r => hotelMeta.categories.includes(r.target));
+  trace.push({
+    tier: 'category', label: 'Category',
+    matched: !!ct, pct: ct?.pct ?? null,
+    detail: ct ? `Matches category · ${D1_CATEGORIES[ct.target]?.name}` : 'No category rule that targets this hotel',
+  });
+
+  const co = (rules.country || []).find(r => r.target === hotelMeta.country);
+  trace.push({
+    tier: 'country', label: 'Country',
+    matched: !!co, pct: co?.pct ?? null,
+    detail: co ? `Matches country · ${D1_COUNTRIES[co.target]?.name}` : 'No country rule that targets this hotel',
+  });
+
+  const ch = (rules.chain || []).find(r => r.target === hotelMeta.chainId);
+  trace.push({
+    tier: 'chain', label: 'Brand',
+    matched: !!ch, pct: ch?.pct ?? null,
+    detail: ch ? `Matches brand · ${D1_CHAINS[ch.target]?.name}` :
+            (hotelMeta.chainId ? 'No brand rule that targets this hotel' : 'Hotel has no brand — brand rules cannot apply'),
+  });
+
+  trace.push({
+    tier: 'default', label: 'Default',
+    matched: true, pct: agency.defaultPct,
+    detail: `Falls through to agency default · ${agency.defaultPct}%`,
+  });
+
+  // Mark the winner — first matched (most-specific first)
+  const winner = trace.find(t => t.matched);
+  if (winner) winner.winner = true;
+  return trace;
+}
+
+window._hpbSelectedAgencyIdx = 0; // remembers selection across recomputes
+
+function hpbSelectAgency(idx) {
+  window._hpbSelectedAgencyIdx = idx;
+  // Visual row highlight
+  document.querySelectorAll('#hpb-agencies-tbody tr').forEach((tr, i) => {
+    tr.classList.toggle('hpb-row-selected', i === idx);
+  });
+  // Re-render the drilldown card
+  hpbRenderAgencyDrilldown(idx);
+  // Smooth-scroll the drilldown into view
+  const card = document.getElementById('hpb-drilldown-card');
+  if (card) card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function hpbRenderAgencyDrilldown(idx) {
+  const screen = document.getElementById('screen-hotel-price-breakdown');
+  if (!screen) return;
+  const sel = screen.querySelector('.hpb-select');
+  const supNetInput = screen.querySelector('.hpb-field input[type="number"]');
+  const hotelKey = sel?.value?.split(' · ')[0] || 'Iberostar Grand Packard';
+  const hotelInfo = _hpbHotels[hotelKey] || _hpbHotels['Iberostar Grand Packard'];
+  const hotelMeta = { name: hotelKey, ...hotelInfo };
+  const supplierNet = parseFloat(supNetInput?.value || '200');
+  const ergosSell = supplierNet * (1 - hotelInfo.chainPct / 100) * (1 + hotelInfo.ergosPct / 100);
+
+  const agency = D1_AGENCIES[idx];
+  if (!agency) return;
+  const trace = d1ResolveAgencyCascade(agency, hotelMeta);
+  const winner = trace.find(t => t.winner);
+  const customer = ergosSell * (1 + (winner?.pct ?? agency.defaultPct) / 100);
+  const income = customer - ergosSell;
+
+  // Header
+  const nameEl = document.getElementById('hpb-drilldown-agency');
+  if (nameEl) nameEl.textContent = `${agency.name} · ${hotelKey}`;
+  const winnerBadge = document.getElementById('hpb-drilldown-winner-badge');
+  if (winnerBadge) winnerBadge.textContent = winner ? `Winner: ${winner.label} · ${winner.pct}%` : '—';
+
+  // Trace
+  const traceEl = document.getElementById('hpb-drilldown-trace');
+  if (traceEl) {
+    traceEl.innerHTML = trace.map(t => {
+      const state = t.winner ? 'winner' : (t.matched ? 'matched' : 'skipped');
+      const indicator = t.winner ? '<i class="ti ti-trophy"></i>' :
+                        t.matched ? '<i class="ti ti-check"></i>' :
+                                    '<i class="ti ti-minus"></i>';
+      const pctTxt = t.pct != null ? `${t.pct}%` : '—';
+      return `<div class="hpb-cascade-step hpb-cascade-${state}">
+        <span class="hpb-cascade-indicator">${indicator}</span>
+        <span class="hpb-cascade-tier">${t.label}</span>
+        <span class="hpb-cascade-detail">${t.detail}</span>
+        <span class="hpb-cascade-pct">${pctTxt}</span>
+      </div>`;
+    }).join('');
+  }
+
+  // Math block
+  const mathEl = document.getElementById('hpb-drilldown-math');
+  if (mathEl) {
+    mathEl.innerHTML = `
+      <div class="hpb-math-row"><span>Ergos sell (this hotel)</span><strong>$${ergosSell.toFixed(2)}</strong></div>
+      <div class="hpb-math-row hpb-math-op"><span>× (1 + ${winner?.pct ?? agency.defaultPct}% markup)</span><strong class="hpb-pos">+ $${income.toFixed(2)}</strong></div>
+      <div class="hpb-math-row hpb-math-total"><span>Customer pays</span><strong>$${customer.toFixed(2)}</strong></div>
+      <div class="hpb-math-row hpb-math-foot"><span>${agency.name} earns per booking</span><strong class="hpb-pos">+$${income.toFixed(2)}</strong></div>
+      <div class="hpb-math-row hpb-math-foot"><span>Bookings in last 90 days</span><strong>${agency.bookings}</strong></div>
+    `;
+  }
+}
 
 function hpbRecompute() {
   const screen = document.getElementById('screen-hotel-price-breakdown');
@@ -385,41 +510,18 @@ function hpbRecompute() {
   const brandBadge = screen.querySelector('.hpb-cascade-card .card-head .badge');
   if (brandBadge) brandBadge.textContent = 'Brand: ' + hotelInfo.brand;
 
-  // 2. "This hotel matches" chips ----------
-  const matchGrid = document.getElementById('hpb-match-grid');
-  if (matchGrid) {
-    const chips = [];
-    if (hotelMeta.chainId && D1_CHAINS[hotelMeta.chainId]) {
-      chips.push(`<span class="hpb-match-chip hpb-match-chip-chain"><i class="ti ti-building-skyscraper"></i> Chain · <strong>${D1_CHAINS[hotelMeta.chainId].name}</strong></span>`);
-    } else {
-      chips.push(`<span class="hpb-match-chip hpb-match-chip-none"><i class="ti ti-building-skyscraper"></i> No chain — chain rules don't apply</span>`);
-    }
-    if (hotelMeta.country && D1_COUNTRIES[hotelMeta.country]) {
-      chips.push(`<span class="hpb-match-chip hpb-match-chip-country"><i class="ti ti-world"></i> Country · <strong>${D1_COUNTRIES[hotelMeta.country].name}</strong></span>`);
-    }
-    (hotelMeta.categories || []).forEach(catId => {
-      const c = D1_CATEGORIES[catId];
-      if (c) chips.push(`<span class="hpb-match-chip hpb-match-chip-category"><i class="ti ti-star"></i> Category · <strong>${c.name}</strong></span>`);
-    });
-    if (!chips.length) chips.push(`<span class="hpb-match-chip hpb-match-chip-none">No tier matches — only Default rules apply</span>`);
-    matchGrid.innerHTML = chips.join('');
-  }
-
-  // 3. Per-agency rows ----------
+  // 2. Per-agency rows ----------
   const afterChain = supplierNet * (1 - hotelInfo.chainPct / 100);
   const ergosSell = afterChain * (1 + hotelInfo.ergosPct / 100);
-  const tierTotals = { hotel: 0, category: 0, country: 0, chain: 0, default: 0 };
   const agencyBody = document.getElementById('hpb-agencies-tbody');
   if (agencyBody) {
-    agencyBody.innerHTML = D1_AGENCIES.map(a => {
+    agencyBody.innerHTML = D1_AGENCIES.map((a, idx) => {
       const r = d1ResolveAgencyTier(a, hotelMeta);
-      tierTotals[r.tier]++;
       const customer = ergosSell * (1 + r.pct / 100);
       const income = customer - ergosSell;
-      const tier = D1_TIER_LABELS[r.tier];
-      return `<tr>
+      return `<tr onclick="hpbSelectAgency(${idx})">
         <td><strong>${a.name}</strong><span class="hpb-agency-id">${a.lic}</span></td>
-        <td><span class="d1-tier ${tier.cls}">${tier.label}</span></td>
+        <td>${d1RuleBadge(r.tier)}</td>
         <td><span class="hpb-rule-reason">${r.reason}</span></td>
         <td class="text-right hpb-mk-pct">${r.pct}%</td>
         <td class="text-right hpb-mk-amt">$${customer.toFixed(2)}</td>
@@ -429,20 +531,11 @@ function hpbRecompute() {
     }).join('');
   }
 
-  // 4. Tier-coverage stats ----------
-  const coverage = document.getElementById('hpb-tier-coverage');
-  if (coverage) {
-    const order = ['hotel', 'category', 'country', 'chain', 'default'];
-    coverage.innerHTML = order.map(t => {
-      const tier = D1_TIER_LABELS[t];
-      return `<div class="hpb-tier-cell hpb-tier-cell-${t}">
-        <div class="hpb-tier-cell-count">${tierTotals[t]}</div>
-        <div class="hpb-tier-cell-label">${tier.label}</div>
-      </div>`;
-    }).join('');
-  }
+  // 2b. Re-render drilldown for currently selected agency (defaults to 0)
+  const selIdx = Math.min(window._hpbSelectedAgencyIdx ?? 0, D1_AGENCIES.length - 1);
+  hpbSelectAgency(selIdx);
 
-  // 5. Agency count
+  // 3. Agency count
   const countEl = document.getElementById('hpb-agency-count');
   if (countEl) countEl.textContent = D1_AGENCIES.length + ' agencies';
 
@@ -602,3 +695,249 @@ function showBookingDetail(ref) {
   detail.scrollIntoView({ behavior: 'smooth', block: 'start' });
   boToast('Loaded breakdown for ' + ref, 'info');
 }
+
+/* ============================================================
+   C1 ENHANCEMENTS (2026-06-04)
+   - frSelectAgency: clicking an agency in the list swaps the
+     drilldown card to show that agency's history
+   - frKpiDrilldown: clicking a KPI filters the list
+   - frSortBy: type-aware sort on any column
+   - frOpenModifyStatus / frSaveModifyStatus: revert paid or change
+     status of any remittance with required reason + audit
+   - frOpenAdjustForRow: per-row adjust (replaces global Adjust)
+   ============================================================ */
+
+/* Mock per-agency stats — would come from backend in production. */
+const FR_AGENCY_STATS = {
+  ag1:  { name: 'Demo Agency',         totalBilled: 13517, totalPaid: 8697, pending: 4820, dueText: 'due Jun 15', avgDays: '3.2 d', tone: 'consistently on-time', cycles: '5 of 6 cycles settled' },
+  ag7:  { name: 'Caribe Tours',        totalBilled: 9210,  totalPaid: 6260, pending: 2950, dueText: 'due Jun 15', avgDays: '4.1 d', tone: 'on-time', cycles: '4 of 5 cycles settled' },
+  ag14: { name: 'Sol Mar Travel',      totalBilled: 11240, totalPaid: 8035, pending: 3205, dueText: 'OVERDUE +18d', avgDays: '12.8 d', tone: 'frequently late', cycles: '4 of 5 cycles settled', flag: 'overdue' },
+  ag22: { name: 'Viajes Mediterráneo', totalBilled: 6680,  totalPaid: 4840, pending: 1840, dueText: 'due Jun 15', avgDays: '5.5 d', tone: 'on-time', cycles: '3 of 4 cycles settled' },
+  ag31: { name: 'Destinos Ibérica',    totalBilled: 4870,  totalPaid: 3450, pending: 1420, dueText: 'due Jun 15', avgDays: '2.9 d', tone: 'consistently on-time', cycles: '3 of 4 cycles settled' },
+};
+const FR_AGENCY_AUDIT = {
+  ag1: [
+    { when: '2026-05-12 14:22', actor: 'finance@ergos.com', action: 'Marked Paid', actionCls: 'success', detail: 'Apr 2026 · WIRE-2026-04-DEMO · $3,612.00' },
+    { when: '2026-05-08 09:00', actor: 'system (cron)',    action: 'Auto-created', actionCls: 'grey',   detail: 'May 2026 cycle · $4,820.00 · due Jun 15' },
+    { when: '2026-04-14 09:05', actor: 'finance@ergos.com', action: 'Marked Paid', actionCls: 'success', detail: 'Mar 2026 · WIRE-2026-03-DEMO · $2,945.00' },
+    { when: '2026-04-08 09:01', actor: 'admin@ergos.com',   action: 'Adjusted',    actionCls: 'warning', detail: 'Apr 2026 · $3,624.00 → $3,612.00 · "rounding correction"' },
+  ],
+  ag7: [
+    { when: '2026-05-17 11:02', actor: 'finance@ergos.com', action: 'Marked Paid', actionCls: 'success', detail: 'Apr 2026 · WIRE-CT-04 · $2,140.00 (2 days late)' },
+    { when: '2026-05-08 09:00', actor: 'system (cron)',    action: 'Auto-created', actionCls: 'grey',   detail: 'May 2026 cycle · $2,950.00 · due Jun 15' },
+  ],
+  ag14: [
+    { when: '2026-06-04 09:00', actor: 'system (cron)',    action: 'Overdue',      actionCls: 'destructive', detail: 'May 2026 cycle · $3,205.00 · 18 days past due' },
+    { when: '2026-05-08 09:00', actor: 'system (cron)',    action: 'Auto-created', actionCls: 'grey',   detail: 'May 2026 cycle · $3,205.00 · due May 17' },
+    { when: '2026-04-22 16:48', actor: 'finance@ergos.com', action: 'Marked Paid', actionCls: 'success', detail: 'Apr 2026 · WIRE-SMT-04 · $2,800.00 (7 days late)' },
+  ],
+  ag22: [
+    { when: '2026-05-08 09:00', actor: 'system (cron)', action: 'Auto-created', actionCls: 'grey', detail: 'May 2026 cycle · $1,840.00 · due Jun 15' },
+  ],
+  ag31: [
+    { when: '2026-05-13 10:15', actor: 'finance@ergos.com', action: 'Marked Paid', actionCls: 'success', detail: 'Apr 2026 · WIRE-DI-04 · $1,380.00' },
+    { when: '2026-05-08 09:00', actor: 'system (cron)',    action: 'Auto-created', actionCls: 'grey',   detail: 'May 2026 cycle · $1,420.00 · due Jun 15' },
+  ],
+};
+
+function frSelectAgency(linkOrRow) {
+  const row = linkOrRow.closest('tr');
+  if (!row) return;
+  const agencyId = row.dataset.agencyId;
+  const agencyName = row.dataset.agencyName || row.querySelector('strong')?.textContent;
+  if (!agencyId) return;
+  const s = FR_AGENCY_STATS[agencyId];
+  if (!s) { boToast('No drilldown data for ' + agencyName, 'warn'); return; }
+
+  // Update title
+  const nameEl = document.getElementById('fr-detail-agency-name');
+  if (nameEl) nameEl.textContent = s.name;
+
+  // Update stat grid
+  const grid = document.getElementById('fr-detail-grid');
+  if (grid) {
+    grid.innerHTML = `
+      <div class="fr-detail-stat"><div class="fr-detail-label">Total billed</div><div class="fr-detail-value">$${s.totalBilled.toLocaleString()}</div><div class="muted">last 6 months</div></div>
+      <div class="fr-detail-stat fr-detail-stat-pos"><div class="fr-detail-label">Total paid</div><div class="fr-detail-value">$${s.totalPaid.toLocaleString()}</div><div class="muted">${s.cycles}</div></div>
+      <div class="fr-detail-stat ${s.flag === 'overdue' ? 'fr-detail-stat-warn' : 'fr-detail-stat-warn'}"><div class="fr-detail-label">Currently pending</div><div class="fr-detail-value">$${s.pending.toLocaleString()}</div><div class="muted">${s.dueText}</div></div>
+      <div class="fr-detail-stat"><div class="fr-detail-label">Avg days to pay</div><div class="fr-detail-value">${s.avgDays}</div><div class="muted">${s.tone}</div></div>`;
+  }
+
+  // Update audit trail
+  const auditTbody = document.querySelector('#fr-audit-table tbody');
+  if (auditTbody) {
+    const entries = FR_AGENCY_AUDIT[agencyId] || [];
+    auditTbody.innerHTML = entries.length
+      ? entries.map(e => `<tr><td class="bb-mono">${e.when}</td><td>${e.actor}</td><td><span class="badge badge-${e.actionCls}">${e.action}</span></td><td>${e.detail}</td></tr>`).join('')
+      : `<tr><td colspan="4" class="muted" style="text-align:center; padding:18px">No audit entries for ${s.name} yet.</td></tr>`;
+  }
+
+  // Highlight row in the upper table
+  document.querySelectorAll('#fr-table tbody tr').forEach(r => r.classList.remove('fr-row-selected'));
+  row.classList.add('fr-row-selected');
+
+  // Flash + scroll the drilldown card
+  const card = document.getElementById('fr-detail-card');
+  if (card) {
+    card.classList.remove('fr-detail-just-swapped');
+    void card.offsetWidth;
+    card.classList.add('fr-detail-just-swapped');
+    card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+  boToast(`Loaded drilldown for ${s.name}`, 'info');
+}
+
+/* KPI drilldown — filter list to the chosen status bucket */
+function frKpiDrilldown(bucket) {
+  const sel = document.getElementById('fr-filter-status');
+  if (!sel) return;
+  if (bucket === 'outstanding') sel.value = 'all'; // outstanding = pending + overdue, show all then filter
+  else if (bucket === 'overdue') sel.value = 'overdue';
+  else if (bucket === 'paid') sel.value = 'paid';
+  sel.dispatchEvent(new Event('change'));
+  // Scroll to list
+  document.querySelector('.fr-list-card')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  const label = bucket === 'outstanding' ? 'all outstanding remittances' : bucket === 'overdue' ? 'overdue remittances' : 'paid remittances';
+  boToast('Filtered to ' + label, 'info');
+}
+
+/* Type-aware column sort */
+function frSortBy(th, key, type) {
+  const tbody = document.querySelector('#fr-table tbody');
+  if (!tbody) return;
+  const current = th.getAttribute('data-sort-active');
+  const next = current === 'asc' ? 'desc' : 'asc';
+  document.querySelectorAll('#fr-table th[data-sortable]').forEach(h => {
+    h.removeAttribute('data-sort-active');
+    h.removeAttribute('aria-sort');
+  });
+  th.setAttribute('data-sort-active', next);
+  th.setAttribute('aria-sort', next === 'asc' ? 'ascending' : 'descending');
+
+  const rows = Array.from(tbody.querySelectorAll('tr'));
+  const colIdx = Array.from(th.parentNode.children).indexOf(th);
+  const cellVal = (tr) => {
+    const cell = tr.children[colIdx];
+    if (!cell) return type === 'num' ? -Infinity : '';
+    const text = cell.textContent.trim();
+    if (type === 'num') {
+      if (/^—/.test(text) || /on time/i.test(text)) return -Infinity;
+      const n = parseFloat(text.replace(/[^0-9.\-]/g, ''));
+      return isNaN(n) ? -Infinity : n;
+    }
+    if (type === 'date') {
+      const t = Date.parse(text);
+      return isNaN(t) ? 0 : t;
+    }
+    return text.toLowerCase();
+  };
+  rows.sort((a, b) => {
+    const av = cellVal(a), bv = cellVal(b);
+    if (av < bv) return next === 'asc' ? -1 : 1;
+    if (av > bv) return next === 'asc' ? 1 : -1;
+    return 0;
+  });
+  rows.forEach(r => tbody.appendChild(r));
+}
+
+/* Per-row Modify Status modal */
+let _frStatusRow = null;
+function frOpenModifyStatus(btn) {
+  _frStatusRow = btn.closest('tr');
+  if (!_frStatusRow) return;
+  const agency = _frStatusRow.dataset.agencyName || '';
+  const period = _frStatusRow.querySelector('td:nth-child(2)')?.textContent?.trim() || '';
+  const amount = _frStatusRow.querySelector('.fr-amt')?.textContent?.trim() || '';
+  const currentStatus = _frStatusRow.dataset.status || 'pending';
+  const modal = document.getElementById('fr-status-modal');
+  if (!modal) return;
+  const summary = document.getElementById('fr-status-summary');
+  if (summary) {
+    summary.innerHTML = `<div><strong>${agency}</strong> · ${period} · ${amount}</div>
+      <div style="margin-top:4px; font-size:12px">Currently <strong>${currentStatus}</strong>. Changes are immutably audited.</div>`;
+  }
+  document.getElementById('fr-status-new').value = currentStatus === 'paid' ? 'pending' : 'paid';
+  document.getElementById('fr-status-ref').value = '';
+  document.getElementById('fr-status-reason').value = '';
+  modal.classList.add('open');
+  setTimeout(() => document.getElementById('fr-status-reason').focus(), 80);
+}
+function frCloseModifyStatus() {
+  document.getElementById('fr-status-modal')?.classList.remove('open');
+  _frStatusRow = null;
+}
+function frSaveModifyStatus() {
+  const newStatus = document.getElementById('fr-status-new')?.value;
+  const ref = document.getElementById('fr-status-ref')?.value?.trim();
+  const reason = document.getElementById('fr-status-reason')?.value?.trim();
+  if (!newStatus) { boToast('Pick a new status', 'error'); return; }
+  if (newStatus === 'paid' && !ref) { boToast('Wire reference required when marking paid', 'error'); return; }
+  if (!reason || reason.length < 6) { boToast('Reason required (audited) — please describe what changed', 'error'); return; }
+  if (_frStatusRow) {
+    const oldStatus = _frStatusRow.dataset.status;
+    const statusCell = _frStatusRow.querySelector('td:nth-child(5)');
+    const lateCell = _frStatusRow.querySelector('td:nth-child(6)');
+    const actionCell = _frStatusRow.querySelector('td:last-child');
+
+    if (newStatus === 'paid') {
+      if (statusCell) statusCell.innerHTML = '<span class="badge badge-success"><i class="ti ti-check"></i> Paid</span>';
+      if (lateCell) lateCell.innerHTML = '<span class="muted">just now</span>';
+      _frStatusRow.classList.remove('fr-row-overdue');
+      _frStatusRow.classList.add('fr-row-paid');
+    } else if (newStatus === 'overdue') {
+      if (statusCell) statusCell.innerHTML = '<span class="badge badge-destructive">Overdue</span>';
+      _frStatusRow.classList.remove('fr-row-paid');
+      _frStatusRow.classList.add('fr-row-overdue');
+    } else {
+      // pending
+      if (statusCell) statusCell.innerHTML = '<span class="badge badge-warning">Pending</span>';
+      if (lateCell) lateCell.innerHTML = '—';
+      _frStatusRow.classList.remove('fr-row-paid', 'fr-row-overdue');
+    }
+    _frStatusRow.dataset.status = newStatus;
+    // Update primary action button to reflect new status
+    if (actionCell) {
+      const primary = actionCell.querySelector('.btn-sm');
+      if (primary) {
+        if (newStatus === 'paid') {
+          primary.outerHTML = '<button class="btn btn-sm" onclick="frOpenDetail(this)">View</button>';
+        } else {
+          primary.outerHTML = '<button class="btn btn-sm btn-primary" onclick="frOpenMarkPaid(this)">Mark Paid</button>';
+        }
+      }
+    }
+
+    _frStatusRow.classList.remove('fr-row-just-changed');
+    void _frStatusRow.offsetWidth;
+    _frStatusRow.classList.add('fr-row-just-changed');
+    _frStatusRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    boToast(`Status changed: ${oldStatus} → ${newStatus} · "${reason.slice(0, 50)}${reason.length > 50 ? '…' : ''}" logged`, 'success');
+  }
+  frCloseModifyStatus();
+}
+
+/* Per-row Adjust amount — replaces the old global-only Adjust */
+function frOpenAdjustForRow(btn) {
+  _frAdjustRow = btn.closest('tr');
+  if (!_frAdjustRow) { boToast('Row not found', 'error'); return; }
+  const modal = document.getElementById('fr-adjust-modal');
+  if (!modal) return;
+  const current = _frAdjustRow.querySelector('.fr-amt')?.textContent || '$0';
+  const agency = _frAdjustRow.dataset.agencyName || '';
+  const period = _frAdjustRow.querySelector('td:nth-child(2)')?.textContent?.trim() || '';
+  const summary = modal.querySelector('.fr-modal-summary');
+  if (summary) summary.innerHTML = `Adjusting <strong>${agency} · ${period}</strong>. Adjustments require a reason and are immutably audited.`;
+  modal.querySelector('#fr-adjust-current').value = current;
+  const numeric = parseFloat(current.replace(/[^0-9.]/g, '')) || 0;
+  modal.querySelector('#fr-adjust-new').value = numeric.toFixed(2);
+  modal.querySelector('#fr-adjust-reason').value = '';
+  modal.classList.add('open');
+  setTimeout(() => modal.querySelector('#fr-adjust-new').focus(), 80);
+}
+
+/* Esc closes the new status modal too */
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    document.getElementById('fr-status-modal')?.classList.remove('open');
+  }
+});
