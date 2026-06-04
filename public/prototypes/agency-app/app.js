@@ -2152,6 +2152,126 @@ document.addEventListener('input', (e) => {
   }
 });
 
+// ========== F1 — DECOUPLED HOTEL + TRANSPORT BOOKING ==========
+// USER_STORIES F1 (issue #23). Hotel and Mozio transportation are independent
+// confirm/pay lifecycles. When the agency confirms the hotel without yet
+// confirming the transfer, the transfer is saved as "pending" with a 48-hour
+// expiry from the hotel's paidAt timestamp. Prototype-only — backend
+// support, scheduled expiry job, and reminder pipeline are aspirational.
+
+window.F1_TRANSPORT_PENDING = false;
+window.F1_HOTEL_PAID_AT = null;        // ms epoch — set on confirmHotelOnly
+let _f1CountdownInterval = null;
+
+// Agency staff: confirm hotel now, save the transfer quote for up to 48 h.
+// Delegates to confirmBooking() (which populates the confirmation screen +
+// triggers showScreen('confirmation')), and the F1 hook on showScreen renders
+// the two-lane status block + in-dev banner when F1_TRANSPORT_PENDING is set.
+function confirmHotelOnly() {
+  if (!serviceTransferAdded) {
+    // No transfer to defer — falls through to the normal flow
+    return confirmBooking();
+  }
+  window.F1_TRANSPORT_PENDING = true;
+  window.F1_HOTEL_PAID_AT = Date.now();
+  protoToast && protoToast('Hotel confirmed. Transfer quote saved — customer has 48 h to complete it.', 2400);
+  confirmBooking();
+}
+
+// Hook into the confirmation render — show the F1 status block + banner if mode active
+function f1RenderOnConfirmation() {
+  const block = document.getElementById('f1-status-block');
+  const banner = document.getElementById('f1-in-dev-banner');
+  const transferSection = document.getElementById('conf-transfer-section');
+  if (!block || !banner) return;
+  if (window.F1_TRANSPORT_PENDING) {
+    block.style.display = 'flex';
+    banner.style.display = 'flex';
+    // Hide the bundled "Transfer Details" section since the transport lane covers it
+    if (transferSection) transferSection.style.display = 'none';
+    // Update confirmation heading to reflect partial confirmation
+    const h1 = document.getElementById('conf-heading');
+    const sub = document.getElementById('conf-subheading');
+    if (h1) h1.textContent = 'Hotel confirmed!';
+    if (sub) sub.textContent = 'Customer can come back within 48 hours to complete the transfer at the saved price.';
+    f1StartCountdown();
+  } else {
+    block.style.display = 'none';
+    banner.style.display = 'none';
+  }
+}
+
+// Countdown ticker — shows hours/minutes remaining in the 48h window
+function f1StartCountdown() {
+  if (_f1CountdownInterval) clearInterval(_f1CountdownInterval);
+  const update = () => {
+    const el = document.getElementById('f1-countdown');
+    if (!el || !window.F1_HOTEL_PAID_AT) return;
+    const expiresAt = window.F1_HOTEL_PAID_AT + (48 * 60 * 60 * 1000);
+    const ms = expiresAt - Date.now();
+    if (ms <= 0) {
+      el.textContent = 'Expired';
+      el.classList.add('f1-countdown-expired');
+      clearInterval(_f1CountdownInterval);
+      const lane = document.querySelector('.f1-lane-transport');
+      if (lane) {
+        lane.classList.remove('f1-lane-pending');
+        lane.classList.add('f1-lane-expired');
+        const s = lane.querySelector('.f1-lane-status');
+        if (s) { s.textContent = '✗ Expired — re-quote required'; s.className = 'f1-lane-status f1-status-expired'; }
+      }
+      return;
+    }
+    const h = Math.floor(ms / 3600000);
+    const m = Math.floor((ms % 3600000) / 60000);
+    el.textContent = `${h} h ${m} min`;
+  };
+  update();
+  // Tick every 30 seconds (prototype — production would use a timer-anchored render)
+  _f1CountdownInterval = setInterval(update, 30000);
+}
+
+// "Confirm transfer now" button handler — completes the transport lane
+function f1ConfirmTransferNow() {
+  protoToast && protoToast('Re-quoting Mozio at current price… confirmed.', 1800);
+  if (_f1CountdownInterval) { clearInterval(_f1CountdownInterval); _f1CountdownInterval = null; }
+  const lane = document.querySelector('.f1-lane-transport');
+  if (lane) {
+    lane.classList.remove('f1-lane-pending', 'f1-lane-expired');
+    lane.classList.add('f1-lane-paid');
+    const s = lane.querySelector('.f1-lane-status');
+    if (s) { s.textContent = '✓ Confirmed & Paid'; s.className = 'f1-lane-status f1-status-paid'; }
+    const cd = lane.querySelector('.f1-lane-body span:nth-child(2)');
+    if (cd) cd.innerHTML = 'Ref <code>MOZIO-RSV-4938-K2</code>';
+    const btn = lane.querySelector('.f1-confirm-now-btn');
+    if (btn) btn.remove();
+  }
+  window.F1_TRANSPORT_PENDING = false;
+}
+
+// Show the F1 "Confirm hotel only" alternative button on the payment screen
+// when a transfer has been added (so the agency staff has a real choice)
+function f1UpdatePaymentScreenAlternative() {
+  const altBtn = document.getElementById('pay-confirm-hotel-only');
+  const altHint = document.getElementById('pay-f1-hint');
+  if (!altBtn || !altHint) return;
+  const show = !!serviceTransferAdded;
+  altBtn.style.display = show ? '' : 'none';
+  altHint.style.display = show ? '' : 'none';
+}
+
+// Hook into showScreen to render F1 on confirmation arrival + show CTA on payment
+(function f1HookShowScreen() {
+  const orig = window.showScreen;
+  if (typeof orig !== 'function') return;
+  window.showScreen = function (id) {
+    const r = orig.apply(this, arguments);
+    if (id === 'confirmation') setTimeout(f1RenderOnConfirmation, 50);
+    if (id === 'payment') setTimeout(f1UpdatePaymentScreenAlternative, 50);
+    return r;
+  };
+})();
+
 // ========== COMBINED BOOKING (ADD SERVICES) ==========
 
 // Track whether a transfer has been added to the hotel booking

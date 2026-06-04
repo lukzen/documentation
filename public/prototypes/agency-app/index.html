@@ -1139,6 +1139,11 @@
             </div>
             <div class="os-row os-total"><span>Total Client Price</span><span id="pay-os-total">USD 194.40</span></div>
             <button class="confirm-btn" onclick="confirmBooking()">Confirm Booking</button>
+            <!-- F1 — alternative path: confirm hotel now, decide transfer later (max 48h) -->
+            <button class="confirm-btn confirm-btn-alt" id="pay-confirm-hotel-only" onclick="confirmHotelOnly()" style="display:none">
+              Confirm Hotel Only — Decide Transfer Later
+            </button>
+            <p class="f1-alt-hint" id="pay-f1-hint" style="display:none">Customer can come back within 48 h to add the transfer at the saved price.</p>
           </div>
         </div>
       </div>
@@ -1159,9 +1164,53 @@
     <div class="confirmation-page">
       <div class="conf-confetti" id="conf-confetti"></div>
       <div class="confirmation-card">
+
+        <!-- F1 — In-Dev banner (only shown when F1 mode is active) -->
+        <div class="in-dev-banner" id="f1-in-dev-banner" style="display:none; margin-bottom: 20px">
+          <div class="in-dev-icon"><i class="ti ti-tool"></i></div>
+          <div class="in-dev-body">
+            <div class="in-dev-title">Functionality In Development</div>
+            <div class="in-dev-msg"><strong>Decoupled bookings (F1)</strong> is not yet in production — hotel + Mozio transportation as independent confirm/pay lifecycles is being designed. See <a href="https://github.com/lukzen/documentation/issues/23" target="_blank">USER_STORIES F1 (#23)</a>.
+              <ul>
+                <li>Hotel and transportation bookings track <strong>independent payment status</strong></li>
+                <li>Pending transfer auto-expires <strong>48 h after the hotel <code>paidAt</code></strong> timestamp</li>
+                <li>Reminder fires 24 h before the deadline; agency staff can confirm the saved transfer quote in one click</li>
+                <li>Per-booking vouchers + per-booking refunds; the two share a <code>bookingGroupId</code> for retrieval</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
         <div class="conf-icon conf-icon-animate"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
         <h1 id="conf-heading">You're all set!</h1>
         <p id="conf-subheading">Your client's stay has been confirmed. Here's everything you need.</p>
+
+        <!-- F1 — Two-lane booking status (only shown when F1 mode is active) -->
+        <div class="f1-status-block" id="f1-status-block" style="display:none">
+          <div class="f1-lane f1-lane-hotel">
+            <div class="f1-lane-head">
+              <span class="f1-lane-icon"><i class="ti ti-bed"></i></span>
+              <span class="f1-lane-title">Hotel booking</span>
+              <span class="f1-lane-status f1-status-paid">✓ Confirmed &amp; Paid</span>
+            </div>
+            <div class="f1-lane-body">
+              <span class="f1-lane-amount" id="f1-hotel-amount">USD 194.40</span>
+              <span class="f1-lane-ref">Ref <code id="f1-hotel-ref">PTA18G28E7CUANQ</code></span>
+            </div>
+          </div>
+          <div class="f1-lane f1-lane-transport f1-lane-pending">
+            <div class="f1-lane-head">
+              <span class="f1-lane-icon"><i class="ti ti-car"></i></span>
+              <span class="f1-lane-title">Transportation (Mozio)</span>
+              <span class="f1-lane-status f1-status-pending">⏱ Pending — quote saved</span>
+            </div>
+            <div class="f1-lane-body">
+              <span class="f1-lane-amount" id="f1-transport-amount">USD 45.00</span>
+              <span class="f1-lane-ref">Expires in <strong id="f1-countdown" class="f1-countdown">47 h 23 min</strong></span>
+              <button class="btn-secondary f1-confirm-now-btn" onclick="f1ConfirmTransferNow()">Confirm transfer now</button>
+            </div>
+          </div>
+        </div>
 
         <div class="conf-refs">
           <div class="conf-ref"><span class="conf-ref-label">Booking Reference</span><span class="conf-ref-val" id="conf-ref">PTA18G28E7CUANQ</span></div>
