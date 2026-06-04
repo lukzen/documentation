@@ -1020,7 +1020,13 @@ document.getElementById('occ-add-room-btn').addEventListener('click', (e) => {
 renderOccRooms();
 
 // "Add Room" button in modify modal — real add/remove
-document.getElementById('btn-add-room').addEventListener('click', addModifyRoom);
+// Pre-existing null-deref bug: btn-add-room lives inside #modify-modal which
+// is hidden at script load, so getElementById returns null on first run and
+// the unguarded .addEventListener halts the entire script (silently breaking
+// every IIFE below this line, including the destination-search autocomplete).
+// Discovered 2026-06-03 while wiring E1.
+const _addRoomBtn = document.getElementById('btn-add-room');
+if (_addRoomBtn) _addRoomBtn.addEventListener('click', addModifyRoom);
 
 // "Apply" button in modify modal (date change)
 document.querySelectorAll('.btn-apply').forEach(btn => {
@@ -1628,6 +1634,7 @@ const markupSampleVehicles = [
 function updateMarkupPreview() {
   const slider = document.getElementById('markup-slider');
   const input = document.getElementById('markup-input');
+  if (!slider || !input) return;  // markup widget lives in #screen-markup-rules only
   const pct = parseFloat(slider.value) || 0;
   input.value = pct;
   agencyMarkupState.percentage = pct;
@@ -1808,22 +1815,49 @@ function resetHotelFilters() {
 
 // ========== SEARCH AUTOCOMPLETE ==========
 
+// E1 — POI-aware location search (USER_STORIES E1). Extends the destination
+// typeahead with Landmarks/POIs that carry country + coordinates. When a POI
+// is picked, the search results page sorts the hotel cards by walking
+// distance from the POI and shows a "X.X km from <POI>" badge on each card.
+//
+// Live-system version uses Google Places (Session-billed, free up to 10k
+// picks/mo) for the live autocomplete; here in the prototype we hardcode a
+// representative sample of POIs across the markets Ergos serves.
+window.E1_SELECTED_POI = null;
+
+const E1_POIS = [
+  // Colombia
+  { type: 'Places',  name: 'Plaza de Bolívar, Bogotá',         sub: 'Historic centre · Colombia', country: 'CO', lat: 4.5981,  lng: -74.0758 },
+  { type: 'Places',  name: 'Zona T, Bogotá',                   sub: 'Nightlife district · Colombia', country: 'CO', lat: 4.6675,  lng: -74.0535 },
+  { type: 'Places',  name: 'Ciudad Amurallada, Cartagena',     sub: 'UNESCO old town · Colombia', country: 'CO', lat: 10.4231, lng: -75.5519 },
+  { type: 'Places',  name: 'Comuna 13, Medellín',              sub: 'Cultural district · Colombia', country: 'CO', lat: 6.2702,  lng: -75.6157 },
+  // Cuba
+  { type: 'Places',  name: 'Plaza Vieja, Habana Vieja',        sub: 'Colonial square · Cuba',     country: 'CU', lat: 23.1338, lng: -82.3491 },
+  { type: 'Places',  name: 'Malecón, Havana',                  sub: 'Seafront promenade · Cuba',  country: 'CU', lat: 23.1448, lng: -82.3650 },
+  // Dominican Republic
+  { type: 'Places',  name: 'Zona Colonial, Santo Domingo',     sub: 'UNESCO old town · DR',       country: 'DO', lat: 18.4733, lng: -69.8851 },
+  // Mexico
+  { type: 'Places',  name: 'Zócalo, Ciudad de México',         sub: 'Main square · Mexico',       country: 'MX', lat: 19.4326, lng: -99.1332 },
+];
+
 (function initAutocomplete() {
   const input = document.getElementById('dest-input');
   const dropdown = document.getElementById('dest-autocomplete');
   if (!input || !dropdown) return;
 
   const suggestions = [
-    { type: 'Cities', name: 'Havana, Cuba', sub: '249 hotels' },
-    { type: 'Cities', name: 'Varadero, Cuba', sub: '87 hotels' },
-    { type: 'Cities', name: 'Cancun, Mexico', sub: '342 hotels' },
-    { type: 'Cities', name: 'Punta Cana, Dominican Republic', sub: '198 hotels' },
-    { type: 'Cities', name: 'Riviera Maya, Mexico', sub: '156 hotels' },
-    { type: 'Hotels', name: 'Gran Muthu Habana', sub: 'Miramar, Havana' },
-    { type: 'Hotels', name: 'Hotel Nacional de Cuba', sub: 'Vedado, Havana' },
-    { type: 'Hotels', name: 'Iberostar Varadero', sub: 'Varadero' },
-    { type: 'Regions', name: 'Caribbean Coast', sub: '1,240 hotels' },
-    { type: 'Regions', name: 'Yucatan Peninsula', sub: '510 hotels' },
+    { type: 'Cities', name: 'Havana, Cuba',        sub: '249 hotels',   country: 'CU' },
+    { type: 'Cities', name: 'Varadero, Cuba',      sub: '87 hotels',    country: 'CU' },
+    { type: 'Cities', name: 'Cancun, Mexico',      sub: '342 hotels',   country: 'MX' },
+    { type: 'Cities', name: 'Bogotá, Colombia',    sub: '186 hotels',   country: 'CO' },
+    { type: 'Cities', name: 'Cartagena, Colombia', sub: '124 hotels',   country: 'CO' },
+    { type: 'Cities', name: 'Medellín, Colombia',  sub: '93 hotels',    country: 'CO' },
+    { type: 'Cities', name: 'Punta Cana, Dominican Republic', sub: '198 hotels', country: 'DO' },
+    ...E1_POIS,  // landmarks / touristic places — carry country + lat/lng
+    { type: 'Hotels', name: 'Gran Muthu Habana',       sub: 'Miramar, Havana' },
+    { type: 'Hotels', name: 'Hotel Nacional de Cuba',  sub: 'Vedado, Havana' },
+    { type: 'Hotels', name: 'Iberostar Varadero',      sub: 'Varadero' },
+    { type: 'Regions', name: 'Caribbean Coast',        sub: '1,240 hotels' },
   ];
 
   function render(query) {
@@ -1833,7 +1867,7 @@ function resetHotelFilters() {
 
     let html = '';
     let lastType = '';
-    filtered.forEach(s => {
+    filtered.forEach((s, idx) => {
       if (s.type !== lastType) {
         lastType = s.type;
         html += '<div class="ac-group-label">' + s.type + '</div>';
@@ -1841,8 +1875,15 @@ function resetHotelFilters() {
       const highlighted = q.length > 0
         ? s.name.replace(new RegExp('(' + q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')', 'gi'), '<mark>$1</mark>')
         : s.name;
-      html += '<div class="ac-item" data-value="' + s.name + '">' +
-        '<span class="ac-item-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="10" r="3"/><path d="M12 21.7C17.3 17 20 13 20 10a8 8 0 1 0-16 0c0 3 2.7 7 8 11.7z"/></svg></span>' +
+      // POI rows get a distinct landmark icon + carry data-lat/lng/country for E1
+      const isPoi = s.type === 'Places';
+      const icon = isPoi
+        ? '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#0d9488" stroke-width="2"><path d="M3 21h18M5 21V7l8-4v18M19 21V11l-6-4"/><path d="M9 9v.01M9 12v.01M9 15v.01M9 18v.01"/></svg>'
+        : '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="10" r="3"/><path d="M12 21.7C17.3 17 20 13 20 10a8 8 0 1 0-16 0c0 3 2.7 7 8 11.7z"/></svg>';
+      html += '<div class="ac-item' + (isPoi ? ' ac-item-poi' : '') + '" data-idx="' + idx + '" data-value="' + s.name + '"' +
+        (isPoi ? ' data-poi="1" data-lat="' + s.lat + '" data-lng="' + s.lng + '" data-country="' + s.country + '"' : '') +
+        '>' +
+        '<span class="ac-item-icon">' + icon + '</span>' +
         '<span>' + highlighted + '</span>' +
         '<span class="ac-item-sub">' + s.sub + '</span>' +
         '</div>';
@@ -1854,6 +1895,18 @@ function resetHotelFilters() {
       item.addEventListener('click', () => {
         input.value = item.dataset.value;
         dropdown.classList.remove('show');
+        // E1: capture POI selection so the results page can swap to proximity mode
+        if (item.dataset.poi === '1') {
+          window.E1_SELECTED_POI = {
+            name: item.dataset.value,
+            country: item.dataset.country,
+            lat: parseFloat(item.dataset.lat),
+            lng: parseFloat(item.dataset.lng),
+          };
+          protoToast && protoToast('Searching hotels near ' + item.dataset.value, 1800);
+        } else {
+          window.E1_SELECTED_POI = null;  // a non-POI pick = standard search
+        }
       });
     });
   }
@@ -1863,6 +1916,111 @@ function resetHotelFilters() {
   document.addEventListener('click', (e) => {
     if (!e.target.closest('.search-field-destination')) dropdown.classList.remove('show');
   });
+})();
+
+// E1 — apply POI proximity sort + "X km from <POI>" badges to the results
+// page. Called whenever the results screen becomes active (see showScreen
+// patch below). Computes mock distances against fabricated hotel coordinates
+// keyed off the card's data-name — in production this would come from the
+// backend's GET /hotels/near?lat=&lng=&country= endpoint.
+function e1HotelCoords(card) {
+  // Hash the hotel name → stable pseudo-coordinates clustered around the POI.
+  // Real implementation reads card.dataset.lat / data-lng populated by the
+  // backend. This keeps the prototype self-contained without persisting
+  // coordinates per card in the HTML.
+  const name = card.dataset.name || '';
+  let h = 0;
+  for (let i = 0; i < name.length; i++) h = ((h << 5) - h) + name.charCodeAt(i) | 0;
+  const poi = window.E1_SELECTED_POI;
+  if (!poi) return null;
+  // Spread hotels within ±0.05° (~5 km) of the POI, deterministically
+  const dLat = ((h & 0xff) - 128) / 2560;
+  const dLng = (((h >> 8) & 0xff) - 128) / 2560;
+  return { lat: poi.lat + dLat, lng: poi.lng + dLng };
+}
+
+function e1HaversineKm(a, b) {
+  const R = 6371;
+  const toRad = d => d * Math.PI / 180;
+  const dLat = toRad(b.lat - a.lat);
+  const dLng = toRad(b.lng - a.lng);
+  const lat1 = toRad(a.lat), lat2 = toRad(b.lat);
+  const x = Math.sin(dLat/2)**2 + Math.cos(lat1) * Math.cos(lat2) * Math.sin(dLng/2)**2;
+  return 2 * R * Math.asin(Math.sqrt(x));
+}
+
+function e1ApplyToResults() {
+  const poi = window.E1_SELECTED_POI;
+  const resultsList = document.getElementById('results-list');
+  const countEl = document.getElementById('results-count');
+  if (!resultsList) return;
+
+  // Remove any existing E1 badge / heading override (idempotent)
+  resultsList.querySelectorAll('.e1-distance-badge').forEach(el => el.remove());
+  const oldNotice = document.getElementById('e1-notice');
+  if (oldNotice) oldNotice.remove();
+
+  if (!poi) {
+    if (countEl && !countEl.textContent.match(/hotels found/)) {
+      countEl.textContent = document.querySelectorAll('#results-list .hotel-card').length + ' hotels found';
+    }
+    return;
+  }
+
+  const cards = Array.from(resultsList.querySelectorAll('.hotel-card'));
+  const measured = cards.map(card => {
+    const coords = e1HotelCoords(card);
+    const km = coords ? e1HaversineKm(poi, coords) : 999;
+    return { card, km };
+  }).sort((a, b) => a.km - b.km);
+
+  // Re-order DOM by distance
+  measured.forEach(({ card }) => resultsList.appendChild(card));
+
+  // Annotate each card with a teal "X.X km from <POI>" badge
+  measured.forEach(({ card, km }) => {
+    const badge = document.createElement('div');
+    badge.className = 'e1-distance-badge';
+    badge.innerHTML = '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 21h18M5 21V7l8-4v18M19 21V11l-6-4"/></svg>' +
+      ' <strong>' + km.toFixed(1) + ' km</strong> from ' + poi.name.split(',')[0];
+    const titleArea = card.querySelector('.hotel-card-name, .hotel-name, h3, h2') || card.firstChild;
+    if (titleArea && titleArea.parentNode) {
+      titleArea.parentNode.insertBefore(badge, titleArea.nextSibling);
+    } else {
+      card.prepend(badge);
+    }
+  });
+
+  // Update heading + insert an E1 notice strip above the list
+  if (countEl) {
+    countEl.textContent = 'Hotels near ' + poi.name + ' (' + cards.length + ' within 5 km)';
+  }
+  const notice = document.createElement('div');
+  notice.id = 'e1-notice';
+  notice.className = 'e1-notice';
+  notice.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0d9488" stroke-width="2"><circle cx="12" cy="10" r="3"/><path d="M12 21.7C17.3 17 20 13 20 10a8 8 0 1 0-16 0c0 3 2.7 7 8 11.7z"/></svg>' +
+    ' Showing hotels sorted by walking distance from <strong>' + poi.name + '</strong>. ' +
+    '<a href="#" onclick="e1ClearPoi(event)" class="e1-clear-link">Clear and show all hotels</a>';
+  resultsList.parentElement.insertBefore(notice, resultsList);
+}
+
+function e1ClearPoi(ev) {
+  if (ev) ev.preventDefault();
+  window.E1_SELECTED_POI = null;
+  const input = document.getElementById('dest-input');
+  if (input) input.value = '';
+  e1ApplyToResults();
+}
+
+// Hook into the existing showScreen() to apply E1 whenever results become active.
+(function hookShowScreen() {
+  const original = window.showScreen;
+  if (typeof original !== 'function') return;
+  window.showScreen = function (id) {
+    const r = original.apply(this, arguments);
+    if (id === 'results') setTimeout(e1ApplyToResults, 60);
+    return r;
+  };
 })();
 
 // ========== FORM VALIDATION ==========
