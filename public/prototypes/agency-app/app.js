@@ -1955,10 +1955,14 @@ function e1ApplyToResults() {
   const countEl = document.getElementById('results-count');
   if (!resultsList) return;
 
-  // Remove any existing E1 badge / heading override (idempotent)
+  // Reset prior E1 state (idempotent — handles re-entry on screen change)
   resultsList.querySelectorAll('.e1-distance-badge').forEach(el => el.remove());
   const oldNotice = document.getElementById('e1-notice');
   if (oldNotice) oldNotice.remove();
+  const oldBanner = document.getElementById('e1-in-dev-banner');
+  if (oldBanner) oldBanner.remove();
+  // Restore visibility of ALL hotel cards (clearing any prior country filter)
+  resultsList.querySelectorAll('.hotel-card').forEach(c => { c.style.display = ''; });
 
   if (!poi) {
     if (countEl && !countEl.textContent.match(/hotels found/)) {
@@ -1967,17 +1971,26 @@ function e1ApplyToResults() {
     return;
   }
 
-  const cards = Array.from(resultsList.querySelectorAll('.hotel-card'));
-  const measured = cards.map(card => {
+  // Filter to hotels in the same country as the POI (the load-bearing rule
+  // for E1 — picking a Bogotá POI must never return Cuba hotels even if
+  // some quirk of geocoded coordinates puts a Cuba hotel within radius).
+  const allCards = Array.from(resultsList.querySelectorAll('.hotel-card'));
+  const inCountry = allCards.filter(c => c.dataset.country === poi.country);
+  const outOfCountry = allCards.filter(c => c.dataset.country !== poi.country);
+  outOfCountry.forEach(c => { c.style.display = 'none'; });
+
+  // Compute distance for in-country cards, sort ascending
+  const measured = inCountry.map(card => {
     const coords = e1HotelCoords(card);
     const km = coords ? e1HaversineKm(poi, coords) : 999;
     return { card, km };
   }).sort((a, b) => a.km - b.km);
 
-  // Re-order DOM by distance
+  // Re-order DOM by distance (visible cards first, hidden cards at the end)
   measured.forEach(({ card }) => resultsList.appendChild(card));
+  outOfCountry.forEach(card => resultsList.appendChild(card));
 
-  // Annotate each card with a teal "X.X km from <POI>" badge
+  // Annotate each visible card with a teal "X.X km from <POI>" badge
   measured.forEach(({ card, km }) => {
     const badge = document.createElement('div');
     badge.className = 'e1-distance-badge';
@@ -1991,10 +2004,36 @@ function e1ApplyToResults() {
     }
   });
 
-  // Update heading + insert an E1 notice strip above the list
+  // Update heading to reflect the country-scoped count
   if (countEl) {
-    countEl.textContent = 'Hotels near ' + poi.name + ' (' + cards.length + ' within 5 km)';
+    countEl.textContent = 'Hotels near ' + poi.name + ' (' + measured.length + ' within 5 km in ' + poi.country + ')';
   }
+
+  // Inject the red "Functionality In Development" banner — E1 is entirely
+  // prototype-only (no Mapbox/Google integration, no MongoDB 2dsphere index,
+  // no /hotels/near endpoint). Banner only appears when E1 mode is engaged;
+  // the rest of the results page ships as-is.
+  const banner = document.createElement('div');
+  banner.id = 'e1-in-dev-banner';
+  banner.className = 'in-dev-banner';
+  banner.innerHTML =
+    '<div class="in-dev-icon"><i class="ti ti-tool"></i></div>' +
+    '<div class="in-dev-body">' +
+      '<div class="in-dev-title">Functionality In Development</div>' +
+      '<div class="in-dev-msg"><strong>POI-aware location search (E1)</strong> is not yet in production. The backend <code>/hotels/near</code> endpoint, MongoDB 2dsphere index, and Google Places live autocomplete are still being designed — see ' +
+      '<a href="https://github.com/lukzen/documentation/issues/17" target="_blank">USER_STORIES E1 (#17)</a> and ' +
+      '<a href="../../../technical/2-architecture/adr/002-poi-autocomplete-provider.md" target="_blank">ADR-002</a>.' +
+      ' Flows being prototyped:' +
+      '<ul>' +
+        '<li>Landmarks group in the destination typeahead with country + lat/lng on each suggestion</li>' +
+        '<li>Country-scoped proximity search — picking a Bogotá POI hides Cuba hotels even if mock distances would place them within radius</li>' +
+        '<li>Per-card distance badges + heading "Hotels near &lt;POI&gt;"</li>' +
+        '<li>"Clear" fallback to standard search without losing the original list</li>' +
+      '</ul></div>' +
+    '</div>';
+  resultsList.parentElement.insertBefore(banner, resultsList);
+
+  // Insert the teal notice strip below the banner
   const notice = document.createElement('div');
   notice.id = 'e1-notice';
   notice.className = 'e1-notice';
