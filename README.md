@@ -29,6 +29,17 @@ documentation/
 
 ---
 
+## Business Cases & Pricing Guides
+
+Bilingual (EN + ES) reference docs explaining how the pricing engine works end-to-end. Best viewed via the deployed Pages site — [https://lukzen.github.io/documentation/](https://lukzen.github.io/documentation/) — but each file also opens directly from the repo browse view.
+
+| Document | Description |
+|----------|-------------|
+| [How Agencies Configure Markup](public/business-cases/agency-markup-guide.html) | The agency-side 4-tier markup cascade (Brand · Country · Category · Hotel), the Markup Rules editor, cascade preview widget, backoffice audit drilldown, and booking-time snapshot. 4 screenshots. EN + ES. |
+| [Pricing Policy & Hotel Brands](public/business-cases/pricing-policy-guide.html) | The Ergos-side 5-layer commission cascade, the `markup_rules` collection, booking snapshot, money flow across all 4 parties, worked-number scenarios. EN + ES. |
+
+---
+
 ## Technical Documentation
 
 ### 0 — Prototype
