@@ -1875,13 +1875,17 @@ const E1_POIS = [
       const highlighted = q.length > 0
         ? s.name.replace(new RegExp('(' + q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')', 'gi'), '<mark>$1</mark>')
         : s.name;
-      // POI rows get a distinct landmark icon + carry data-lat/lng/country for E1
+      // POI rows get a distinct landmark icon + carry data-lat/lng/country for E1.
+      // City rows ALSO carry data-country so picking a city filters by country
+      // without engaging the proximity-sort + POI banner.
       const isPoi = s.type === 'Places';
+      const hasCountry = !!s.country;
       const icon = isPoi
         ? '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#0d9488" stroke-width="2"><path d="M3 21h18M5 21V7l8-4v18M19 21V11l-6-4"/><path d="M9 9v.01M9 12v.01M9 15v.01M9 18v.01"/></svg>'
         : '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="10" r="3"/><path d="M12 21.7C17.3 17 20 13 20 10a8 8 0 1 0-16 0c0 3 2.7 7 8 11.7z"/></svg>';
       html += '<div class="ac-item' + (isPoi ? ' ac-item-poi' : '') + '" data-idx="' + idx + '" data-value="' + s.name + '"' +
-        (isPoi ? ' data-poi="1" data-lat="' + s.lat + '" data-lng="' + s.lng + '" data-country="' + s.country + '"' : '') +
+        (hasCountry ? ' data-country="' + s.country + '"' : '') +
+        (isPoi ? ' data-poi="1" data-lat="' + s.lat + '" data-lng="' + s.lng + '"' : '') +
         '>' +
         '<span class="ac-item-icon">' + icon + '</span>' +
         '<span>' + highlighted + '</span>' +
@@ -1895,7 +1899,7 @@ const E1_POIS = [
       item.addEventListener('click', () => {
         input.value = item.dataset.value;
         dropdown.classList.remove('show');
-        // E1: capture POI selection so the results page can swap to proximity mode
+        // POI selection → proximity mode (adds banner + badges + distance sort)
         if (item.dataset.poi === '1') {
           window.E1_SELECTED_POI = {
             name: item.dataset.value,
@@ -1903,9 +1907,12 @@ const E1_POIS = [
             lat: parseFloat(item.dataset.lat),
             lng: parseFloat(item.dataset.lng),
           };
+          window.E1_DESTINATION_COUNTRY = item.dataset.country;
           protoToast && protoToast('Searching hotels near ' + item.dataset.value, 1800);
         } else {
-          window.E1_SELECTED_POI = null;  // a non-POI pick = standard search
+          // City / Region selection → country filter only (no banner, no proximity)
+          window.E1_SELECTED_POI = null;
+          window.E1_DESTINATION_COUNTRY = item.dataset.country || null;
         }
       });
     });
@@ -1949,6 +1956,34 @@ function e1HaversineKm(a, b) {
   return 2 * R * Math.asin(Math.sqrt(x));
 }
 
+// Best-effort country parse from a free-text destination string (e.g., user
+// typed "colombia" and hit search without picking from the dropdown). Matches
+// against the same suggestions list the autocomplete uses, so the mappings
+// stay in one place.
+function e1ParseCountryFromText(text) {
+  if (!text) return null;
+  const t = text.toLowerCase().trim();
+  // Country name → ISO code
+  const countryMap = {
+    'cuba': 'CU', 'colombia': 'CO', 'dominican republic': 'DO', 'república dominicana': 'DO',
+    'mexico': 'MX', 'méxico': 'MX',
+  };
+  for (const [name, iso] of Object.entries(countryMap)) {
+    if (t.includes(name)) return iso;
+  }
+  // City keyword → country (fast lookup for the prototype's known cities)
+  const cityMap = {
+    'havana': 'CU', 'habana': 'CU', 'varadero': 'CU',
+    'bogotá': 'CO', 'bogota': 'CO', 'cartagena': 'CO', 'medellín': 'CO', 'medellin': 'CO',
+    'punta cana': 'DO', 'santo domingo': 'DO',
+    'cancun': 'MX', 'cancún': 'MX',
+  };
+  for (const [name, iso] of Object.entries(cityMap)) {
+    if (t.includes(name)) return iso;
+  }
+  return null;
+}
+
 function e1ApplyToResults() {
   const poi = window.E1_SELECTED_POI;
   const resultsList = document.getElementById('results-list');
@@ -1964,20 +1999,44 @@ function e1ApplyToResults() {
   // Restore visibility of ALL hotel cards (clearing any prior country filter)
   resultsList.querySelectorAll('.hotel-card').forEach(c => { c.style.display = ''; });
 
-  if (!poi) {
+  // Determine the target country from THREE sources in priority order:
+  // 1. POI selection (carries country + lat/lng)
+  // 2. City/Region autocomplete selection (E1_DESTINATION_COUNTRY)
+  // 3. Free-text input parse (e.g., user typed "Colombia" without picking)
+  let targetCountry = poi?.country || window.E1_DESTINATION_COUNTRY || null;
+  if (!targetCountry) {
+    const input = document.getElementById('dest-input');
+    targetCountry = e1ParseCountryFromText(input?.value);
+    if (targetCountry) window.E1_DESTINATION_COUNTRY = targetCountry;
+  }
+
+  // No country signal at all — baseline behaviour (everything visible)
+  if (!targetCountry) {
     if (countEl && !countEl.textContent.match(/hotels found/)) {
       countEl.textContent = document.querySelectorAll('#results-list .hotel-card').length + ' hotels found';
     }
     return;
   }
 
-  // Filter to hotels in the same country as the POI (the load-bearing rule
-  // for E1 — picking a Bogotá POI must never return Cuba hotels even if
-  // some quirk of geocoded coordinates puts a Cuba hotel within radius).
+  // Apply country filter (always — for POI, City, and free-text paths)
   const allCards = Array.from(resultsList.querySelectorAll('.hotel-card'));
-  const inCountry = allCards.filter(c => c.dataset.country === poi.country);
-  const outOfCountry = allCards.filter(c => c.dataset.country !== poi.country);
+  const inCountry = allCards.filter(c => c.dataset.country === targetCountry);
+  const outOfCountry = allCards.filter(c => c.dataset.country !== targetCountry);
   outOfCountry.forEach(c => { c.style.display = 'none'; });
+
+  // Heading reflects country-scoped count even without POI (e.g., "5 hotels in CO")
+  if (countEl && !poi) {
+    const countryName = { CU: 'Cuba', CO: 'Colombia', DO: 'Dominican Republic', MX: 'Mexico' }[targetCountry] || targetCountry;
+    countEl.textContent = inCountry.length + ' hotels in ' + countryName;
+  }
+
+  // City / free-text path stops here — no banner, no badges, no proximity sort.
+  // The E1 enhancements below are POI-only.
+  if (!poi) {
+    // Still re-append hidden cards to the end so visible order is clean
+    outOfCountry.forEach(card => resultsList.appendChild(card));
+    return;
+  }
 
   // Compute distance for in-country cards, sort ascending
   const measured = inCountry.map(card => {
