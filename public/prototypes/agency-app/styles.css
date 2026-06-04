@@ -3350,3 +3350,50 @@ body.modal-open { overflow: hidden; }
   padding-left: 18px;
 }
 .in-dev-banner ul li { margin: 2px 0; }
+
+/* ===== E1 — POI-aware location search (USER_STORIES E1) =====
+   Extends the destination typeahead with Landmarks ("Places") and shows a
+   "X.X km from <POI>" badge + sorted order on the results page. */
+.ac-item-poi { background: linear-gradient(90deg, #f0fdfa 0%, transparent 60%); }
+.ac-item-poi .ac-item-icon { color: #0d9488; }
+.ac-item-poi .ac-item-sub { color: #0f766e; font-style: italic; }
+
+.e1-distance-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 9px;
+  margin: 6px 0 4px;
+  background: #ccfbf1;
+  color: #0f766e;
+  border: 1px solid #99f6e4;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+}
+.e1-distance-badge strong { color: #0c5c54; font-weight: 700; }
+.e1-distance-badge svg { color: #0d9488; }
+
+.e1-notice {
+  background: linear-gradient(90deg, #f0fdfa 0%, white 100%);
+  border: 1px solid #99f6e4;
+  border-left: 4px solid #0d9488;
+  border-radius: 8px;
+  padding: 10px 16px;
+  margin: 0 0 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #0f766e;
+  font-size: 13px;
+}
+.e1-notice svg { flex-shrink: 0; }
+.e1-notice strong { color: #0c5c54; }
+.e1-clear-link {
+  margin-left: auto;
+  color: #0d9488;
+  font-weight: 600;
+  text-decoration: none;
+  font-size: 12.5px;
+}
+.e1-clear-link:hover { text-decoration: underline; }
