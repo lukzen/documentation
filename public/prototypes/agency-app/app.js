@@ -1919,7 +1919,15 @@ const E1_POIS = [
   }
 
   input.addEventListener('focus', () => render(input.value));
-  input.addEventListener('input', () => render(input.value));
+  input.addEventListener('input', () => {
+    // Typing fresh text invalidates any previously-picked POI / country.
+    // Without this, picking "Havana, Cuba" then re-typing "colombia" would
+    // leave E1_DESTINATION_COUNTRY='CU' stuck, and the country filter would
+    // hide CO hotels while the user thinks they searched Colombia.
+    window.E1_SELECTED_POI = null;
+    window.E1_DESTINATION_COUNTRY = null;
+    render(input.value);
+  });
   document.addEventListener('click', (e) => {
     if (!e.target.closest('.search-field-destination')) dropdown.classList.remove('show');
   });
@@ -1931,16 +1939,20 @@ const E1_POIS = [
 // keyed off the card's data-name — in production this would come from the
 // backend's GET /hotels/near?lat=&lng=&country= endpoint.
 function e1HotelCoords(card) {
-  // Hash the hotel name → stable pseudo-coordinates clustered around the POI.
-  // Real implementation reads card.dataset.lat / data-lng populated by the
-  // backend. This keeps the prototype self-contained without persisting
-  // coordinates per card in the HTML.
+  // Prefer real coordinates from data-lat / data-lng on the card (added to
+  // index.html for the 6 demo hotels). Fall back to hash-derived pseudo-coords
+  // only when the card omits them — keeps the prototype working for any new
+  // card a maintainer adds without coordinates.
+  const realLat = parseFloat(card.dataset.lat);
+  const realLng = parseFloat(card.dataset.lng);
+  if (Number.isFinite(realLat) && Number.isFinite(realLng)) {
+    return { lat: realLat, lng: realLng };
+  }
+  const poi = window.E1_SELECTED_POI;
+  if (!poi) return null;
   const name = card.dataset.name || '';
   let h = 0;
   for (let i = 0; i < name.length; i++) h = ((h << 5) - h) + name.charCodeAt(i) | 0;
-  const poi = window.E1_SELECTED_POI;
-  if (!poi) return null;
-  // Spread hotels within ±0.05° (~5 km) of the POI, deterministically
   const dLat = ((h & 0xff) - 128) / 2560;
   const dLng = (((h >> 8) & 0xff) - 128) / 2560;
   return { lat: poi.lat + dLat, lng: poi.lng + dLng };
@@ -1954,6 +1966,45 @@ function e1HaversineKm(a, b) {
   const lat1 = toRad(a.lat), lat2 = toRad(b.lat);
   const x = Math.sin(dLat/2)**2 + Math.cos(lat1) * Math.cos(lat2) * Math.sin(dLng/2)**2;
   return 2 * R * Math.asin(Math.sqrt(x));
+}
+
+// Normalize: lowercase, strip diacritics, trim. Lets "Bogotá" match "bogota".
+function _e1Norm(s) {
+  return (s || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').trim();
+}
+
+// Best-effort CITY parse from free-text. Returns the canonical city name as
+// stored on hotel cards' data-city, or null. Tries POI keywords first (so
+// "malecón" → "Havana") then direct city aliases. Free-text typing wants
+// city-level filtering — "Havana" shouldn't surface Holguín / Varadero hotels.
+function e1ParseCityFromText(text) {
+  const t = _e1Norm(text);
+  if (!t) return null;
+  // POI keyword → canonical city (mirrors E1_POIS — "malecón" implies Havana)
+  const poiToCity = {
+    'malecon': 'Havana', 'plaza vieja': 'Havana',
+    'plaza de bolivar': 'Bogotá', 'zona t': 'Bogotá', 'comuna 13': 'Medellín',
+    'ciudad amurallada': 'Cartagena',
+    'zona colonial': 'Santo Domingo',
+    'zocalo': 'Mexico City',
+  };
+  for (const [k, city] of Object.entries(poiToCity)) {
+    if (t.includes(k)) return city;
+  }
+  // Direct city alias → canonical
+  const cityAlias = {
+    'havana': 'Havana', 'habana': 'Havana',
+    'holguin': 'Holguín', 'varadero': 'Varadero',
+    'bogota': 'Bogotá', 'cartagena': 'Cartagena', 'medellin': 'Medellín',
+    'punta cana': 'Punta Cana', 'santo domingo': 'Santo Domingo',
+    'cancun': 'Cancún',
+  };
+  // Match longest first so "punta cana" beats "punta"
+  const keys = Object.keys(cityAlias).sort((a, b) => b.length - a.length);
+  for (const k of keys) {
+    if (t.includes(k)) return cityAlias[k];
+  }
+  return null;
 }
 
 // Best-effort country parse from a free-text destination string (e.g., user
@@ -1973,12 +2024,23 @@ function e1ParseCountryFromText(text) {
   }
   // City keyword → country (fast lookup for the prototype's known cities)
   const cityMap = {
-    'havana': 'CU', 'habana': 'CU', 'varadero': 'CU',
+    'havana': 'CU', 'habana': 'CU', 'varadero': 'CU', 'holguín': 'CU', 'holguin': 'CU',
     'bogotá': 'CO', 'bogota': 'CO', 'cartagena': 'CO', 'medellín': 'CO', 'medellin': 'CO',
     'punta cana': 'DO', 'santo domingo': 'DO',
     'cancun': 'MX', 'cancún': 'MX',
   };
   for (const [name, iso] of Object.entries(cityMap)) {
+    if (t.includes(name)) return iso;
+  }
+  // POI keyword → country (mirrors E1_POIS so free-text "malecón" still scopes)
+  const poiMap = {
+    'malecón': 'CU', 'malecon': 'CU', 'plaza vieja': 'CU',
+    'plaza de bolívar': 'CO', 'plaza de bolivar': 'CO', 'zona t': 'CO',
+    'ciudad amurallada': 'CO', 'comuna 13': 'CO',
+    'zona colonial': 'DO',
+    'zócalo': 'MX', 'zocalo': 'MX',
+  };
+  for (const [name, iso] of Object.entries(poiMap)) {
     if (t.includes(name)) return iso;
   }
   return null;
@@ -1999,16 +2061,17 @@ function e1ApplyToResults() {
   // Restore visibility of ALL hotel cards (clearing any prior country filter)
   resultsList.querySelectorAll('.hotel-card').forEach(c => { c.style.display = ''; });
 
-  // Determine the target country from THREE sources in priority order:
-  // 1. POI selection (carries country + lat/lng)
-  // 2. City/Region autocomplete selection (E1_DESTINATION_COUNTRY)
-  // 3. Free-text input parse (e.g., user typed "Colombia" without picking)
-  let targetCountry = poi?.country || window.E1_DESTINATION_COUNTRY || null;
-  if (!targetCountry) {
-    const input = document.getElementById('dest-input');
-    targetCountry = e1ParseCountryFromText(input?.value);
-    if (targetCountry) window.E1_DESTINATION_COUNTRY = targetCountry;
-  }
+  // Determine target city + country from input text. Current text beats stored
+  // state so re-typing always wins. (E.g., user picks "Havana, Cuba" then
+  // re-types "colombia": stored CU must NOT preempt the parser.)
+  // City is preferred over country when both match — typing "Havana" means the
+  // user wants Havana hotels, not all of Cuba.
+  const input = document.getElementById('dest-input');
+  const parsedCity = e1ParseCityFromText(input?.value);
+  const parsedCountry = e1ParseCountryFromText(input?.value);
+  let targetCity = parsedCity || null;
+  let targetCountry = poi?.country || parsedCountry || window.E1_DESTINATION_COUNTRY || null;
+  if (parsedCountry) window.E1_DESTINATION_COUNTRY = parsedCountry;
 
   // No country signal at all — baseline behaviour (everything visible)
   if (!targetCountry) {
@@ -2024,16 +2087,35 @@ function e1ApplyToResults() {
   const outOfCountry = allCards.filter(c => c.dataset.country !== targetCountry);
   outOfCountry.forEach(c => { c.style.display = 'none'; });
 
-  // Heading reflects country-scoped count even without POI (e.g., "5 hotels in CO")
+  // Additional city filter — when user typed a city name (e.g., "Havana"),
+  // hide other cities within the same country (Holguín, Varadero).
+  // POI path skips this — its distance cap already enforces walking-distance.
+  let inScope = inCountry;
+  let outOfCity = [];
+  if (!poi && targetCity) {
+    const cityNorm = _e1Norm(targetCity);
+    inScope = inCountry.filter(c => _e1Norm(c.dataset.city) === cityNorm);
+    outOfCity = inCountry.filter(c => _e1Norm(c.dataset.city) !== cityNorm);
+    outOfCity.forEach(c => { c.style.display = 'none'; });
+  }
+
+  // Heading reflects the actual scope
   if (countEl && !poi) {
-    const countryName = { CU: 'Cuba', CO: 'Colombia', DO: 'Dominican Republic', MX: 'Mexico' }[targetCountry] || targetCountry;
-    countEl.textContent = inCountry.length + ' hotels in ' + countryName;
+    if (targetCity) {
+      countEl.textContent = inScope.length + ' hotels in ' + targetCity;
+    } else {
+      const countryName = { CU: 'Cuba', CO: 'Colombia', DO: 'Dominican Republic', MX: 'Mexico' }[targetCountry] || targetCountry;
+      countEl.textContent = inCountry.length + ' hotels in ' + countryName;
+    }
   }
 
   // City / free-text path stops here — no banner, no badges, no proximity sort.
   // The E1 enhancements below are POI-only.
   if (!poi) {
-    // Still re-append hidden cards to the end so visible order is clean
+    // Re-append hidden cards to the end so visible order is clean.
+    // Order: in-scope (visible) → out-of-city (hidden, same country) → out-of-country (hidden).
+    inScope.forEach(card => resultsList.appendChild(card));
+    outOfCity.forEach(card => resultsList.appendChild(card));
     outOfCountry.forEach(card => resultsList.appendChild(card));
     return;
   }
@@ -2045,12 +2127,20 @@ function e1ApplyToResults() {
     return { card, km };
   }).sort((a, b) => a.km - b.km);
 
-  // Re-order DOM by distance (visible cards first, hidden cards at the end)
-  measured.forEach(({ card }) => resultsList.appendChild(card));
+  // Distance cap: "near a POI" means walking-/short-drive distance, not
+  // same-country. Holguín ↔ Malecón is 700 km, both CU — hide those.
+  const NEAR_KM = 25;
+  const nearby = measured.filter(m => m.km <= NEAR_KM);
+  const farInCountry = measured.filter(m => m.km > NEAR_KM);
+  farInCountry.forEach(({ card }) => { card.style.display = 'none'; });
+
+  // Re-order DOM: nearby (sorted) → far same-country (hidden) → out-of-country (hidden)
+  nearby.forEach(({ card }) => resultsList.appendChild(card));
+  farInCountry.forEach(({ card }) => resultsList.appendChild(card));
   outOfCountry.forEach(card => resultsList.appendChild(card));
 
   // Annotate each visible card with a teal "X.X km from <POI>" badge
-  measured.forEach(({ card, km }) => {
+  nearby.forEach(({ card, km }) => {
     const badge = document.createElement('div');
     badge.className = 'e1-distance-badge';
     badge.innerHTML = '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 21h18M5 21V7l8-4v18M19 21V11l-6-4"/></svg>' +
@@ -2063,9 +2153,9 @@ function e1ApplyToResults() {
     }
   });
 
-  // Update heading to reflect the country-scoped count
+  // Update heading to reflect the actual nearby count
   if (countEl) {
-    countEl.textContent = 'Hotels near ' + poi.name + ' (' + measured.length + ' within 5 km in ' + poi.country + ')';
+    countEl.textContent = 'Hotels near ' + poi.name + ' (' + nearby.length + ' within ' + NEAR_KM + ' km in ' + poi.country + ')';
   }
 
   // Inject the red "Functionality In Development" banner — E1 is entirely
