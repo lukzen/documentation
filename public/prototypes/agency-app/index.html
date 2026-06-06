@@ -296,9 +296,22 @@
       <button class="rsb-edit"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
     </div>
 
+    <!-- Mobile-only "Show filters" trigger — opens .filter-sidebar as a slide-in drawer -->
+    <button class="filter-drawer-trigger" id="filter-drawer-trigger" type="button" aria-controls="filter-sidebar" aria-expanded="false" onclick="openFilterDrawer()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M6 12h12M10 18h4"/></svg>
+      <span>Filters</span>
+      <span class="filter-drawer-badge" id="filter-drawer-badge" style="display:none">0</span>
+    </button>
+
+    <!-- Backdrop that dims the page when the drawer is open -->
+    <div class="filter-drawer-backdrop" id="filter-drawer-backdrop" onclick="closeFilterDrawer()"></div>
+
     <div class="results-layout">
-      <!-- Sidebar Filters -->
-      <aside class="filter-sidebar">
+      <!-- Sidebar Filters — desktop column / mobile drawer -->
+      <aside class="filter-sidebar" id="filter-sidebar">
+        <button class="filter-drawer-close" type="button" onclick="closeFilterDrawer()" aria-label="Close filters">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg>
+        </button>
         <h3 class="filter-title">Filters</h3>
         <div class="change-callout" data-change="1.1b">
           <span class="change-badge">CHANGED</span>

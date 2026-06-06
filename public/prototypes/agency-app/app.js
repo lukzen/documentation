@@ -1773,6 +1773,66 @@ function resetHotelFilters() {
   if (empty) empty.style.display = 'none';
 }
 
+// ========== MOBILE FILTER DRAWER ==========
+// On viewports <=1024 px the .filter-sidebar is taken off the page flow and
+// hidden off-canvas; openFilterDrawer slides it in over a backdrop.
+
+function openFilterDrawer() {
+  const sidebar = document.getElementById('filter-sidebar');
+  const backdrop = document.getElementById('filter-drawer-backdrop');
+  const trigger = document.getElementById('filter-drawer-trigger');
+  if (!sidebar || !backdrop) return;
+  sidebar.classList.add('open');
+  backdrop.classList.add('open');
+  document.body.classList.add('filter-drawer-open');
+  if (trigger) trigger.setAttribute('aria-expanded', 'true');
+}
+
+function closeFilterDrawer() {
+  const sidebar = document.getElementById('filter-sidebar');
+  const backdrop = document.getElementById('filter-drawer-backdrop');
+  const trigger = document.getElementById('filter-drawer-trigger');
+  if (!sidebar || !backdrop) return;
+  sidebar.classList.remove('open');
+  backdrop.classList.remove('open');
+  document.body.classList.remove('filter-drawer-open');
+  if (trigger) trigger.setAttribute('aria-expanded', 'false');
+}
+
+// Close on Escape; refresh active-filter badge whenever filters change
+(function wireFilterDrawer() {
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeFilterDrawer();
+  });
+  // Active-filter count badge — anything that visibly narrows the result set
+  function updateBadge() {
+    const badge = document.getElementById('filter-drawer-badge');
+    if (!badge) return;
+    let count = 0;
+    const name = document.getElementById('filter-hotel-name')?.value?.trim();
+    if (name) count++;
+    const price = parseInt(document.getElementById('filter-price-range')?.value);
+    if (Number.isFinite(price) && price < 2000) count++;
+    count += document.querySelectorAll('.filter-star:checked').length;
+    count += document.querySelectorAll('.filter-meal:checked').length;
+    const refund = document.querySelector('.filter-refund:checked')?.value;
+    if (refund && refund !== 'all') count++;
+    const poi = document.getElementById('filter-poi')?.value;
+    if (poi) count++;
+    badge.textContent = String(count);
+    badge.style.display = count > 0 ? '' : 'none';
+  }
+  // Recompute on any change to any filter input
+  document.addEventListener('change', updateBadge);
+  document.addEventListener('input', updateBadge);
+  // Initial render once DOM is ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', updateBadge);
+  } else {
+    setTimeout(updateBadge, 100);
+  }
+})();
+
 // ========== DATE CROSS-VALIDATION & NIGHTS CHIP ==========
 
 (function initDateValidation() {
