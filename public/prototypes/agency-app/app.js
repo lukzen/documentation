@@ -2414,7 +2414,80 @@ function f1UpdatePaymentScreenAlternative() {
   altHint.style.display = show ? '' : 'none';
 }
 
-// Hook into showScreen to render F1 on confirmation arrival + show CTA on payment
+// Booking-detail mirror of the two-lane block (F1 AC #5).
+// Uses separate `bd-f1-*` DOM ids so it coexists with the confirmation screen
+// block; both read from the same window.F1_TRANSPORT_PENDING flag.
+let _bdF1CountdownInterval = null;
+
+function f1RenderOnBookingDetail() {
+  const banner = document.getElementById('bd-f1-in-dev-banner');
+  const block = document.getElementById('bd-f1-status-block');
+  const headerStatus = document.getElementById('bd-header-status');
+  if (!banner || !block) return;
+  if (window.F1_TRANSPORT_PENDING) {
+    banner.style.display = 'flex';
+    block.style.display = 'flex';
+    // Header status becomes PARTIAL when only one of the two is paid
+    if (headerStatus) {
+      headerStatus.textContent = 'PARTIAL';
+      headerStatus.className = 'status-badge';
+      headerStatus.style.background = '#fef3c7';
+      headerStatus.style.color = '#92400e';
+    }
+    f1StartBookingDetailCountdown();
+  } else {
+    banner.style.display = 'none';
+    block.style.display = 'none';
+  }
+}
+
+function f1StartBookingDetailCountdown() {
+  if (_bdF1CountdownInterval) clearInterval(_bdF1CountdownInterval);
+  const update = () => {
+    const el = document.getElementById('bd-f1-countdown');
+    if (!el || !window.F1_HOTEL_PAID_AT) return;
+    const expiresAt = window.F1_HOTEL_PAID_AT + (48 * 60 * 60 * 1000);
+    const ms = expiresAt - Date.now();
+    if (ms <= 0) {
+      el.textContent = 'Expired';
+      el.classList.add('f1-countdown-expired');
+      clearInterval(_bdF1CountdownInterval);
+      const lane = document.getElementById('bd-f1-transport-lane');
+      const status = document.getElementById('bd-f1-transport-status');
+      if (lane) { lane.classList.remove('f1-lane-pending'); lane.classList.add('f1-lane-expired'); }
+      if (status) { status.textContent = '✗ Expired — re-quote required'; status.className = 'f1-lane-status f1-status-expired'; }
+      return;
+    }
+    const h = Math.floor(ms / 3600000);
+    const m = Math.floor((ms % 3600000) / 60000);
+    el.textContent = `${h} h ${m} min`;
+  };
+  update();
+  _bdF1CountdownInterval = setInterval(update, 30000);
+}
+
+function f1ConfirmTransferFromBookingDetail() {
+  protoToast && protoToast('Re-quoting Mozio at current price… confirmed.', 1800);
+  if (_bdF1CountdownInterval) { clearInterval(_bdF1CountdownInterval); _bdF1CountdownInterval = null; }
+  const lane = document.getElementById('bd-f1-transport-lane');
+  const status = document.getElementById('bd-f1-transport-status');
+  const meta = document.getElementById('bd-f1-transport-meta');
+  const btn = document.getElementById('bd-f1-confirm-now-btn');
+  const headerStatus = document.getElementById('bd-header-status');
+  if (lane) { lane.classList.remove('f1-lane-pending', 'f1-lane-expired'); lane.classList.add('f1-lane-paid'); }
+  if (status) { status.textContent = '✓ Confirmed & Paid'; status.className = 'f1-lane-status f1-status-paid'; }
+  if (meta) meta.innerHTML = 'Ref <code>MOZIO-RSV-4938-K2</code> · Voucher available';
+  if (btn) btn.remove();
+  if (headerStatus) {
+    headerStatus.textContent = 'CONFIRMED';
+    headerStatus.className = 'status-badge confirmed';
+    headerStatus.style.background = '';
+    headerStatus.style.color = '';
+  }
+  window.F1_TRANSPORT_PENDING = false;
+}
+
+// Hook into showScreen to render F1 on confirmation + payment + booking-detail
 (function f1HookShowScreen() {
   const orig = window.showScreen;
   if (typeof orig !== 'function') return;
@@ -2422,6 +2495,7 @@ function f1UpdatePaymentScreenAlternative() {
     const r = orig.apply(this, arguments);
     if (id === 'confirmation') setTimeout(f1RenderOnConfirmation, 50);
     if (id === 'payment') setTimeout(f1UpdatePaymentScreenAlternative, 50);
+    if (id === 'booking-detail') setTimeout(f1RenderOnBookingDetail, 50);
     return r;
   };
 })();

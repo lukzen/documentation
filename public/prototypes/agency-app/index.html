@@ -1625,6 +1625,41 @@
         </div>
       </div>
 
+      <!-- F1 — two-lane status block (only shown when F1_TRANSPORT_PENDING is set) -->
+      <div class="in-dev-banner" id="bd-f1-in-dev-banner" style="display:none">
+        <div class="in-dev-icon"><i class="ti ti-tool"></i></div>
+        <div class="in-dev-body">
+          <div class="in-dev-title">Functionality In Development</div>
+          <div class="in-dev-msg"><strong>Decoupled bookings (F1)</strong> — hotel and transportation tracked as independent confirm/pay lifecycles. See <a href="https://github.com/lukzen/documentation/issues/23" target="_blank">USER_STORIES F1 (#23)</a>.</div>
+        </div>
+      </div>
+      <div class="f1-status-block" id="bd-f1-status-block" style="display:none">
+        <div class="f1-lane f1-lane-hotel">
+          <div class="f1-lane-head">
+            <span class="f1-lane-icon"><i class="ti ti-bed"></i></span>
+            <span class="f1-lane-title">Hotel booking</span>
+            <span class="f1-lane-status f1-status-paid">✓ Confirmed &amp; Paid</span>
+          </div>
+          <div class="f1-lane-body">
+            <span class="f1-lane-amount" id="bd-f1-hotel-amount">USD 194.40</span>
+            <span class="f1-lane-ref">Ref <code id="bd-f1-hotel-ref">PTA18G28E7CUANQ</code></span>
+            <span class="f1-lane-ref">Voucher available · Invoice available</span>
+          </div>
+        </div>
+        <div class="f1-lane f1-lane-transport f1-lane-pending" id="bd-f1-transport-lane">
+          <div class="f1-lane-head">
+            <span class="f1-lane-icon"><i class="ti ti-car"></i></span>
+            <span class="f1-lane-title">Transportation (Mozio)</span>
+            <span class="f1-lane-status f1-status-pending" id="bd-f1-transport-status">⏱ Pending — quote saved</span>
+          </div>
+          <div class="f1-lane-body">
+            <span class="f1-lane-amount" id="bd-f1-transport-amount">USD 45.00</span>
+            <span class="f1-lane-ref" id="bd-f1-transport-meta">Expires in <strong id="bd-f1-countdown" class="f1-countdown">47 h 23 min</strong></span>
+            <button class="btn-secondary f1-confirm-now-btn" id="bd-f1-confirm-now-btn" onclick="f1ConfirmTransferFromBookingDetail()">Confirm transfer now</button>
+          </div>
+        </div>
+      </div>
+
       <div class="bd-body">
         <div class="bd-main">
           <!-- Cancellation Policy -->
