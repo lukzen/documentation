@@ -3351,6 +3351,24 @@ body.modal-open { overflow: hidden; }
 }
 .in-dev-banner ul li { margin: 2px 0; }
 
+/* E1 results-page banner only — horizontal title + message on one row.
+   Other in-dev banners (F1, markup-rules) keep their stacked layout. */
+#e1-in-dev-banner .in-dev-body {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 8px;
+}
+#e1-in-dev-banner .in-dev-title {
+  flex: 0 0 auto;
+  margin: 0;
+  padding: 2px 8px;
+  background: #fecaca;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+#e1-in-dev-banner .in-dev-msg { flex: 1 1 auto; }
+
 /* ===== E1 — POI-aware location search (USER_STORIES E1) =====
    Extends the destination typeahead with Landmarks ("Places") and shows a
    "X.X km from <POI>" badge + sorted order on the results page. */

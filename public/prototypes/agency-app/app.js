@@ -2175,28 +2175,26 @@ function e1ApplyToResults() {
   banner.innerHTML =
     '<div class="in-dev-icon"><i class="ti ti-tool"></i></div>' +
     '<div class="in-dev-body">' +
-      '<div class="in-dev-title">Functionality In Development</div>' +
-      '<div class="in-dev-msg"><strong>POI-aware location search (E1)</strong> is not yet in production. The backend <code>/hotels/near</code> endpoint, MongoDB 2dsphere index, and Google Places live autocomplete are still being designed — see ' +
-      '<a href="https://github.com/lukzen/documentation/issues/17" target="_blank">USER_STORIES E1 (#17)</a> and ' +
+      '<span class="in-dev-title">Functionality In Development</span> ' +
+      '<span class="in-dev-msg"><strong>POI-aware location search (E1)</strong> — prototype-only; live <code>/hotels/near</code> + Google Places not yet wired. See ' +
+      '<a href="https://github.com/lukzen/documentation/issues/17" target="_blank">USER_STORIES E1 (#17)</a> · ' +
       '<a href="../../../technical/2-architecture/adr/002-poi-autocomplete-provider.md" target="_blank">ADR-002</a>.' +
-      ' Flows being prototyped:' +
-      '<ul>' +
-        '<li>Landmarks group in the destination typeahead with country + lat/lng on each suggestion</li>' +
-        '<li>Country-scoped proximity search — picking a Bogotá POI hides Cuba hotels even if mock distances would place them within radius</li>' +
-        '<li>Per-card distance badges + heading "Hotels near &lt;POI&gt;"</li>' +
-        '<li>"Clear" fallback to standard search without losing the original list</li>' +
-      '</ul></div>' +
-    '</div>';
-  resultsList.parentElement.insertBefore(banner, resultsList);
+      '</span></div>';
+  // Insert ABOVE the .results-layout grid so the banner spans the full width
+  // (sidebar + results column), not just the narrow results column.
+  const resultsLayout = document.querySelector('.results-layout');
+  const insertHost = resultsLayout?.parentElement || resultsList.parentElement;
+  const insertBefore = resultsLayout || resultsList;
+  insertHost.insertBefore(banner, insertBefore);
 
-  // Insert the teal notice strip below the banner
+  // Insert the teal notice strip below the banner (same host, same anchor)
   const notice = document.createElement('div');
   notice.id = 'e1-notice';
   notice.className = 'e1-notice';
   notice.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0d9488" stroke-width="2"><circle cx="12" cy="10" r="3"/><path d="M12 21.7C17.3 17 20 13 20 10a8 8 0 1 0-16 0c0 3 2.7 7 8 11.7z"/></svg>' +
     ' Showing hotels sorted by walking distance from <strong>' + poi.name + '</strong>. ' +
     '<a href="#" onclick="e1ClearPoi(event)" class="e1-clear-link">Clear and show all hotels</a>';
-  resultsList.parentElement.insertBefore(notice, resultsList);
+  insertHost.insertBefore(notice, insertBefore);
 }
 
 function e1ClearPoi(ev) {
