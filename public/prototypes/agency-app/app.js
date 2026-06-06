@@ -165,6 +165,13 @@ function showScreen(id) {
   if (id === 'services') initServiceTransferFromBooking();
   // Render dynamic bookings list
   if (id === 'bookings') renderBookingsList();
+  // E1 — apply POI/city/country filter when entering results screen.
+  // Inlined here (instead of via window.showScreen wrapping) because the
+  // function declaration `showScreen` is referenced lexically from
+  // performSearch() and bypasses any window.showScreen reassignment.
+  if (id === 'results' && typeof e1ApplyToResults === 'function') {
+    setTimeout(e1ApplyToResults, 60);
+  }
 }
 
 function initServiceTransferFromBooking() {
@@ -2694,6 +2701,11 @@ function buildSkeletonCards(count) {
         const tab = activeGroup.querySelector('[data-screen="results"]');
         if (tab) tab.classList.add('active');
       }
+      // E1 — this performSearch override activates screen-results DIRECTLY
+      // (bypassing showScreen), so the showScreen-based e1 hook never fires.
+      // Run the POI/city/country filter here so the cards the user sees
+      // actually match what they typed.
+      if (typeof e1ApplyToResults === 'function') e1ApplyToResults();
     }, 1800);
   };
 })();
