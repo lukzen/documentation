@@ -309,10 +309,12 @@
           <h4>Hotel Name</h4>
           <input type="text" id="filter-hotel-name" class="filter-input" placeholder="Search hotel...">
         </div>
-        <div class="filter-section">
+        <div class="filter-section" id="filter-poi-section">
           <h4>Point of Interest</h4>
-          <select class="filter-select"><option>Select...</option></select>
-          <input type="text" class="filter-input" placeholder="Address..." style="margin-top:8px">
+          <select class="filter-select" id="filter-poi">
+            <option value="">Any — show all in destination</option>
+          </select>
+          <div class="filter-hint" id="filter-poi-hint">Pick a landmark to sort hotels by walking distance and hide those farther than 25 km.</div>
         </div>
         <div class="filter-section">
           <h4>Price Range</h4>
@@ -537,6 +539,248 @@
               <div class="hotel-card-price">
                 <span class="price-label">From</span>
                 <span class="price-value">USD 445.00</span>
+                <span class="price-per">total for 2 nights</span>
+              </div>
+              <button class="view-rooms-btn">View Rooms →</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Hotel Card 7 — Cuba, Havana (Habana Vieja, walking distance to Plaza Vieja & Malecón) -->
+        <div class="hotel-card" onclick="selectHotel(this)" data-name="Iberostar Parque Central" data-country="CU" data-city="Havana" data-lat="23.139" data-lng="-82.357" data-stars="5" data-price="248.00" data-meal="Bed & Breakfast" data-refund="refundable">
+          <div class="hotel-card-img">
+            <img src="https://images.unsplash.com/photo-1564501049412-61c2a3083791?w=400&h=280&fit=crop" alt="Hotel">
+            <div class="hotel-card-badge free">Free Cancellation</div>
+          </div>
+          <div class="hotel-card-body">
+            <div class="hotel-card-top">
+              <div class="hotel-card-top-row">
+                <h3>Iberostar Parque Central</h3>
+                <div class="review-score"><span class="review-score-num">9.0</span><span class="review-score-label">Wonderful</span></div>
+              </div>
+              <div class="hotel-card-stars">★★★★★ <span class="hotel-card-loc">Neptuno e/ Prado y Zulueta, Habana Vieja</span></div>
+            </div>
+            <div class="hotel-card-tags">
+              <span class="tag tag-meal">Bed & Breakfast</span>
+              <span class="tag tag-refund">Free cancellation</span>
+            </div>
+            <div class="social-proof">Booked 12 times this week</div>
+            <div class="hotel-card-bottom">
+              <div class="hotel-card-price">
+                <span class="price-label">From</span>
+                <span class="price-value">USD 248.00</span>
+                <span class="price-per">total for 2 nights</span>
+              </div>
+              <button class="view-rooms-btn">View Rooms →</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Hotel Card 8 — Cuba, Havana (Vedado, on the Malecón seafront) -->
+        <div class="hotel-card" onclick="selectHotel(this)" data-name="Hotel Nacional de Cuba" data-country="CU" data-city="Havana" data-lat="23.144" data-lng="-82.382" data-stars="5" data-price="320.00" data-meal="Breakfast" data-refund="refundable">
+          <div class="hotel-card-img">
+            <img src="https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?w=400&h=280&fit=crop" alt="Hotel">
+            <div class="hotel-card-badge free">Free Cancellation</div>
+            <div class="hotel-card-badge-top">Top Pick</div>
+          </div>
+          <div class="hotel-card-body">
+            <div class="hotel-card-top">
+              <div class="hotel-card-top-row">
+                <h3>Hotel Nacional de Cuba</h3>
+                <div class="review-score"><span class="review-score-num">9.2</span><span class="review-score-label">Wonderful</span></div>
+              </div>
+              <div class="hotel-card-stars">★★★★★ <span class="hotel-card-loc">Calle 21 y O, Vedado, La Habana</span></div>
+            </div>
+            <div class="hotel-card-tags">
+              <span class="tag tag-meal">Breakfast</span>
+              <span class="tag tag-refund">Free cancellation</span>
+            </div>
+            <div class="social-proof">Booked 18 times this week</div>
+            <div class="hotel-card-bottom">
+              <div class="hotel-card-price">
+                <span class="price-label">From</span>
+                <span class="price-value">USD 320.00</span>
+                <span class="price-per">total for 2 nights</span>
+              </div>
+              <button class="view-rooms-btn">View Rooms →</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Hotel Card 9 — Cuba, Havana (Vedado west, ~4 km from Malecón) -->
+        <div class="hotel-card" onclick="selectHotel(this)" data-name="Meliá Cohíba" data-country="CU" data-city="Havana" data-lat="23.131" data-lng="-82.404" data-stars="5" data-price="285.00" data-meal="All Inclusive" data-refund="nonrefundable">
+          <div class="hotel-card-img">
+            <img src="https://images.unsplash.com/photo-1571003123894-1f0594d2b5d9?w=400&h=280&fit=crop" alt="Hotel">
+            <div class="hotel-card-badge nonrefund">Non-Refundable</div>
+          </div>
+          <div class="hotel-card-body">
+            <div class="hotel-card-top">
+              <div class="hotel-card-top-row">
+                <h3>Meliá Cohíba</h3>
+                <div class="review-score"><span class="review-score-num">8.5</span><span class="review-score-label">Very good</span></div>
+              </div>
+              <div class="hotel-card-stars">★★★★★ <span class="hotel-card-loc">Avenida Paseo, Vedado, La Habana</span></div>
+            </div>
+            <div class="hotel-card-tags">
+              <span class="tag tag-meal">All Inclusive</span>
+              <span class="tag tag-refund">Non-refundable</span>
+            </div>
+            <div class="social-proof">Booked 6 times this week</div>
+            <div class="hotel-card-bottom">
+              <div class="hotel-card-price">
+                <span class="price-label">From</span>
+                <span class="price-value">USD 285.00</span>
+                <span class="price-per">total for 2 nights</span>
+              </div>
+              <button class="view-rooms-btn">View Rooms →</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Hotel Card 10 — Colombia, Bogotá (Zona Rosa / Zona T) -->
+        <div class="hotel-card" onclick="selectHotel(this)" data-name="Bogotá Marriott Hotel" data-country="CO" data-city="Bogotá" data-lat="4.6515" data-lng="-74.0570" data-stars="5" data-price="225.00" data-meal="Bed & Breakfast" data-refund="refundable">
+          <div class="hotel-card-img">
+            <img src="https://images.unsplash.com/photo-1551918120-9739cb430c6d?w=400&h=280&fit=crop" alt="Hotel">
+            <div class="hotel-card-badge free">Free Cancellation</div>
+          </div>
+          <div class="hotel-card-body">
+            <div class="hotel-card-top">
+              <div class="hotel-card-top-row">
+                <h3>Bogotá Marriott Hotel</h3>
+                <div class="review-score"><span class="review-score-num">8.9</span><span class="review-score-label">Excellent</span></div>
+              </div>
+              <div class="hotel-card-stars">★★★★★ <span class="hotel-card-loc">Av. El Dorado #69B-53, Zona Rosa</span></div>
+            </div>
+            <div class="hotel-card-tags">
+              <span class="tag tag-meal">Bed & Breakfast</span>
+              <span class="tag tag-refund">Free cancellation</span>
+            </div>
+            <div class="social-proof">Booked 7 times this week</div>
+            <div class="hotel-card-bottom">
+              <div class="hotel-card-price">
+                <span class="price-label">From</span>
+                <span class="price-value">USD 225.00</span>
+                <span class="price-per">total for 2 nights</span>
+              </div>
+              <button class="view-rooms-btn">View Rooms →</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Hotel Card 11 — Colombia, Medellín (El Poblado) -->
+        <div class="hotel-card" onclick="selectHotel(this)" data-name="Click Clack Medellín" data-country="CO" data-city="Medellín" data-lat="6.209" data-lng="-75.567" data-stars="4" data-price="165.00" data-meal="Bed & Breakfast" data-refund="refundable">
+          <div class="hotel-card-img">
+            <img src="https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400&h=280&fit=crop" alt="Hotel">
+            <div class="hotel-card-badge free">Free Cancellation</div>
+          </div>
+          <div class="hotel-card-body">
+            <div class="hotel-card-top">
+              <div class="hotel-card-top-row">
+                <h3>Click Clack Medellín</h3>
+                <div class="review-score"><span class="review-score-num">9.1</span><span class="review-score-label">Wonderful</span></div>
+              </div>
+              <div class="hotel-card-stars">★★★★ <span class="hotel-card-loc">Cra. 37 #8a-09, El Poblado, Medellín</span></div>
+            </div>
+            <div class="hotel-card-tags">
+              <span class="tag tag-meal">Bed & Breakfast</span>
+              <span class="tag tag-refund">Free cancellation</span>
+            </div>
+            <div class="social-proof">Booked 11 times this week</div>
+            <div class="hotel-card-bottom">
+              <div class="hotel-card-price">
+                <span class="price-label">From</span>
+                <span class="price-value">USD 165.00</span>
+                <span class="price-per">total for 2 nights</span>
+              </div>
+              <button class="view-rooms-btn">View Rooms →</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Hotel Card 12 — Mexico, Cancún (Hotel Zone) -->
+        <div class="hotel-card" onclick="selectHotel(this)" data-name="Hyatt Ziva Cancún" data-country="MX" data-city="Cancún" data-lat="21.090" data-lng="-86.769" data-stars="5" data-price="565.00" data-meal="All Inclusive" data-refund="refundable">
+          <div class="hotel-card-img">
+            <img src="https://images.unsplash.com/photo-1582719508461-905c673771fd?w=400&h=280&fit=crop" alt="Hotel">
+            <div class="hotel-card-badge free">Free Cancellation</div>
+            <div class="hotel-card-badge-top">Top Pick</div>
+          </div>
+          <div class="hotel-card-body">
+            <div class="hotel-card-top">
+              <div class="hotel-card-top-row">
+                <h3>Hyatt Ziva Cancún</h3>
+                <div class="review-score"><span class="review-score-num">9.3</span><span class="review-score-label">Wonderful</span></div>
+              </div>
+              <div class="hotel-card-stars">★★★★★ <span class="hotel-card-loc">Blvd. Kukulcan Mz 51 Lt 7, Hotel Zone, Cancún</span></div>
+            </div>
+            <div class="hotel-card-tags">
+              <span class="tag tag-meal">All Inclusive</span>
+              <span class="tag tag-refund">Free cancellation</span>
+            </div>
+            <div class="social-proof">Booked 22 times this week</div>
+            <div class="hotel-card-bottom">
+              <div class="hotel-card-price">
+                <span class="price-label">From</span>
+                <span class="price-value">USD 565.00</span>
+                <span class="price-per">total for 2 nights</span>
+              </div>
+              <button class="view-rooms-btn">View Rooms →</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Hotel Card 13 — Dominican Republic, Santo Domingo (Zona Colonial) -->
+        <div class="hotel-card" onclick="selectHotel(this)" data-name="Catalonia Santo Domingo" data-country="DO" data-city="Santo Domingo" data-lat="18.471" data-lng="-69.892" data-stars="4" data-price="178.00" data-meal="Breakfast" data-refund="refundable">
+          <div class="hotel-card-img">
+            <img src="https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=400&h=280&fit=crop" alt="Hotel">
+            <div class="hotel-card-badge free">Free Cancellation</div>
+          </div>
+          <div class="hotel-card-body">
+            <div class="hotel-card-top">
+              <div class="hotel-card-top-row">
+                <h3>Catalonia Santo Domingo</h3>
+                <div class="review-score"><span class="review-score-num">8.6</span><span class="review-score-label">Very good</span></div>
+              </div>
+              <div class="hotel-card-stars">★★★★ <span class="hotel-card-loc">Av. George Washington 500, Zona Colonial</span></div>
+            </div>
+            <div class="hotel-card-tags">
+              <span class="tag tag-meal">Breakfast</span>
+              <span class="tag tag-refund">Free cancellation</span>
+            </div>
+            <div class="social-proof">Booked 5 times this week</div>
+            <div class="hotel-card-bottom">
+              <div class="hotel-card-price">
+                <span class="price-label">From</span>
+                <span class="price-value">USD 178.00</span>
+                <span class="price-per">total for 2 nights</span>
+              </div>
+              <button class="view-rooms-btn">View Rooms →</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Hotel Card 14 — Dominican Republic, Punta Cana (Bávaro beach) -->
+        <div class="hotel-card" onclick="selectHotel(this)" data-name="Hard Rock Hotel Punta Cana" data-country="DO" data-city="Punta Cana" data-lat="18.696" data-lng="-68.448" data-stars="5" data-price="490.00" data-meal="All Inclusive" data-refund="refundable">
+          <div class="hotel-card-img">
+            <img src="https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=400&h=280&fit=crop" alt="Hotel">
+            <div class="hotel-card-badge free">Free Cancellation</div>
+          </div>
+          <div class="hotel-card-body">
+            <div class="hotel-card-top">
+              <div class="hotel-card-top-row">
+                <h3>Hard Rock Hotel Punta Cana</h3>
+                <div class="review-score"><span class="review-score-num">9.0</span><span class="review-score-label">Wonderful</span></div>
+              </div>
+              <div class="hotel-card-stars">★★★★★ <span class="hotel-card-loc">Blvd. Turístico del Este, Bávaro, Punta Cana</span></div>
+            </div>
+            <div class="hotel-card-tags">
+              <span class="tag tag-meal">All Inclusive</span>
+              <span class="tag tag-refund">Free cancellation</span>
+            </div>
+            <div class="social-proof">Booked 15 times this week</div>
+            <div class="hotel-card-bottom">
+              <div class="hotel-card-price">
+                <span class="price-label">From</span>
+                <span class="price-value">USD 490.00</span>
                 <span class="price-per">total for 2 nights</span>
               </div>
               <button class="view-rooms-btn">View Rooms →</button>

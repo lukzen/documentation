@@ -2085,6 +2085,7 @@ function e1ApplyToResults() {
     if (countEl && !countEl.textContent.match(/hotels found/)) {
       countEl.textContent = document.querySelectorAll('#results-list .hotel-card').length + ' hotels found';
     }
+    setTimeout(e1PopulateSidebarPoiFilter, 0);
     return;
   }
 
@@ -2124,6 +2125,7 @@ function e1ApplyToResults() {
     inScope.forEach(card => resultsList.appendChild(card));
     outOfCity.forEach(card => resultsList.appendChild(card));
     outOfCountry.forEach(card => resultsList.appendChild(card));
+    setTimeout(e1PopulateSidebarPoiFilter, 0);
     return;
   }
 
@@ -2195,6 +2197,7 @@ function e1ApplyToResults() {
     ' Showing hotels sorted by walking distance from <strong>' + poi.name + '</strong>. ' +
     '<a href="#" onclick="e1ClearPoi(event)" class="e1-clear-link">Clear and show all hotels</a>';
   insertHost.insertBefore(notice, insertBefore);
+  setTimeout(e1PopulateSidebarPoiFilter, 0);
 }
 
 function e1ClearPoi(ev) {
@@ -2202,8 +2205,64 @@ function e1ClearPoi(ev) {
   window.E1_SELECTED_POI = null;
   const input = document.getElementById('dest-input');
   if (input) input.value = '';
+  // Also clear the sidebar POI select so its state matches
+  const sel = document.getElementById('filter-poi');
+  if (sel) sel.value = '';
   e1ApplyToResults();
 }
+
+// Populate the sidebar POI dropdown with E1_POIS scoped to the country/city
+// currently in view. Hides itself when the destination is unknown — picking a
+// POI in a country whose hotels aren't on this list would just hide everything.
+function e1PopulateSidebarPoiFilter() {
+  const sel = document.getElementById('filter-poi');
+  const section = document.getElementById('filter-poi-section');
+  if (!sel || typeof E1_POIS === 'undefined') return;
+  // Detect the active scope from the visible hotel cards' data-country/data-city.
+  const visibleCards = Array.from(document.querySelectorAll('#results-list .hotel-card'))
+    .filter(c => getComputedStyle(c).display !== 'none');
+  const countries = [...new Set(visibleCards.map(c => c.dataset.country).filter(Boolean))];
+  // Show only when exactly one country is in view — that's the case where
+  // narrowing by a POI within that country makes sense.
+  if (countries.length !== 1) {
+    if (section) section.style.display = 'none';
+    return;
+  }
+  if (section) section.style.display = '';
+  const scopeCountry = countries[0];
+  const matchingPois = E1_POIS.filter(p => p.country === scopeCountry);
+  const prevValue = sel.value;
+  sel.innerHTML = '<option value="">Any — show all in destination</option>' +
+    matchingPois.map(p =>
+      '<option value="' + p.name.replace(/"/g, '&quot;') + '">' + p.name + '</option>'
+    ).join('');
+  // Preserve selection if the previously-picked POI is still in scope
+  if (prevValue && matchingPois.some(p => p.name === prevValue)) {
+    sel.value = prevValue;
+  } else if (window.E1_SELECTED_POI && matchingPois.some(p => p.name === window.E1_SELECTED_POI.name)) {
+    sel.value = window.E1_SELECTED_POI.name;
+  }
+}
+
+// One-time change handler — picking a POI from the sidebar invokes the same
+// proximity mode the destination autocomplete uses.
+(function wireSidebarPoiFilter() {
+  document.addEventListener('change', (ev) => {
+    if (ev.target?.id !== 'filter-poi') return;
+    const name = ev.target.value;
+    if (!name) {
+      // Switched back to "Any" — drop POI mode but keep current country scope
+      window.E1_SELECTED_POI = null;
+      e1ApplyToResults();
+      return;
+    }
+    const poi = E1_POIS.find(p => p.name === name);
+    if (!poi) return;
+    window.E1_SELECTED_POI = { name: poi.name, country: poi.country, lat: poi.lat, lng: poi.lng };
+    window.E1_DESTINATION_COUNTRY = poi.country;
+    e1ApplyToResults();
+  });
+})();
 
 // Hook into the existing showScreen() to apply E1 whenever results become active.
 (function hookShowScreen() {
