@@ -25,9 +25,18 @@
    - [6.5 Routing](#65-routing-across-host--remotes)
    - [6.6 Repo & Deploy Topology](#66-repo--deploy-topology)
    - [6.7 Multi-Tenancy](#67-multi-tenant-compatibility)
-8. [Migration Path (Strangler-Fig)](#7-migration-path-strangler-fig)
-9. [Risks & Trade-offs](#8-risks--trade-offs)
-10. [References](#9-references)
+8. [Infrastructure & Hosting Plan (Phase by Phase)](#7-infrastructure--hosting-plan-phase-by-phase)
+   - [7.1 Current Hosting Baseline](#71-current-hosting-baseline)
+   - [7.2 Target Hosting Model](#72-target-hosting-model)
+   - [7.3 Phase H0 — Container-per-MFE in ACK](#73-phase-h0--container-per-mfe-in-ack)
+   - [7.4 Phase H1 — Static Remotes on OSS + CDN](#74-phase-h1--static-remotes-on-oss--cdn)
+   - [7.5 Phase H2 — Registry, Promotion & Rollback](#75-phase-h2--registry-promotion--rollback)
+   - [7.6 Phase H3 — Per-Tenant Edge Delivery](#76-phase-h3--per-tenant-edge-delivery)
+   - [7.7 CI/CD Pipeline per Repo](#77-cicd-pipeline-per-repo)
+   - [7.8 Infra Phase Summary](#78-infrastructure-phase-summary)
+9. [Migration Path (Strangler-Fig)](#8-migration-path-strangler-fig)
+10. [Risks & Trade-offs](#9-risks--trade-offs)
+11. [References](#10-references)
 
 ---
 
@@ -357,7 +366,104 @@ See [`2.2-ARCHITECTURE_MULTI_TENANT_AGENCIES.md`](./2.2-ARCHITECTURE_MULTI_TENAN
 
 ---
 
-## 7. Migration Path (Strangler-Fig)
+## 7. Infrastructure & Hosting Plan (Phase by Phase)
+
+[§6](#6-target-architecture--runtime-module-federation) describes *how the code is federated*; this section describes *how the bundles are actually served* on our Alibaba Cloud infrastructure, evolving from the current single-container model to true independent, atomic, edge-delivered remote deployments. The infra phases (**H0–H3**) run alongside the application-extraction phases in [§8](#8-migration-path-strangler-fig). Infra context and the gaps referenced here come from [`2-PRODUCTION_READINESS_ALIBABA_INFRA.md`](./2-PRODUCTION_READINESS_ALIBABA_INFRA.md).
+
+### 7.1 Current Hosting Baseline
+
+The agency-app today is a **single Nginx container** running in **Alibaba Cloud Kubernetes (ACK, K8s 1.32.7)**:
+
+- One `Deployment` (`agency-app`, 3 replicas, zero-downtime rolling update) serving the built SPA from an Nginx container.
+- Image built and pushed to **ACR** (`registry.na-south-1.aliyuncs.com/oneclick/agency-app`).
+- Runtime config injected via a **ConfigMap** (`agency-app-config`) that populates `window.__APP_CONFIG__` (`src/config/app.config.ts`) — backend URL, notification URL, payment keys — *without rebuilding the image*. This pattern is the backbone of the MFE hosting model and is preserved throughout.
+- Traffic flows **SLB → Nginx Ingress Controller → Service → Pods**.
+
+Known gaps (from the infra assessment) that this plan must address: **no CDN in front of static assets**, **single-AZ** deployment, and **manual DNS/TLS** with **no GitOps**.
+
+### 7.2 Target Hosting Model
+
+```mermaid
+flowchart TB
+    user(["Agency user — agencyX.lukzen-op.com"])
+    cdn["Alibaba CDN (edge cache + edge function)"]
+    subgraph oss["OSS — immutable, content-hashed static assets"]
+        rh["/shell/&lt;sha&gt;/index.html + chunks"]
+        rb["/mfe-booking/&lt;sha&gt;/remoteEntry.js + mf-manifest.json"]
+        ra["/mfe-account/&lt;sha&gt;/..."]
+        rm["/mfe-home/&lt;sha&gt;/..."]
+        reg["mfe-registry.{staging,prod}.json"]
+    end
+    subgraph ack["ACK (Kubernetes)"]
+        ing["Nginx Ingress"]
+        api["backend-service (API pods)"]
+    end
+    user --> cdn
+    cdn -->|HTML + JS assets| oss
+    cdn -->|/api/*| ing --> api
+    cdn -.reads at boot.-> reg
+```
+
+- **Remotes are immutable static assets** (`remoteEntry.js`, code-split chunks, `mf-manifest.json`) under content-hashed OSS paths, fronted by **Alibaba CDN** — built once, cached at the edge, deployed by upload (no pod roll).
+- **The host shell** serves `index.html` + the shell bundle; it can remain a small ACK container during transition or also move to OSS+CDN.
+- **A per-environment `mfe-registry.json`** in OSS maps each remote name → its current manifest URL. The shell reads it (alongside `__APP_CONFIG__`) at boot and wires remotes via the MF 2.0 runtime.
+- **`/api/*`** continues to route through Nginx Ingress to the backend pods in ACK.
+
+### 7.3 Phase H0 — Container-per-MFE in ACK
+
+*Pairs with extraction Phase 1 ([§8](#8-migration-path-strangler-fig)). Goal: independent deploys with the least new infrastructure.*
+
+- Each extracted MFE gets its **own `Deployment` + `Service` + ACR image**, cloned from the existing `agency-app` manifest (same security context, anti-affinity, probes). First mover: `mfe-account`.
+- The shell's Ingress routes remote paths to remote Services; the shell loads `remoteEntry.js` from the remote's in-cluster Service URL (injected via ConfigMap).
+- ✅ Reuses the proven ACK pattern; each team deploys its own image on its own cadence. ⚠️ Still container overhead per remote, still no CDN — an interim step, not the destination.
+
+### 7.4 Phase H1 — Static Remotes on OSS + CDN
+
+*Pairs with extraction Phases 2–3. Closes the documented CDN gap.*
+
+- Provision (via Terraform in `alibaba-infra`) **one OSS bucket** for static MFE assets and an **Alibaba CDN** distribution in front of it, with TLS and long-lived `Cache-Control: immutable` on content-hashed paths and **no-cache** on `index.html` + `mfe-registry.json`.
+- Remote CI uploads build artifacts to `oss://<bucket>/mfe-<name>/<gitSha>/` — immutable, never overwritten. A deploy is an **upload**, not a pod roll: no ACK container per remote.
+- The shell container shrinks to serving `index.html` (or also moves to OSS+CDN). `/api/*` still proxies to ACK.
+- ✅ Cheapest and fastest hosting, global edge caching, atomic + instant deploys, independent per remote. This is the **destination** for remotes.
+
+### 7.5 Phase H2 — Registry, Promotion & Rollback
+
+*Pairs with extraction Phase 4 (harden).*
+
+- **`mfe-registry.<env>.json`** (in OSS) is the source of truth for which remote version each environment serves. **Deploy = upload immutable artifacts, then atomically flip the registry entry.** **Rollback = flip the entry back** to the prior SHA — no rebuild, near-instant.
+- **Promotion**: `staging` registry validated by smoke tests → copy entry to `prod` registry. The artifacts are identical (same SHA), only the pointer moves.
+- **Canary**: the registry entry can carry a weighted/percentage or cohort rule; combined with MF 2.0 **runtime version negotiation**, the shell resolves shared singletons to the host version even when a remote is a slightly newer build — making "Booking deploys Tuesday, Shell Thursday" safe.
+
+### 7.6 Phase H3 — Per-Tenant Edge Delivery
+
+*Builds on [§6.7](#67-multi-tenant-compatibility) (multi-tenancy).*
+
+- An **edge function** (Alibaba CDN EdgeRoutine) keyed on the wildcard subdomain (`agencyX.lukzen-op.com`) or custom domain injects per-tenant `window.__APP_CONFIG__` **and** `window.__MFE_REGISTRY__` into `index.html` at the edge.
+- This enables **per-tenant version pinning and canary** (roll a remote to one agency first) and **per-tenant branding** (Mantine theme + logo) — while remotes remain **built once and tenant-agnostic**, the key property preserved from [§7.1](#71-current-hosting-baseline).
+- DNS/TLS for new tenant subdomains should be automated here (the infra assessment flags these as currently manual) via Terraform + cert-manager / Alibaba certificate automation.
+
+### 7.7 CI/CD Pipeline per Repo
+
+Each of the 4 repos ([§6.6](#66-repo--deploy-topology)) runs an independent pipeline (GitHub Actions; the infra assessment flags **no GitOps today** — this introduces it):
+
+1. **Build** — `bun install` → MF production build (`build.target: esnext`), content-hashed output.
+2. **Drift gate** — fail if resolved `react` / `react-dom` / `@mantine/core` major/minor diverge from the host manifest published in `@agency/mfe-shared-config` ([§6.3](#63-shared-dependency-strategy)).
+3. **Publish** — H0: build + push image to ACR; H1+: upload artifacts to `oss://.../mfe-<name>/<gitSha>/`.
+4. **Smoke test** — load the shell against the staging registry pointed at the new remote; assert routes mount and no duplicate-React error.
+5. **Promote** — flip the `staging` then `prod` registry entry ([§7.5](#75-phase-h2--registry-promotion--rollback)); rollback = revert the entry.
+
+### 7.8 Infrastructure Phase Summary
+
+| Infra phase | Hosting model | New infra | Deploy unit | Rollback | Pairs with |
+|---|---|---|---|---|---|
+| **H0** | Container per MFE in ACK | ACR images + Deployments | Pod roll (image) | Redeploy prior image | Extraction Phase 1 |
+| **H1** | Static remotes on OSS + CDN | OSS bucket + CDN (Terraform) | OSS upload | Re-point to prior SHA | Extraction Phases 2–3 |
+| **H2** | Registry-driven promotion | `mfe-registry.<env>.json` | Registry flip | Registry flip back | Extraction Phase 4 |
+| **H3** | Per-tenant edge delivery | CDN edge function + DNS/TLS automation | Per-tenant registry/config | Per-tenant flip | [§6.7](#67-multi-tenant-compatibility) |
+
+---
+
+## 8. Migration Path (Strangler-Fig)
 
 Keep the app shippable at every step. Start with the lowest-coupling cut, not the funnel.
 
@@ -379,7 +485,7 @@ flowchart LR
 
 ---
 
-## 8. Risks & Trade-offs
+## 9. Risks & Trade-offs
 
 The tax MFE imposes, ordered by how hard it lands on *this* app:
 
@@ -401,7 +507,7 @@ The tax MFE imposes, ordered by how hard it lands on *this* app:
 
 ---
 
-## 9. References
+## 10. References
 
 **Onboarding & system overview**
 - [`1-onboarding/ARCHITECTURE.md`](../1-onboarding/ARCHITECTURE.md) — C4 system overview and the deliberate **multi-repo (not monorepo)** decision that this architecture aligns with.
@@ -418,7 +524,8 @@ The tax MFE imposes, ordered by how hard it lands on *this* app:
 - [`4-PRODUCTION_READINESS_BACKEND_SERVICE.md`](./4-PRODUCTION_READINESS_BACKEND_SERVICE.md) — backend service the federated frontends consume via the shared API layer.
 - [`5-PRODUCTION_READINESS_BACKOFFICE_APP.md`](./5-PRODUCTION_READINESS_BACKOFFICE_APP.md) — sibling React SPA; the existing app-level deploy boundary.
 - [`6-RESERVATION_SYSTEM_MULTI_GDS_ANALYSIS.md`](./6-RESERVATION_SYSTEM_MULTI_GDS_ANALYSIS.md) — reservation flow through the GDS adapters behind the booking journey.
+- [`8-BACKEND_DDD_CQRS_MIGRATION.md`](./8-BACKEND_DDD_CQRS_MIGRATION.md) — backend counterpart: phased DDD + CQRS migration ("prepare now, split later").
 
 **Decision records (ADR)**
-- [`adr/001-cqrs-architecture-refactor.md`](./adr/001-cqrs-architecture-refactor.md) — related backend architecture direction (CQRS).
+- [`adr/001-cqrs-architecture-refactor.md`](./adr/001-cqrs-architecture-refactor.md) — related backend architecture direction (CQRS); executed by [`8-BACKEND_DDD_CQRS_MIGRATION.md`](./8-BACKEND_DDD_CQRS_MIGRATION.md).
 - [`adr/transfer-flow-comparison.md`](./adr/transfer-flow-comparison.md) — transfer booking flow decision affecting the booking-journey remote.
