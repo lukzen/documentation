@@ -616,13 +616,26 @@ body.lang-es [lang-content="es"]{display:inline}
   <aside class="rail right" id="simulate">
     <!-- Simulate / Audit tab toggle (mirrors live RightRail) -->
     <div class="rail-tabs">
-      <button class="rail-tab active" data-rail-tab="simulate">
+      <button class="rail-tab active" data-rail-tab="simulate" onclick="switchRail('simulate', this)">
         <span lang-content="en">Simulate</span><span lang-content="es">Simular</span>
+      </button>
+      <button class="rail-tab" data-rail-tab="live" onclick="switchRail('live', this)">
+        <span lang-content="en">Live (GDS)</span><span lang-content="es">En vivo (GDS)</span>
       </button>
       <button class="rail-tab" data-rail-tab="audit" onclick="document.getElementById('auditBackdrop').classList.add('open');document.getElementById('auditDrawer').classList.add('open');">
         🕒 <span lang-content="en">Audit</span><span lang-content="es">Auditoría</span>
       </button>
     </div>
+    <script>
+      function switchRail(which, btn){
+        document.querySelectorAll('.rail-tabs .rail-tab').forEach(function(b){ b.classList.remove('active'); });
+        if(btn){ btn.classList.add('active'); }
+        document.getElementById('railSimulate').hidden = (which !== 'simulate');
+        document.getElementById('railLive').hidden = (which !== 'live');
+      }
+    </script>
+
+    <div id="railSimulate">
 
     <!-- Live-preview banner (shown when there are unsaved edits) -->
     <div class="preview-banner" id="previewBanner" hidden>
@@ -689,6 +702,54 @@ body.lang-es [lang-content="es"]{display:inline}
         <span lang-content="en">Margin split by agent</span><span lang-content="es">Reparto por agente</span>
       </div>
       <div class="chart-wrap"><canvas id="marginChart"></canvas></div>
+    </div>
+    </div><!-- /#railSimulate -->
+
+    <!-- LIVE (GDS) panel — same cascade as Simulate, run on real live GDS prices -->
+    <div id="railLive" hidden>
+      <p style="font-size:11px;color:var(--text-muted);margin:0 0 12px">
+        <span lang-content="en">Live Ergos prices across all available rooms of <b>Playa Vista Azul</b> (Hotetec · Cuba).</span>
+        <span lang-content="es" style="display:none">Precios Ergos en vivo de todas las habitaciones disponibles de <b>Playa Vista Azul</b> (Hotetec · Cuba).</span>
+      </p>
+
+      <label style="font-size:10px;font-weight:700;text-transform:uppercase;color:var(--text-muted);letter-spacing:.6px">
+        <span lang-content="en">Stay dates</span><span lang-content="es" style="display:none">Fechas de estancia</span>
+      </label>
+      <div style="display:flex;align-items:center;gap:6px;margin:6px 0 10px;padding:9px 11px;border:1px solid var(--border-light);border-radius:8px;font-size:12px;color:var(--text-secondary)">📅 Jul 2 – Jul 4, 2026</div>
+      <button class="btn btn-primary" style="width:100%;margin-bottom:14px">↻ <span lang-content="en">Load prices</span><span lang-content="es" style="display:none">Cargar precios</span></button>
+
+      <div class="preview-card" style="display:flex;justify-content:space-between;align-items:center">
+        <span style="font-size:11px;font-weight:700;text-transform:uppercase;color:var(--text-muted);letter-spacing:.6px">8 <span lang-content="en">room types</span><span lang-content="es" style="display:none">tipos de habitación</span></span>
+        <span style="font-size:12px;font-weight:700;color:var(--navy);font-variant-numeric:tabular-nums">Ergos $94.94 – $377.74/night</span>
+      </div>
+
+      <div class="preview-card">
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:var(--text-muted);letter-spacing:.8px;margin-bottom:10px">
+          <span lang-content="en">Price per night · by room type</span><span lang-content="es" style="display:none">Precio por noche · por tipo de habitación</span>
+        </div>
+        <div id="liveRooms"></div>
+      </div>
+      <script>
+        (function(){
+          var rooms = [
+            ['Premium Ocean Front', 'All Inclusive', 280.00, 226.24],
+            ['Premium Ocean View', 'All Inclusive', 467.50, 377.74],
+            ['Luxury Suite', 'All Inclusive', 417.50, 337.34],
+            ['Standard Double', 'All Inclusive', 230.00, 185.84],
+            ['Junior Suite', 'Bed & Breakfast', 195.00, 157.56]
+          ];
+          var el = document.getElementById('liveRooms');
+          if(!el) return;
+          el.innerHTML = rooms.map(function(r, i){
+            return '<div style="padding:8px 0;'+(i<rooms.length-1?'border-bottom:1px solid var(--border-light)':'')+'">'
+              + '<div style="display:flex;justify-content:space-between;gap:8px;font-size:12px"><span style="font-weight:700;color:var(--navy)">'+r[0]+'</span><span style="font-size:10px;color:var(--text-muted)">'+r[1]+'</span></div>'
+              + '<div style="display:flex;justify-content:space-between;margin-top:3px;font-size:13px;font-variant-numeric:tabular-nums">'
+              + '<span style="color:var(--text-muted)"><span style="font-size:10px;letter-spacing:.4px">COST</span> $'+r[2].toFixed(2)+'</span>'
+              + '<span><span style="font-size:10px;color:var(--text-muted);letter-spacing:.4px">ERGOS</span> <b style="color:var(--navy)">$'+r[3].toFixed(2)+'</b>/night</span>'
+              + '</div></div>';
+          }).join('');
+        })();
+      </script>
     </div>
   </aside>
 </div>

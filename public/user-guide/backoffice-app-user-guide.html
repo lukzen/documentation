@@ -419,6 +419,57 @@
       <span class="lang-en"> a GDS-scope rule affects every hotel from that GDS that doesn't already have a more-specific rule. Use Country or Individual hotels scope when you only want a subset. Always read the live preview ("X hotel(s) affected") before clicking Apply.</span>
       <span class="lang-es"> una regla de scope GDS afecta a cada hotel de ese GDS que no tenga ya una regla más específica. Usá scope Country o Individual hotels cuando solo querés un subconjunto. Siempre leé la vista previa en vivo ("X hotel(s) affected") antes de hacer clic en Apply.</span>
     </div>
+
+    <h3 class="lang-en">Live (GDS) price simulation</h3>
+    <h3 class="lang-es">Simulación de precios en vivo (GDS)</h3>
+    <p class="lang-en">The right rail has three tabs: <strong>Simulate</strong>, <strong>Live (GDS)</strong>, and <strong>Audit Trail</strong>. The <strong>Simulate</strong> tab runs the cascade on a hypothetical net price you type in. The <strong>Live (GDS)</strong> tab runs the <em>exact same</em> cascade, but against the hotel's <strong>real, live GDS prices</strong> for every available room type — so you can see precisely how your pricing policy lands on the rooms a guest would actually book. It works the same way for every GDS (Restel, Roibos, Hotetec, Dingus).</p>
+    <p class="lang-es">El panel derecho tiene tres pestañas: <strong>Simulate</strong>, <strong>Live (GDS)</strong> y <strong>Audit Trail</strong>. La pestaña <strong>Simulate</strong> corre la cascada sobre un precio neto hipotético que vos ingresás. La pestaña <strong>Live (GDS)</strong> corre <em>exactamente la misma</em> cascada, pero contra los <strong>precios reales y en vivo del GDS</strong> del hotel para cada tipo de habitación disponible — así ves con precisión cómo tu política de precios aterriza sobre las habitaciones que un huésped realmente reservaría. Funciona igual para cada GDS (Restel, Roibos, Hotetec, Dingus).</p>
+
+    <div class="task">
+      <h4 class="lang-en">Checking live prices for a hotel</h4>
+      <h4 class="lang-es">Ver precios en vivo de un hotel</h4>
+      <ol class="lang-en">
+        <li>On the <strong>Hotels</strong> scope tab, pick a hotel from the left rail (use the search box to find it).</li>
+        <li>In the right rail, click the <strong>Live (GDS)</strong> tab.</li>
+        <li>Click <strong>Stay dates</strong> and pick a check-in then a check-out date on the calendar (any future period).</li>
+        <li>Click <strong>Load prices</strong>. Each available room type shows its per-night <strong>Cost</strong> (the GDS rate) and the resulting <strong>Ergos</strong> price (after the full commission cascade).</li>
+        <li>Edit any layer in the center panel (e.g. the hotel markup) and the Ergos prices recompute instantly — no need to reload.</li>
+      </ol>
+      <ol class="lang-es">
+        <li>En la pestaña de scope <strong>Hotels</strong>, elegí un hotel del panel izquierdo (usá el buscador para encontrarlo).</li>
+        <li>En el panel derecho, hacé clic en la pestaña <strong>Live (GDS)</strong>.</li>
+        <li>Hacé clic en <strong>Stay dates</strong> y elegí una fecha de entrada y luego una de salida en el calendario (cualquier período futuro).</li>
+        <li>Hacé clic en <strong>Load prices</strong>. Cada tipo de habitación disponible muestra su <strong>Costo</strong> por noche (la tarifa del GDS) y el precio <strong>Ergos</strong> resultante (tras la cascada completa de comisiones).</li>
+        <li>Editá cualquier capa en el panel central (ej. el markup del hotel) y los precios Ergos se recalculan al instante — sin recargar.</li>
+      </ol>
+    </div>
+
+    <figure class="screenshot">
+      <div class="screenshot-frame">
+        <img src="10-live-gds-tab.png"
+             alt="Pricing Policy page with the Live (GDS) tab open for Playa Vista Azul (Hotetec, Cuba) — right rail shows 8 room types, each with its per-night GDS cost and the resulting Ergos price."
+             loading="lazy" onerror="this.style.display='none'" />
+      </div>
+      <figcaption class="lang-en">The Live (GDS) tab for Playa Vista Azul (Hotetec, Cuba): 8 real room types, each showing the per-night GDS Cost and the Ergos price the policy produces. Edit a layer in the center and these recompute live.</figcaption>
+      <figcaption class="lang-es">La pestaña Live (GDS) para Playa Vista Azul (Hotetec, Cuba): 8 tipos de habitación reales, cada uno mostrando el Costo del GDS por noche y el precio Ergos que produce la política. Editá una capa en el centro y estos se recalculan en vivo.</figcaption>
+    </figure>
+
+    <figure class="screenshot">
+      <div class="screenshot-frame">
+        <img src="11-live-gds-dates.png"
+             alt="The Live (GDS) tab with the stay-dates calendar open — a single range calendar where you click a check-in date then a check-out date; past dates are disabled."
+             loading="lazy" onerror="this.style.display='none'" />
+      </div>
+      <figcaption class="lang-en">Picking the stay window: one calendar — click check-in, then check-out. Past dates are disabled, and clicking again starts a fresh range.</figcaption>
+      <figcaption class="lang-es">Eligiendo la ventana de estadía: un calendario — clic en entrada, luego en salida. Las fechas pasadas están deshabilitadas, y al hacer clic de nuevo se inicia un rango nuevo.</figcaption>
+    </figure>
+
+    <div class="callout callout-info">
+      <strong class="lang-en">Why an Ergos price can be below the Cost:</strong>
+      <strong class="lang-es">Por qué el precio Ergos puede ser menor que el Costo:</strong>
+      <span class="lang-en"> when a hotel belongs to a chain with a negotiated discount (shown in the center cascade), Ergos's real cost drops below the raw GDS rate, so the Ergos price can land under the displayed Cost. That's the chain discount working — check the center "Effective Configuration" to see it applied.</span>
+      <span class="lang-es"> cuando un hotel pertenece a una cadena con descuento negociado (mostrado en la cascada central), el costo real de Ergos baja por debajo de la tarifa bruta del GDS, así que el precio Ergos puede quedar por debajo del Costo mostrado. Eso es el descuento de cadena funcionando — mirá la "Effective Configuration" central para verlo aplicado.</span>
+    </div>
   </section>
 
   <!-- SECTION 9: HOTEL BRANDS -->
