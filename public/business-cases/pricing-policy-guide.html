@@ -1382,7 +1382,7 @@ sequenceDiagram
   </figure>
 
   <div class="callout callout-teal">
-    <strong class="lang-en">2026-05-27 baseline policy note.</strong><strong class="lang-es">Nota de política base del 2026-05-27.</strong> The global default <code>ergosMarkupPct</code> was set to 0% â markup waived by default, configured per-policy in the backoffice â per the 2026-06-18 reset (previously 3%). The schema enforces <code>min: 0, max: 100</code>. All 105,761 existing <code>hotel.ergosMarkupPct</code> values in the test environment were cleared by <code>migrate-clear-hotel-basecommission.ts</code> so the markup_rules cascade takes over. Hotels that genuinely need a per-hotel override can have one set via the Hotel layer card or via <code>markup_rules[scope='hotel']</code> through the Create Markup Rule drawer.
+    <strong class="lang-en">2026-05-27 baseline policy note.</strong><strong class="lang-es">Nota de política base del 2026-05-27.</strong> The global default <code>ergosMarkupPct</code> was set to 0% — markup waived by default, configured per-policy in the backoffice — per the 2026-06-18 reset (previously 3%). The schema enforces <code>min: 0, max: 100</code>. All 105,761 existing <code>hotel.ergosMarkupPct</code> values in the test environment were cleared by <code>migrate-clear-hotel-basecommission.ts</code> so the markup_rules cascade takes over. Hotels that genuinely need a per-hotel override can have one set via the Hotel layer card or via <code>markup_rules[scope='hotel']</code> through the Create Markup Rule drawer.
   </div>
 
   <!-- ─────────────────────────────────────────────────────────── -->
@@ -3414,8 +3414,8 @@ ergosPctOfGross  = ergosNet ÷ ergosGross</div>
 
   <h4 style="margin-top: 18px;">Case A — Standard international hotel (no chain discount, no rebate)</h4>
 
-  <p class="lang-en">Assumptions: $300 USD GDS net (international weighted average), <strong>3% Ergos markup</strong> (the new 2026-05-27 default for non-chain, non-rebate bookings), 0% agency rebate, Growth-tier agent (18% earning, 7% ops). The recruiting compensation is a flat $2.00 per booking (proposed — see model below).</p>
-  <p class="lang-es">Supuestos: $300 USD GDS net (promedio ponderado internacional), <strong>3% Ergos markup</strong> (el nuevo default del 2026-05-27 para reservas sin cadena, sin rebate), 0% rebate de agencia, agente tier Growth (18% earning, 7% ops). La compensación de reclutamiento es un flat $2.00 por reserva (propuesto — ver modelo abajo).</p>
+  <p class="lang-en">Assumptions: $300 USD GDS net (international weighted average), <strong>3% Ergos markup</strong> (a representative <em>configured</em> markup — Ergos sets 1–5% for standard non-chain hotels; the global default is 0%, so a markup_rule must be configured for the booking to carry any margin), 0% agency rebate, Growth-tier agent (18% earning, 7% ops). The recruiting compensation is a flat $2.00 per booking (proposed — see model below).</p>
+  <p class="lang-es">Supuestos: $300 USD GDS net (promedio ponderado internacional), <strong>3% Ergos markup</strong> (un markup <em>configurado</em> representativo — Ergos fija 1–5% para hoteles estándar sin cadena; el default global es 0%, así que debe configurarse un markup_rule para que la reserva tenga margen), 0% rebate de agencia, agente tier Growth (18% earning, 7% ops). La compensación de reclutamiento es un flat $2.00 por reserva (propuesto — ver modelo abajo).</p>
 
   <table>
     <thead>
@@ -3435,20 +3435,20 @@ ergosPctOfGross  = ergosNet ÷ ergosGross</div>
     </tbody>
   </table>
 
-  <p class="lang-en">Each standard booking at the new 3% default contributes <strong>$4.75</strong> toward fixed-cost recovery and profit, after agent + ops + the proposed $2 recruiting commission.</p>
-  <p class="lang-es">Cada reserva estándar al nuevo default del 3% contribuye <strong>$4.75</strong> hacia la recuperación de costos fijos y la ganancia, después del agente + ops + la comisión de reclutamiento propuesta de $2.</p>
+  <p class="lang-en">At a representative 3% configured markup (within the 1–5% standard band), each standard booking contributes <strong>$4.75</strong> toward fixed-cost recovery and profit, after agent + ops + the proposed $2 recruiting commission. A booking left at the 0% default carries $0 gross and cannot fund the agent + ops + recruiting comp — so configuring a markup is mandatory, not optional.</p>
+  <p class="lang-es">A un markup configurado representativo del 3% (dentro de la banda estándar 1–5%), cada reserva estándar contribuye <strong>$4.75</strong> hacia la recuperación de costos fijos y la ganancia, después del agente + ops + la comisión de reclutamiento propuesta de $2. Una reserva dejada en el default de 0% tiene $0 de gross y no puede cubrir el agente + ops + la comisión de reclutamiento — así que configurar un markup es obligatorio, no opcional.</p>
 
   <div class="callout callout-warning lang-en" style="margin-bottom: 16px;">
-    <strong>What happens if this same booking carries a 4% agency rebate?</strong> At 3% ergosMarkupPct + 4% rebate, <code>ergosGross = ergosSell × (1 − 0.04) − supplierNet = $309 × 0.96 − $300 = −$3.36</code> — Ergos receives less than what it owes the hotel. The booking is structurally unprofitable before paying anyone. <strong>Rebate-paying agencies on the 3% default are not viable under the new policy.</strong> The fix is to uplift <code>ergosMarkupPct</code> at the per-hotel or per-chain level (e.g. set chain.ergosMarkupPct ≥ 8 for hotels whose agencies receive rebate) so the gross has room for the rebate plus everything downstream. The legacy Case A (8% markup + 4% rebate → $6.28 contribution) only worked because the legacy default was 8–13%, not 3%.
+    <strong>What happens if this same booking carries a 4% agency rebate?</strong> At 3% ergosMarkupPct + 4% rebate, <code>ergosGross = ergosSell × (1 − 0.04) − supplierNet = $309 × 0.96 − $300 = −$3.36</code> — Ergos receives less than what it owes the hotel. The booking is structurally unprofitable before paying anyone. <strong>Rebate-paying agencies on a low (1–5%) configured markup are not viable under the new policy.</strong> The fix is to uplift <code>ergosMarkupPct</code> at the per-hotel or per-chain level (e.g. set chain.ergosMarkupPct ≥ 8 for hotels whose agencies receive rebate) so the gross has room for the rebate plus everything downstream. The legacy Case A (8% markup + 4% rebate → $6.28 contribution) only worked because the legacy default was 8–13%, not 3%.
   </div>
   <div class="callout callout-warning lang-es" style="margin-bottom: 16px;">
-    <strong>¿Qué pasa si esta misma reserva lleva un rebate de agencia de 4%?</strong> Con 3% ergosMarkupPct + 4% rebate, <code>ergosGross = ergosSell × (1 − 0.04) − supplierNet = $309 × 0.96 − $300 = −$3.36</code> — Ergos recibe menos de lo que le debe al hotel. La reserva es estructuralmente no-rentable antes de pagarle a nadie. <strong>Las agencias que reciben rebate sobre el default de 3% no son viables bajo la nueva política.</strong> La solución es subir <code>ergosMarkupPct</code> a nivel por-hotel o por-cadena (ej. fijar chain.ergosMarkupPct ≥ 8 para hoteles cuyas agencias reciben rebate) para que el gross tenga espacio para el rebate más todo lo demás downstream. El Caso A legacy (8% markup + 4% rebate → $6.28 de contribución) solo funcionaba porque el default legacy era 8–13%, no 3%.
+    <strong>¿Qué pasa si esta misma reserva lleva un rebate de agencia de 4%?</strong> Con 3% ergosMarkupPct + 4% rebate, <code>ergosGross = ergosSell × (1 − 0.04) − supplierNet = $309 × 0.96 − $300 = −$3.36</code> — Ergos recibe menos de lo que le debe al hotel. La reserva es estructuralmente no-rentable antes de pagarle a nadie. <strong>Las agencias que reciben rebate con un markup configurado bajo (1–5%) no son viables bajo la nueva política.</strong> La solución es subir <code>ergosMarkupPct</code> a nivel por-hotel o por-cadena (ej. fijar chain.ergosMarkupPct ≥ 8 para hoteles cuyas agencias reciben rebate) para que el gross tenga espacio para el rebate más todo lo demás downstream. El Caso A legacy (8% markup + 4% rebate → $6.28 de contribución) solo funcionaba porque el default legacy era 8–13%, no 3%.
   </div>
 
   <h4 style="margin-top: 18px;">Case B — Chain-discounted hotel (Meliá-style)</h4>
 
-  <p class="lang-en">Assumptions: $300 USD GDS net, 15% chain discount, 13% Ergos markup (set on the chain via the chain editor's <code>ergosMarkupPct</code> field — chains with negotiated discounts uplift markup above the 3% non-chain default), 4% agency rebate, Elite-tier agent (24% earning, 6% ops).</p>
-  <p class="lang-es">Supuestos: $300 USD GDS net, 15% descuento de cadena, 13% Ergos markup (fijado en la cadena vía el campo <code>ergosMarkupPct</code> del editor de cadena — las cadenas con descuento negociado suben el markup por encima del default de 3% sin cadena), 4% rebate de agencia, agente tier Elite (24% earning, 6% ops).</p>
+  <p class="lang-en">Assumptions: $300 USD GDS net, 15% chain discount, 13% Ergos markup (set on the chain via the chain editor's <code>ergosMarkupPct</code> field — chains with negotiated discounts uplift markup above the 1–5% standard non-chain band), 4% agency rebate, Elite-tier agent (24% earning, 6% ops).</p>
+  <p class="lang-es">Supuestos: $300 USD GDS net, 15% descuento de cadena, 13% Ergos markup (fijado en la cadena vía el campo <code>ergosMarkupPct</code> del editor de cadena — las cadenas con descuento negociado suben el markup por encima de la banda estándar de 1–5% sin cadena), 4% rebate de agencia, agente tier Elite (24% earning, 6% ops).</p>
 
   <table>
     <thead>
@@ -3475,8 +3475,8 @@ ergosPctOfGross  = ergosNet ÷ ergosGross</div>
   <h3 class="lang-en">Break-even and volume sensitivity</h3>
   <h3 class="lang-es">Punto de equilibrio y sensibilidad al volumen</h3>
 
-  <p class="lang-en">Assuming a 70% standard / 30% chain inventory mix, the weighted average per-booking contribution is <strong>$7.26 USD</strong> (= 0.70 × $4.75 + 0.30 × $13.13). This is meaningfully lower than the legacy mix (~$8.34) because Case A's contribution dropped from $6.28 to $4.75 when the default markup moved 8% → 3%.</p>
-  <p class="lang-es">Asumiendo un mix de inventario 70% estándar / 30% cadena, la contribución promedio ponderada por reserva es <strong>$7.26 USD</strong> (= 0.70 × $4.75 + 0.30 × $13.13). Esto es significativamente más bajo que el mix legacy (~$8.34) porque la contribución del Caso A bajó de $6.28 a $4.75 cuando el default de markup pasó de 8% → 3%.</p>
+  <p class="lang-en">Assuming a 70% standard / 30% chain inventory mix, the weighted average per-booking contribution is <strong>$7.26 USD</strong> (= 0.70 × $4.75 + 0.30 × $13.13). This is lower than the legacy mix (~$8.34) because Case A here uses a 3% configured markup (vs the legacy 8%) — with the global default at 0%, the standard-booking contribution scales entirely with the configured markup.</p>
+  <p class="lang-es">Asumiendo un mix de inventario 70% estándar / 30% cadena, la contribución promedio ponderada por reserva es <strong>$7.26 USD</strong> (= 0.70 × $4.75 + 0.30 × $13.13). Esto es más bajo que el mix legacy (~$8.34) porque acá el Caso A usa un markup configurado del 3% (vs el 8% legacy) — con el default global en 0%, la contribución por reserva estándar depende enteramente del markup configurado.</p>
 
   <p class="lang-en">At $3,650 USD/month fixed costs:</p>
   <p class="lang-es">Con $3,650 USD/mes de costos fijos:</p>
@@ -3496,12 +3496,12 @@ ergosPctOfGross  = ergosNet ÷ ergosGross</div>
   </table>
 
   <div class="callout callout-gold lang-en">
-    <strong>Break-even at ~500 bookings/month under the new 1/3/5 policy</strong> (up from ~440 under the legacy 8% default). A productive travel agency does 50–200 bookings/month, so 4–10 agencies covers fixed costs. Headline for any conversation with prospective sales agents: <em>"Once you've recruited about 5–10 active agencies — or fewer if they're booking chain-discounted inventory — Ergos is profitable and every additional booking you bring in is overwhelmingly margin."</em>
+    <strong>Break-even at ~500 bookings/month under the current policy (0% default; standard markups configured at 1–5%)</strong> (up from ~440 under the legacy 8% default). A productive travel agency does 50–200 bookings/month, so 4–10 agencies covers fixed costs. Headline for any conversation with prospective sales agents: <em>"Once you've recruited about 5–10 active agencies — or fewer if they're booking chain-discounted inventory — Ergos is profitable and every additional booking you bring in is overwhelmingly margin."</em>
     <br><br>
     <strong>Why chain inventory mix matters more than ever:</strong> shifting the mix from 70/30 standard/chain to 50/50 raises the weighted average from $7.26 to $8.94 — a 23% improvement to per-booking contribution. The product pitch to recruited agencies should highlight chain discount access as a primary value prop.
   </div>
   <div class="callout callout-gold lang-es">
-    <strong>Break-even en ~500 reservas/mes bajo la nueva política 1/3/5</strong> (sube desde ~440 bajo el default legacy de 8%). Una agencia de viajes productiva hace 50–200 reservas/mes, así que 4–10 agencias cubren los costos fijos. Headline para cualquier conversación con potenciales agentes comerciales: <em>"Una vez que hayas reclutado unas 5–10 agencias activas — o menos si están reservando inventario con descuento de cadena — Ergos es rentable y cada reserva adicional que traés es abrumadoramente margen."</em>
+    <strong>Break-even en ~500 reservas/mes bajo la política actual (default 0%; markups estándar configurados en 1–5%)</strong> (sube desde ~440 bajo el default legacy de 8%). Una agencia de viajes productiva hace 50–200 reservas/mes, así que 4–10 agencias cubren los costos fijos. Headline para cualquier conversación con potenciales agentes comerciales: <em>"Una vez que hayas reclutado unas 5–10 agencias activas — o menos si están reservando inventario con descuento de cadena — Ergos es rentable y cada reserva adicional que traés es abrumadoramente margen."</em>
     <br><br>
     <strong>Por qué el mix de inventario de cadena importa más que nunca:</strong> mover el mix de 70/30 estándar/cadena a 50/50 sube el promedio ponderado de $7.26 a $8.94 — una mejora del 23% en la contribución por reserva. El pitch de producto a las agencias reclutadas debería destacar el acceso a descuentos de cadena como propuesta de valor primaria.
   </div>
@@ -3535,7 +3535,7 @@ ergosPctOfGross  = ergosNet ÷ ergosGross</div>
       <tr>
         <td><strong>Portfolio guardrail</strong></td>
         <td class="mono">cap at 30% of monthly contribution</td>
-        <td>Total recruiting commissions in any month cannot exceed 30% of Ergos's total contribution margin that month; excess rolls to next month. Protects against runaway costs in early scaling. Under the new 1/3/5 policy: $2/booking is 27.5% of the weighted $7.26 contribution at 70/30 mix (within cap), but a recruiter with 100% non-chain inventory (Case A only) would hit the cap at $1.43/booking effective. Pushes recruiters toward chain-discounted inventory.</td>
+        <td>Total recruiting commissions in any month cannot exceed 30% of Ergos's total contribution margin that month; excess rolls to next month. Protects against runaway costs in early scaling. Under the current policy (1–5% standard markups): $2/booking is 27.5% of the weighted $7.26 contribution at 70/30 mix (within cap), but a recruiter with 100% non-chain inventory (Case A only) would hit the cap at $1.43/booking effective. Pushes recruiters toward chain-discounted inventory.</td>
       </tr>
     </tbody>
   </table>
