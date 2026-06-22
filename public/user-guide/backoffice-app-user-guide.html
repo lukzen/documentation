@@ -228,7 +228,7 @@
     <h3 class="lang-en">The 4 tiers</h3>
     <h3 class="lang-es">Los 4 tiers</h3>
     <table>
-      <thead><tr><th>Tier</th><th class="lang-en">Earning range</th><th class="lang-es">Rango de earning</th><th class="lang-en">Default earningPct</th><th class="lang-en">Default ops</th></tr></thead>
+      <thead><tr><th>Tier</th><th class="lang-en">Earning range</th><th class="lang-es">Rango de earning</th><th class="lang-en">Default salesAgentEarningPct</th><th class="lang-en">Default ops</th></tr></thead>
       <tbody>
         <tr><td><strong>Starter</strong></td><td>10–14%</td><td>12%</td><td>8%</td></tr>
         <tr><td><strong>Growth</strong></td><td>15–20%</td><td>18%</td><td>7%</td></tr>
@@ -303,13 +303,13 @@
     <p class="lang-es">Los hoteles vienen de los feeds del proveedor, así que los datos centrales (nombre, dirección, fotos, tipos de habitación) son solo lectura — esos cambios tienen que hacerse en el proveedor. Lo que el personal de Ergos <em>sí</em> puede editar por hotel:</p>
     <ul class="lang-en">
       <li><strong>Chain link</strong> — manually associate a hotel with a chain in the registry (when auto-link missed it).</li>
-      <li><strong>baseCommission</strong> — per-hotel Ergos markup override (rarely used; prefer markup_rules for groups of hotels).</li>
-      <li><strong>chainDiscountPct</strong> — per-hotel chain discount override.</li>
+      <li><strong>ergosMarkupPct</strong> — per-hotel Ergos markup override (rarely used; prefer markup_rules for groups of hotels).</li>
+      <li><strong>hotelChainDiscountPct</strong> — per-hotel chain discount override.</li>
     </ul>
     <ul class="lang-es">
       <li><strong>Vínculo con cadena</strong> — asociar manualmente un hotel con una cadena del registro (cuando el auto-link no lo detectó).</li>
-      <li><strong>baseCommission</strong> — override del markup de Ergos por hotel (raramente usado; preferí markup_rules para grupos de hoteles).</li>
-      <li><strong>chainDiscountPct</strong> — override del descuento de cadena por hotel.</li>
+      <li><strong>ergosMarkupPct</strong> — override del markup de Ergos por hotel (raramente usado; preferí markup_rules para grupos de hoteles).</li>
+      <li><strong>hotelChainDiscountPct</strong> — override del descuento de cadena por hotel.</li>
     </ul>
   </section>
 
@@ -331,14 +331,14 @@
     <ul class="lang-en">
       <li><strong>Guest info</strong> — full names of every guest, contact details.</li>
       <li><strong>Price distribution</strong> — supplier net, Ergos sell, agency markup, customer price; the whole waterfall.</li>
-      <li><strong>Commission Snapshot</strong> — the frozen-at-booking-time commission policy (baseCommission, chainDiscountPct, rebatePct, earningPct, opsExpense). Used for dispute resolution.</li>
+      <li><strong>Commission Snapshot</strong> — the frozen-at-booking-time commission policy (ergosMarkupPct, hotelChainDiscountPct, agencyRebatePct, salesAgentEarningPct, ergosOpsExpensePct). Used for dispute resolution.</li>
       <li><strong>Supplier confirmation</strong> — the code returned by the GDS, plus the timestamp.</li>
       <li><strong>Audit timeline</strong> — every status change with timestamp and actor.</li>
     </ul>
     <ul class="lang-es">
       <li><strong>Datos del huésped</strong> — nombres completos de cada huésped, datos de contacto.</li>
       <li><strong>Distribución de precio</strong> — supplier net, Ergos sell, markup de agencia, precio cliente; toda la cascada.</li>
-      <li><strong>Commission Snapshot</strong> — la política de comisión congelada al momento de la reserva (baseCommission, chainDiscountPct, rebatePct, earningPct, opsExpense). Usada para resolver disputas.</li>
+      <li><strong>Commission Snapshot</strong> — la política de comisión congelada al momento de la reserva (ergosMarkupPct, hotelChainDiscountPct, agencyRebatePct, salesAgentEarningPct, ergosOpsExpensePct). Usada para resolver disputas.</li>
       <li><strong>Confirmación del proveedor</strong> — el código devuelto por el GDS, más el timestamp.</li>
       <li><strong>Timeline de auditoría</strong> — cada cambio de estado con timestamp y actor.</li>
     </ul>
@@ -495,13 +495,13 @@
     <ol class="lang-en">
       <li><strong>Edit Chain</strong> — change name, code, discount %, contract status, effective/expiry dates, name match patterns, applicable vendors.</li>
       <li><strong>Manage Hotels</strong> — open the dialog to link or unlink specific hotels. The "Currently linked" section shows existing members; the "Add hotels" section lets you search and select more.</li>
-      <li><strong>Apply discount to linked hotels</strong> — pushes the chain's <code>chainDiscountPct</code> to every linked hotel's commission record. Required after any discount change. Writes one audit entry per affected hotel.</li>
+      <li><strong>Apply discount to linked hotels</strong> — pushes the chain's <code>hotelChainDiscountPct</code> to every linked hotel's commission record. Required after any discount change. Writes one audit entry per affected hotel.</li>
       <li><strong>Delete Chain</strong> — removes the chain. Linked hotels are unlinked but not deleted.</li>
     </ol>
     <ol class="lang-es">
       <li><strong>Editar Cadena</strong> — cambiar nombre, código, % de descuento, estado del contrato, fechas effective/expiry, patrones de coincidencia de nombre, vendors aplicables.</li>
       <li><strong>Administrar Hoteles</strong> — abrir el diálogo para vincular o desvincular hoteles específicos. La sección "Currently linked" muestra los miembros existentes; la sección "Add hotels" te permite buscar y seleccionar más.</li>
-      <li><strong>Aplicar descuento a hoteles vinculados</strong> — empuja el <code>chainDiscountPct</code> de la cadena a cada registro de comisión del hotel vinculado. Requerido después de cualquier cambio de descuento. Escribe una entrada de auditoría por hotel afectado.</li>
+      <li><strong>Aplicar descuento a hoteles vinculados</strong> — empuja el <code>hotelChainDiscountPct</code> de la cadena a cada registro de comisión del hotel vinculado. Requerido después de cualquier cambio de descuento. Escribe una entrada de auditoría por hotel afectado.</li>
       <li><strong>Eliminar Cadena</strong> — quita la cadena. Los hoteles vinculados se desvinculan pero no se eliminan.</li>
     </ol>
 
@@ -510,14 +510,14 @@
       <h4 class="lang-es">Onboardear una nueva cadena</h4>
       <ol class="lang-en">
         <li>Click <strong>+ Add Chain</strong> (top right).</li>
-        <li>Fill in name, code, hasDiscount ON, chainDiscountPct (e.g., 15 for 15% off), contractStatus = <em>signed</em>, effective date today.</li>
+        <li>Fill in name, code, hasDiscount ON, hotelChainDiscountPct (e.g., 15 for 15% off), contractStatus = <em>signed</em>, effective date today.</li>
         <li>Save. The new chain appears with "0 hotels".</li>
         <li>Click <strong>Manage Hotels</strong>, search for matching hotels, click each to select, click <strong>Link N hotel(s)</strong>.</li>
         <li>Back on the chain card, click <strong>⚡ Apply discount to linked hotels</strong> to push the discount to every linked hotel.</li>
       </ol>
       <ol class="lang-es">
         <li>Hacé clic en <strong>+ Add Chain</strong> (arriba a la derecha).</li>
-        <li>Completá nombre, código, hasDiscount ON, chainDiscountPct (ej. 15 para 15% off), contractStatus = <em>signed</em>, fecha effective hoy.</li>
+        <li>Completá nombre, código, hasDiscount ON, hotelChainDiscountPct (ej. 15 para 15% off), contractStatus = <em>signed</em>, fecha effective hoy.</li>
         <li>Guardá. La nueva cadena aparece con "0 hoteles".</li>
         <li>Hacé clic en <strong>Administrar Hoteles</strong>, buscá los hoteles que coinciden, hacé clic en cada uno para seleccionar, hacé clic en <strong>Link N hotel(s)</strong>.</li>
         <li>De vuelta en la tarjeta de la cadena, hacé clic en <strong>⚡ Apply discount to linked hotels</strong> para empujar el descuento a cada hotel vinculado.</li>
@@ -682,13 +682,13 @@
     <h3 class="lang-en">A sales agent's commission seems wrong</h3>
     <h3 class="lang-es">La comisión de un agente comercial parece incorrecta</h3>
     <ul class="lang-en">
-      <li>Open one of their recent bookings from Reservations. Look at the Commission Snapshot's earningPct.</li>
+      <li>Open one of their recent bookings from Reservations. Look at the Commission Snapshot's salesAgentEarningPct.</li>
       <li>Confirm their current tier is correct (Sales Agents → Edit).</li>
       <li>Check if there's a per-(agent, hotel) override active that's lowering the rate.</li>
       <li>Cross-reference with the audit log to see if their tier was changed recently.</li>
     </ul>
     <ul class="lang-es">
-      <li>Abrí una de sus reservas recientes desde Reservas. Mirá el earningPct del Commission Snapshot.</li>
+      <li>Abrí una de sus reservas recientes desde Reservas. Mirá el salesAgentEarningPct del Commission Snapshot.</li>
       <li>Confirmá que su tier actual sea el correcto (Agentes Comerciales → Editar).</li>
       <li>Revisá si hay un override por (agente, hotel) activo que esté bajando la tasa.</li>
       <li>Cruzá con el log de auditoría para ver si su tier se cambió recientemente.</li>

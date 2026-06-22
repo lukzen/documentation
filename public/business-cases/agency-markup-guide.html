@@ -287,7 +287,7 @@ body.es .lang-es { display: revert; }
         <tr><td><strong>2. Category</strong></td><td>A property classification (e.g. 5-star All-Inclusive)</td><td>"5-star AI → 20%"</td><td>0–5</td></tr>
         <tr><td><strong>3. Country</strong></td><td>An ISO country code</td><td>"Cuba → 14%"</td><td>0–20</td></tr>
         <tr><td><strong>4. Brand</strong></td><td>A hotel chain by id</td><td>"Iberostar → 18%"</td><td>0–50</td></tr>
-        <tr><td><em>Default</em></td><td>Catch-all on the agency profile</td><td><code>defaultMarkupPct</code> = 15%</td><td>Always 1</td></tr>
+        <tr><td><em>Default</em></td><td>Catch-all on the agency profile</td><td><code>defaultMarkupPct</code> = 0%</td><td>Always 1</td></tr>
       </tbody>
     </table>
 
@@ -300,7 +300,7 @@ body.es .lang-es { display: revert; }
         <tr><td><strong>2. Categoría</strong></td><td>Una clasificación de propiedad (ej. 5 estrellas Todo Incluido)</td><td>"5 estrellas AI → 20%"</td><td>0–5</td></tr>
         <tr><td><strong>3. País</strong></td><td>Un código de país ISO</td><td>"Cuba → 14%"</td><td>0–20</td></tr>
         <tr><td><strong>4. Marca</strong></td><td>Una cadena hotelera por id</td><td>"Iberostar → 18%"</td><td>0–50</td></tr>
-        <tr><td><em>Por defecto</em></td><td>Catch-all en el perfil de la agencia</td><td><code>defaultMarkupPct</code> = 15%</td><td>Siempre 1</td></tr>
+        <tr><td><em>Por defecto</em></td><td>Catch-all en el perfil de la agencia</td><td><code>defaultMarkupPct</code> = 0%</td><td>Siempre 1</td></tr>
       </tbody>
     </table>
 
@@ -384,7 +384,7 @@ function resolveAgencyMarkupPct(agency, hotel) {
   if (countryRule) return { pct: countryRule.pct, source: 'country', label: countryName(countryRule.targetId) };
 
   // 4. Brand / chain match
-  const brandRule = agency.rules.brand.find(r =&gt; r.targetId === hotel.chainId);
+  const brandRule = agency.rules.brand.find(r =&gt; r.targetId === hotel.hotelChainId);
   if (brandRule) return { pct: brandRule.pct, source: 'brand', label: brandName(brandRule.targetId) };
 
   // 5. Default — always wins if nothing else matched
@@ -406,7 +406,7 @@ function resolveAgencyMarkupPct(agency, hotel) {
   if (countryRule) return { pct: countryRule.pct, source: 'country', label: countryName(countryRule.targetId) };
 
   // 4. Coincidencia por marca / cadena
-  const brandRule = agency.rules.brand.find(r =&gt; r.targetId === hotel.chainId);
+  const brandRule = agency.rules.brand.find(r =&gt; r.targetId === hotel.hotelChainId);
   if (brandRule) return { pct: brandRule.pct, source: 'brand', label: brandName(brandRule.targetId) };
 
   // 5. Por defecto — siempre gana si nada más coincide
