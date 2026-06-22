@@ -420,23 +420,23 @@ body.lang-es [lang-content="es"]{display:inline}
           </div>
         </div>
         <div class="field-row">
-          <div><div class="field-label">baseCommission</div><span class="field-hint">Ergos markup over supplier net</span></div>
+          <div><div class="field-label">ergosMarkupPct</div><span class="field-hint">Ergos markup over supplier net</span></div>
           <div class="field-control"><input type="number" value="15" min="0" max="100" step="0.5" style="width:80px;padding:6px 8px;border:1px solid var(--border);border-radius:4px"><span style="font-size:11px;color:var(--text-muted)">%</span></div>
         </div>
         <div class="field-row">
-          <div><div class="field-label">chainDiscountPct</div><span class="field-hint">Negotiated chain discount</span></div>
+          <div><div class="field-label">hotelChainDiscountPct</div><span class="field-hint">Negotiated chain discount</span></div>
           <div class="field-control"><input type="number" value="0" min="0" max="100" step="0.5" style="width:80px;padding:6px 8px;border:1px solid var(--border);border-radius:4px"><span style="font-size:11px;color:var(--text-muted)">%</span></div>
         </div>
         <div class="field-row">
-          <div><div class="field-label">earningPercentage</div><span class="field-hint">Agent earning share of gross</span></div>
+          <div><div class="field-label">salesAgentEarningPct</div><span class="field-hint">Agent earning share of gross</span></div>
           <div class="field-control"><input type="number" value="22" min="0" max="100" step="0.5" style="width:80px;padding:6px 8px;border:1px solid var(--border);border-radius:4px"><span style="font-size:11px;color:var(--text-muted)">%</span></div>
         </div>
         <div class="field-row">
-          <div><div class="field-label">operationalExpense</div><span class="field-hint">Ops expense deducted from gross</span></div>
+          <div><div class="field-label">ergosOpsExpensePct</div><span class="field-hint">Ops expense deducted from gross</span></div>
           <div class="field-control"><input type="number" value="7" min="0" max="100" step="0.5" style="width:80px;padding:6px 8px;border:1px solid var(--border);border-radius:4px"><span style="font-size:11px;color:var(--text-muted)">%</span></div>
         </div>
         <div class="field-row">
-          <div><div class="field-label">rebatePct</div><span class="field-hint">Agency rebate off sell price</span></div>
+          <div><div class="field-label">agencyRebatePct</div><span class="field-hint">Agency rebate off sell price</span></div>
           <div class="field-control"><input type="number" value="3" min="0" max="100" step="0.5" style="width:80px;padding:6px 8px;border:1px solid var(--border);border-radius:4px"><span style="font-size:11px;color:var(--text-muted)">%</span></div>
         </div>
       </div>
@@ -456,11 +456,11 @@ body.lang-es [lang-content="es"]{display:inline}
           </div>
         </div>
         <div class="field-row">
-          <div><div class="field-label">baseCommission</div><span class="field-hint">Overrides global (15%) from markup rule</span></div>
+          <div><div class="field-label">ergosMarkupPct</div><span class="field-hint">Overrides global (15%) from markup rule</span></div>
           <div class="field-control"><input type="number" value="17.5" min="0" max="100" step="0.5" style="width:80px;padding:6px 8px;border:1px solid var(--border);border-radius:4px;background:rgba(15,168,155,0.06)"><span style="font-size:11px;color:var(--text-muted)">%</span></div>
         </div>
         <div class="field-row">
-          <div><div class="field-label">chainDiscountPct</div><span class="field-hint">From chain "Meliá Group"</span></div>
+          <div><div class="field-label">hotelChainDiscountPct</div><span class="field-hint">From chain "Meliá Group"</span></div>
           <div class="field-control"><input type="number" value="12.5" min="0" max="100" step="0.5" style="width:80px;padding:6px 8px;border:1px solid var(--border);border-radius:4px;background:rgba(15,168,155,0.06)"><span style="font-size:11px;color:var(--text-muted)">%</span></div>
         </div>
         <div class="field-row">
@@ -488,7 +488,7 @@ body.lang-es [lang-content="es"]{display:inline}
             </div>
           </div>
           <div class="field-row">
-            <div><div class="field-label">rebatePct</div><span class="field-hint">Default cashback Ergos returns to agencies</span></div>
+            <div><div class="field-label">agencyRebatePct</div><span class="field-hint">Default cashback Ergos returns to agencies</span></div>
             <div class="field-control"><input type="number" value="3" min="0" max="100" step="0.5" style="width:80px;padding:6px 8px;border:1px solid var(--border);border-radius:4px"><span style="font-size:11px;color:var(--text-muted)">%</span></div>
           </div>
         </div>
@@ -508,7 +508,7 @@ body.lang-es [lang-content="es"]{display:inline}
             </div>
           </div>
           <div class="field-row">
-            <div><div class="field-label">rebatePct</div><span class="field-hint">Negotiated higher rebate vs global (3% → 4%)</span></div>
+            <div><div class="field-label">agencyRebatePct</div><span class="field-hint">Negotiated higher rebate vs global (3% → 4%)</span></div>
             <div class="field-control"><input type="number" value="4" min="0" max="100" step="0.5" style="width:80px;padding:6px 8px;border:1px solid var(--border);border-radius:4px;background:rgba(15,168,155,0.06)"><span style="font-size:11px;color:var(--text-muted)">%</span></div>
           </div>
           <div class="field-row">
@@ -535,11 +535,11 @@ body.lang-es [lang-content="es"]{display:inline}
             </div>
           </div>
           <div class="field-row">
-            <div><div class="field-label">earningPercentage</div><span class="field-hint">Default agent share of gross</span></div>
+            <div><div class="field-label">salesAgentEarningPct</div><span class="field-hint">Default agent share of gross</span></div>
             <div class="field-control"><input type="number" value="22" min="0" max="100" step="0.5" style="width:80px;padding:6px 8px;border:1px solid var(--border);border-radius:4px"><span style="font-size:11px;color:var(--text-muted)">%</span></div>
           </div>
           <div class="field-row">
-            <div><div class="field-label">operationalExpense</div><span class="field-hint">Default ops expense deducted from gross</span></div>
+            <div><div class="field-label">ergosOpsExpensePct</div><span class="field-hint">Default ops expense deducted from gross</span></div>
             <div class="field-control"><input type="number" value="7" min="0" max="100" step="0.5" style="width:80px;padding:6px 8px;border:1px solid var(--border);border-radius:4px"><span style="font-size:11px;color:var(--text-muted)">%</span></div>
           </div>
         </div>
@@ -559,11 +559,11 @@ body.lang-es [lang-content="es"]{display:inline}
             </div>
           </div>
           <div class="field-row">
-            <div><div class="field-label">earningPercentage</div><span class="field-hint">Growth tier baseline (mid-range)</span></div>
+            <div><div class="field-label">salesAgentEarningPct</div><span class="field-hint">Growth tier baseline (mid-range)</span></div>
             <div class="field-control"><input type="number" value="17.5" min="0" max="100" step="0.5" style="width:80px;padding:6px 8px;border:1px solid var(--border);border-radius:4px"><span style="font-size:11px;color:var(--text-muted)">%</span></div>
           </div>
           <div class="field-row">
-            <div><div class="field-label">operationalExpense</div><span class="field-hint">Tier ops baseline</span></div>
+            <div><div class="field-label">ergosOpsExpensePct</div><span class="field-hint">Tier ops baseline</span></div>
             <div class="field-control"><input type="number" value="7" min="0" max="100" step="0.5" style="width:80px;padding:6px 8px;border:1px solid var(--border);border-radius:4px"><span style="font-size:11px;color:var(--text-muted)">%</span></div>
           </div>
         </div>
@@ -583,11 +583,11 @@ body.lang-es [lang-content="es"]{display:inline}
             </div>
           </div>
           <div class="field-row">
-            <div><div class="field-label">earningPercentage</div><span class="field-hint">M. Ruiz override (tier 17.5% → 19.5%, within Growth 15–20% range)</span></div>
+            <div><div class="field-label">salesAgentEarningPct</div><span class="field-hint">M. Ruiz override (tier 17.5% → 19.5%, within Growth 15–20% range)</span></div>
             <div class="field-control"><input type="number" value="19.5" min="0" max="100" step="0.5" style="width:80px;padding:6px 8px;border:1px solid var(--border);border-radius:4px;background:rgba(15,168,155,0.06)"><span style="font-size:11px;color:var(--text-muted)">%</span></div>
           </div>
           <div class="field-row">
-            <div><div class="field-label">operationalExpense</div><span class="field-hint">Falls back to tier baseline (7%)</span></div>
+            <div><div class="field-label">ergosOpsExpensePct</div><span class="field-hint">Falls back to tier baseline (7%)</span></div>
             <div class="field-control"><input type="number" value="7" min="0" max="100" step="0.5" disabled style="width:80px;padding:6px 8px;border:1px solid var(--border);border-radius:4px;background:#fafafa;color:#5c5c7a"><span style="font-size:11px;color:var(--text-muted)">%</span></div>
           </div>
         </div>
@@ -602,11 +602,11 @@ body.lang-es [lang-content="es"]{display:inline}
         <span lang-content="es">Configuración efectiva</span>
       </h3>
       <div class="eff-grid" id="effGrid">
-        <div class="eff-row"><span>baseCommission</span><span>17.5%</span></div>
-        <div class="eff-row"><span>chainDiscountPct</span><span>12.5%</span></div>
-        <div class="eff-row"><span>earningPercentage</span><span>22.0%</span></div>
-        <div class="eff-row"><span>operationalExpense</span><span>7.0%</span></div>
-        <div class="eff-row"><span>rebatePct</span><span>3.0%</span></div>
+        <div class="eff-row"><span>ergosMarkupPct</span><span>17.5%</span></div>
+        <div class="eff-row"><span>hotelChainDiscountPct</span><span>12.5%</span></div>
+        <div class="eff-row"><span>salesAgentEarningPct</span><span>22.0%</span></div>
+        <div class="eff-row"><span>ergosOpsExpensePct</span><span>7.0%</span></div>
+        <div class="eff-row"><span>agencyRebatePct</span><span>3.0%</span></div>
         <div class="eff-row"><span>chainId</span><span>Meliá Group</span></div>
       </div>
     </div>
@@ -825,9 +825,9 @@ body.lang-es [lang-content="es"]{display:inline}
       </select>
     </div>
 
-    <!-- baseCommission % -->
+    <!-- ergosMarkupPct % -->
     <div style="margin-top:14px">
-      <label style="font-size:12px;font-weight:600"><span lang-content="en">baseCommission (%)</span><span lang-content="es">comisión base (%)</span></label>
+      <label style="font-size:12px;font-weight:600"><span lang-content="en">ergosMarkupPct (%)</span><span lang-content="es">comisión base (%)</span></label>
       <input type="number" step="0.5" min="0" max="100" id="fBaseComm" value="15" style="width:100%;padding:8px 10px;margin-top:6px;border:1px solid var(--border);border-radius:6px;font-family:inherit">
     </div>
 
@@ -895,12 +895,12 @@ body.lang-es [lang-content="es"]{display:inline}
 /* ───────── MOCK DATA (10k+ seeded) ───────── */
 /* Featured curated records come first so verification scenarios still pass. */
 const FEATURED_HOTELS = [
-  { id:'h1', name:'Meliá Barcelona', vendor:'Hoteltec', gds:'Hoteltec', baseCommission:0.13, priceAdjustment:0.85, city:'Barcelona', stars:5 },
-  { id:'h2', name:'Riu Palace Cancun', vendor:'Restel', gds:'Restel', baseCommission:0.15, priceAdjustment:1.00, city:'Cancun', stars:5 },
-  { id:'h3', name:'NH Collection Madrid', vendor:'Hoteltec', gds:'Hoteltec', baseCommission:0.14, priceAdjustment:0.92, city:'Madrid', stars:5 },
-  { id:'h4', name:'Barceló Maya Palace', vendor:'Restel', gds:'Restel', baseCommission:0.16, priceAdjustment:0.98, city:'Riviera Maya', stars:5 },
-  { id:'h5', name:'Iberostar Selection Lanzarote', vendor:'Juniper', gds:'Juniper', baseCommission:0.15, priceAdjustment:0.95, city:'Lanzarote', stars:5 },
-  { id:'h6', name:'Hotel Arts Barcelona', vendor:'Dingus', gds:'Dingus', baseCommission:0.12, priceAdjustment:0.88, city:'Barcelona', stars:5 }
+  { id:'h1', name:'Meliá Barcelona', vendor:'Hoteltec', gds:'Hoteltec', ergosMarkupPct:0.13, priceAdjustment:0.85, city:'Barcelona', stars:5 },
+  { id:'h2', name:'Riu Palace Cancun', vendor:'Restel', gds:'Restel', ergosMarkupPct:0.15, priceAdjustment:1.00, city:'Cancun', stars:5 },
+  { id:'h3', name:'NH Collection Madrid', vendor:'Hoteltec', gds:'Hoteltec', ergosMarkupPct:0.14, priceAdjustment:0.92, city:'Madrid', stars:5 },
+  { id:'h4', name:'Barceló Maya Palace', vendor:'Restel', gds:'Restel', ergosMarkupPct:0.16, priceAdjustment:0.98, city:'Riviera Maya', stars:5 },
+  { id:'h5', name:'Iberostar Selection Lanzarote', vendor:'Juniper', gds:'Juniper', ergosMarkupPct:0.15, priceAdjustment:0.95, city:'Lanzarote', stars:5 },
+  { id:'h6', name:'Hotel Arts Barcelona', vendor:'Dingus', gds:'Dingus', ergosMarkupPct:0.12, priceAdjustment:0.88, city:'Barcelona', stars:5 }
 ];
 const FEATURED_AGENCIES = [
   { id:'ag1', name:'Ergos Travel (house)', tier:'house', rebatePctPerHotel:{} },
@@ -909,10 +909,10 @@ const FEATURED_AGENCIES = [
   { id:'ag4', name:'Mediterráneo Travel', tier:'partner', rebatePctPerHotel:{ h1:0.02, h5:0.03 } }
 ];
 const FEATURED_AGENTS = [
-  { id:'a1', name:'M. Ruiz', tier:'Elite', earningPct:0.24, opsExpense:0.06, hotelOverrides:{ h1:0.26 } },
-  { id:'a2', name:'J. Pérez', tier:'Growth', earningPct:0.18, opsExpense:0.07, hotelOverrides:{} },
-  { id:'a3', name:'L. Fernández', tier:'Strategic', earningPct:0.30, opsExpense:0.05, hotelOverrides:{ h2:0.31 } },
-  { id:'a4', name:'C. Navarro', tier:'Starter', earningPct:0.12, opsExpense:0.08, hotelOverrides:{} }
+  { id:'a1', name:'M. Ruiz', tier:'Elite', salesAgentEarningPct:0.24, ergosOpsExpensePct:0.06, hotelOverrides:{ h1:0.26 } },
+  { id:'a2', name:'J. Pérez', tier:'Growth', salesAgentEarningPct:0.18, ergosOpsExpensePct:0.07, hotelOverrides:{} },
+  { id:'a3', name:'L. Fernández', tier:'Strategic', salesAgentEarningPct:0.30, ergosOpsExpensePct:0.05, hotelOverrides:{ h2:0.31 } },
+  { id:'a4', name:'C. Navarro', tier:'Starter', salesAgentEarningPct:0.12, ergosOpsExpensePct:0.08, hotelOverrides:{} }
 ];
 
 const CHAINS = ['Meliá','Riu','NH','Barceló','Iberostar','Hesperia','Catalonia','Vincci','Sol','Playa','Hotel','Gran','Hilton','Marriott','Accor','Best Western','Exe','Silken','Sercotel','Occidental'];
@@ -938,7 +938,7 @@ function genHotels(n) {
       id:'h'+(i+1),
       name: `${pick(CHAINS)} ${pick(DESCRIPTORS)} ${pick(CITIES)}`,
       vendor: pick(VENDORS), gds: pick(VENDORS),
-      baseCommission: +(0.10 + rand()*0.08).toFixed(3),
+      ergosMarkupPct: +(0.10 + rand()*0.08).toFixed(3),
       priceAdjustment: +(0.85 + rand()*0.20).toFixed(3),
       city: pick(CITIES), stars
     });
@@ -966,8 +966,8 @@ function genAgents(n) {
     out.push({
       id:'a'+(i+1),
       name:`${pick(FIRST_NAMES)} ${pick(LAST_NAMES)}`,
-      tier, earningPct:+(range[0]+rand()*(range[1]-range[0])).toFixed(3),
-      opsExpense:ops, hotelOverrides:{}
+      tier, salesAgentEarningPct:+(range[0]+rand()*(range[1]-range[0])).toFixed(3),
+      ergosOpsExpensePct:ops, hotelOverrides:{}
     });
   }
   return out;
@@ -984,13 +984,13 @@ const TIER_DEFAULTS = {
   Strategic: { range:[0.27,0.32], ops:0.05, default:0.30 }
 };
 
-const GLOBAL_DEFAULTS = { baseCommission:0.15, priceAdjustment:1.00 };
+const GLOBAL_DEFAULTS = { ergosMarkupPct:0.15, priceAdjustment:1.00 };
 const GUARDRAILS = { minErgosNetPct:0.05, maxAgentPctOfGross:0.32, minErgosPctOfGross:0.50 };
 
 const AUDIT = [
-  { ts:'2026-04-05 14:22', who:'admin@ergos', layer:'Hotel', field:'baseCommission', from:0.12, to:0.13, reason:'Negotiated uplift Q2' },
+  { ts:'2026-04-05 14:22', who:'admin@ergos', layer:'Hotel', field:'ergosMarkupPct', from:0.12, to:0.13, reason:'Negotiated uplift Q2' },
   { ts:'2026-03-14 09:41', who:'ops@ergos', layer:'Hotel', field:'priceAdjustment', from:0.90, to:0.85, reason:'Contracted rate improvement' },
-  { ts:'2026-02-02 11:08', who:'admin@ergos', layer:'Agency', field:'rebatePct h1', from:0.03, to:0.04, reason:'Viajes Azul volume bonus' }
+  { ts:'2026-02-02 11:08', who:'admin@ergos', layer:'Agency', field:'agencyRebatePct h1', from:0.03, to:0.04, reason:'Viajes Azul volume bonus' }
 ];
 
 /* ───────── STATE ───────── */
@@ -1017,18 +1017,18 @@ const OVERSCAN = 6;
 /* ───────── CALCULATION ENGINE ───────── */
 function computeMargin({ hotel, agency, agent, supplierNet, overrideEarning }) {
   const adjustedCost  = supplierNet * hotel.priceAdjustment;
-  const ergosSell     = adjustedCost * (1 + hotel.baseCommission);
-  const rebatePct     = agency.rebatePctPerHotel[hotel.id] || 0;
-  const rebateAmt     = ergosSell * rebatePct;
+  const ergosSell     = adjustedCost * (1 + hotel.ergosMarkupPct);
+  const agencyRebatePct     = agency.rebatePctPerHotel[hotel.id] || 0;
+  const rebateAmt     = ergosSell * agencyRebatePct;
   const agencyEffective = ergosSell - rebateAmt;
   const ergosGross    = agencyEffective - adjustedCost;
-  const earningPct    = overrideEarning ?? (agent.hotelOverrides[hotel.id] ?? agent.earningPct);
-  const agentEarning  = ergosGross * earningPct;
-  const opsAmt        = ergosGross * agent.opsExpense;
+  const salesAgentEarningPct    = overrideEarning ?? (agent.hotelOverrides[hotel.id] ?? agent.salesAgentEarningPct);
+  const agentEarning  = ergosGross * salesAgentEarningPct;
+  const opsAmt        = ergosGross * agent.ergosOpsExpensePct;
   const ergosNet      = ergosGross - agentEarning - opsAmt;
   return {
-    supplierNet, adjustedCost, ergosSell, rebatePct, rebateAmt, ergosGross,
-    earningPct, agentEarning, opsAmt, ergosNet,
+    supplierNet, adjustedCost, ergosSell, agencyRebatePct, rebateAmt, ergosGross,
+    salesAgentEarningPct, agentEarning, opsAmt, ergosNet,
     ergosNetPct: ergosSell>0 ? ergosNet/ergosSell : 0,
     agentPctOfGross: ergosGross>0 ? agentEarning/ergosGross : 0,
     ergosPctOfGross: ergosGross>0 ? ergosNet/ergosGross : 0
@@ -1044,10 +1044,10 @@ function evaluateGuardrails(m) {
   };
 }
 
-function worstCaseAcrossTiers({ hotel, agency, supplierNet, opsExpense }) {
+function worstCaseAcrossTiers({ hotel, agency, supplierNet, ergosOpsExpensePct }) {
   let min = Infinity, minTier = null;
   Object.entries(TIER_DEFAULTS).forEach(([tier,cfg]) => {
-    const fakeAgent = { earningPct:cfg.range[1], opsExpense:opsExpense || cfg.ops, hotelOverrides:{} };
+    const fakeAgent = { salesAgentEarningPct:cfg.range[1], ergosOpsExpensePct:ergosOpsExpensePct || cfg.ops, hotelOverrides:{} };
     const m = computeMargin({ hotel, agency, agent:fakeAgent, supplierNet });
     if (m.ergosNetPct < min) { min = m.ergosNetPct; minTier = tier; }
   });
@@ -1315,7 +1315,7 @@ function renderStack() {
   if (document.querySelector('.stack-variant')) return;
   const {hotel,agency,agent} = getActive();
   const tierCfg = TIER_DEFAULTS[agent.tier] || { range:[0,0], ops:0, default:0 };
-  const hasHotelOverride = hotel.baseCommission !== GLOBAL_DEFAULTS.baseCommission || hotel.priceAdjustment !== GLOBAL_DEFAULTS.priceAdjustment;
+  const hasHotelOverride = hotel.ergosMarkupPct !== GLOBAL_DEFAULTS.ergosMarkupPct || hotel.priceAdjustment !== GLOBAL_DEFAULTS.priceAdjustment;
   const hasAgencyRebate = (agency.rebatePctPerHotel[hotel.id]||0) > 0;
   const tierActive = agent.tier !== '—';
   const hasAgentHotelOverride = agent.hotelOverrides[hotel.id] !== undefined;
@@ -1326,7 +1326,7 @@ function renderStack() {
       src:'System baseline • read-mostly',
       chip:'inherit', chipLabel:'Inherited',
       fields:[
-        field('baseCommission', GLOBAL_DEFAULTS.baseCommission, 0, 0.25, true, 'pct'),
+        field('ergosMarkupPct', GLOBAL_DEFAULTS.ergosMarkupPct, 0, 0.25, true, 'pct'),
         field('priceAdjustment', GLOBAL_DEFAULTS.priceAdjustment, 0.7, 1.1, true, 'adjPct')
       ]
     },
@@ -1337,7 +1337,7 @@ function renderStack() {
       chipLabel: hasHotelOverride?'Overridden':'Inherited',
       history:true, layer:'hotel',
       fields:[
-        field('baseCommission', hotel.baseCommission, 0.05, 0.25, false, 'pct', v => { hotel.baseCommission = v; markDirty('hotel.'+hotel.id+'.baseCommission'); refresh(); }),
+        field('ergosMarkupPct', hotel.ergosMarkupPct, 0.05, 0.25, false, 'pct', v => { hotel.ergosMarkupPct = v; markDirty('hotel.'+hotel.id+'.ergosMarkupPct'); refresh(); }),
         field('priceAdjustment', hotel.priceAdjustment, 0.70, 1.10, false, 'adjPct', v => { hotel.priceAdjustment = v; markDirty('hotel.'+hotel.id+'.priceAdjustment'); refresh(); })
       ]
     },
@@ -1348,7 +1348,7 @@ function renderStack() {
       chipLabel: hasAgencyRebate?'Overridden':'Inherited',
       history:true, layer:'agency',
       fields:[
-        field('rebatePct @ '+hotel.name, agency.rebatePctPerHotel[hotel.id]||0, 0, 0.10, agency.tier==='house', 'pct',
+        field('agencyRebatePct @ '+hotel.name, agency.rebatePctPerHotel[hotel.id]||0, 0, 0.10, agency.tier==='house', 'pct',
           v => { agency.rebatePctPerHotel[hotel.id] = v; markDirty('agency.'+agency.id+'.rebate.'+hotel.id); refresh(); })
       ]
     },
@@ -1358,7 +1358,7 @@ function renderStack() {
       chip:'inherit', chipLabel:'Inherited',
       fields: tierActive ? [
         field('tier default', tierCfg.default, tierCfg.range[0], tierCfg.range[1], true, 'pct'),
-        field('opsExpense', tierCfg.ops, 0.03, 0.10, true, 'pct')
+        field('ergosOpsExpensePct', tierCfg.ops, 0.03, 0.10, true, 'pct')
       ] : []
     },
     {
@@ -1368,7 +1368,7 @@ function renderStack() {
       chipLabel: hasAgentHotelOverride?'Overridden':'Inherited',
       history:true, layer:'agent',
       fields:[
-        field('earningPct @ '+hotel.name, agent.hotelOverrides[hotel.id] ?? agent.earningPct, 0.05, 0.40, false, 'pct',
+        field('salesAgentEarningPct @ '+hotel.name, agent.hotelOverrides[hotel.id] ?? agent.salesAgentEarningPct, 0.05, 0.40, false, 'pct',
           v => { agent.hotelOverrides[hotel.id] = v; markDirty('agent.'+agent.id+'.override.'+hotel.id); refresh(); })
       ]
     }
@@ -1439,16 +1439,16 @@ function renderStack() {
 }
 
 const FIELD_HINTS = {
-  baseCommission:  'Markup Ergos applies on top of adjusted cost',
+  ergosMarkupPct:  'Markup Ergos applies on top of adjusted cost',
   priceAdjustment: 'Contracted uplift (+) or discount (−) vs supplier rate',
-  rebatePct:       'Kickback paid to the agency on the sell price',
+  agencyRebatePct:       'Kickback paid to the agency on the sell price',
   'tier default':  'Midpoint of the tier earning range',
-  opsExpense:      'Ops cost allocated per sale (CC fees, infra, support)',
-  earningPct:      'Agent share of Ergos gross — driven by sales performance tier'
+  ergosOpsExpensePct:      'Ops cost allocated per sale (CC fees, infra, support)',
+  salesAgentEarningPct:      'Agent share of Ergos gross — driven by sales performance tier'
 };
 function field(label, value, min, max, readonly, fmt, onChange) {
   let warn = null;
-  if (label.startsWith('earningPct') && value > GUARDRAILS.maxAgentPctOfGross) {
+  if (label.startsWith('salesAgentEarningPct') && value > GUARDRAILS.maxAgentPctOfGross) {
     warn = `Agent earning ${fmtPct(value)} exceeds 32% of gross cap`;
   }
   // Resolve a hint by matching the first word of the label
@@ -1461,11 +1461,11 @@ function renderEffective() {
   const {hotel,agency,agent} = getActive();
   const m = computeMargin({ hotel, agency, agent, supplierNet: state.supplierNet });
   $('#effGrid').innerHTML = `
-    <div class="eff-row"><span>Base commission</span><span>${fmtPct(hotel.baseCommission)}</span></div>
+    <div class="eff-row"><span>Base commission</span><span>${fmtPct(hotel.ergosMarkupPct)}</span></div>
     <div class="eff-row"><span>Price adjustment</span><span>${fmtAdjPct(hotel.priceAdjustment)}</span></div>
-    <div class="eff-row"><span>Agency rebate</span><span>${fmtPct(m.rebatePct)}</span></div>
-    <div class="eff-row"><span>Agent earning</span><span>${fmtPct(m.earningPct)}</span></div>
-    <div class="eff-row"><span>Ops expense</span><span>${fmtPct(agent.opsExpense)}</span></div>
+    <div class="eff-row"><span>Agency rebate</span><span>${fmtPct(m.agencyRebatePct)}</span></div>
+    <div class="eff-row"><span>Agent earning</span><span>${fmtPct(m.salesAgentEarningPct)}</span></div>
+    <div class="eff-row"><span>Ops expense</span><span>${fmtPct(agent.ergosOpsExpensePct)}</span></div>
     <div class="eff-row"><span>Ergos net margin</span><span>${fmtPct(m.ergosNetPct)}</span></div>
   `;
 }
@@ -1477,7 +1477,7 @@ function renderPreview() {
   let subLabel = `Ergos net margin • supplier $${state.supplierNet}`;
 
   if (state.worstCase) {
-    const wc = worstCaseAcrossTiers({ hotel, agency, supplierNet: state.supplierNet, opsExpense: agent.opsExpense });
+    const wc = worstCaseAcrossTiers({ hotel, agency, supplierNet: state.supplierNet, ergosOpsExpensePct: agent.ergosOpsExpensePct });
     displayPct = wc.pct;
     subLabel = `Worst case: ${wc.tier} tier max earn`;
   }
@@ -1504,11 +1504,11 @@ function renderPreview() {
   $('#waterfall').innerHTML = `
     <div class="waterfall-row pos"><span class="lbl">Supplier net</span><span>${fmtMoney(m.supplierNet)}</span></div>
     <div class="waterfall-row pos"><span class="lbl">Adjustment (${fmtAdjPct(hotel.priceAdjustment)})</span><span>${fmtMoney(m.adjustedCost)}</span></div>
-    <div class="waterfall-row pos"><span class="lbl">+ Commission (${fmtPct(hotel.baseCommission)})</span><span>${fmtMoney(m.ergosSell)}</span></div>
-    <div class="waterfall-row neg"><span class="lbl">− Agency rebate (${fmtPct(m.rebatePct)})</span><span>−${fmtMoney(m.rebateAmt)}</span></div>
+    <div class="waterfall-row pos"><span class="lbl">+ Commission (${fmtPct(hotel.ergosMarkupPct)})</span><span>${fmtMoney(m.ergosSell)}</span></div>
+    <div class="waterfall-row neg"><span class="lbl">− Agency rebate (${fmtPct(m.agencyRebatePct)})</span><span>−${fmtMoney(m.rebateAmt)}</span></div>
     <div class="waterfall-row pos"><span class="lbl">= Ergos gross</span><span>${fmtMoney(m.ergosGross)}</span></div>
-    <div class="waterfall-row neg"><span class="lbl">− Agent earning (${fmtPct(m.earningPct)})</span><span>−${fmtMoney(m.agentEarning)}</span></div>
-    <div class="waterfall-row neg"><span class="lbl">− Ops (${fmtPct(agent.opsExpense)})</span><span>−${fmtMoney(m.opsAmt)}</span></div>
+    <div class="waterfall-row neg"><span class="lbl">− Agent earning (${fmtPct(m.salesAgentEarningPct)})</span><span>−${fmtMoney(m.agentEarning)}</span></div>
+    <div class="waterfall-row neg"><span class="lbl">− Ops (${fmtPct(agent.ergosOpsExpensePct)})</span><span>−${fmtMoney(m.opsAmt)}</span></div>
     <div class="waterfall-row"><span class="lbl">Ergos net</span><span>${fmtMoney(m.ergosNet)}</span></div>
   `;
   if (wfChanged) {
@@ -1730,13 +1730,13 @@ function renderBulkDiff() {
   const list = bulkFiltered();
   const newVal = +$('#fBaseComm').value;
   $('#bulkDiff').innerHTML = list.length ? list.map(h =>
-    `<div class="diff-row"><span>${h.name}</span><span><span class="old">${(h.baseCommission*100).toFixed(1)}%</span> → <span class="new">${(newVal*100).toFixed(1)}%</span></span></div>`
+    `<div class="diff-row"><span>${h.name}</span><span><span class="old">${(h.ergosMarkupPct*100).toFixed(1)}%</span> → <span class="new">${(newVal*100).toFixed(1)}%</span></span></div>`
   ).join('') : '<em style="color:var(--text-muted)">No hotels match</em>';
 }
 $('#bulkApply').addEventListener('click', () => {
   if ($('#bulkConfirm').value.trim() !== 'APPLY') { alert('Type APPLY to confirm'); return; }
   const list = bulkFiltered(); const newVal = +$('#fBaseComm').value;
-  list.forEach(h => { h.baseCommission = newVal; markDirty('hotel.'+h.id+'.baseCommission'); });
+  list.forEach(h => { h.ergosMarkupPct = newVal; markDirty('hotel.'+h.id+'.ergosMarkupPct'); });
   closeDrawer('bulk');
   $('#bulkConfirm').value = '';
   refresh();

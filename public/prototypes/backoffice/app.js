@@ -34,11 +34,11 @@ const AGENCIES = Array.from({length:42},(_,i)=>{const p=person(i+100);return{id:
 
 const EMPLOYEES = Array.from({length:64},(_,i)=>{const p=person(i+400),ag=pick(AGENCIES);return{...p,agency:ag.name,agencyId:ag.id,role:pick(['Manager','Agent','Supervisor']),invited:'2026-0'+(1+Math.floor(rnd()*3))+'-'+pad(1+Math.floor(rnd()*28),2),status:pick(['Accepted','Accepted','Pending','Expired'])};});
 
-const HOTELS = Array.from({length:140},(_,i)=>{const brand=pick(HOTEL_BRANDS),city=pick(CITIES),stars=3+Math.floor(rnd()*3);return{id:'h'+(i+1),code:'HT'+pad(i+1,5),name:brand+' '+city+(rnd()>0.5?' Resort':' Palace'),city,vendor:pick(VENDORS),stars,baseCommission:(0.10+rnd()*0.08).toFixed(3),priceAdjustment:(0.85+rnd()*0.20).toFixed(3),lastSync:'2026-04-0'+(1+Math.floor(rnd()*6))};});
+const HOTELS = Array.from({length:140},(_,i)=>{const brand=pick(HOTEL_BRANDS),city=pick(CITIES),stars=3+Math.floor(rnd()*3);return{id:'h'+(i+1),code:'HT'+pad(i+1,5),name:brand+' '+city+(rnd()>0.5?' Resort':' Palace'),city,vendor:pick(VENDORS),stars,ergosMarkupPct:(0.10+rnd()*0.08).toFixed(3),priceAdjustment:(0.85+rnd()*0.20).toFixed(3),lastSync:'2026-04-0'+(1+Math.floor(rnd()*6))};});
 
 const RESERVATIONS = Array.from({length:80},(_,i)=>{const h=pick(HOTELS),ag=pick(AGENCIES),g=person(i+700);return{id:'R'+pad(i+1,6),locator:'ERG-'+pad(i+1001,6),guest:g.name,hotel:h.name,agency:ag.name,checkin:'2026-0'+(4+Math.floor(rnd()*3))+'-'+pad(1+Math.floor(rnd()*28),2),nights:1+Math.floor(rnd()*7),total:(200+rnd()*1800).toFixed(2),status:pick(STATUSES)};});
 
-const AGENTS = Array.from({length:54},(_,i)=>{const p=person(i+900),tier=pick(TIERS),ranges={Starter:[0.10,0.14],Growth:[0.15,0.20],Elite:[0.21,0.26],Strategic:[0.27,0.32]}[tier];return{...p,tier,city:pick(CITIES),earningPct:(ranges[0]+rnd()*(ranges[1]-ranges[0])).toFixed(3),opsExpense:({Starter:0.08,Growth:0.07,Elite:0.06,Strategic:0.05})[tier].toFixed(3),oneClickMember:rnd()>0.4,active:rnd()>0.15};});
+const AGENTS = Array.from({length:54},(_,i)=>{const p=person(i+900),tier=pick(TIERS),ranges={Starter:[0.10,0.14],Growth:[0.15,0.20],Elite:[0.21,0.26],Strategic:[0.27,0.32]}[tier];return{...p,tier,city:pick(CITIES),salesAgentEarningPct:(ranges[0]+rnd()*(ranges[1]-ranges[0])).toFixed(3),ergosOpsExpensePct:({Starter:0.08,Growth:0.07,Elite:0.06,Strategic:0.05})[tier].toFixed(3),oneClickMember:rnd()>0.4,active:rnd()>0.15};});
 
 /* ---------- router ---------- */
 // Mirrors the live backoffice sidebar (Mantine app at localhost:3032).
@@ -511,7 +511,7 @@ RENDERERS['hotels'] = () => {
     {key:'city',label:'City'},
     {label:'★',fmt:r=>'★'.repeat(r.stars)},
     {label:'Vendor',fmt:r=>`<span class="vendor-chip ${r.vendor.toLowerCase()}">${r.vendor}</span>`},
-    {label:'Base comm.',fmt:r=>(r.baseCommission*100).toFixed(1)+'%'},
+    {label:'Base comm.',fmt:r=>(r.ergosMarkupPct*100).toFixed(1)+'%'},
     {label:'Price adj.',fmt:r=>{const d=((r.priceAdjustment-1)*100);return (d>=0?'+':'')+d.toFixed(1)+'%';}},
     {key:'lastSync',label:'Last sync'},
     {label:'',fmt:r=>`<button class="btn btn-sm" onclick="viewHotel('${r.id}')">View</button> <button class="btn btn-sm" onclick="openHotelModal('${r.id}')">Edit</button> <button class="btn btn-sm btn-outline" onclick="syncHotel('${r.id}')">⟳ Sync</button>`}
@@ -538,8 +538,8 @@ RENDERERS['agents'] = () => {
     {key:'email',label:'Email'},
     {key:'city',label:'City'},
     {label:'Tier',fmt:r=>tierPill(r.tier)},
-    {label:'Earning %',fmt:r=>(r.earningPct*100).toFixed(1)+'%'},
-    {label:'Ops %',fmt:r=>(r.opsExpense*100).toFixed(1)+'%'},
+    {label:'Earning %',fmt:r=>(r.salesAgentEarningPct*100).toFixed(1)+'%'},
+    {label:'Ops %',fmt:r=>(r.ergosOpsExpensePct*100).toFixed(1)+'%'},
     {label:'1-Click',fmt:r=>sw(r.oneClickMember,`ag:${r.id}:oneClickMember`)},
     {label:'Active',fmt:r=>sw(r.active,`ag:${r.id}:active`)},
     {label:'',fmt:r=>`<button class="btn btn-sm" onclick="viewAgent('${r.id}')">View</button> <button class="btn btn-sm" onclick="openAgentModal('${r.id}')">Edit</button>`}
@@ -673,14 +673,14 @@ function openHotelModal(id){
   const h = id ? HOTELS.find(x=>x.id===id) : null;
   const m = h || {stars:4,vendor:'Hoteltec'};
   const adj = m.priceAdjustment ? (((+m.priceAdjustment)-1)*100).toFixed(1) : '0';
-  const base = m.baseCommission ? (((+m.baseCommission))*100).toFixed(1) : '13';
+  const base = m.ergosMarkupPct ? (((+m.ergosMarkupPct))*100).toFixed(1) : '13';
   openModal(id?'Edit Hotel — '+h.name:'Add Hotel',
     `<div class="form-grid">
        ${fld('Code',m.code,'text','code')}${fld('Name',m.name,'text','name')}
        ${fld('City',m.city,'text','city')}
        <div class="form-field"><label>Vendor</label><select data-bind="vendor">${VENDORS.map(v=>`<option ${v===m.vendor?'selected':''}>${v}</option>`).join('')}</select></div>
        <div class="form-field"><label>Stars</label><select data-bind="stars">${[5,4,3,2,1].map(s=>`<option ${s===m.stars?'selected':''}>${s}</option>`).join('')}</select></div>
-       ${fld('Base commission (%)',base,'number','baseCommissionPct')}
+       ${fld('Base commission (%)',base,'number','ergosMarkupPct')}
        ${fld('Price adjustment (%)',adj,'number','priceAdjustmentPct')}
        ${fld('Last sync',m.lastSync,'text','lastSync')}
      </div>
@@ -688,9 +688,9 @@ function openHotelModal(id){
     {onSave:()=>{
       const v = collect();
       v.stars = +v.stars;
-      v.baseCommission = (v.baseCommissionPct/100).toFixed(3);
+      v.ergosMarkupPct = (v.ergosMarkupPct/100).toFixed(3);
       v.priceAdjustment = (1 + v.priceAdjustmentPct/100).toFixed(3);
-      delete v.baseCommissionPct; delete v.priceAdjustmentPct;
+      delete v.ergosMarkupPct; delete v.priceAdjustmentPct;
       if(h){ Object.assign(h, v); } else { HOTELS.unshift({id:'h'+(HOTELS.length+1),...v}); }
       RENDERERS['hotels']();
     }});
@@ -699,8 +699,8 @@ function openHotelModal(id){
 function openAgentModal(id){
   const a = id ? AGENTS.find(x=>x.id===id) : null;
   const m = a || {tier:'Starter',active:true};
-  const earn = m.earningPct ? ((+m.earningPct)*100).toFixed(1) : '—';
-  const ops = m.opsExpense ? ((+m.opsExpense)*100).toFixed(1) : '—';
+  const earn = m.salesAgentEarningPct ? ((+m.salesAgentEarningPct)*100).toFixed(1) : '—';
+  const ops = m.ergosOpsExpensePct ? ((+m.ergosOpsExpensePct)*100).toFixed(1) : '—';
   openModal(id?'Edit Sales Agent — '+a.name:'Add Sales Agent',
     `<div class="form-grid">
        ${fld('First name',m.firstName,'text','firstName')}${fld('Last name',m.lastName,'text','lastName')}
@@ -721,14 +721,14 @@ function openAgentModal(id){
         applyEdit(a, v);
         if(tierChanged){
           const ranges = {Starter:[0.10,0.14],Growth:[0.15,0.20],Elite:[0.21,0.26],Strategic:[0.27,0.32]}[v.tier];
-          a.earningPct = ((ranges[0]+ranges[1])/2).toFixed(3);
-          a.opsExpense = ({Starter:0.08,Growth:0.07,Elite:0.06,Strategic:0.05})[v.tier].toFixed(3);
+          a.salesAgentEarningPct = ((ranges[0]+ranges[1])/2).toFixed(3);
+          a.ergosOpsExpensePct = ({Starter:0.08,Growth:0.07,Elite:0.06,Strategic:0.05})[v.tier].toFixed(3);
         }
       } else {
         const ranges = {Starter:[0.10,0.14],Growth:[0.15,0.20],Elite:[0.21,0.26],Strategic:[0.27,0.32]}[v.tier];
         AGENTS.push({id:'a'+(AGENTS.length+1),...v,name:(v.firstName+' '+v.lastName).trim(),
-          earningPct:((ranges[0]+ranges[1])/2).toFixed(3),
-          opsExpense:({Starter:0.08,Growth:0.07,Elite:0.06,Strategic:0.05})[v.tier].toFixed(3)});
+          salesAgentEarningPct:((ranges[0]+ranges[1])/2).toFixed(3),
+          ergosOpsExpensePct:({Starter:0.08,Growth:0.07,Elite:0.06,Strategic:0.05})[v.tier].toFixed(3)});
       }
       RENDERERS['agents']();
     }});
@@ -773,7 +773,7 @@ function viewHotel(id){
       ['Code',`<code class="code-chip">${h.code}</code>`],
       ['Name',h.name],['City',h.city],['Stars','★'.repeat(h.stars)],
       ['Vendor',`<span class="vendor-chip ${h.vendor.toLowerCase()}">${h.vendor}</span>`],
-      ['Base commission',((+h.baseCommission)*100).toFixed(2)+'%'],
+      ['Base commission',((+h.ergosMarkupPct)*100).toFixed(2)+'%'],
       ['Price adjustment',(adj>=0?'+':'')+adj+'%'],
       ['Last sync',h.lastSync]
     ]) + `<div class="modal-note">Use <strong>⟳ Sync</strong> to pull fresh rates from ${h.vendor}. Overrides are preserved.</div>`,
@@ -812,12 +812,12 @@ function openAgentDrawer(id, tab){
     <div class="comp-summary">
       <div class="comp-card">
         <div class="comp-label">Effective earning rate</div>
-        <div class="comp-value">${((+a.earningPct)*100).toFixed(2)}<span>%</span></div>
+        <div class="comp-value">${((+a.salesAgentEarningPct)*100).toFixed(2)}<span>%</span></div>
         <div class="comp-source">Inherited from <strong>${a.tier}</strong> tier default</div>
       </div>
       <div class="comp-card">
         <div class="comp-label">Ops expense allocation</div>
-        <div class="comp-value">${((+a.opsExpense)*100).toFixed(2)}<span>%</span></div>
+        <div class="comp-value">${((+a.ergosOpsExpensePct)*100).toFixed(2)}<span>%</span></div>
         <div class="comp-source">Tier-driven (${a.tier})</div>
       </div>
     </div>
@@ -827,7 +827,7 @@ function openAgentDrawer(id, tab){
         <li><span class="lyr-name">Global default</span><span class="lyr-val">— inherited</span></li>
         <li><span class="lyr-name">Hotel layer</span><span class="lyr-val">— per hotel</span></li>
         <li><span class="lyr-name">Agency layer</span><span class="lyr-val">— per booking</span></li>
-        <li class="active"><span class="lyr-name">Agent Tier (${a.tier})</span><span class="lyr-val">${((+a.earningPct)*100).toFixed(2)}% ★</span></li>
+        <li class="active"><span class="lyr-name">Agent Tier (${a.tier})</span><span class="lyr-val">${((+a.salesAgentEarningPct)*100).toFixed(2)}% ★</span></li>
         <li><span class="lyr-name">Agent-Hotel override</span><span class="lyr-val">none</span></li>
       </ol>
     </div>
@@ -841,7 +841,7 @@ function openAgentDrawer(id, tab){
   const earningsRows = months.map((m,i)=>{
     const bookings = 8+Math.floor(rnd()*22);
     const gross = (bookings*(800+rnd()*1500));
-    const earned = gross*(+a.earningPct);
+    const earned = gross*(+a.salesAgentEarningPct);
     return {m,bookings,gross:gross.toFixed(0),earned:earned.toFixed(0)};
   });
   const totalEarned = earningsRows.reduce((s,r)=>s+(+r.earned),0).toFixed(0);
