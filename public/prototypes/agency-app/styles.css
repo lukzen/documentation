@@ -3559,3 +3559,61 @@ body.modal-open { overflow: hidden; }
   cursor: pointer;
 }
 .f1-confirm-now-btn:hover { background: #0f766e; }
+
+/* ============================================================
+   MOZIO — POST-BOOKING "ADD TRANSFER" (booking-detail page)
+   Styles for the bdat-* section. Reuses .bd-section / .bd-svc-header
+   / .vehicle-card / .vc-* / .svc-route-* from elsewhere; only the
+   CTA, booked card, and a couple of badges are new.
+   ============================================================ */
+.bdat-cta {
+  display: flex; align-items: center; gap: 18px;
+  flex-wrap: wrap;
+}
+.bdat-cta-copy { flex: 1; min-width: 220px; }
+.bdat-cta-copy strong { display: block; font-size: 15px; color: var(--navy); margin-bottom: 4px; }
+.bdat-cta-copy p { font-size: 13px; color: var(--warm-500); margin: 0; line-height: 1.45; }
+.bdat-add-btn { white-space: nowrap; display: inline-flex; align-items: center; gap: 6px; }
+
+/* spinner used by the search buttons (also fixes the pre-existing .spinner-sm gap) */
+.spinner-sm {
+  display: inline-block; width: 13px; height: 13px; vertical-align: -1px;
+  border: 2px solid rgba(255,255,255,.45); border-top-color: #fff;
+  border-radius: 50%; animation: bdat-spin .7s linear infinite; margin-right: 4px;
+}
+@keyframes bdat-spin { to { transform: rotate(360deg); } }
+
+/* class badge on the Mozio quote vehicle name */
+.vc-class-badge {
+  display: inline-block; margin-left: 6px; padding: 1px 7px;
+  font-size: 10.5px; font-weight: 600; letter-spacing: .02em;
+  color: var(--teal-dark); background: var(--teal-light);
+  border-radius: 999px; vertical-align: 1px;
+}
+
+/* book CTA + policy note under a selected quote */
+.bdat-policy-note {
+  display: none; margin: 14px 0 0; padding-top: 14px;
+  border-top: 1px solid var(--warm-200, #e8e5e0);
+  display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+}
+.bdat-book-btn { display: inline-flex; align-items: center; gap: 6px; }
+.bdat-policy-text { font-size: 12.5px; color: var(--warm-500); }
+
+/* booked confirmation card */
+.bdat-booked-head {
+  display: flex; align-items: center; gap: 12px;
+  padding-bottom: 14px; margin-bottom: 6px;
+  border-bottom: 1px solid var(--warm-200, #e8e5e0);
+}
+.bdat-booked-check {
+  width: 30px; height: 30px; flex-shrink: 0; border-radius: 50%;
+  background: #059669; display: flex; align-items: center; justify-content: center;
+}
+.bdat-booked-head > div { flex: 1; min-width: 0; }
+.bdat-booked-head strong { display: block; font-size: 15px; color: var(--navy); }
+.bdat-booked-conf { font-size: 12.5px; color: var(--warm-500); }
+.bdat-booked-conf code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 12.5px; color: var(--teal-dark); font-weight: 600;
+}

@@ -1723,6 +1723,156 @@
             </div>
           </div>
 
+          <!-- ===== Airport Transfer (Mozio) — post-booking add-on ===== -->
+          <!-- Mirrors the real TransferSection.tsx / BookingConfirmationPage "Add Transfer"
+               CTA: a collapsed section on a confirmed booking that expands a Mozio
+               search form → quotes → book → mozioConfirmationNumber. Self-contained
+               bdat-* ids so it coexists with the in-flow services-screen transfer. -->
+          <div class="bd-section" id="bdat-section">
+            <div class="bd-svc-header transfer">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13" rx="2"/><path d="M16 8h4l3 3v5h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+              <h3>Airport Transfer</h3>
+            </div>
+
+            <!-- State A — collapsed CTA -->
+            <div class="bd-service-card bdat-cta" id="bdat-cta">
+              <div class="bdat-cta-copy">
+                <strong>Add an airport transfer to this booking</strong>
+                <p>Private door-to-door car service via Mozio, billed to the same client. Pickup is pre-filled with the hotel address.</p>
+              </div>
+              <button class="btn-primary bdat-add-btn" onclick="bdatExpand()">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                Add Transfer
+              </button>
+            </div>
+
+            <!-- State B + C — search form + results (hidden until expanded) -->
+            <div class="bd-service-card bdat-panel" id="bdat-panel" style="display:none">
+              <div class="svc-route-config">
+                <div class="svc-route-row">
+                  <div class="svc-route-field">
+                    <label>Pickup</label>
+                    <input type="text" class="form-input" value="José Martí Intl Airport (HAV)" id="bdat-pickup">
+                  </div>
+                  <button class="svc-swap-btn" onclick="bdatSwap()" title="Swap">⇆</button>
+                  <div class="svc-route-field">
+                    <label>Drop-off</label>
+                    <input type="text" class="form-input" value="Gran Muthu Habana, Miramar" id="bdat-dropoff">
+                  </div>
+                </div>
+                <div class="svc-route-row">
+                  <div class="svc-route-field">
+                    <label>Date</label>
+                    <input type="date" class="form-input" value="2026-03-25" id="bdat-date">
+                  </div>
+                  <div class="svc-route-field">
+                    <label>Time</label>
+                    <input type="time" class="form-input" value="14:30" id="bdat-time">
+                  </div>
+                  <div class="svc-route-field">
+                    <label>Passengers</label>
+                    <input type="number" class="form-input" value="2" min="1" max="50" id="bdat-pax">
+                  </div>
+                </div>
+                <div class="transfer-mode-pills" style="display:flex;gap:8px;margin:12px 0 4px">
+                  <button type="button" class="mode-pill active" id="bdat-mode-oneway" onclick="bdatSetMode('oneway')">One Way</button>
+                  <button type="button" class="mode-pill" id="bdat-mode-roundtrip" onclick="bdatSetMode('roundtrip')">Round Trip</button>
+                </div>
+                <div class="svc-route-row bdat-return-row" id="bdat-return-row" style="display:none;background:#f8f7f5;border-radius:8px;padding:10px 12px;margin:8px 0">
+                  <div class="svc-route-field" style="flex:1">
+                    <label style="font-size:12px;color:#78716c">Return Date</label>
+                    <input type="date" class="form-input" value="2026-03-27" id="bdat-return-date">
+                  </div>
+                  <div class="svc-route-field" style="flex:1">
+                    <label style="font-size:12px;color:#78716c">Return Time</label>
+                    <input type="time" class="form-input" value="10:00" id="bdat-return-time">
+                  </div>
+                </div>
+                <div class="svc-autofill-badge">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#0d9488" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                  <span>Auto-filled from this booking — Mozio requires flight info, added at checkout</span>
+                </div>
+                <div style="display:flex;gap:10px">
+                  <button class="btn-outline" onclick="bdatCollapse()" style="flex:0 0 auto">Cancel</button>
+                  <button class="btn-primary svc-search-btn bdat-search-btn" onclick="bdatSearch()" style="flex:1">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+                    Search Vehicles
+                  </button>
+                </div>
+              </div>
+
+              <!-- Results list (Mozio quotes) -->
+              <div class="svc-tf-results bdat-results" id="bdat-results" style="display:none">
+                <div class="svc-tf-controls">
+                  <span class="svc-tf-count">2 vehicles found · prices from Mozio</span>
+                </div>
+                <div class="svc-tf-results-list" id="bdat-results-list">
+                  <!-- Quote 1 — Cadillac XTS / Book A Limo -->
+                  <div class="vehicle-card" data-base-price="48.00" data-vehicle="Cadillac XTS" data-class="First Class" data-provider="ICS, Book A Limo" data-maxpax="3" data-maxbags="3" data-cancel="Free cancellation up to 24h before pickup">
+                    <div class="vc-icon"><svg width="40" height="28" viewBox="0 0 40 28" fill="none"><path d="M5 17h30" stroke="#6b7280" stroke-width="1.5"/><path d="M7 17l2.5-7c.5-1.5 2-2.5 3.5-2.5h14c1.5 0 3 1 3.5 2.5l2.5 7" stroke="#6b7280" stroke-width="1.5" fill="none"/><rect x="3" y="17" width="34" height="5" rx="2" stroke="#6b7280" stroke-width="1.5"/><circle cx="11" cy="24.5" r="2.5" stroke="#6b7280" stroke-width="1.5"/><circle cx="29" cy="24.5" r="2.5" stroke="#6b7280" stroke-width="1.5"/><line x1="13" y1="10" x2="27" y2="10" stroke="#6b7280" stroke-width="1"/></svg></div>
+                    <div class="vc-info">
+                      <div class="vc-name">Cadillac XTS <span class="vc-class-badge">First Class</span></div>
+                      <div class="vc-meta">ICS, Book A Limo · Sedan · Up to 3 passengers · 3 bags</div>
+                      <div class="vc-tags">
+                        <span class="vc-tag green">Free cancel 24h</span>
+                        <span class="vc-tag">Meet &amp; Greet</span>
+                        <span class="vc-tag">Flight Tracking</span>
+                      </div>
+                    </div>
+                    <div class="vc-price">
+                      <div class="vc-net">Net USD 48.00</div>
+                      <div class="vc-sell" data-base-usd="55.20">USD 55.20</div>
+                    </div>
+                    <button class="vc-add-btn" onclick="bdatSelect(this.closest('.vehicle-card'))">Select</button>
+                  </div>
+                  <!-- Quote 2 — Toyota Sienna / Welcome Pickups -->
+                  <div class="vehicle-card" data-base-price="62.00" data-vehicle="Toyota Sienna" data-class="Business Van" data-provider="Welcome Pickups" data-maxpax="6" data-maxbags="6" data-cancel="Free cancellation up to 48h before pickup">
+                    <div class="vc-icon"><svg width="40" height="28" viewBox="0 0 40 28" fill="none"><rect x="3" y="8" width="30" height="13" rx="3" stroke="#6b7280" stroke-width="1.5"/><path d="M33 12h3a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2h-1" stroke="#6b7280" stroke-width="1.5"/><circle cx="10" cy="24" r="2.5" stroke="#6b7280" stroke-width="1.5"/><circle cx="28" cy="24" r="2.5" stroke="#6b7280" stroke-width="1.5"/><line x1="8" y1="13" x2="28" y2="13" stroke="#6b7280" stroke-width="1"/></svg></div>
+                    <div class="vc-info">
+                      <div class="vc-name">Toyota Sienna <span class="vc-class-badge">Business Van</span></div>
+                      <div class="vc-meta">Welcome Pickups · Van · Up to 6 passengers · 6 bags</div>
+                      <div class="vc-tags">
+                        <span class="vc-tag green">Free cancel 48h</span>
+                        <span class="vc-tag">Meet &amp; Greet</span>
+                        <span class="vc-tag">WiFi</span>
+                      </div>
+                    </div>
+                    <div class="vc-price">
+                      <div class="vc-net">Net USD 62.00</div>
+                      <div class="vc-sell" data-base-usd="71.30">USD 71.30</div>
+                    </div>
+                    <button class="vc-add-btn" onclick="bdatSelect(this.closest('.vehicle-card'))">Select</button>
+                  </div>
+                </div>
+                <p class="bdat-policy-note" id="bdat-policy-note"></p>
+              </div>
+            </div>
+
+            <!-- State D — booked confirmation -->
+            <div class="bd-service-card bdat-booked" id="bdat-booked" style="display:none">
+              <div class="bdat-booked-head">
+                <span class="bdat-booked-check"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+                <div>
+                  <strong>Airport Transfer Confirmed</strong>
+                  <span class="bdat-booked-conf">Mozio confirmation <code id="bdat-conf-number">—</code></span>
+                </div>
+                <span class="status-badge confirmed">CONFIRMED</span>
+              </div>
+              <div class="bd-sc-row"><span class="bd-sc-label">Route</span><span id="bdat-booked-route">—</span></div>
+              <div class="bd-sc-row"><span class="bd-sc-label">Vehicle</span><span id="bdat-booked-vehicle">—</span></div>
+              <div class="bd-sc-row"><span class="bd-sc-label">Provider</span><span id="bdat-booked-provider">—</span></div>
+              <div class="bd-sc-row"><span class="bd-sc-label">Date &amp; Time</span><span id="bdat-booked-datetime">—</span></div>
+              <div class="bd-sc-row"><span class="bd-sc-label">Passengers</span><span id="bdat-booked-pax">—</span></div>
+              <div class="bd-sc-row"><span class="bd-sc-label">Cancellation</span><span id="bdat-booked-cancel">—</span></div>
+              <div class="bd-sc-row bd-sc-price-row"><span class="bd-sc-label">Transfer Price (client)</span><span id="bdat-booked-price" class="bd-sc-price" data-base-usd="55.20">USD 55.20</span></div>
+            </div>
+
+            <div class="change-callout" data-change="M1">
+              <span class="change-badge">NEW</span>
+              Mozio airport transfer can be added <strong>after</strong> the hotel is confirmed — collapsed CTA → search → quote → book, returning a Mozio confirmation number. Mirrors the real booking-details TransferSection.
+            </div>
+          </div>
+
           <!-- Price Summary (hidden unless combined booking) -->
           <div class="bd-section" id="bd-price-summary" style="display:none">
             <h3>Price Breakdown</h3>

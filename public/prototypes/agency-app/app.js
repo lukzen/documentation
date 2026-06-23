@@ -2930,3 +2930,152 @@ function sortServiceVehicles(criteria) {
   });
   cards.forEach(card => list.appendChild(card));
 }
+
+/* ============================================================
+   MOZIO — POST-BOOKING "ADD TRANSFER" (booking-detail page)
+   Mirrors the real TransferSection.tsx / BookingConfirmationPage
+   "Add Transfer" CTA: a confirmed booking can add a Mozio airport
+   transfer after the fact. States: collapsed CTA → search form →
+   quote results → booked (with mozioConfirmationNumber).
+   Self-contained bdat-* ids; net prices are USD, client price uses
+   the agency markup + selected currency (formatPrice / data-base-usd).
+   ============================================================ */
+
+let bdatMode = 'oneway';
+let bdatSelectedCard = null;
+
+function bdatExpand() {
+  const cta = document.getElementById('bdat-cta');
+  const panel = document.getElementById('bdat-panel');
+  if (cta) cta.style.display = 'none';
+  if (panel) { panel.style.display = ''; panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }
+}
+
+function bdatCollapse() {
+  const cta = document.getElementById('bdat-cta');
+  const panel = document.getElementById('bdat-panel');
+  const results = document.getElementById('bdat-results');
+  if (panel) panel.style.display = 'none';
+  if (results) results.style.display = 'none';
+  if (cta) cta.style.display = '';
+  bdatSelectedCard = null;
+  document.querySelectorAll('#bdat-results-list .vehicle-card').forEach(c => {
+    c.classList.remove('selected');
+    const b = c.querySelector('.vc-add-btn');
+    if (b) b.textContent = 'Select';
+  });
+}
+
+function bdatSwap() {
+  const p = document.getElementById('bdat-pickup');
+  const d = document.getElementById('bdat-dropoff');
+  if (!p || !d) return;
+  const tmp = p.value; p.value = d.value; d.value = tmp;
+}
+
+function bdatSetMode(mode) {
+  bdatMode = mode;
+  document.getElementById('bdat-mode-oneway')?.classList.toggle('active', mode === 'oneway');
+  document.getElementById('bdat-mode-roundtrip')?.classList.toggle('active', mode === 'roundtrip');
+  const row = document.getElementById('bdat-return-row');
+  if (row) row.style.display = mode === 'roundtrip' ? '' : 'none';
+}
+
+function bdatSearch() {
+  const btn = document.querySelector('.bdat-search-btn');
+  const results = document.getElementById('bdat-results');
+  if (!btn || !results) return;
+  // Reset any prior selection
+  bdatSelectedCard = null;
+  document.querySelectorAll('#bdat-results-list .vehicle-card').forEach(c => {
+    c.classList.remove('selected');
+    const b = c.querySelector('.vc-add-btn');
+    if (b) b.textContent = 'Select';
+  });
+  const orig = btn.innerHTML;
+  btn.innerHTML = '<span class="spinner-sm"></span> Searching Mozio…';
+  btn.disabled = true;
+  results.style.display = 'none';
+  setTimeout(() => {
+    btn.innerHTML = orig;
+    btn.disabled = false;
+    results.style.display = 'block';
+    // Re-price client-facing amounts in the active currency
+    if (typeof updateVisiblePrices === 'function') updateVisiblePrices();
+    results.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    if (typeof protoToast === 'function') protoToast('2 Mozio quotes returned for ' + (document.getElementById('bdat-dropoff')?.value || 'the hotel'), 'info');
+  }, 1100);
+}
+
+function bdatSelect(card) {
+  if (!card) return;
+  document.querySelectorAll('#bdat-results-list .vehicle-card').forEach(c => {
+    c.classList.remove('selected');
+    const b = c.querySelector('.vc-add-btn');
+    if (b) b.textContent = 'Select';
+  });
+  card.classList.add('selected');
+  const addBtn = card.querySelector('.vc-add-btn');
+  if (addBtn) addBtn.textContent = '✓ Selected';
+  bdatSelectedCard = card;
+  const note = document.getElementById('bdat-policy-note');
+  if (note) {
+    note.style.display = 'block';
+    note.innerHTML = '<button class="btn-primary bdat-book-btn" onclick="bdatBook()">Book transfer · '
+      + (card.querySelector('.vc-sell')?.textContent || '') + '</button>'
+      + '<span class="bdat-policy-text">' + (card.dataset.cancel || '') + '</span>';
+  }
+}
+
+function bdatGenConfNumber() {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  let n = '';
+  for (let i = 0; i < 8; i++) n += chars[Math.floor(Math.random() * chars.length)];
+  return 'MOZ-' + n;
+}
+
+function bdatBook() {
+  const card = bdatSelectedCard;
+  if (!card) { if (typeof protoToast === 'function') protoToast('Select a vehicle first', 'error'); return; }
+  const btn = document.querySelector('.bdat-book-btn');
+  if (btn) { btn.textContent = 'Booking with Mozio…'; btn.disabled = true; }
+  setTimeout(() => {
+    const vehicle = card.dataset.vehicle;
+    const vClass = card.dataset.class;
+    const provider = card.dataset.provider;
+    const maxPax = card.dataset.maxpax;
+    const cancel = card.dataset.cancel;
+    const baseUsd = card.querySelector('.vc-sell')?.dataset.baseUsd;
+    const pickup = document.getElementById('bdat-pickup')?.value || '';
+    const dropoff = document.getElementById('bdat-dropoff')?.value || '';
+    const date = document.getElementById('bdat-date')?.value || '';
+    const time = document.getElementById('bdat-time')?.value || '';
+    const pax = document.getElementById('bdat-pax')?.value || '2';
+    const conf = bdatGenConfNumber();
+
+    // Populate the booked state
+    const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+    set('bdat-conf-number', conf);
+    set('bdat-booked-route', pickup + ' → ' + dropoff + (bdatMode === 'roundtrip' ? ' (round trip)' : ''));
+    set('bdat-booked-vehicle', vehicle + ' · ' + vClass);
+    set('bdat-booked-provider', provider);
+    set('bdat-booked-datetime', (date ? formatDateShort(date) : '') + (time ? ' at ' + time : ''));
+    set('bdat-booked-pax', pax + ' passenger' + (pax === '1' ? '' : 's') + ' · up to ' + maxPax);
+    set('bdat-booked-cancel', cancel);
+    const priceEl = document.getElementById('bdat-booked-price');
+    if (priceEl && baseUsd) { priceEl.dataset.baseUsd = baseUsd; }
+
+    // Swap to booked state
+    document.getElementById('bdat-panel').style.display = 'none';
+    document.getElementById('bdat-cta').style.display = 'none';
+    document.getElementById('bdat-booked').style.display = '';
+    if (typeof updateVisiblePrices === 'function') updateVisiblePrices();
+    document.getElementById('bdat-booked').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+    if (typeof showToast === 'function') {
+      showToast('success', 'Transfer Booked', 'Mozio confirmation ' + conf + ' · ' + vehicle + '. Added to this booking and the client invoice.');
+    } else if (typeof protoToast === 'function') {
+      protoToast('Transfer booked · Mozio ' + conf, 'success');
+    }
+  }, 1100);
+}
