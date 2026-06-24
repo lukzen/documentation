@@ -163,6 +163,8 @@ function showScreen(id) {
   if (id === 'invoice') renderInvoicePreview();
   // Auto-fill transfer fields from hotel booking context
   if (id === 'services') initServiceTransferFromBooking();
+  // Keep the confirmation transfer CTA / details in sync (transfer is post-booking)
+  if (id === 'confirmation' && typeof renderConfirmationTransfer === 'function') renderConfirmationTransfer();
   // Render dynamic bookings list
   if (id === 'bookings') renderBookingsList();
   // E1 — apply POI/city/country filter when entering results screen.
@@ -478,15 +480,14 @@ function confirmModification() {
     if (bdTime) bdTime.textContent = tfTime;
     if (bdPax) bdPax.textContent = tfPax;
 
-    // Update price breakdown totals
-    const combinedTotal = roomTotal + serviceTransferPrice;
+    // Header "Total Client Price" = room only; the transfer is a separate Mozio line.
     const headerPrice = document.getElementById('bd-header-price');
-    if (headerPrice) headerPrice.textContent = formatUSD(combinedTotal);
+    if (headerPrice) headerPrice.textContent = formatUSD(roomTotal);
     const bdPbHotel = document.getElementById('bd-pb-hotel');
     if (bdPbHotel) bdPbHotel.textContent = formatUSD(roomTotal);
     const bdPbTotal = document.getElementById('bd-pb-total');
-    if (bdPbTotal) bdPbTotal.textContent = formatUSD(combinedTotal);
-    bookingState.totalPrice = combinedTotal;
+    if (bdPbTotal) bdPbTotal.textContent = formatUSD(roomTotal);
+    bookingState.totalPrice = roomTotal;
   }
 
   // Update booking detail screen
@@ -646,12 +647,10 @@ function updateBookingDetailFromState() {
   const nights = nightsBetween(bookingState.checkin, bookingState.checkout);
   const hotelPrice = parseFloat(bookingState.price);
 
-  // Header price (hotel + transfer if added)
+  // Header "Total Client Price" = room only (the transfer is a separate Mozio
+  // booking, shown in its own section — matches the live app).
   const headerPrice = document.getElementById('bd-header-price');
-  if (headerPrice) {
-    const total = serviceTransferAdded ? hotelPrice + serviceTransferPrice : hotelPrice;
-    headerPrice.textContent = formatUSD(total);
-  }
+  if (headerPrice) headerPrice.textContent = formatUSD(hotelPrice);
 
   // Service card rows
   const bdCheckin = document.getElementById('bd-checkin');
@@ -668,16 +667,9 @@ function updateBookingDetailFromState() {
   if (bdMeal) bdMeal.textContent = bookingState.mealPlan;
   if (bdHotelPrice) bdHotelPrice.textContent = formatUSD(hotelPrice);
 
-  // Update amount paid to match total
+  // Amount paid by card = room only (the transfer fare is billed to the Mozio account).
   const bdAmountPaid = document.getElementById('bd-amount-paid');
-  if (bdAmountPaid) {
-    if (serviceTransferAdded) {
-      const total = hotelPrice + serviceTransferPrice;
-      bdAmountPaid.textContent = formatUSD(total);
-    } else {
-      bdAmountPaid.textContent = formatUSD(hotelPrice);
-    }
-  }
+  if (bdAmountPaid) bdAmountPaid.textContent = formatUSD(hotelPrice);
 }
 
 // ========== DYNAMIC BOOKINGS LIST ==========
@@ -712,7 +704,7 @@ function snapshotBooking() {
     nights: nights,
     guests: '2 Adults',
     meal: bookingState.mealPlan,
-    price: serviceTransferAdded ? hotelPrice + serviceTransferPrice : hotelPrice,
+    price: hotelPrice,
     ref: bookingState.bookingRef,
     screen: 'booking-detail',
     _bookingRef: bookingState.bookingRef
@@ -747,7 +739,7 @@ function getActiveBookings() {
       refundable: true,
       dates: ciShort + ' – ' + coShort,
       nights: nights, guests: '2 Adults', meal: bookingState.mealPlan,
-      price: serviceTransferAdded ? hotelPrice + serviceTransferPrice : hotelPrice,
+      price: hotelPrice,
       ref: bookingState.bookingRef, screen: 'booking-detail'
     };
     if (serviceTransferAdded) {
@@ -1376,7 +1368,7 @@ function buildProformaHTML(lang) {
     <tr><td>${isES ? 'Transfer Privado' : 'Private Transfer'} — ${serviceTransferVehicle}<br><span style="font-size:12px;color:#78716c">${transferBookingState.pickup} → ${transferBookingState.dropoff}</span></td><td>1</td><td class="right">${formatPrice(serviceTransferPrice)}</td><td class="right">${formatPrice(serviceTransferPrice)}</td></tr>` : ''}
     ${serviceTransferAdded ? `<tr style="background:#f5f3f0"><td colspan="3" style="padding:10px 14px;font-size:13px;color:#57534e;border-bottom:1px solid #e8e5e0">${isES ? 'Subtotal Alojamiento' : 'Accommodation Subtotal'}</td><td class="right" style="border-bottom:1px solid #e8e5e0">${formatUSD(bookingState.price)}</td></tr>
     <tr style="background:#f5f3f0"><td colspan="3" style="padding:10px 14px;font-size:13px;color:#57534e;border-bottom:1px solid #e8e5e0">${isES ? 'Subtotal Transfer' : 'Transfer Subtotal'}</td><td class="right" style="border-bottom:1px solid #e8e5e0">${formatPrice(serviceTransferPrice)}</td></tr>` : ''}
-    <tr class="total-row"><td colspan="3">${isES ? 'TOTAL A PAGAR' : 'TOTAL DUE'}</td><td class="right" style="color:#0d9488">${formatUSD(serviceTransferAdded ? parseFloat(bookingState.price) + serviceTransferPrice : parseFloat(bookingState.price))}</td></tr>
+    <tr class="total-row"><td colspan="3">${isES ? 'TOTAL A PAGAR' : 'TOTAL DUE'}</td><td class="right" style="color:#0d9488">${formatUSD(parseFloat(bookingState.price) + serviceTransferPrice)}</td></tr>
   </tbody>
 </table></div>
 <div class="section"><h3>${isES ? 'Información de Pago' : 'Payment Information'}</h3>
@@ -1569,7 +1561,7 @@ function buildInvoicePreview(lang) {
           </tr>` : ''}
           <tr class="total-row">
             <td colspan="3">${isES ? 'TOTAL A PAGAR' : 'TOTAL DUE'}</td>
-            <td class="right" style="color:var(--teal)">${formatUSD(serviceTransferAdded ? parseFloat(bookingState.price) + serviceTransferPrice : parseFloat(bookingState.price))}</td>
+            <td class="right" style="color:var(--teal)">${formatUSD(parseFloat(bookingState.price) + serviceTransferPrice)}</td>
           </tr>
         </tbody>
       </table>
@@ -2562,10 +2554,18 @@ function f1ConfirmTransferFromBookingDetail() {
 
 // ========== COMBINED BOOKING (ADD SERVICES) ==========
 
-// Track whether a transfer has been added to the hotel booking
+// Track whether a transfer has been booked for this reservation.
+// The transfer is a SEPARATE Mozio booking made AFTER the hotel reservation —
+// it is not paid by the card on file; the net fare is billed to the agency's
+// Mozio account and the client price (with markup) is tracked in the P&L.
 let serviceTransferAdded = false;
 let serviceTransferVehicle = null;
-let serviceTransferPrice = 0;
+let serviceTransferPrice = 0;   // client price (what the agency charges the client)
+let serviceTransferNet = 0;     // agency net cost (billed to the Mozio account)
+// Working selection on the Add Transfer screen, before "Book Transfer" is pressed.
+let selectedVehicleName = null;
+let selectedVehicleNet = 0;
+let selectedVehiclePrice = 0;
 
 function toggleServiceConfig(type) {
   if (type !== 'transfer') return;
@@ -2642,74 +2642,136 @@ function selectServiceVehicle(card) {
   const selectedText = document.getElementById('svc-tf-selected-text');
   const osTransfer = document.getElementById('svc-os-transfer');
   const osVehicle = document.getElementById('svc-os-vehicle');
+  const osNet = document.getElementById('svc-os-net');
   const osTfPrice = document.getElementById('svc-os-tf-price');
-  const osTotal = document.getElementById('svc-os-total');
-  const skipBtn = document.querySelector('.svc-skip-btn');
-  const continueBtn = document.getElementById('svc-continue-btn');
+  const osEmpty = document.getElementById('svc-os-empty');
+  const mozioNote = document.getElementById('svc-mozio-note');
+  const bookBtn = document.getElementById('svc-book-btn');
+  const flightInfo = document.getElementById('svc-flight-info');
 
   if (wasSelected) {
-    // Deselect
-    serviceTransferAdded = false;
-    serviceTransferVehicle = null;
-    serviceTransferPrice = 0;
+    // Deselect — clear the working selection (nothing is booked yet)
+    selectedVehicleName = null;
+    selectedVehicleNet = 0;
+    selectedVehiclePrice = 0;
     selectedDiv.style.display = 'none';
     osTransfer.style.display = 'none';
-    osTotal.textContent = formatUSD(parseFloat(bookingState.price));
-    skipBtn.style.display = '';
-    continueBtn.style.display = 'none';
+    if (osEmpty) osEmpty.style.display = '';
+    if (mozioNote) mozioNote.style.display = 'none';
+    if (flightInfo) flightInfo.style.display = 'none';
+    if (bookBtn) bookBtn.style.display = 'none';
   } else {
     card.classList.add('selected');
     const addBtn = card.querySelector('.vc-add-btn');
     if (addBtn) addBtn.textContent = '\u2713 Added';
     const name = card.querySelector('.vc-name').textContent;
     const price = parseFloat(card.dataset.price);
-    serviceTransferAdded = true;
-    serviceTransferVehicle = name;
-    serviceTransferPrice = price;
+    const sellEl = card.querySelector('.vc-sell');
+    const clientPrice = sellEl ? parseFloat((sellEl.textContent.match(/[\d.]+/) || [price])[0]) : price;
+    selectedVehicleName = name;
+    selectedVehicleNet = price;
+    selectedVehiclePrice = clientPrice;
 
     selectedText.textContent = name + ' — ' + formatPrice(price);
     selectedDiv.style.display = 'flex';
 
-    // Update sidebar
+    // Capture vehicle class for the confirmation/voucher
+    transferBookingState.vehicleClass = card.dataset.class || 'Standard';
+
+    // Flight-info fields: shown only when this provider tracks the flight
+    const tracksFlight = /Flight Tracking/i.test(card.textContent);
+    if (flightInfo) flightInfo.style.display = tracksFlight ? 'block' : 'none';
+
+    // Transfer-only summary (no hotel total - the room is already paid)
+    if (osEmpty) osEmpty.style.display = 'none';
     osTransfer.style.display = 'block';
     osVehicle.textContent = name;
-    osTfPrice.textContent = formatPrice(price);
-    const total = parseFloat(bookingState.price) + price;
-    osTotal.textContent = formatUSD(total);
+    if (osNet) osNet.textContent = formatPrice(price);
+    osTfPrice.textContent = formatPrice(clientPrice);
+    if (mozioNote) mozioNote.style.display = 'block';
+    if (bookBtn) bookBtn.style.display = '';
+  }
+}
 
-    // Switch buttons
-    skipBtn.style.display = 'none';
-    continueBtn.style.display = '';
+// Book the selected vehicle as a SEPARATE Mozio reservation (not card-paid).
+function bookServiceTransfer() {
+  if (!selectedVehicleName) return;
+  serviceTransferAdded = true;
+  serviceTransferVehicle = selectedVehicleName;
+  serviceTransferPrice = selectedVehiclePrice;
+  serviceTransferNet = selectedVehicleNet;
+  transferBookingState.pickup = (document.getElementById('svc-pickup').value || '').trim();
+  transferBookingState.dropoff = (document.getElementById('svc-dropoff').value || '').trim();
+  transferBookingState.date = document.getElementById('svc-tf-date').value;
+  transferBookingState.time = document.getElementById('svc-tf-time').value;
+  transferBookingState.passengers = document.getElementById('svc-tf-pax').value;
+  protoToast('Transfer booked - billed to your Mozio account', 'success');
+  renderConfirmationTransfer();
+  if (typeof updateBookingListFromState === 'function') updateBookingListFromState();
+  showScreen('confirmation');
+}
+
+// Render the (separate, billed-to-Mozio) transfer on the confirmation + booking-detail
+// screens. The room remains the only card charge.
+function renderConfirmationTransfer() {
+  const sec = document.getElementById('conf-transfer-section');
+  const cta = document.getElementById('conf-add-transfer');
+  if (!sec) return;
+  if (!serviceTransferAdded) {
+    sec.style.display = 'none';
+    if (cta) cta.style.display = '';
+    return;
+  }
+  sec.style.display = '';
+  if (cta) cta.style.display = 'none';
+  const arrow = ' → ';
+  document.getElementById('conf-tf-route').textContent = transferBookingState.pickup + arrow + transferBookingState.dropoff;
+  document.getElementById('conf-tf-vehicle').textContent = serviceTransferVehicle;
+  document.getElementById('conf-tf-datetime').textContent = formatDate(transferBookingState.date) + ' at ' + transferBookingState.time;
+  document.getElementById('conf-tf-pax').textContent = transferBookingState.passengers;
+  const priceEl = document.getElementById('conf-tf-price');
+  if (priceEl) priceEl.textContent = formatPrice(serviceTransferPrice);
+  const confNumEl = document.getElementById('conf-tf-confnum');
+  if (confNumEl) confNumEl.textContent = 'MOZ-' + (bookingState.bookingRef || '8W5D5P') + '-4821';
+  // The card charge stays the room only — the transfer is billed to the Mozio account.
+  document.getElementById('conf-price').textContent = formatUSD(bookingState.price);
+  const h = document.getElementById('conf-heading');
+  if (h) h.textContent = 'Transfer added!';
+  const sh = document.getElementById('conf-subheading');
+  if (sh) sh.textContent = 'The airport transfer is booked and billed to your Mozio account.';
+  // Mirror onto the booking-detail transfer section
+  const bdTfSection = document.getElementById('bd-transfer-section');
+  if (bdTfSection) {
+    bdTfSection.style.display = '';
+    const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+    set('bd-tf-route', transferBookingState.pickup + arrow + transferBookingState.dropoff);
+    set('bd-tf-date', formatDate(transferBookingState.date));
+    set('bd-tf-time', transferBookingState.time);
+    set('bd-tf-vehicle', serviceTransferVehicle);
+    set('bd-tf-passengers', transferBookingState.passengers);
+    set('bd-tf-price', formatPrice(serviceTransferPrice));
   }
 }
 
 function removeServiceTransfer() {
-  serviceTransferAdded = false;
-  serviceTransferVehicle = null;
-  serviceTransferPrice = 0;
+  selectedVehicleName = null;
+  selectedVehicleNet = 0;
+  selectedVehiclePrice = 0;
   document.querySelectorAll('.vehicle-card').forEach(c => {
     c.classList.remove('selected');
     const btn = c.querySelector('.vc-add-btn');
     if (btn) btn.textContent = '+ Add';
   });
   document.getElementById('svc-tf-selected').style.display = 'none';
+  const flightInfo = document.getElementById('svc-flight-info');
+  if (flightInfo) flightInfo.style.display = 'none';
   document.getElementById('svc-os-transfer').style.display = 'none';
-  document.getElementById('svc-os-total').textContent = formatUSD(parseFloat(bookingState.price));
-  document.querySelector('.svc-skip-btn').style.display = '';
-  document.getElementById('svc-continue-btn').style.display = 'none';
-}
-
-function skipServices() {
-  serviceTransferAdded = false;
-  serviceTransferVehicle = null;
-  serviceTransferPrice = 0;
-  updatePaymentForServices();
-  showScreen('payment');
-}
-
-function continueWithServices() {
-  updatePaymentForServices();
-  showScreen('payment');
+  const osEmpty = document.getElementById('svc-os-empty');
+  if (osEmpty) osEmpty.style.display = '';
+  const mozioNote = document.getElementById('svc-mozio-note');
+  if (mozioNote) mozioNote.style.display = 'none';
+  const bookBtn = document.getElementById('svc-book-btn');
+  if (bookBtn) bookBtn.style.display = 'none';
 }
 
 function updatePaymentForServices() {
@@ -2781,6 +2843,9 @@ function updatePaymentForServices() {
       const tfTime = document.getElementById('svc-tf-time').value;
       document.getElementById('conf-tf-datetime').textContent = formatDate(tfDate) + ' at ' + tfTime;
       document.getElementById('conf-tf-pax').textContent = document.getElementById('svc-tf-pax').value;
+      // Mozio confirmation number, derived from the booking reference
+      const confNumEl = document.getElementById('conf-tf-confnum');
+      if (confNumEl) confNumEl.textContent = 'MOZ-' + (bookingState.bookingRef || 'PTAMQ7T') + '-4821';
 
       // Show breakdown
       confBreakdown.style.display = '';
@@ -2826,6 +2891,9 @@ function updatePaymentForServices() {
       document.getElementById('conf-price').textContent = formatUSD(bookingState.price);
       confTfSection.style.display = 'none';
       confBreakdown.style.display = 'none';
+      // Offer the (separate, post-booking) Mozio transfer
+      const confAddCta = document.getElementById('conf-add-transfer');
+      if (confAddCta) confAddCta.style.display = '';
       confHeading.textContent = 'You\'re all set!';
       confSubheading.textContent = 'Your client\'s stay has been confirmed. Here\'s everything you need.';
 

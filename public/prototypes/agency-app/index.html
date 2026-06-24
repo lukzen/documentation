@@ -53,7 +53,7 @@
         <button class="proto-tab" data-screen="hotel">3. Hotel Detail</button>
         <button class="proto-tab" data-screen="rooms">4. Room Selection</button>
         <button class="proto-tab" data-screen="guest">5. Guest Info</button>
-        <button class="proto-tab" data-screen="services">6. Add Services</button>
+        <button class="proto-tab" data-screen="services">6. Add Transfer (post-booking)</button>
         <button class="proto-tab" data-screen="payment">7. Payment</button>
         <button class="proto-tab" data-screen="confirmation">8. Confirmation</button>
         <button class="proto-tab" data-screen="bookings">9. My Bookings</button>
@@ -977,11 +977,9 @@
         <div class="step-connector completed"></div>
         <div class="step active"><span class="step-num">2</span> Guest Details</div>
         <div class="step-connector"></div>
-        <div class="step"><span class="step-num">3</span> Add Services</div>
+        <div class="step"><span class="step-num">3</span> Payment</div>
         <div class="step-connector"></div>
-        <div class="step"><span class="step-num">4</span> Payment</div>
-        <div class="step-connector"></div>
-        <div class="step"><span class="step-num">5</span> Confirmation</div>
+        <div class="step"><span class="step-num">4</span> Confirmation</div>
       </div>
 
       <div class="flow-layout">
@@ -1024,7 +1022,7 @@
             <div class="os-row os-policy"><span><i class="ti ti-file-check"></i> Free cancellation until Mar 25, 2026</span></div>
             <div class="os-divider"></div>
             <div class="os-row os-total"><span>Total Price</span><span>USD 194.40</span></div>
-            <button class="continue-btn" onclick="showScreen('services')">Continue →</button>
+            <button class="continue-btn" onclick="showScreen('payment')">Continue →</button>
           </div>
         </div>
       </div>
@@ -1043,23 +1041,11 @@
     </nav>
 
     <div class="booking-flow-page">
-      <div class="progress-steps">
-        <div class="step completed"><span class="step-num">1</span> Room Selection</div>
-        <div class="step-connector completed"></div>
-        <div class="step completed"><span class="step-num">2</span> Guest Details</div>
-        <div class="step-connector completed"></div>
-        <div class="step active"><span class="step-num">3</span> Add Services</div>
-        <div class="step-connector"></div>
-        <div class="step"><span class="step-num">4</span> Payment</div>
-        <div class="step-connector"></div>
-        <div class="step"><span class="step-num">5</span> Confirmation</div>
-      </div>
-
       <div class="flow-layout">
         <div class="flow-main">
-          <a href="#" class="back-link" onclick="showScreen('guest')">← Back to Guest Info</a>
-          <h2>Enhance your client's trip</h2>
-          <p class="services-subtitle">Add transportation or other services to create a complete travel package.</p>
+          <a href="#" class="back-link" onclick="showScreen('confirmation')">← Back to booking</a>
+          <h2>Add Airport Transfer</h2>
+          <p class="services-subtitle">Booking <strong id="svc-booking-ref">8W5D5P</strong> · This is a <strong>separate Mozio booking</strong> — it is <strong>not</strong> charged to the card on file. The net fare is billed to your agency's Mozio account; your client price (with markup) is tracked in the booking P&amp;L.</p>
 
           <!-- Transfer Service Offer Card -->
           <div class="service-offer-card" id="svc-transfer-card">
@@ -1261,6 +1247,24 @@
                   <span id="svc-tf-selected-text">Mercedes E-Class — USD 45.00</span>
                   <button class="svc-remove-btn" onclick="removeServiceTransfer()">Remove</button>
                 </div>
+
+                <!-- Flight info (shown when the selected vehicle tracks the flight) -->
+                <div class="svc-flight-info" id="svc-flight-info" style="display:none">
+                  <p class="svc-flight-hint">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#b45309" stroke-width="2"><path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.4-.1.9.3 1.1l5.2 3 2 2-5.2 3c-.4.2-.5.7-.3 1.1l.3.5c.2.4.6.6 1.1.5L13 16l2 2 3 5.2c.2.4.7.5 1.1.3l.5-.3c.4-.2.6-.6.5-1.1z"/></svg>
+                    This provider tracks your flight — enter the arrival flight so the driver can adjust for delays.
+                  </p>
+                  <div class="svc-route-row">
+                    <div class="svc-route-field">
+                      <label>Airline (IATA) *</label>
+                      <input type="text" class="form-input" id="svc-tf-airline" placeholder="AA" maxlength="3" oninput="this.value=this.value.toUpperCase()">
+                    </div>
+                    <div class="svc-route-field">
+                      <label>Flight Number *</label>
+                      <input type="text" class="form-input" id="svc-tf-flightnum" placeholder="1234">
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -1286,26 +1290,22 @@
 
         <div class="flow-sidebar">
           <div class="order-summary">
-            <img src="https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400&h=160&fit=crop" alt="Gran Muthu Habana" class="os-hotel-img">
-            <h3>Trip Summary</h3>
-            <div class="os-service-header"><i class="ti ti-bed"></i> Hotel</div>
-            <div class="os-hotel">Gran Muthu Habana ★★★★★</div>
-            <div class="os-row"><span>Check-in</span><span>Mar 25, 2026</span></div>
-            <div class="os-row"><span>Check-out</span><span>Mar 27, 2026</span></div>
-            <div class="os-row"><span>Room</span><span>Standard Room</span></div>
-            <div class="os-row"><span>Hotel subtotal</span><span>USD 194.40</span></div>
-            <div class="os-divider"></div>
+            <h3>Transfer Summary</h3>
+            <div class="os-service-header"><i class="ti ti-car"></i> Airport Transfer</div>
+            <p class="svc-empty-hint" id="svc-os-empty">Search and select a vehicle to add a transfer to this booking.</p>
             <div class="os-transfer-section" id="svc-os-transfer" style="display:none">
-              <div class="os-service-header"><i class="ti ti-car"></i> Transfer</div>
               <div class="os-row"><span>Route</span><span id="svc-os-route">HAV → Hotel</span></div>
               <div class="os-row"><span>Vehicle</span><span id="svc-os-vehicle">—</span></div>
-              <div class="os-row"><span>Transfer subtotal</span><span id="svc-os-tf-price">USD 0.00</span></div>
+              <div class="os-row"><span>Net (your cost)</span><span id="svc-os-net">USD 0.00</span></div>
               <div class="os-divider"></div>
+              <div class="os-row os-total"><span>Client price</span><span id="svc-os-tf-price">USD 0.00</span></div>
             </div>
-            <div class="os-row os-total"><span>Total Client Price</span><span id="svc-os-total">USD 194.40</span></div>
+            <div class="svc-mozio-note" id="svc-mozio-note" style="display:none">
+              <strong>Separate from the room payment.</strong> The net fare is billed to your agency's <strong>Mozio account</strong> — not the card on file. Your margin is tracked in the booking P&amp;L.
+            </div>
             <div class="svc-actions">
-              <button class="btn-outline svc-skip-btn" onclick="skipServices()">Skip — Hotel Only →</button>
-              <button class="continue-btn" id="svc-continue-btn" onclick="continueWithServices()" style="display:none">Continue to Payment →</button>
+              <button class="continue-btn" id="svc-book-btn" onclick="bookServiceTransfer()" style="display:none">Book Transfer →</button>
+              <button class="btn-outline" onclick="showScreen('confirmation')">← Back to booking</button>
             </div>
           </div>
         </div>
@@ -1330,16 +1330,14 @@
         <div class="step-connector completed"></div>
         <div class="step completed"><span class="step-num">2</span> Guest Details</div>
         <div class="step-connector completed"></div>
-        <div class="step completed"><span class="step-num">3</span> Add Services</div>
-        <div class="step-connector completed"></div>
-        <div class="step active"><span class="step-num">4</span> Payment</div>
+        <div class="step active"><span class="step-num">3</span> Payment</div>
         <div class="step-connector"></div>
-        <div class="step"><span class="step-num">5</span> Confirmation</div>
+        <div class="step"><span class="step-num">4</span> Confirmation</div>
       </div>
 
       <div class="flow-layout">
         <div class="flow-main">
-          <a href="#" class="back-link" onclick="showScreen('services')">← Back to Add Services</a>
+          <a href="#" class="back-link" onclick="showScreen('guest')">← Back to Guest Info</a>
           <h2>Secure your booking</h2>
 
           <div class="form-card">
@@ -1497,14 +1495,33 @@
           </div>
         </div>
 
-        <!-- Transfer details (shown when transfer is included) -->
+        <!-- Add-transfer CTA (shown when no transfer is booked yet) -->
+        <div class="conf-section conf-add-transfer" id="conf-add-transfer" style="display:none">
+          <div class="conf-addtf-row">
+            <div class="conf-addtf-text">
+              <h3><i class="ti ti-car"></i> Add an airport transfer <span class="conf-tf-recommended">Recommended</span></h3>
+              <p>Book a private Mozio transfer for this reservation. It's a <strong>separate booking</strong> — billed to your agency's Mozio account, not the card on file.</p>
+            </div>
+            <button class="btn-primary" onclick="showScreen('services')">Add Transfer →</button>
+          </div>
+        </div>
+
+        <!-- Transfer details (shown when a transfer has been booked) -->
         <div class="conf-section" id="conf-transfer-section" style="display:none">
-          <h3><i class="ti ti-car"></i> Transfer Details</h3>
+          <h3><i class="ti ti-car"></i> Transfer Details <span class="conf-tf-status">✓ Confirmed</span></h3>
           <div class="conf-detail-grid">
             <div><span class="cdg-label">Route</span><span id="conf-tf-route">HAV Airport → Gran Muthu Habana</span></div>
             <div><span class="cdg-label">Vehicle</span><span id="conf-tf-vehicle">Mercedes E-Class</span></div>
             <div><span class="cdg-label">Date & Time</span><span id="conf-tf-datetime">Mar 25, 2026 at 2:30 PM</span></div>
             <div><span class="cdg-label">Passengers</span><span id="conf-tf-pax">2</span></div>
+            <div><span class="cdg-label">Client price</span><span id="conf-tf-price">USD 45.00</span></div>
+            <div><span class="cdg-label">Mozio Confirmation #</span><span id="conf-tf-confnum" class="conf-tf-confnum">MOZ-8W5D5P-4821</span></div>
+          </div>
+          <div class="svc-mozio-note" style="margin-top:12px">
+            <strong>Separate from the room payment.</strong> The net fare is billed to your agency's <strong>Mozio account</strong> — not the card on file; your margin is tracked in the booking P&amp;L.
+          </div>
+          <div class="conf-driver-instructions" id="conf-tf-instructions">
+            <strong>Driver instructions:</strong> Your driver will meet you in the arrivals hall holding a name sign with the lead guest's name. If you can't find your driver, call the Mozio support number on your voucher.
           </div>
         </div>
 
