@@ -53,7 +53,6 @@
         <button class="proto-tab" data-screen="hotel">3. Hotel Detail</button>
         <button class="proto-tab" data-screen="rooms">4. Room Selection</button>
         <button class="proto-tab" data-screen="guest">5. Guest Info</button>
-        <button class="proto-tab" data-screen="services">6. Add Transfer (post-booking)</button>
         <button class="proto-tab" data-screen="payment">7. Payment</button>
         <button class="proto-tab" data-screen="confirmation">8. Confirmation</button>
         <button class="proto-tab" data-screen="bookings">9. My Bookings</button>
@@ -1502,7 +1501,19 @@
               <h3><i class="ti ti-car"></i> Add an airport transfer <span class="conf-tf-recommended">Recommended</span></h3>
               <p>Book a private Mozio transfer for this reservation. It's a <strong>separate booking</strong> — billed to your agency's Mozio account, not the card on file.</p>
             </div>
-            <button class="btn-primary" onclick="showScreen('services')">Add Transfer →</button>
+            <button class="btn-primary" onclick="confExpandTransfer()">Add Transfer →</button>
+          </div>
+        </div>
+
+        <!-- Inline transfer flow (expands from the CTA above, like the live app) -->
+        <div class="conf-section conf-addtf-panel" id="conf-addtf-panel" style="display:none">
+          <div class="conf-addtf-paneltitle"><i class="ti ti-car"></i> Book your airport transfer</div>
+          <div class="svc-mozio-note" style="margin:10px 0 14px">
+            <strong>Separate from the room payment.</strong> The net fare is billed to your agency's <strong>Mozio account</strong> — not the card on file; your margin is tracked in the booking P&amp;L.
+          </div>
+          <div id="conf-tf-host"></div>
+          <div class="svc-actions" id="conf-tf-actions" style="margin-top:14px">
+            <button class="btn-outline" onclick="confSkipTransfer()">Skip — Hotel Only</button>
           </div>
         </div>
 

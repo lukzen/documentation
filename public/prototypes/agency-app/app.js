@@ -2713,17 +2713,50 @@ function bookServiceTransfer() {
 
 // Render the (separate, billed-to-Mozio) transfer on the confirmation + booking-detail
 // screens. The room remains the only card charge.
+// Expand the inline transfer flow on the confirmation screen (live-app behaviour):
+// the "Add Transfer" CTA reveals the search form → quotes → Book Transfer right here,
+// with a "Skip — Hotel Only" option. The transfer UI is relocated into the panel so
+// the existing search/select/book handlers keep working against the same element ids.
+function confExpandTransfer() {
+  const host = document.getElementById('conf-tf-host');
+  const actions = document.getElementById('conf-tf-actions');
+  const card = document.getElementById('svc-transfer-card');
+  const bookBtn = document.getElementById('svc-book-btn');
+  if (host && card && card.parentElement !== host) host.appendChild(card);
+  if (actions && bookBtn && bookBtn.parentElement !== actions) actions.insertBefore(bookBtn, actions.firstChild);
+  // Force the offer card open so the form is visible immediately
+  if (card) card.classList.add('active');
+  const cfg = document.getElementById('svc-transfer-config');
+  if (cfg) cfg.classList.add('open');
+  initServiceTransferFromBooking();
+  const cta = document.getElementById('conf-add-transfer');
+  if (cta) cta.style.display = 'none';
+  const panel = document.getElementById('conf-addtf-panel');
+  if (panel) panel.style.display = 'block';
+}
+
+function confSkipTransfer() {
+  removeServiceTransfer();
+  const panel = document.getElementById('conf-addtf-panel');
+  if (panel) panel.style.display = 'none';
+  const cta = document.getElementById('conf-add-transfer');
+  if (cta) cta.style.display = '';
+}
+
 function renderConfirmationTransfer() {
   const sec = document.getElementById('conf-transfer-section');
   const cta = document.getElementById('conf-add-transfer');
+  const panel = document.getElementById('conf-addtf-panel');
   if (!sec) return;
   if (!serviceTransferAdded) {
     sec.style.display = 'none';
     if (cta) cta.style.display = '';
+    if (panel) panel.style.display = 'none';
     return;
   }
   sec.style.display = '';
   if (cta) cta.style.display = 'none';
+  if (panel) panel.style.display = 'none';
   const arrow = ' → ';
   document.getElementById('conf-tf-route').textContent = transferBookingState.pickup + arrow + transferBookingState.dropoff;
   document.getElementById('conf-tf-vehicle').textContent = serviceTransferVehicle;

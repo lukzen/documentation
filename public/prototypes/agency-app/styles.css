@@ -3642,3 +3642,9 @@ body.modal-open { overflow: hidden; }
   background: #f0fdfa; border: 1px solid #99f6e4; border-radius: 8px;
   font-size: 13px; color: #134e4a; line-height: 1.5;
 }
+.conf-addtf-paneltitle {
+  display: flex; align-items: center; gap: 8px;
+  font-family: 'Fraunces', Georgia, serif; font-size: 17px; font-weight: 600;
+  color: var(--navy, #1a1a4e);
+}
+.conf-addtf-paneltitle i { color: var(--teal, #0d9488); }
