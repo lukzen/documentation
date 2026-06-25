@@ -3534,6 +3534,30 @@ details[open] .mr-tier-summary::before {
   .mr-country-filter-select { width: 100%; }
 }
 
+/* Country-card sub-rule tables reflow to stacked rows so the 6 columns never
+   overflow a narrow viewport (name on its own line; meta + actions wrap below).
+   Mirrors the shipped agency-app fix. */
+@media (max-width: 480px) {
+  .mr-cc-section .mr-table,
+  .mr-cc-section .mr-table tbody { display: block; }
+  .mr-cc-section .mr-table tr {
+    display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px;
+    padding: 8px 0; border-bottom: 1px solid var(--warm-100, #f0ebe4);
+  }
+  .mr-cc-section .mr-table tr:last-child { border-bottom: none; }
+  .mr-cc-section .mr-table td {
+    display: inline-flex; align-items: center; border: none; padding: 0;
+    text-align: left !important;
+  }
+  .mr-cc-section .mr-table td:first-child {
+    flex: 1 1 100%; flex-direction: column; align-items: flex-start;
+  }
+  .mr-cc-section .mr-table td:last-child { margin-left: auto; }
+  /* Country-card header buttons wrap below the title instead of overflowing. */
+  .mr-tier-summary { flex-wrap: wrap; }
+  .mr-cc-header-actions { flex-shrink: 1; }
+}
+
 /* ----- Country-cards area header (title + "Add country" button) ----- */
 .mr-country-cards-header {
   display: flex;
