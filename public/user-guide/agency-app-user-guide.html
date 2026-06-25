@@ -527,15 +527,15 @@
     <p class="lang-es">Cuando la app pone precio a un hotel, revisa tus reglas en este orden y se detiene en la primera que coincide:</p>
     <ol class="lang-en">
       <li><strong>Per-hotel</strong> — an explicit rule for that exact property.</li>
-      <li><strong>Chain</strong> — a rule for the hotel's brand group (e.g., Meliá, Iberostar, NH).</li>
-      <li><strong>Category (star rating)</strong> — a rule for all 5★, 4★, or 3★ hotels.</li>
+      <li><strong>Chain × Country</strong> — a rule for a brand group <em>in a specific country</em> (e.g., Meliá in Cuba). Meliá in Cuba and Meliá in Spain are separate rules.</li>
+      <li><strong>Category × Country</strong> — a rule for all 5★, 4★, or 3★ hotels <em>in a specific country</em> (e.g., 5★ in Cuba).</li>
       <li><strong>Country</strong> — a rule for all hotels in a specific country.</li>
       <li><strong>Default</strong> — the baseline, when nothing else matched.</li>
     </ol>
     <ol class="lang-es">
       <li><strong>Por hotel</strong> — una regla explícita para esa propiedad exacta.</li>
-      <li><strong>Cadena</strong> — una regla para el grupo de la marca del hotel (ej. Meliá, Iberostar, NH).</li>
-      <li><strong>Categoría (calificación de estrellas)</strong> — una regla para todos los hoteles de 5★, 4★ o 3★.</li>
+      <li><strong>Cadena × País</strong> — una regla para un grupo de marca <em>en un país específico</em> (ej. Meliá en Cuba). Meliá en Cuba y Meliá en España son reglas separadas.</li>
+      <li><strong>Categoría × País</strong> — una regla para todos los hoteles de 5★, 4★ o 3★ <em>en un país específico</em> (ej. 5★ en Cuba).</li>
       <li><strong>País</strong> — una regla para todos los hoteles de un país específico.</li>
       <li><strong>Default</strong> — el baseline, cuando nada más coincidió.</li>
     </ol>
@@ -543,8 +543,8 @@
     <div class="callout callout-info">
       <strong class="lang-en">Worked example:</strong>
       <strong class="lang-es">Ejemplo práctico:</strong>
-      <span class="lang-en"> You have a Meliá <em>chain</em> rule (20%), a Cuba <em>country</em> rule (12%), and a 5★ <em>category</em> rule (18%). A customer books a 5★ Meliá hotel in Cuba. The chain rule wins — it sits above both country and category in the cascade — and the customer is charged 20% on top of Ergos sell. The country and category rules are ignored for that booking.</span>
-      <span class="lang-es"> Tenés una regla de <em>cadena</em> Meliá (20%), una regla de <em>país</em> Cuba (12%) y una regla de <em>categoría</em> 5★ (18%). Un cliente reserva un hotel Meliá 5★ en Cuba. La regla de cadena gana — está por encima de país y categoría en la cascada — y al cliente se le cobra un 20% sobre el precio de venta de Ergos. Las reglas de país y categoría se ignoran para esa reserva.</span>
+      <span class="lang-en"> You have a Meliá-in-Cuba <em>chain</em> rule (20%), a Cuba <em>country</em> rule (12%), and a 5★-in-Cuba <em>category</em> rule (18%). A customer books a 5★ Meliá hotel in Cuba. The chain rule wins — it sits above both country and category in the cascade — and the customer is charged 20% on top of Ergos sell. The country and category rules are ignored for that booking.</span>
+      <span class="lang-es"> Tenés una regla de <em>cadena</em> Meliá-en-Cuba (20%), una regla de <em>país</em> Cuba (12%) y una regla de <em>categoría</em> 5★-en-Cuba (18%). Un cliente reserva un hotel Meliá 5★ en Cuba. La regla de cadena gana — está por encima de país y categoría en la cascada — y al cliente se le cobra un 20% sobre el precio de venta de Ergos. Las reglas de país y categoría se ignoran para esa reserva.</span>
     </div>
 
     <div class="callout callout-warning">
@@ -563,15 +563,15 @@
       <h4 class="lang-en">To add any rule</h4>
       <h4 class="lang-es">Para agregar cualquier regla</h4>
       <ol class="lang-en">
-        <li>Click <strong>+</strong> on the tier you want (Chain, Country, Category, or Hotel).</li>
-        <li>Pick the <strong>target</strong> — the specific chain, country, star rating, or hotel the rule applies to.</li>
+        <li>Use <strong>+ Add rule</strong> (top), a country card's <strong>+ Chain / + Category</strong>, or <strong>+ Add country</strong> for a new country rate.</li>
+        <li>Pick the <strong>rule type</strong>. Chain and Category rules also need a <strong>country</strong> — choose it before the chain or star rating. (Country and per-hotel rules don't.)</li>
         <li>Enter the <strong>markup percentage</strong> as a whole number (0–200). For example, type <code>12</code> for 12%.</li>
         <li>Click <strong>Save rule</strong>. The rule appears in the tier list immediately and applies to all future availability queries.</li>
         <li>To discard without saving, click <strong>Cancel</strong> or press Escape.</li>
       </ol>
       <ol class="lang-es">
-        <li>Hacé clic en <strong>+</strong> en el nivel que querés (Cadena, País, Categoría u Hotel).</li>
-        <li>Elegí el <strong>objetivo</strong> — la cadena, país, calificación de estrellas u hotel específico al que aplica la regla.</li>
+        <li>Usá <strong>+ Agregar regla</strong> (arriba), el <strong>+ Cadena / + Categoría</strong> de una tarjeta de país, o <strong>+ Agregar país</strong> para una nueva tarifa de país.</li>
+        <li>Elegí el <strong>tipo de regla</strong>. Las reglas de Cadena y Categoría también necesitan un <strong>país</strong> — elegilo antes de la cadena o la calificación de estrellas. (Las de País y por hotel no.)</li>
         <li>Ingresá el <strong>porcentaje de markup</strong> como número entero (0–200). Por ejemplo, escribí <code>12</code> para 12%.</li>
         <li>Hacé clic en <strong>Guardar regla</strong>. La regla aparece en la lista del nivel al instante y se aplica a todas las consultas de disponibilidad futuras.</li>
         <li>Para descartar sin guardar, hacé clic en <strong>Cancelar</strong> o presioná Escape.</li>
@@ -599,13 +599,13 @@
 
     <h3 class="lang-en">Category rules and star ratings</h3>
     <h3 class="lang-es">Reglas de categoría y calificación de estrellas</h3>
-    <p class="lang-en">In the current version, the Category tier maps directly to <strong>star rating</strong> — you create rules for 5★, 4★, or 3★ hotels. A rule set for 5★ applies to every five-star hotel in every country, unless a more specific per-hotel or chain rule exists for that property. Richer style categories (all-inclusive, boutique, resort) may be added in a future release.</p>
-    <p class="lang-es">En la versión actual, el nivel Categoría mapea directamente a la <strong>calificación de estrellas</strong> — creás reglas para hoteles de 5★, 4★ o 3★. Una regla de 5★ aplica a todos los hoteles de cinco estrellas en todos los países, salvo que exista una regla por hotel o cadena más específica para esa propiedad. Categorías de estilo más ricas (all-inclusive, boutique, resort) pueden agregarse en una versión futura.</p>
+    <p class="lang-en">In the current version, the Category tier maps directly to <strong>star rating</strong> — you create rules for 5★, 4★, or 3★ hotels <em>within a country</em>. A 5★ rule in Cuba applies only to five-star hotels in Cuba; 5★ in Spain is a separate rule. A category rule is beaten only by a more specific per-hotel or chain rule for that property. Richer style categories (all-inclusive, boutique, resort) may be added in a future release.</p>
+    <p class="lang-es">En la versión actual, el nivel Categoría mapea directamente a la <strong>calificación de estrellas</strong> — creás reglas para hoteles de 5★, 4★ o 3★ <em>dentro de un país</em>. Una regla de 5★ en Cuba aplica solo a los hoteles de cinco estrellas en Cuba; 5★ en España es una regla separada. Una regla de categoría solo es superada por una regla por hotel o de cadena más específica para esa propiedad. Categorías de estilo más ricas (all-inclusive, boutique, resort) pueden agregarse en una versión futura.</p>
 
-    <h3 class="lang-en">Country filter on the page vs. country rules</h3>
-    <h3 class="lang-es">Filtro de país en la página vs. reglas de país</h3>
-    <p class="lang-en">The <strong>country filter</strong> at the top of the Markup Rules page is a <em>display filter only</em> — it scopes the per-hotel rule list so you see only hotels from one country at a time, which cuts clutter in large catalogs. It does not affect chain rules, because chain rules are <strong>global</strong> — a Meliá rule applies to every Meliá hotel regardless of where it is.</p>
-    <p class="lang-es">El <strong>filtro de país</strong> en la parte superior de la página de Reglas de Markup es solo un <em>filtro de visualización</em> — acota la lista de reglas por hotel para que veas solo hoteles de un país a la vez, reduciendo el ruido en catálogos grandes. No afecta las reglas de cadena, porque las reglas de cadena son <strong>globales</strong> — una regla Meliá aplica a todos los hoteles Meliá sin importar dónde estén.</p>
+    <h3 class="lang-en">Rules are organised by country cards</h3>
+    <h3 class="lang-es">Las reglas se organizan en tarjetas de país</h3>
+    <p class="lang-en">The Markup Rules page groups your rules into <strong>country cards</strong>: one card per country, each holding that country's rate plus its category (star) and chain rules. Chain and category rules are <strong>country-scoped</strong> — a Meliá rule in Cuba is a different rule from Meliá in Spain, so you can price the same brand differently per market. Only <strong>per-hotel overrides</strong> (in their own card) and the <strong>Default</strong> are global. Use <strong>+ Add country</strong> to start a new country, and a card's <strong>+ Chain</strong> / <strong>+ Category</strong> to add a rule with that country pre-filled.</p>
+    <p class="lang-es">La página de Reglas de Markup agrupa tus reglas en <strong>tarjetas de país</strong>: una tarjeta por país, cada una con la tarifa de ese país más sus reglas de categoría (estrellas) y de cadena. Las reglas de cadena y categoría están <strong>limitadas por país</strong> — una regla de Meliá en Cuba es distinta de Meliá en España, así que podés poner precios diferentes a la misma marca por mercado. Solo los <strong>ajustes por hotel</strong> (en su propia tarjeta) y el <strong>Default</strong> son globales. Usá <strong>+ Agregar país</strong> para empezar un país nuevo, y el <strong>+ Cadena / + Categoría</strong> de una tarjeta para agregar una regla con ese país ya seleccionado.</p>
 
     <h3 class="lang-en">Cascade preview</h3>
     <h3 class="lang-es">Vista previa de la cascada</h3>
