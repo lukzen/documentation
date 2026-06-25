@@ -2289,7 +2289,7 @@
         <div class="acct-header-row">
           <div>
             <h1 class="acct-title">Markup Rules</h1>
-            <p class="acct-sub">Set markup over Ergos's wholesale price by <strong>hotel · chain · category · country</strong>, or fall back to the default. Most specific rule wins.</p>
+            <p class="acct-sub">Set markup over Ergos's wholesale price — rules are <strong>country-rooted</strong>. Most specific match wins.</p>
           </div>
           <button class="btn-primary" onclick="mrOpenDrawer()">+ Add rule</button>
         </div>
@@ -2299,9 +2299,9 @@
           <span class="mr-resolution-legend-label"><i class="ti ti-list-check"></i> Resolution order</span>
           <span class="mr-resolution-step mr-tier-hotel"><i class="ti ti-bed"></i> Hotel</span>
           <span class="mr-resolution-sep">›</span>
-          <span class="mr-resolution-step mr-tier-chain"><i class="ti ti-building-skyscraper"></i> Chain</span>
+          <span class="mr-resolution-step mr-tier-chain"><i class="ti ti-building-skyscraper"></i> Chain · Country</span>
           <span class="mr-resolution-sep">›</span>
-          <span class="mr-resolution-step mr-tier-category"><i class="ti ti-star"></i> Category</span>
+          <span class="mr-resolution-step mr-tier-category"><i class="ti ti-star"></i> Category · Country</span>
           <span class="mr-resolution-sep">›</span>
           <span class="mr-resolution-step mr-tier-country"><i class="ti ti-world"></i> Country</span>
           <span class="mr-resolution-sep">›</span>
@@ -2319,9 +2319,12 @@
             <select id="mr-preview-hotel" class="mr-preview-select" onchange="mrPreviewUpdate()">
               <option value="iberostar-grand-packard">Iberostar Grand Packard · Cuba</option>
               <option value="melia-las-antillas">Meliá Las Antillas · Cuba</option>
+              <option value="havana-libre">Gran Hotel Manzana Kempinski · Cuba</option>
               <option value="hyatt-ziva-cap-cana">Hyatt Ziva Cap Cana · Dominican Republic</option>
               <option value="catalonia-royal-bavaro">Catalonia Royal Bávaro · Dominican Republic</option>
+              <option value="iberostar-las-letras">Iberostar las Letras Madrid · Spain</option>
               <option value="paradores-leon">Parador de León · Spain</option>
+              <option value="iberostar-cancun">Iberostar Cancún · Mexico</option>
             </select>
           </div>
           <div class="mr-preview-cascade" id="mr-preview-cascade">
@@ -2329,31 +2332,16 @@
           </div>
         </div>
 
-        <!-- Country filter bar -->
-        <div class="mr-country-filter-bar">
-          <label class="mr-country-filter-label"><i class="ti ti-filter"></i> Filter by country</label>
-          <select class="mr-country-filter-select" onchange="mrCountryFilterChange(this.value)">
-            <option value="">All countries</option>
-            <option value="cu">Cuba</option>
-            <option value="do">Dominican Republic</option>
-            <option value="mx">Mexico</option>
-            <option value="es">Spain</option>
-            <option value="jm">Jamaica</option>
-            <option value="us">United States</option>
-          </select>
-          <span class="mr-country-filter-note"><i class="ti ti-info-circle"></i> Filters the hotel picker above and the Per-hotel overrides section below. Chain rules are global — they apply in every country.</span>
-        </div>
-
         <!-- Functionality In Development banner — entirely prototype-only -->
         <div class="in-dev-banner">
           <div class="in-dev-icon"><i class="ti ti-tool"></i></div>
           <div class="in-dev-body">
-            <div class="in-dev-title">Functionality In Development</div>
-            <div class="in-dev-msg">The <strong>Markup Rules</strong> page is not yet in production — the real agency-app only stores a single <code>defaultMarkupPct</code> on the agency profile. The cascade editor on this prototype is in design. Flows being prototyped:
+            <div class="in-dev-title">Functionality In Development — Country-Rooted Markup Rules</div>
+            <div class="in-dev-msg">The <strong>Markup Rules</strong> page is not yet in production — the real agency-app only stores a single <code>defaultMarkupPct</code>. This prototype designs the country-rooted cascade editor. Flows being prototyped:
               <ul>
-                <li>4-tier cascade: <strong>Hotel › Chain › Category › Country › Default</strong> (no GDS exposure — agencies never see vendor identity)</li>
-                <li>Cascade preview hero — pick a hotel → see the full resolution walk + customer price on a $200 supplier-net sample</li>
-                <li>Country filter — browse hotel overrides by destination; chain rules remain global</li>
+                <li>5-tier cascade: <strong>Hotel › Chain·Country › Category·Country › Country › Default</strong> — chain and category rules are always scoped to a country</li>
+                <li>Cascade preview hero — pick a hotel → see the full 5-step resolution walk + customer price on a $200 supplier-net sample</li>
+                <li>Country cards — one collapsible card per configured country containing its rate, category rules, chain rules, and per-hotel overrides</li>
                 <li>Audit trail — every create/edit/delete recorded with timestamp + user; surfaced under P&amp;L</li>
               </ul>
             </div>
@@ -2376,59 +2364,19 @@
           </div>
         </div>
 
-        <!-- Tier 1: Per-hotel overrides (most specific — listed first) -->
-        <details class="mr-tier-card" open>
-          <summary class="mr-tier-head mr-tier-summary">
-            <div style="flex:1">
-              <h3><i class="ti ti-bed tier-icon"></i>Per-hotel overrides <span class="mr-tier-badge mr-tier-hotel"><i class="ti ti-bed"></i> Tier 1 — most specific (wins)</span></h3>
-              <p class="acct-help" style="margin-top:2px">Surgical: pin a markup for one specific hotel. Beats every other rule.</p>
-            </div>
-            <button class="mr-tier-add" onclick="event.stopPropagation();mrOpenDrawer({type:'hotel'})"><i class="ti ti-plus"></i> Hotel</button>
-          </summary>
-          <input type="text" class="mr-search" placeholder="Filter overrides by hotel name…" oninput="mrFilterRules(this.value)" style="margin:8px 0">
-          <table class="mr-table" id="mr-table-hotel"><tbody></tbody></table>
-          <div class="mr-audit-note">
-            <span class="mr-audit-icon"><i class="ti ti-shield-check"></i></span>
-            Every create / edit / delete is audited with timestamp + user. View the full audit trail in <a onclick="showScreen('pnl')" style="color:#0d8a7f;cursor:pointer">P&amp;L → Audit</a>.
-          </div>
-        </details>
+        <!-- Markup by country — one collapsible card per configured country -->
+        <div class="mr-country-cards-header">
+          <h2 class="mr-country-cards-title"><i class="ti ti-world"></i> Markup by country</h2>
+          <button class="mr-tier-add" onclick="mrOpenDrawer({type:'country'})"><i class="ti ti-plus"></i> Add country</button>
+        </div>
+        <div id="mr-country-cards">
+          <!-- Filled by mrRenderCountryCards() -->
+        </div>
 
-        <!-- Tier 2: Chain rules -->
-        <details class="mr-tier-card" open>
-          <summary class="mr-tier-head mr-tier-summary">
-            <div style="flex:1">
-              <h3><i class="ti ti-building-skyscraper tier-icon"></i>Chain rules <span class="mr-tier-badge mr-tier-chain"><i class="ti ti-building-skyscraper"></i> Tier 2 — brand/chain</span></h3>
-              <p class="acct-help" style="margin-top:2px">Applies to every hotel in this brand — globally, regardless of country. Negotiated brand deals win over star-category defaults.</p>
-            </div>
-            <button class="mr-tier-add" onclick="event.stopPropagation();mrOpenDrawer({type:'chain'})"><i class="ti ti-plus"></i> Chain</button>
-          </summary>
-          <p class="mr-global-note"><i class="ti ti-globe"></i> A Chain rule applies in every country — it is not scoped by the country filter above.</p>
-          <table class="mr-table" id="mr-table-chain"><tbody></tbody></table>
-        </details>
-
-        <!-- Tier 3: Category rules -->
-        <details class="mr-tier-card">
-          <summary class="mr-tier-head mr-tier-summary">
-            <div style="flex:1">
-              <h3><i class="ti ti-star tier-icon"></i>Category rules <span class="mr-tier-badge mr-tier-category"><i class="ti ti-star"></i> Tier 3 — star rating</span></h3>
-              <p class="acct-help" style="margin-top:2px">Applied by hotel star rating (5★ / 4★ / 3★). Hotels without a star rating fall through to a more general tier.</p>
-            </div>
-            <button class="mr-tier-add" onclick="event.stopPropagation();mrOpenDrawer({type:'category'})"><i class="ti ti-plus"></i> Category</button>
-          </summary>
-          <table class="mr-table" id="mr-table-category"><tbody></tbody></table>
-        </details>
-
-        <!-- Tier 4: Country rules -->
-        <details class="mr-tier-card">
-          <summary class="mr-tier-head mr-tier-summary">
-            <div style="flex:1">
-              <h3><i class="ti ti-world tier-icon"></i>Country rules <span class="mr-tier-badge mr-tier-country"><i class="ti ti-world"></i> Tier 4 — geographic</span></h3>
-              <p class="acct-help" style="margin-top:2px">Applied to every hotel in this country. 100% catalog coverage — every hotel has a country.</p>
-            </div>
-            <button class="mr-tier-add" onclick="event.stopPropagation();mrOpenDrawer({type:'country'})"><i class="ti ti-plus"></i> Country</button>
-          </summary>
-          <table class="mr-table" id="mr-table-country"><tbody></tbody></table>
-        </details>
+        <div class="mr-audit-note" style="margin-top:8px">
+          <span class="mr-audit-icon"><i class="ti ti-shield-check"></i></span>
+          Every create / edit / delete is audited with timestamp + user. View the full audit trail in <a onclick="showScreen('pnl')" style="color:#0d8a7f;cursor:pointer">P&amp;L → Audit</a>.
+        </div>
 
       </main>
     </div>
@@ -2450,13 +2398,29 @@
               <button class="mr-type-btn" data-type="category" onclick="mrSetType('category')"><i class="ti ti-star"></i> Category</button>
               <button class="mr-type-btn" data-type="hotel" onclick="mrSetType('hotel')"><i class="ti ti-bed"></i> Hotel</button>
             </div>
-            <p class="acct-help" id="mr-type-help">Pick the granularity. Hotel &gt; Chain &gt; Category &gt; Country &gt; Default.</p>
+            <p class="acct-help" id="mr-type-help">Pick the granularity. Hotel › Chain·Country › Category·Country › Country › Default.</p>
           </div>
 
           <div class="acct-field">
             <label id="mr-target-label">Target</label>
             <select id="mr-target-select" onchange="mrCoverageUpdate()"></select>
             <p class="acct-help" id="mr-target-help">Select what this rule applies to.</p>
+          </div>
+
+          <!-- Country scope row — shown for chain and category rules only -->
+          <div class="acct-field" id="mr-country-row" style="display:none">
+            <label>Country scope <span style="color:#b45309;font-size:11px">(required)</span></label>
+            <select id="mr-country-select" onchange="mrCoverageUpdate()">
+              <option value="">— select a country —</option>
+              <option value="cu">Cuba</option>
+              <option value="do">Dominican Republic</option>
+              <option value="mx">Mexico</option>
+              <option value="es">Spain</option>
+              <option value="co">Colombia</option>
+              <option value="jm">Jamaica</option>
+              <option value="us">United States</option>
+            </select>
+            <p class="acct-help">Chain and category rules are always scoped to a country — there are no global chain/category tiers.</p>
           </div>
 
           <!-- Coverage badge — live "applies to N hotels" -->

@@ -38,14 +38,16 @@ function protoToast(msg, type) {
 }
 
 /* ============================================================
-   A1: Markup Rules — 4-tier cascade refactor
-   Tiers (most specific → least): hotel · chain · category · country · default
-   NOTE: Chain beats Category because a negotiated brand deal is more specific
-   than a generic star-rating bracket. Swapping Chain↔Category is the one
-   open policy choice if the team decides differently.
+   A1: Markup Rules — country-rooted cascade
+   Tiers (most specific → least):
+     1. Hotel        — one specific hotel (exact name)
+     2. Chain×Country — chain scoped to a country (e.g. Meliá in Cuba)
+     3. Category×Country — star rating scoped to a country (e.g. 5★ in Spain)
+     4. Country      — all hotels in a country
+     5. Default      — agency catch-all
+   There are NO global chain or global category rules.
    Demo data lives in JS; rule edits mutate JS state and re-render
-   tables + cascade preview. Coverage badges read from the catalog
-   stats below.
+   the country-card area + cascade preview.
    ============================================================ */
 
 /* ---------- Reference catalog stats (mock) ----------
@@ -111,24 +113,32 @@ const MR_DEMO_HOTELS = {
   'hyatt-cali':                 { name: 'Hyatt Regency Cali',             country: 'co', city: 'Cali',        stars: '5', chainId: 'hyatt',      categories: ['5'] },
 };
 
-/* ---------- Mutable rules state ---------- */
+/* ---------- Mutable rules state — country-rooted model ----------
+   chain[].country and category[].country are required — they scope the rule
+   to a specific country. There are no global chain or global category rules. */
 let MR_DEFAULT = 15;
 const MR_STATE = {
+  /* Chain × Country rules — e.g. Iberostar in Cuba only */
   chain: [
-    { id: 'r-c1', tier: 'chain', target: 'iberostar', pct: 18, updated: '2026-05-29', by: 'patria@' },
-    { id: 'r-c2', tier: 'chain', target: 'melia',     pct: 20, updated: '2026-05-26', by: 'patria@' },
+    { id: 'r-c1', tier: 'chain', target: 'iberostar', country: 'cu', pct: 18, updated: '2026-05-29', by: 'patria@' },
+    { id: 'r-c2', tier: 'chain', target: 'melia',     country: 'cu', pct: 20, updated: '2026-05-26', by: 'patria@' },
   ],
+  /* Country rules — all hotels in a country */
   country: [
     { id: 'r-co1', tier: 'country', target: 'cu', pct: 12, updated: '2026-05-25', by: 'patria@' },
+    { id: 'r-co2', tier: 'country', target: 'es', pct: 15, updated: '2026-05-20', by: 'carlos@' },
   ],
+  /* Category × Country rules — star rating within a country */
   category: [
-    { id: 'r-ct1', tier: 'category', target: '5', pct: 25, updated: '2026-05-24', by: 'carlos@' },
+    { id: 'r-ct1', tier: 'category', target: '5', country: 'cu', pct: 25, updated: '2026-05-24', by: 'carlos@' },
+    { id: 'r-ct2', tier: 'category', target: '4', country: 'es', pct: 18, updated: '2026-05-22', by: 'patria@' },
   ],
+  /* Per-hotel overrides */
   hotel: [
-    { id: 'r-h1', tier: 'hotel', target: 'Iberostar Grand Packard', pct: 22, city: 'Havana, Cuba', updated: '2026-05-28', by: 'patria@' },
-    { id: 'r-h2', tier: 'hotel', target: 'Hyatt Ziva Cap Cana',    pct: 25, city: 'Punta Cana, DR', updated: '2026-05-25', by: 'carlos@' },
-    { id: 'r-h3', tier: 'hotel', target: 'Memories Varadero',     pct: 10, city: 'Varadero, Cuba', updated: '2026-05-22', by: 'patria@' },
-    { id: 'r-h4', tier: 'hotel', target: 'Iberostar Selection Bávaro', pct: 20, city: 'Bávaro, DR', updated: '2026-05-18', by: 'patria@' },
+    { id: 'r-h1', tier: 'hotel', target: 'Iberostar Grand Packard',    pct: 22, city: 'Havana, Cuba',       updated: '2026-05-28', by: 'patria@' },
+    { id: 'r-h2', tier: 'hotel', target: 'Hyatt Ziva Cap Cana',        pct: 25, city: 'Punta Cana, DR',     updated: '2026-05-25', by: 'carlos@' },
+    { id: 'r-h3', tier: 'hotel', target: 'Memories Varadero',          pct: 10, city: 'Varadero, Cuba',     updated: '2026-05-22', by: 'patria@' },
+    { id: 'r-h4', tier: 'hotel', target: 'Iberostar Selection Bávaro', pct: 20, city: 'Bávaro, DR',         updated: '2026-05-18', by: 'patria@' },
   ],
 };
 
@@ -143,37 +153,53 @@ function mrDeltaStr(pct) {
   return `<span class="${cls}">${d >= 0 ? '+' : ''}${d} pts</span>`;
 }
 
-/* ---------- Cascade resolver (most-specific wins) ----------
-   Order: Hotel > Chain > Category > Country > Default
-   "Chain beats Category" rationale: a negotiated brand deal is an explicit
-   commercial agreement and should win over a generic star-rating bracket.
-   Swapping Chain↔Category is the one open policy choice. */
+/* ---------- Cascade resolver — country-rooted 5-tier walk ----------
+   Precedence: Hotel › Chain·Country › Category·Country › Country › Default
+   Chain and Category rules are always scoped to a country — there are no
+   global chain or global category tiers. */
 function mrResolveForHotel(hotelKey) {
   const h = MR_DEMO_HOTELS[hotelKey];
   if (!h) return { tier: 'default', pct: MR_DEFAULT, label: 'Default markup', walk: [] };
   const walk = [];
 
-  // Tier 1 — hotel override (exact name match)
+  // Tier 1 — per-hotel override (exact name match)
   const ho = MR_STATE.hotel.find(r => r.target === h.name);
-  walk.push({ tier: 'hotel', matched: !!ho, pct: ho?.pct, label: ho ? `Per-hotel override · ${h.name}` : `No per-hotel override for ${h.name}` });
+  walk.push({ tier: 'hotel', matched: !!ho, pct: ho?.pct,
+    label: ho ? `Per-hotel override · ${h.name}` : `No per-hotel override for ${h.name}` });
   if (ho) return { tier: 'hotel', pct: ho.pct, label: `Per-hotel override · ${h.name}`, walk };
 
-  // Tier 2 — chain (negotiated brand deal beats star-category)
-  const ch = MR_STATE.chain.find(r => r.target === h.chainId);
-  walk.push({ tier: 'chain', matched: !!ch, pct: ch?.pct, label: ch ? `Chain rule · ${mrChainById(ch.target)?.name}` : (h.chainId ? `No chain rule for ${mrChainById(h.chainId)?.name || h.chainId}` : 'No chain affiliation') });
-  if (ch) return { tier: 'chain', pct: ch.pct, label: `Chain rule · ${mrChainById(ch.target)?.name}`, walk };
+  // Tier 2 — Chain × Country (chain scoped to hotel's country)
+  const ch = MR_STATE.chain.find(r => r.target === h.chainId && r.country === h.country);
+  const countryName = mrCountryById(h.country)?.name || h.country;
+  if (h.chainId) {
+    const chainName = mrChainById(h.chainId)?.name || h.chainId;
+    walk.push({ tier: 'chain', matched: !!ch, pct: ch?.pct,
+      label: ch
+        ? `Chain×Country · ${chainName} in ${countryName}`
+        : `No Chain×Country rule for ${chainName} in ${countryName}` });
+  } else {
+    walk.push({ tier: 'chain', matched: false, pct: undefined,
+      label: 'No chain affiliation — Chain×Country tier skipped' });
+  }
+  if (ch) return { tier: 'chain', pct: ch.pct, label: `Chain×Country · ${mrChainById(ch.target)?.name} in ${countryName}`, walk };
 
-  // Tier 3 — category (star rating)
-  const ct = MR_STATE.category.find(r => h.categories.includes(r.target));
-  walk.push({ tier: 'category', matched: !!ct, pct: ct?.pct, label: ct ? `Category rule · ${mrCategoryById(ct.target)?.name}` : `No category rule (hotel in: ${h.categories.map(c => mrCategoryById(c)?.name || c).join(', ')})` });
-  if (ct) return { tier: 'category', pct: ct.pct, label: `Category rule · ${mrCategoryById(ct.target)?.name}`, walk };
+  // Tier 3 — Category × Country (star rating scoped to hotel's country)
+  const ct = MR_STATE.category.find(r => h.categories.includes(r.target) && r.country === h.country);
+  walk.push({ tier: 'category', matched: !!ct, pct: ct?.pct,
+    label: ct
+      ? `Category×Country · ${mrCategoryById(ct.target)?.name} in ${countryName}`
+      : `No Category×Country rule for ${h.stars}★ in ${countryName}` });
+  if (ct) return { tier: 'category', pct: ct.pct, label: `Category×Country · ${mrCategoryById(ct.target)?.name} in ${countryName}`, walk };
 
-  // Tier 4 — country
+  // Tier 4 — Country (all hotels in this country)
   const co = MR_STATE.country.find(r => r.target === h.country);
-  walk.push({ tier: 'country', matched: !!co, pct: co?.pct, label: co ? `Country rule · ${mrCountryById(co.target)?.name}` : `No country rule for ${mrCountryById(h.country)?.name || h.country}` });
-  if (co) return { tier: 'country', pct: co.pct, label: `Country rule · ${mrCountryById(co.target)?.name}`, walk };
+  walk.push({ tier: 'country', matched: !!co, pct: co?.pct,
+    label: co
+      ? `Country · ${countryName}`
+      : `No country rule for ${countryName}` });
+  if (co) return { tier: 'country', pct: co.pct, label: `Country · ${countryName}`, walk };
 
-  // Tier 5 — default
+  // Tier 5 — Default
   walk.push({ tier: 'default', matched: true, pct: MR_DEFAULT, label: 'Default markup (catch-all)' });
   return { tier: 'default', pct: MR_DEFAULT, label: 'Default markup (no rule matched)', walk };
 }
@@ -236,7 +262,7 @@ function mrPreviewUpdate() {
 }
 
 /* Shared icon + label map — keeps tier styling consistent everywhere.
-   Order: Hotel(1) > Chain(2) > Category(3) > Country(4) > Default(5) */
+   Order: Hotel(1) > Chain×Country(2) > Category×Country(3) > Country(4) > Default(5) */
 const MR_TIER_ICONS = {
   hotel:    'ti-bed',
   chain:    'ti-building-skyscraper',
@@ -246,9 +272,9 @@ const MR_TIER_ICONS = {
 };
 const MR_TIER_LABELS = {
   hotel:    'Tier 1 — per hotel',
-  chain:    'Tier 2 — brand/chain',
-  category: 'Tier 3 — star rating',
-  country:  'Tier 4 — geographic',
+  chain:    'Tier 2 — chain × country',
+  category: 'Tier 3 — category × country',
+  country:  'Tier 4 — country',
   default:  'Tier 5 — catch-all',
 };
 
@@ -386,155 +412,201 @@ function mrHotelPickerSelect(hotelName) {
   mrCoverageUpdate();
 }
 
-/* ---------- Country filter ---------- */
-let MR_COUNTRY_FILTER = '';  // '' = all countries
+/* ---------- Country-card renderer ----------
+   Builds one collapsible <details> card per configured country.
+   Within each card, in order: country rate row, category sub-rules,
+   chain sub-rules, per-hotel overrides. */
 
-function mrCountryFilterChange(val) {
-  MR_COUNTRY_FILTER = val;
-  // Re-populate hotel picker in preview hero
-  const sel = document.getElementById('mr-preview-hotel');
-  if (sel) {
-    const opts = Object.entries(MR_DEMO_HOTELS)
-      .filter(([, h]) => !MR_COUNTRY_FILTER || h.country === MR_COUNTRY_FILTER)
-      .map(([key, h]) => {
-        const countryName = mrCountryById(h.country)?.name || h.country;
-        return `<option value="${key}"${sel.value === key ? ' selected' : ''}>${h.name} · ${countryName}</option>`;
-      }).join('');
-    sel.innerHTML = opts || `<option value="">No hotels in this country</option>`;
-    mrPreviewUpdate();
-  }
-  // Re-render hotel table so country filter applies there too
-  mrRenderHotel();
-}
-
-/* ---------- Table renderers ---------- */
 function mrRenderAll() {
-  mrRenderChain();
-  mrRenderCountry();
-  mrRenderCategory();
-  mrRenderHotel();
+  mrRenderCountryCards();
   mrPreviewUpdate();
-  // Update default reference in drawer
   const ref = document.getElementById('mr-default-ref');
   if (ref) ref.textContent = MR_DEFAULT + '%';
 }
-function mrRenderChain() {
-  const tbody = document.querySelector('#mr-table-chain tbody');
-  if (!tbody) return;
-  if (MR_STATE.chain.length === 0) {
-    tbody.innerHTML = `<tr class="mr-empty-row"><td colspan="5"><span>No chain rules yet.</span> Use "+ Chain" to set a brand-wide markup (e.g. Iberostar +18%).</td></tr>`;
-    return;
-  }
-  tbody.innerHTML = MR_STATE.chain.map(r => {
-    const c = mrChainById(r.target);
-    if (!c) return '';
-    const cov = `<span class="mr-coverage-badge">${c.count} hotels linked${c.candidates ? `, ${c.candidates} pending link` : ''}</span>`;
-    return `<tr data-rule-id="${r.id}">
-      <td><strong>${c.name}</strong><span class="mr-hotel-city">Tier 2 — brand/chain · applies in every country</span></td>
-      <td>${cov}</td>
-      <td class="${mrPctClass(r.pct)}" style="text-align:right">${r.pct}%</td>
-      <td style="text-align:right">${mrDeltaStr(r.pct)}</td>
-      <td>${r.updated} by ${r.by}</td>
-      <td class="mr-actions" style="text-align:right">
-        <button class="mr-icon-btn" title="Edit" onclick="mrEditRule('${r.id}','chain')">✎</button>
-        <button class="mr-icon-btn mr-icon-danger" title="Delete" onclick="mrDeleteRule('${r.id}','chain')">🗑</button>
-      </td>
-    </tr>`;
-  }).join('');
-}
-function mrRenderCountry() {
-  const tbody = document.querySelector('#mr-table-country tbody');
-  if (!tbody) return;
-  if (MR_STATE.country.length === 0) {
-    tbody.innerHTML = `<tr class="mr-empty-row"><td colspan="5"><span>No country rules yet.</span> Use "+ Country" to set a geographic markup (e.g. Cuba +12%).</td></tr>`;
-    return;
-  }
-  tbody.innerHTML = MR_STATE.country.map(r => {
-    const c = mrCountryById(r.target);
-    if (!c) return '';
-    return `<tr data-rule-id="${r.id}">
-      <td><strong>${c.name}</strong><span class="mr-hotel-city">Tier 4 — geographic</span></td>
-      <td><span class="mr-coverage-badge">${c.count} hotels in country</span></td>
-      <td class="${mrPctClass(r.pct)}" style="text-align:right">${r.pct}%</td>
-      <td style="text-align:right">${mrDeltaStr(r.pct)}</td>
-      <td>${r.updated} by ${r.by}</td>
-      <td class="mr-actions" style="text-align:right">
-        <button class="mr-icon-btn" title="Edit" onclick="mrEditRule('${r.id}','country')">✎</button>
-        <button class="mr-icon-btn mr-icon-danger" title="Delete" onclick="mrDeleteRule('${r.id}','country')">🗑</button>
-      </td>
-    </tr>`;
-  }).join('');
-}
-function mrRenderCategory() {
-  const tbody = document.querySelector('#mr-table-category tbody');
-  if (!tbody) return;
-  if (MR_STATE.category.length === 0) {
-    tbody.innerHTML = `<tr class="mr-empty-row"><td colspan="5"><span>No category rules yet.</span> Use "+ Category" to markup by star rating (e.g. 5★ +25%).</td></tr>`;
-    return;
-  }
-  tbody.innerHTML = MR_STATE.category.map(r => {
-    const c = mrCategoryById(r.target);
-    if (!c) return '';
-    return `<tr data-rule-id="${r.id}">
-      <td><strong>${c.name}</strong><span class="mr-hotel-city">Tier 3 — star rating</span></td>
-      <td><span class="mr-coverage-badge mr-coverage-badge-warn">${c.count} hotels graded · others fall through</span></td>
-      <td class="${mrPctClass(r.pct)}" style="text-align:right">${r.pct}%</td>
-      <td style="text-align:right">${mrDeltaStr(r.pct)}</td>
-      <td>${r.updated} by ${r.by}</td>
-      <td class="mr-actions" style="text-align:right">
-        <button class="mr-icon-btn" title="Edit" onclick="mrEditRule('${r.id}','category')">✎</button>
-        <button class="mr-icon-btn mr-icon-danger" title="Delete" onclick="mrDeleteRule('${r.id}','category')">🗑</button>
-      </td>
-    </tr>`;
-  }).join('');
-}
-function mrRenderHotel() {
-  const tbody = document.querySelector('#mr-table-hotel tbody');
-  if (!tbody) return;
-  if (MR_STATE.hotel.length === 0) {
-    tbody.innerHTML = `<tr class="mr-empty-row"><td colspan="5"><span>No per-hotel overrides yet.</span> Use "+ Hotel" to pin a specific hotel's markup.</td></tr>`;
-    return;
-  }
-  // Country filter: match hotel rules whose city string contains country name,
-  // or whose name matches a demo hotel in the selected country.
-  const demoHotelsByName = Object.values(MR_DEMO_HOTELS);
-  const rows = MR_STATE.hotel.filter(r => {
-    if (!MR_COUNTRY_FILTER) return true;
-    // Try to find a demo hotel match to check its country
-    const demo = demoHotelsByName.find(h => h.name === r.target);
-    if (demo) return demo.country === MR_COUNTRY_FILTER;
-    // Fallback: city string heuristic (e.g. "Havana, Cuba")
-    const countryName = mrCountryById(MR_COUNTRY_FILTER)?.name || '';
-    return countryName && (r.city || '').includes(countryName);
+
+/* Build the full "Markup by country" section */
+function mrRenderCountryCards() {
+  const container = document.getElementById('mr-country-cards');
+  if (!container) return;
+
+  // Collect all configured country ids (from country rules, chain rules, category rules, hotel rules)
+  const configured = new Set();
+  MR_STATE.country.forEach(r => configured.add(r.target));
+  MR_STATE.chain.forEach(r => configured.add(r.country));
+  MR_STATE.category.forEach(r => configured.add(r.country));
+  MR_STATE.hotel.forEach(r => {
+    const demo = Object.values(MR_DEMO_HOTELS).find(h => h.name === r.target);
+    if (demo) configured.add(demo.country);
   });
 
-  if (rows.length === 0) {
-    const cName = mrCountryById(MR_COUNTRY_FILTER)?.name || 'selected country';
-    tbody.innerHTML = `<tr class="mr-empty-row"><td colspan="6"><span>No hotel overrides for ${cName}.</span> Use "+ Hotel" to add one, or change the country filter above.</td></tr>`;
+  if (configured.size === 0) {
+    container.innerHTML = `<div class="mr-empty-row" style="padding:24px 20px;background:#fff;border-radius:12px;border:1px dashed var(--warm-200)">
+      <span>No country rules yet.</span> Click <strong>+ Add country</strong> to get started.
+    </div>`;
     return;
   }
-  tbody.innerHTML = rows.map(r => {
-    return `<tr data-rule-id="${r.id}">
-      <td><strong>${r.target}</strong><span class="mr-hotel-city">${r.city || 'Per-hotel'}</span></td>
-      <td><span class="mr-coverage-badge">1 hotel (exact)</span></td>
-      <td class="${mrPctClass(r.pct)}" style="text-align:right">${r.pct}%</td>
-      <td style="text-align:right">${mrDeltaStr(r.pct)}</td>
-      <td>${r.updated} by ${r.by}</td>
-      <td class="mr-actions" style="text-align:right">
-        <button class="mr-icon-btn" title="Edit" onclick="mrEditRule('${r.id}','hotel')">✎</button>
-        <button class="mr-icon-btn mr-icon-danger" title="Delete" onclick="mrDeleteRule('${r.id}','hotel')">🗑</button>
-      </td>
-    </tr>`;
-  }).join('');
+
+  // Sort alphabetically by country name
+  const sorted = [...configured].sort((a, b) => {
+    const na = mrCountryById(a)?.name || a;
+    const nb = mrCountryById(b)?.name || b;
+    return na.localeCompare(nb);
+  });
+
+  container.innerHTML = sorted.map(countryId => mrBuildCountryCard(countryId)).join('');
 }
 
+function mrBuildCountryCard(countryId) {
+  const countryMeta = mrCountryById(countryId);
+  const countryName = countryMeta?.name || countryId;
+  const countryRule = MR_STATE.country.find(r => r.target === countryId);
+  const chainRules = MR_STATE.chain.filter(r => r.country === countryId);
+  const catRules = MR_STATE.category.filter(r => r.country === countryId);
+  const hotelRules = MR_STATE.hotel.filter(r => {
+    const demo = Object.values(MR_DEMO_HOTELS).find(h => h.name === r.target);
+    return demo && demo.country === countryId;
+  });
+  const subRuleCount = chainRules.length + catRules.length + hotelRules.length;
+
+  // Country rate row
+  const countryRateRow = countryRule
+    ? `<div class="mr-cc-rate-row">
+        <div class="mr-cc-rate-label"><i class="ti ti-world"></i> Country rate</div>
+        <div class="mr-cc-rate-val">
+          <span class="${mrPctClass(countryRule.pct)}">${countryRule.pct}%</span>
+          ${mrDeltaStr(countryRule.pct)}
+          <span class="mr-cc-meta">${countryRule.updated} by ${countryRule.by}</span>
+        </div>
+        <div class="mr-cc-rate-actions">
+          <button class="mr-icon-btn" title="Edit country rate" onclick="mrEditRule('${countryRule.id}','country')">✎</button>
+          <button class="mr-icon-btn mr-icon-danger" title="Delete" onclick="mrDeleteRule('${countryRule.id}','country')">🗑</button>
+        </div>
+      </div>`
+    : `<div class="mr-cc-rate-row mr-cc-rate-row--none">
+        <div class="mr-cc-rate-label"><i class="ti ti-world"></i> Country rate</div>
+        <span class="mr-cc-no-rate">No country rate — sub-rules will fall through to Default.</span>
+        <button class="mr-tier-add" style="margin-left:auto" onclick="mrOpenDrawer({type:'country',lockedCountry:'${countryId}'})"><i class="ti ti-plus"></i> Set rate</button>
+      </div>`;
+
+  // Category sub-rules table
+  const catRows = catRules.length === 0
+    ? `<tr class="mr-empty-row"><td colspan="5"><span>No category rules for ${countryName}.</span></td></tr>`
+    : catRules.map(r => {
+        const c = mrCategoryById(r.target);
+        if (!c) return '';
+        return `<tr data-rule-id="${r.id}">
+          <td><strong>${c.name}</strong><span class="mr-hotel-city">Category × ${countryName}</span></td>
+          <td><span class="mr-coverage-badge mr-coverage-badge-warn">${c.count} hotels graded</span></td>
+          <td class="${mrPctClass(r.pct)}" style="text-align:right">${r.pct}%</td>
+          <td style="text-align:right">${mrDeltaStr(r.pct)}</td>
+          <td>${r.updated} by ${r.by}</td>
+          <td class="mr-actions" style="text-align:right">
+            <button class="mr-icon-btn" title="Edit" onclick="mrEditRule('${r.id}','category')">✎</button>
+            <button class="mr-icon-btn mr-icon-danger" title="Delete" onclick="mrDeleteRule('${r.id}','category')">🗑</button>
+          </td>
+        </tr>`;
+      }).join('');
+
+  // Chain sub-rules table
+  const chainRows = chainRules.length === 0
+    ? `<tr class="mr-empty-row"><td colspan="5"><span>No chain rules for ${countryName}.</span></td></tr>`
+    : chainRules.map(r => {
+        const c = mrChainById(r.target);
+        if (!c) return '';
+        const cov = `<span class="mr-coverage-badge">${c.count} hotels linked${c.candidates ? `, ${c.candidates} pending` : ''}</span>`;
+        return `<tr data-rule-id="${r.id}">
+          <td><strong>${c.name}</strong><span class="mr-hotel-city">Chain × ${countryName}</span></td>
+          <td>${cov}</td>
+          <td class="${mrPctClass(r.pct)}" style="text-align:right">${r.pct}%</td>
+          <td style="text-align:right">${mrDeltaStr(r.pct)}</td>
+          <td>${r.updated} by ${r.by}</td>
+          <td class="mr-actions" style="text-align:right">
+            <button class="mr-icon-btn" title="Edit" onclick="mrEditRule('${r.id}','chain')">✎</button>
+            <button class="mr-icon-btn mr-icon-danger" title="Delete" onclick="mrDeleteRule('${r.id}','chain')">🗑</button>
+          </td>
+        </tr>`;
+      }).join('');
+
+  // Hotel override sub-rules table
+  const hotelRows = hotelRules.length === 0
+    ? `<tr class="mr-empty-row"><td colspan="5"><span>No per-hotel overrides for ${countryName}.</span></td></tr>`
+    : hotelRules.map(r => `<tr data-rule-id="${r.id}">
+        <td><strong>${r.target}</strong><span class="mr-hotel-city">${r.city || countryName}</span></td>
+        <td><span class="mr-coverage-badge">1 hotel (exact)</span></td>
+        <td class="${mrPctClass(r.pct)}" style="text-align:right">${r.pct}%</td>
+        <td style="text-align:right">${mrDeltaStr(r.pct)}</td>
+        <td>${r.updated} by ${r.by}</td>
+        <td class="mr-actions" style="text-align:right">
+          <button class="mr-icon-btn" title="Edit" onclick="mrEditRule('${r.id}','hotel')">✎</button>
+          <button class="mr-icon-btn mr-icon-danger" title="Delete" onclick="mrDeleteRule('${r.id}','hotel')">🗑</button>
+        </td>
+      </tr>`).join('');
+
+  const countryRateDisplay = countryRule ? `${countryRule.pct}%` : 'no rate';
+  const subLabel = subRuleCount > 0 ? `${subRuleCount} sub-rule${subRuleCount !== 1 ? 's' : ''}` : 'no sub-rules';
+
+  return `<details class="mr-tier-card mr-country-card" open>
+    <summary class="mr-tier-head mr-tier-summary">
+      <div style="flex:1;min-width:0">
+        <h3><i class="ti ti-world tier-icon"></i>${countryName}
+          <span class="mr-tier-badge mr-tier-country" style="margin-left:8px">${countryRateDisplay}</span>
+        </h3>
+        <p class="acct-help" style="margin-top:2px">${subLabel} · ${countryMeta?.count ?? '?'} hotels in catalog</p>
+      </div>
+      <div class="mr-cc-header-actions" onclick="event.stopPropagation()">
+        <button class="mr-tier-add" onclick="mrOpenDrawer({type:'category',lockedCountry:'${countryId}'})"><i class="ti ti-plus"></i> Category</button>
+        <button class="mr-tier-add" onclick="mrOpenDrawer({type:'chain',lockedCountry:'${countryId}'})"><i class="ti ti-plus"></i> Chain</button>
+        <button class="mr-tier-add" onclick="mrOpenDrawer({type:'hotel',lockedCountry:'${countryId}'})"><i class="ti ti-plus"></i> Hotel</button>
+      </div>
+    </summary>
+
+    <div class="mr-cc-body">
+      ${countryRateRow}
+
+      <div class="mr-cc-section">
+        <div class="mr-cc-section-head">
+          <span class="mr-tier-badge mr-tier-category"><i class="ti ti-star"></i> Category rules</span>
+          <span class="mr-cc-section-count">${catRules.length}</span>
+        </div>
+        <table class="mr-table"><tbody>${catRows}</tbody></table>
+      </div>
+
+      <div class="mr-cc-section">
+        <div class="mr-cc-section-head">
+          <span class="mr-tier-badge mr-tier-chain"><i class="ti ti-building-skyscraper"></i> Chain rules</span>
+          <span class="mr-cc-section-count">${chainRules.length}</span>
+        </div>
+        <table class="mr-table"><tbody>${chainRows}</tbody></table>
+      </div>
+
+      <div class="mr-cc-section">
+        <div class="mr-cc-section-head">
+          <span class="mr-tier-badge mr-tier-hotel"><i class="ti ti-bed"></i> Per-hotel overrides</span>
+          <span class="mr-cc-section-count">${hotelRules.length}</span>
+        </div>
+        <table class="mr-table"><tbody>${hotelRows}</tbody></table>
+      </div>
+    </div>
+  </details>`;
+}
+
+/* Legacy stubs — kept so any stray old onclick references don't crash */
+function mrRenderChain() { mrRenderCountryCards(); }
+function mrRenderCountry() { mrRenderCountryCards(); }
+function mrRenderCategory() { mrRenderCountryCards(); }
+function mrRenderHotel() { mrRenderCountryCards(); }
+function mrFilterRules() {} // no-op — per-hotel is now inside country cards
+
 /* ---------- Drawer state + handlers ---------- */
-let MR_DRAWER = { type: 'hotel', editId: null };
+/* lockedCountry: when opening from inside a country card, pre-fill and lock
+   the country field so the user just picks chain/category/hotel within it. */
+let MR_DRAWER = { type: 'hotel', editId: null, lockedCountry: null };
 
 function mrOpenDrawer(opts) {
   opts = opts || {};
   MR_DRAWER.type = opts.type || 'hotel';
   MR_DRAWER.editId = opts.editId || null;
+  MR_DRAWER.lockedCountry = opts.lockedCountry || null;
   const drawer = document.getElementById('mr-create-drawer');
   if (!drawer) return;
   drawer.classList.add('open');
@@ -549,12 +621,16 @@ function mrOpenDrawer(opts) {
     if (r) {
       document.getElementById('mr-pct-input').value = r.pct;
       if (MR_DRAWER.type === 'hotel') {
-        // Pre-select in the hotel picker
         const pickerSel = document.getElementById('mr-hotel-picker-selected');
         if (pickerSel) { pickerSel.value = r.target; mrHotelPickerRender(); }
       } else {
         const sel = document.getElementById('mr-target-select');
         if (sel) sel.value = r.target;
+        // For chain/category edits, restore the country select
+        if ((MR_DRAWER.type === 'chain' || MR_DRAWER.type === 'category') && r.country) {
+          const cSel = document.getElementById('mr-country-select');
+          if (cSel) cSel.value = r.country;
+        }
       }
       mrCoverageUpdate();
     }
@@ -577,25 +653,61 @@ function mrSetType(type) {
   const help = document.getElementById('mr-target-help');
   if (!sel || !lbl) return;
   const opts = {
-    chain: { label: 'Hotel chain', help: 'Markup applies to every hotel linked to this chain.', items: MR_CHAINS },
-    country: { label: 'Country', help: 'Markup applies to every hotel in this country.', items: MR_COUNTRIES },
-    category: { label: 'Star rating', help: 'Markup applies to every hotel with this star rating.', items: MR_CATEGORIES },
-    hotel: { label: 'Hotel', help: 'Markup applies only to this specific hotel.', items: null },
+    chain:    { label: 'Hotel chain',  help: 'Markup applies to every hotel in this chain within the selected country.', items: MR_CHAINS },
+    country:  { label: 'Country',      help: 'Markup applies to every hotel in this country.', items: MR_COUNTRIES },
+    category: { label: 'Star rating',  help: 'Markup applies to every hotel with this star rating in the selected country.', items: MR_CATEGORIES },
+    hotel:    { label: 'Hotel',        help: 'Markup applies only to this specific hotel.', items: null },
   }[type];
   lbl.textContent = opts.label;
   help.textContent = opts.help;
+
+  // Show/hide the country-scoping row for chain and category types
+  const countryRow = document.getElementById('mr-country-row');
+  const countrySelEl = document.getElementById('mr-country-select');
+  if (countryRow && countrySelEl) {
+    const needsCountry = (type === 'chain' || type === 'category');
+    countryRow.style.display = needsCountry ? '' : 'none';
+    if (needsCountry && MR_DRAWER.lockedCountry) {
+      countrySelEl.value = MR_DRAWER.lockedCountry;
+      countrySelEl.disabled = true;
+    } else if (needsCountry) {
+      countrySelEl.disabled = false;
+    }
+  }
+
+  // Show/hide hotel picker for country type — only country select shown
+  if (type === 'hotel') {
+    // Lock hotel picker country if coming from a country card
+    if (MR_DRAWER.lockedCountry) {
+      // Pre-set country in picker and lock it
+      const hpCountry = document.getElementById('mr-hp-country');
+      sel.style.display = 'none';
+      mrHotelPickerInit();
+      if (hpCountry) {
+        hpCountry.value = MR_DRAWER.lockedCountry;
+        hpCountry.disabled = true;
+        mrHotelPickerFilter();
+      }
+    } else {
+      sel.style.display = 'none';
+      // Ensure country picker is unlocked
+      const hpCountry = document.getElementById('mr-hp-country');
+      if (hpCountry) hpCountry.disabled = false;
+      mrHotelPickerInit();
+    }
+  } else {
+    const picker = document.getElementById('mr-hotel-picker');
+    if (picker) picker.style.display = 'none';
+    // Re-enable hotel picker country for next time
+    const hpCountry = document.getElementById('mr-hp-country');
+    if (hpCountry) hpCountry.disabled = false;
+  }
+
   if (opts.items) {
     sel.innerHTML = opts.items.map(o =>
       `<option value="${o.id}">${o.name}${o.count != null ? ` — ${o.count} hotels` : ''}</option>`
     ).join('');
-    sel.style.display = '';
-    // Hide hotel picker if visible
-    const picker = document.getElementById('mr-hotel-picker');
-    if (picker) picker.style.display = 'none';
-  } else {
-    // Hotel tier — replace the select with a cascading picker
-    sel.style.display = 'none';
-    mrHotelPickerInit();
+    sel.style.display = type === 'hotel' ? 'none' : '';
   }
   mrCoverageUpdate();
 }
@@ -604,10 +716,14 @@ function mrCoverageUpdate() {
   if (!cov) return;
   const sel = document.getElementById('mr-target-select');
   const val = sel?.value || '';
+  const countrySelEl = document.getElementById('mr-country-select');
+  const scopedCountryId = countrySelEl?.value || '';
+  const scopedCountryName = mrCountryById(scopedCountryId)?.name || scopedCountryId;
   let html = '';
   if (MR_DRAWER.type === 'chain') {
     const c = mrChainById(val); if (!c) return;
-    html = `<div class="mr-coverage-title"><i class="ti ti-chart-bar"></i> This rule will apply to ${c.count} hotels</div>
+    const scope = scopedCountryId ? ` in <strong>${scopedCountryName}</strong>` : ' (select a country)';
+    html = `<div class="mr-coverage-title"><i class="ti ti-chart-bar"></i> This rule will apply to ${c.count} ${c.name} hotels${scope}</div>
       <div class="mr-coverage-stats">${c.count} hotels linked to <strong>${c.name}</strong>${
         c.candidates ? ` · <span class="mr-coverage-warn">${c.candidates} likely-${c.name} hotels not yet linked — <a onclick="protoToast('Re-link request sent to Ergos staff', 'info')">request a re-link?</a></span>` : ' · all caught up.'}</div>`;
   } else if (MR_DRAWER.type === 'country') {
@@ -616,8 +732,9 @@ function mrCoverageUpdate() {
       <div class="mr-coverage-stats">${c.count} hotels in <strong>${c.name}</strong>. 100% coverage — every hotel has a country.</div>`;
   } else if (MR_DRAWER.type === 'category') {
     const c = mrCategoryById(val); if (!c) return;
-    html = `<div class="mr-coverage-title"><i class="ti ti-chart-bar"></i> This rule will apply to ${c.count} hotels</div>
-      <div class="mr-coverage-stats">${c.count} hotels graded as <strong>${c.name}</strong>. <span class="mr-coverage-warn">Hotels without a category fall through to a more general tier.</span></div>`;
+    const scope = scopedCountryId ? ` in <strong>${scopedCountryName}</strong>` : ' (select a country)';
+    html = `<div class="mr-coverage-title"><i class="ti ti-chart-bar"></i> This rule will apply to ${c.name} hotels${scope}</div>
+      <div class="mr-coverage-stats">${c.count} hotels graded as <strong>${c.name}</strong> total. <span class="mr-coverage-warn">Hotels without a star rating fall through to the country or default tier.</span></div>`;
   } else if (MR_DRAWER.type === 'hotel') {
     const pickerSel = document.getElementById('mr-hotel-picker-selected');
     const selName = pickerSel ? pickerSel.value : '';
@@ -634,10 +751,9 @@ function mrCoverageUpdate() {
   cov.innerHTML = html;
 }
 function mrSaveRule() {
-  const drawer = document.getElementById('mr-create-drawer');
   const pct = parseInt(document.getElementById('mr-pct-input')?.value || '0', 10);
   if (isNaN(pct) || pct < 0 || pct > 200) { protoToast('Markup must be a whole number 0–200', 'error'); return; }
-  let target, hotelCity;
+  let target, hotelCity, ruleCountry;
   if (MR_DRAWER.type === 'hotel') {
     const pickerSel = document.getElementById('mr-hotel-picker-selected');
     target = (pickerSel?.value || '').trim();
@@ -648,12 +764,21 @@ function mrSaveRule() {
     const sel = document.getElementById('mr-target-select');
     target = (sel?.value || '').trim();
     if (!target) { protoToast('Pick a target before saving', 'error'); return; }
+    // Chain and category require a country scope
+    if (MR_DRAWER.type === 'chain' || MR_DRAWER.type === 'category') {
+      const cSel = document.getElementById('mr-country-select');
+      ruleCountry = (cSel?.value || '').trim();
+      if (!ruleCountry) { protoToast('Select a country to scope this rule', 'error'); return; }
+    }
   }
   const today = new Date().toISOString().slice(0, 10);
   if (MR_DRAWER.editId) {
     const list = MR_STATE[MR_DRAWER.type];
     const r = list.find(x => x.id === MR_DRAWER.editId);
-    if (r) { r.pct = pct; r.target = target; r.updated = today; r.by = 'patria@'; }
+    if (r) {
+      r.pct = pct; r.target = target; r.updated = today; r.by = 'patria@';
+      if (ruleCountry) r.country = ruleCountry;
+    }
     protoToast('Rule updated · audited as ' + today, 'success');
   } else {
     const newRule = {
@@ -665,11 +790,13 @@ function mrSaveRule() {
       by: 'patria@',
     };
     if (MR_DRAWER.type === 'hotel') newRule.city = hotelCity || 'Per-hotel';
+    if (ruleCountry) newRule.country = ruleCountry;
     MR_STATE[MR_DRAWER.type].push(newRule);
     let displayTarget = target;
-    if (MR_DRAWER.type === 'chain') displayTarget = mrChainById(target)?.name || target;
+    const cName = ruleCountry ? ` in ${mrCountryById(ruleCountry)?.name || ruleCountry}` : '';
+    if (MR_DRAWER.type === 'chain') displayTarget = (mrChainById(target)?.name || target) + cName;
     else if (MR_DRAWER.type === 'country') displayTarget = mrCountryById(target)?.name || target;
-    else if (MR_DRAWER.type === 'category') displayTarget = mrCategoryById(target)?.name || target;
+    else if (MR_DRAWER.type === 'category') displayTarget = (mrCategoryById(target)?.name || target) + cName;
     protoToast(`Rule added: ${MR_DRAWER.type} — ${displayTarget} at ${pct}% · audited`, 'success');
   }
   mrRenderAll();
@@ -682,9 +809,15 @@ function mrDeleteRule(id, type) {
   const r = MR_STATE[type].find(x => x.id === id);
   if (!r) return;
   let displayTarget = r.target;
-  if (type === 'chain') displayTarget = mrChainById(r.target)?.name || r.target;
-  else if (type === 'country') displayTarget = mrCountryById(r.target)?.name || r.target;
-  else if (type === 'category') displayTarget = mrCategoryById(r.target)?.name || r.target;
+  if (type === 'chain') {
+    const cName = mrCountryById(r.country)?.name || r.country || '';
+    displayTarget = (mrChainById(r.target)?.name || r.target) + (cName ? ` in ${cName}` : '');
+  } else if (type === 'country') {
+    displayTarget = mrCountryById(r.target)?.name || r.target;
+  } else if (type === 'category') {
+    const cName = mrCountryById(r.country)?.name || r.country || '';
+    displayTarget = (mrCategoryById(r.target)?.name || r.target) + (cName ? ` in ${cName}` : '');
+  }
   if (!confirm(`Delete the ${type} rule for "${displayTarget}"? This action is audited.`)) return;
   MR_STATE[type] = MR_STATE[type].filter(x => x.id !== id);
   mrRenderAll();
