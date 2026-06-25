@@ -379,7 +379,7 @@ function mrHotelPickerRender() {
     if (stars && h.stars !== stars) return false;
     if (name && !h.name.toLowerCase().includes(name)) return false;
     return true;
-  });
+  }).sort((a, b) => a.name.localeCompare(b.name)); // alphabetical — mirrors the app's name-asc sort
 
   const resultsEl = document.getElementById('mr-hp-results');
   if (!resultsEl) return;
