@@ -137,7 +137,7 @@ function mrResolveForHotel(hotelKey) {
   walk.push({ tier: 'chain', matched: !!ch, pct: ch?.pct, label: ch ? `Chain rule · ${mrChainById(ch.target)?.name}` : (h.chainId ? `No chain rule for ${mrChainById(h.chainId)?.name || h.chainId}` : 'No chain affiliation') });
   if (ch) return { tier: 'chain', pct: ch.pct, label: `Chain rule · ${mrChainById(ch.target)?.name}`, walk };
 
-  // Tier 3 — category (star rating / property type)
+  // Tier 3 — category (star rating)
   const ct = MR_STATE.category.find(r => h.categories.includes(r.target));
   walk.push({ tier: 'category', matched: !!ct, pct: ct?.pct, label: ct ? `Category rule · ${mrCategoryById(ct.target)?.name}` : `No category rule (hotel in: ${h.categories.map(c => mrCategoryById(c)?.name || c).join(', ')})` });
   if (ct) return { tier: 'category', pct: ct.pct, label: `Category rule · ${mrCategoryById(ct.target)?.name}`, walk };
@@ -316,7 +316,7 @@ function mrRenderCategory() {
     const c = mrCategoryById(r.target);
     if (!c) return '';
     return `<tr data-rule-id="${r.id}">
-      <td><strong>${c.name}</strong><span class="mr-hotel-city">Tier 3 — property type</span></td>
+      <td><strong>${c.name}</strong><span class="mr-hotel-city">Tier 3 — star rating</span></td>
       <td><span class="mr-coverage-badge mr-coverage-badge-warn">${c.count} hotels graded · others fall through</span></td>
       <td class="${mrPctClass(r.pct)}" style="text-align:right">${r.pct}%</td>
       <td style="text-align:right">${mrDeltaStr(r.pct)}</td>
