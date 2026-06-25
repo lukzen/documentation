@@ -69,19 +69,20 @@ const MR_COUNTRIES = [
   { id: 'jm', name: 'Jamaica', count: 48 },
   { id: 'us', name: 'United States', count: 312 },
 ];
+// v1: "Category" = hotel STAR RATING — the classification the GDS catalog reliably
+// carries. A fixed list, not fetched. Richer style tags (all-inclusive, family,
+// boutique) are a deferred follow-up needing a hotel category/tags field + backfill.
 const MR_CATEGORIES = [
-  { id: '5star', name: '5-star', count: 340 },
-  { id: '5star-ai', name: '5-star · All-Inclusive', count: 185 },
-  { id: '4star-ai', name: '4-star · All-Inclusive', count: 280 },
-  { id: 'boutique', name: 'Boutique (< 50 rooms)', count: 180 },
-  { id: 'family', name: 'Family-friendly', count: 412 },
+  { id: '5', name: '5 stars', count: 525 },
+  { id: '4', name: '4 stars', count: 690 },
+  { id: '3', name: '3 stars', count: 410 },
 ];
 const MR_DEMO_HOTELS = {
-  'iberostar-grand-packard': { name: 'Iberostar Grand Packard', country: 'cu', chainId: 'iberostar', categories: ['5star', '5star-ai'] },
-  'melia-las-antillas':      { name: 'Meliá Las Antillas',      country: 'cu', chainId: 'melia',     categories: ['4star-ai', 'family'] },
-  'hyatt-ziva-cap-cana':     { name: 'Hyatt Ziva Cap Cana',     country: 'do', chainId: 'hyatt',     categories: ['5star', '5star-ai', 'family'] },
-  'catalonia-royal-bavaro':  { name: 'Catalonia Royal Bávaro',  country: 'do', chainId: null,        categories: ['4star-ai'] },
-  'paradores-leon':          { name: 'Parador de León',          country: 'es', chainId: null,        categories: ['boutique'] },
+  'iberostar-grand-packard': { name: 'Iberostar Grand Packard', country: 'cu', chainId: 'iberostar', categories: ['5'] },
+  'melia-las-antillas':      { name: 'Meliá Las Antillas',      country: 'cu', chainId: 'melia',     categories: ['4'] },
+  'hyatt-ziva-cap-cana':     { name: 'Hyatt Ziva Cap Cana',     country: 'do', chainId: 'hyatt',     categories: ['5'] },
+  'catalonia-royal-bavaro':  { name: 'Catalonia Royal Bávaro',  country: 'do', chainId: null,        categories: ['4'] },
+  'paradores-leon':          { name: 'Parador de León',          country: 'es', chainId: null,        categories: ['3'] },
 };
 
 /* ---------- Mutable rules state ---------- */
@@ -95,7 +96,7 @@ const MR_STATE = {
     { id: 'r-co1', tier: 'country', target: 'cu', pct: 12, updated: '2026-05-25', by: 'patria@' },
   ],
   category: [
-    { id: 'r-ct1', tier: 'category', target: '5star-ai', pct: 25, updated: '2026-05-24', by: 'carlos@' },
+    { id: 'r-ct1', tier: 'category', target: '5', pct: 25, updated: '2026-05-24', by: 'carlos@' },
   ],
   hotel: [
     { id: 'r-h1', tier: 'hotel', target: 'Iberostar Grand Packard', pct: 22, city: 'Havana, Cuba', updated: '2026-05-28', by: 'patria@' },
@@ -220,7 +221,7 @@ const MR_TIER_ICONS = {
 const MR_TIER_LABELS = {
   hotel:    'Tier 1 — per hotel',
   chain:    'Tier 2 — brand/chain',
-  category: 'Tier 3 — property type',
+  category: 'Tier 3 — star rating',
   country:  'Tier 4 — geographic',
   default:  'Tier 5 — catch-all',
 };
@@ -308,7 +309,7 @@ function mrRenderCategory() {
   const tbody = document.querySelector('#mr-table-category tbody');
   if (!tbody) return;
   if (MR_STATE.category.length === 0) {
-    tbody.innerHTML = `<tr class="mr-empty-row"><td colspan="5"><span>No category rules yet.</span> Use "+ Category" to markup by property type (e.g. 5★ All-Inclusive +25%).</td></tr>`;
+    tbody.innerHTML = `<tr class="mr-empty-row"><td colspan="5"><span>No category rules yet.</span> Use "+ Category" to markup by star rating (e.g. 5★ +25%).</td></tr>`;
     return;
   }
   tbody.innerHTML = MR_STATE.category.map(r => {
@@ -412,7 +413,7 @@ function mrSetType(type) {
   const opts = {
     chain: { label: 'Hotel chain', help: 'Markup applies to every hotel linked to this chain.', items: MR_CHAINS },
     country: { label: 'Country', help: 'Markup applies to every hotel in this country.', items: MR_COUNTRIES },
-    category: { label: 'Property category', help: 'Markup applies to every hotel that matches this category.', items: MR_CATEGORIES },
+    category: { label: 'Star rating', help: 'Markup applies to every hotel with this star rating.', items: MR_CATEGORIES },
     hotel: { label: 'Hotel', help: 'Markup applies only to this specific hotel.', items: null },
   }[type];
   lbl.textContent = opts.label;
