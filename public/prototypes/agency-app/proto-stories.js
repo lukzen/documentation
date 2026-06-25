@@ -395,7 +395,12 @@ function mrHotelPickerRender() {
     const countryName = mrCountryById(h.country)?.name || h.country;
     const chain = h.chainId ? mrChainById(h.chainId)?.name : null;
     const stars = '★'.repeat(parseInt(h.stars, 10));
-    return `<button class="mr-hp-row${isSelected ? ' mr-hp-row--selected' : ''}" onclick="mrHotelPickerSelect(${JSON.stringify(h.name)})">
+    // JSON.stringify handles JS-string escaping; &quot; keeps the inner double
+    // quotes from closing the double-quoted onclick attribute (the browser
+    // decodes &quot; back to " when the handler runs). Plain JSON.stringify here
+    // truncated the attribute to `mrHotelPickerSelect(`, so clicks did nothing.
+    const arg = JSON.stringify(h.name).replace(/"/g, '&quot;');
+    return `<button class="mr-hp-row${isSelected ? ' mr-hp-row--selected' : ''}" onclick="mrHotelPickerSelect(${arg})">
       <span class="mr-hp-name">${h.name}</span>
       <span class="mr-hp-meta">${h.city}, ${countryName} · <span class="mr-hp-stars">${stars}</span>${chain ? ` · ${chain}` : ''}</span>
       ${isSelected ? `<span class="mr-hp-check"><i class="ti ti-check"></i></span>` : ''}
@@ -679,14 +684,17 @@ function mrSetType(type) {
   if (type === 'hotel') {
     // Lock hotel picker country if coming from a country card
     if (MR_DRAWER.lockedCountry) {
-      // Pre-set country in picker and lock it
-      const hpCountry = document.getElementById('mr-hp-country');
+      // Pre-set + lock the picker's country. Re-query mr-hp-country AFTER
+      // mrHotelPickerInit() — init rebuilds the picker HTML, so a reference taken
+      // before it pointed at the old (detached) <select> and the lock never
+      // applied. Dispatch 'change' so the city options populate + the list filters.
       sel.style.display = 'none';
       mrHotelPickerInit();
+      const hpCountry = document.getElementById('mr-hp-country');
       if (hpCountry) {
         hpCountry.value = MR_DRAWER.lockedCountry;
+        hpCountry.dispatchEvent(new Event('change', { bubbles: true }));
         hpCountry.disabled = true;
-        mrHotelPickerFilter();
       }
     } else {
       sel.style.display = 'none';
