@@ -39,7 +39,10 @@ function protoToast(msg, type) {
 
 /* ============================================================
    A1: Markup Rules — 4-tier cascade refactor
-   Tiers (most specific → least): hotel · category · country · chain · default
+   Tiers (most specific → least): hotel · chain · category · country · default
+   NOTE: Chain beats Category because a negotiated brand deal is more specific
+   than a generic star-rating bracket. Swapping Chain↔Category is the one
+   open policy choice if the team decides differently.
    Demo data lives in JS; rule edits mutate JS state and re-render
    tables + cascade preview. Coverage badges read from the catalog
    stats below.
@@ -113,27 +116,42 @@ function mrDeltaStr(pct) {
   return `<span class="${cls}">${d >= 0 ? '+' : ''}${d} pts</span>`;
 }
 
-/* ---------- Cascade resolver (most-specific wins) ---------- */
+/* ---------- Cascade resolver (most-specific wins) ----------
+   Order: Hotel > Chain > Category > Country > Default
+   "Chain beats Category" rationale: a negotiated brand deal is an explicit
+   commercial agreement and should win over a generic star-rating bracket.
+   Swapping Chain↔Category is the one open policy choice. */
 function mrResolveForHotel(hotelKey) {
   const h = MR_DEMO_HOTELS[hotelKey];
-  if (!h) return { tier: 'default', pct: MR_DEFAULT, label: 'Default markup' };
+  if (!h) return { tier: 'default', pct: MR_DEFAULT, label: 'Default markup', walk: [] };
+  const walk = [];
+
   // Tier 1 — hotel override (exact name match)
   const ho = MR_STATE.hotel.find(r => r.target === h.name);
-  if (ho) return { tier: 'hotel', pct: ho.pct, label: `Per-hotel override on ${h.name}` };
-  // Tier 2 — category (any of the hotel's categories)
-  const ct = MR_STATE.category.find(r => h.categories.includes(r.target));
-  if (ct) return { tier: 'category', pct: ct.pct, label: `Category rule · ${mrCategoryById(ct.target)?.name}` };
-  // Tier 3 — country
-  const co = MR_STATE.country.find(r => r.target === h.country);
-  if (co) return { tier: 'country', pct: co.pct, label: `Country rule · ${mrCountryById(co.target)?.name}` };
-  // Tier 4 — chain
+  walk.push({ tier: 'hotel', matched: !!ho, pct: ho?.pct, label: ho ? `Per-hotel override · ${h.name}` : `No per-hotel override for ${h.name}` });
+  if (ho) return { tier: 'hotel', pct: ho.pct, label: `Per-hotel override · ${h.name}`, walk };
+
+  // Tier 2 — chain (negotiated brand deal beats star-category)
   const ch = MR_STATE.chain.find(r => r.target === h.chainId);
-  if (ch) return { tier: 'chain', pct: ch.pct, label: `Chain rule · ${mrChainById(ch.target)?.name}` };
+  walk.push({ tier: 'chain', matched: !!ch, pct: ch?.pct, label: ch ? `Chain rule · ${mrChainById(ch.target)?.name}` : (h.chainId ? `No chain rule for ${mrChainById(h.chainId)?.name || h.chainId}` : 'No chain affiliation') });
+  if (ch) return { tier: 'chain', pct: ch.pct, label: `Chain rule · ${mrChainById(ch.target)?.name}`, walk };
+
+  // Tier 3 — category (star rating / property type)
+  const ct = MR_STATE.category.find(r => h.categories.includes(r.target));
+  walk.push({ tier: 'category', matched: !!ct, pct: ct?.pct, label: ct ? `Category rule · ${mrCategoryById(ct.target)?.name}` : `No category rule (hotel in: ${h.categories.map(c => mrCategoryById(c)?.name || c).join(', ')})` });
+  if (ct) return { tier: 'category', pct: ct.pct, label: `Category rule · ${mrCategoryById(ct.target)?.name}`, walk };
+
+  // Tier 4 — country
+  const co = MR_STATE.country.find(r => r.target === h.country);
+  walk.push({ tier: 'country', matched: !!co, pct: co?.pct, label: co ? `Country rule · ${mrCountryById(co.target)?.name}` : `No country rule for ${mrCountryById(h.country)?.name || h.country}` });
+  if (co) return { tier: 'country', pct: co.pct, label: `Country rule · ${mrCountryById(co.target)?.name}`, walk };
+
   // Tier 5 — default
-  return { tier: 'default', pct: MR_DEFAULT, label: 'Default markup (no rule matched)' };
+  walk.push({ tier: 'default', matched: true, pct: MR_DEFAULT, label: 'Default markup (catch-all)' });
+  return { tier: 'default', pct: MR_DEFAULT, label: 'Default markup (no rule matched)', walk };
 }
 
-/* ---------- Cascade preview widget ---------- */
+/* ---------- Cascade preview widget (hero) ---------- */
 function mrPreviewUpdate() {
   const sel = document.getElementById('mr-preview-hotel');
   const out = document.getElementById('mr-preview-cascade');
@@ -142,44 +160,91 @@ function mrPreviewUpdate() {
   const r = mrResolveForHotel(key);
   const supplierNet = 200;
   const customerPay = (supplierNet * (1 + r.pct / 100)).toFixed(2);
-  const tierColors = { hotel: 'mr-tier-hotel', category: 'mr-tier-category', country: 'mr-tier-country', chain: 'mr-tier-chain', default: 'mr-tier-default' };
+  const tierColorMap = { hotel: 'mr-tier-hotel', chain: 'mr-tier-chain', category: 'mr-tier-category', country: 'mr-tier-country', default: 'mr-tier-default' };
+
+  // Build cascade walk rows
+  const walkRows = (r.walk || []).map(step => {
+    const isWinner = step.matched;
+    const icon = isWinner
+      ? `<span class="mr-walk-icon mr-walk-icon--hit"><i class="ti ti-check"></i></span>`
+      : `<span class="mr-walk-icon mr-walk-icon--miss"><i class="ti ti-x"></i></span>`;
+    const badge = `<span class="mr-tier-badge ${tierColorMap[step.tier]}" style="margin-left:0"><i class="ti ${MR_TIER_ICONS[step.tier]}"></i> ${MR_TIER_LABELS[step.tier]}</span>`;
+    const pctCol = isWinner ? `<strong class="mr-walk-pct">${step.pct}%</strong>` : `<span class="mr-walk-pct--miss">—</span>`;
+    return `<tr class="mr-walk-row${isWinner ? ' mr-walk-row--winner' : ''}">
+      <td>${icon}</td>
+      <td>${badge}</td>
+      <td class="mr-walk-label">${step.label}</td>
+      <td>${pctCol}</td>
+    </tr>`;
+  }).join('');
+
   out.innerHTML = `
-    <div class="mr-preview-step">
-      <span class="mr-preview-step-label">Ergos supplier net</span>
-      <span class="mr-preview-step-val">$${supplierNet.toFixed(2)}</span>
-      <span class="mr-preview-step-source">demo: $200 reference</span>
+    <div class="mr-preview-price-row">
+      <div class="mr-preview-step">
+        <span class="mr-preview-step-label">Ergos supplier net</span>
+        <span class="mr-preview-step-val">$${supplierNet.toFixed(2)}</span>
+        <span class="mr-preview-step-source">$200 demo reference</span>
+      </div>
+      <div class="mr-preview-arrow"><i class="ti ti-arrow-right"></i></div>
+      <div class="mr-preview-step">
+        <span class="mr-preview-step-label">Markup applied</span>
+        <span class="mr-preview-step-val">+${r.pct}%</span>
+        <span class="mr-preview-step-source">${r.label}</span>
+      </div>
+      <div class="mr-preview-arrow"><i class="ti ti-arrow-right"></i></div>
+      <div class="mr-preview-step mr-preview-step--total">
+        <span class="mr-preview-step-label">Customer pays</span>
+        <span class="mr-preview-step-val">$${customerPay}</span>
+        <span class="mr-preview-step-source">your retail price</span>
+      </div>
     </div>
-    <div class="mr-preview-step">
-      <span class="mr-preview-step-label">Markup applied</span>
-      <span class="mr-preview-step-val">+${r.pct}%</span>
-      <span class="mr-preview-step-source">${r.label}</span>
-    </div>
-    <div class="mr-preview-step">
-      <span class="mr-preview-step-label">Customer pays</span>
-      <span class="mr-preview-step-val">$${customerPay}</span>
-      <span class="mr-preview-step-source">your retail price</span>
-    </div>
+    <div class="mr-preview-walk-label">Resolution walk — rules checked in order</div>
+    <table class="mr-walk-table">
+      <tbody>${walkRows}</tbody>
+    </table>
     <div class="mr-preview-applied">
-      <span class="mr-tier-badge ${tierColors[r.tier]}"><i class="ti ${MR_TIER_ICONS[r.tier]}"></i> ${MR_TIER_LABELS[r.tier]}</span>
-      <span>Applied because <strong>${r.label}</strong>. Add or edit a more-specific rule above to override.</span>
+      <span class="mr-tier-badge ${tierColorMap[r.tier]}"><i class="ti ${MR_TIER_ICONS[r.tier]}"></i> ${MR_TIER_LABELS[r.tier]}</span>
+      <span>Rule applied: <strong>${r.label}</strong>. Add a more-specific rule in the sections below to override.</span>
     </div>`;
 }
 
-/* Shared icon + label map — keeps tier styling consistent everywhere */
+/* Shared icon + label map — keeps tier styling consistent everywhere.
+   Order: Hotel(1) > Chain(2) > Category(3) > Country(4) > Default(5) */
 const MR_TIER_ICONS = {
   hotel:    'ti-bed',
+  chain:    'ti-building-skyscraper',
   category: 'ti-star',
   country:  'ti-world',
-  chain:    'ti-building-skyscraper',
   default:  'ti-asterisk',
 };
 const MR_TIER_LABELS = {
-  hotel:    'Tier 1 — most specific',
-  category: 'Tier 2 — property type',
-  country:  'Tier 3 — geographic',
-  chain:    'Tier 4 — brand',
+  hotel:    'Tier 1 — per hotel',
+  chain:    'Tier 2 — brand/chain',
+  category: 'Tier 3 — property type',
+  country:  'Tier 4 — geographic',
   default:  'Tier 5 — catch-all',
 };
+
+/* ---------- Country filter ---------- */
+let MR_COUNTRY_FILTER = '';  // '' = all countries
+
+function mrCountryFilterChange(val) {
+  MR_COUNTRY_FILTER = val;
+  // Re-populate hotel picker in preview hero
+  const sel = document.getElementById('mr-preview-hotel');
+  if (sel) {
+    const opts = Object.entries(MR_DEMO_HOTELS)
+      .filter(([, h]) => !MR_COUNTRY_FILTER || h.country === MR_COUNTRY_FILTER)
+      .map(([key, h]) => {
+        const countryName = mrCountryById(h.country)?.name || h.country;
+        return `<option value="${key}"${sel.value === key ? ' selected' : ''}>${h.name} · ${countryName}</option>`;
+      }).join('');
+    sel.innerHTML = opts || `<option value="">No hotels in this country</option>`;
+    mrPreviewUpdate();
+  }
+  // Re-render hotel table so country filter applies there too
+  mrRenderHotel();
+}
 
 /* ---------- Table renderers ---------- */
 function mrRenderAll() {
@@ -204,7 +269,7 @@ function mrRenderChain() {
     if (!c) return '';
     const cov = `<span class="mr-coverage-badge">${c.count} hotels linked${c.candidates ? `, ${c.candidates} pending link` : ''}</span>`;
     return `<tr data-rule-id="${r.id}">
-      <td><strong>${c.name}</strong><span class="mr-hotel-city">Tier 4 — brand</span></td>
+      <td><strong>${c.name}</strong><span class="mr-hotel-city">Tier 2 — brand/chain · applies in every country</span></td>
       <td>${cov}</td>
       <td class="${mrPctClass(r.pct)}" style="text-align:right">${r.pct}%</td>
       <td style="text-align:right">${mrDeltaStr(r.pct)}</td>
@@ -227,7 +292,7 @@ function mrRenderCountry() {
     const c = mrCountryById(r.target);
     if (!c) return '';
     return `<tr data-rule-id="${r.id}">
-      <td><strong>${c.name}</strong><span class="mr-hotel-city">Tier 3 — geographic</span></td>
+      <td><strong>${c.name}</strong><span class="mr-hotel-city">Tier 4 — geographic</span></td>
       <td><span class="mr-coverage-badge">${c.count} hotels in country</span></td>
       <td class="${mrPctClass(r.pct)}" style="text-align:right">${r.pct}%</td>
       <td style="text-align:right">${mrDeltaStr(r.pct)}</td>
@@ -250,7 +315,7 @@ function mrRenderCategory() {
     const c = mrCategoryById(r.target);
     if (!c) return '';
     return `<tr data-rule-id="${r.id}">
-      <td><strong>${c.name}</strong><span class="mr-hotel-city">Tier 2 — property type</span></td>
+      <td><strong>${c.name}</strong><span class="mr-hotel-city">Tier 3 — property type</span></td>
       <td><span class="mr-coverage-badge mr-coverage-badge-warn">${c.count} hotels graded · others fall through</span></td>
       <td class="${mrPctClass(r.pct)}" style="text-align:right">${r.pct}%</td>
       <td style="text-align:right">${mrDeltaStr(r.pct)}</td>
@@ -269,7 +334,25 @@ function mrRenderHotel() {
     tbody.innerHTML = `<tr class="mr-empty-row"><td colspan="5"><span>No per-hotel overrides yet.</span> Use "+ Hotel" to pin a specific hotel's markup.</td></tr>`;
     return;
   }
-  tbody.innerHTML = MR_STATE.hotel.map(r => {
+  // Country filter: match hotel rules whose city string contains country name,
+  // or whose name matches a demo hotel in the selected country.
+  const demoHotelsByName = Object.values(MR_DEMO_HOTELS);
+  const rows = MR_STATE.hotel.filter(r => {
+    if (!MR_COUNTRY_FILTER) return true;
+    // Try to find a demo hotel match to check its country
+    const demo = demoHotelsByName.find(h => h.name === r.target);
+    if (demo) return demo.country === MR_COUNTRY_FILTER;
+    // Fallback: city string heuristic (e.g. "Havana, Cuba")
+    const countryName = mrCountryById(MR_COUNTRY_FILTER)?.name || '';
+    return countryName && (r.city || '').includes(countryName);
+  });
+
+  if (rows.length === 0) {
+    const cName = mrCountryById(MR_COUNTRY_FILTER)?.name || 'selected country';
+    tbody.innerHTML = `<tr class="mr-empty-row"><td colspan="6"><span>No hotel overrides for ${cName}.</span> Use "+ Hotel" to add one, or change the country filter above.</td></tr>`;
+    return;
+  }
+  tbody.innerHTML = rows.map(r => {
     return `<tr data-rule-id="${r.id}">
       <td><strong>${r.target}</strong><span class="mr-hotel-city">${r.city || 'Per-hotel'}</span></td>
       <td><span class="mr-coverage-badge">1 hotel (exact)</span></td>
