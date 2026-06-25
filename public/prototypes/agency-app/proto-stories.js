@@ -66,6 +66,7 @@ const MR_COUNTRIES = [
   { id: 'do', name: 'Dominican Republic', count: 95 },
   { id: 'mx', name: 'Mexico', count: 220 },
   { id: 'es', name: 'Spain', count: 520 },
+  { id: 'co', name: 'Colombia', count: 64 },
   { id: 'jm', name: 'Jamaica', count: 48 },
   { id: 'us', name: 'United States', count: 312 },
 ];
@@ -78,11 +79,36 @@ const MR_CATEGORIES = [
   { id: '3', name: '3 stars', count: 410 },
 ];
 const MR_DEMO_HOTELS = {
-  'iberostar-grand-packard': { name: 'Iberostar Grand Packard', country: 'cu', chainId: 'iberostar', categories: ['5'] },
-  'melia-las-antillas':      { name: 'Meliá Las Antillas',      country: 'cu', chainId: 'melia',     categories: ['4'] },
-  'hyatt-ziva-cap-cana':     { name: 'Hyatt Ziva Cap Cana',     country: 'do', chainId: 'hyatt',     categories: ['5'] },
-  'catalonia-royal-bavaro':  { name: 'Catalonia Royal Bávaro',  country: 'do', chainId: null,        categories: ['4'] },
-  'paradores-leon':          { name: 'Parador de León',          country: 'es', chainId: null,        categories: ['3'] },
+  // Cuba
+  'iberostar-grand-packard':    { name: 'Iberostar Grand Packard',        country: 'cu', city: 'Havana',      stars: '5', chainId: 'iberostar', categories: ['5'] },
+  'melia-las-antillas':         { name: 'Meliá Las Antillas',             country: 'cu', city: 'Varadero',    stars: '4', chainId: 'melia',     categories: ['4'] },
+  'memories-varadero':          { name: 'Memories Varadero',              country: 'cu', city: 'Varadero',    stars: '4', chainId: null,         categories: ['4'] },
+  'iberostar-bella-vista':      { name: 'Iberostar Bella Vista Varadero', country: 'cu', city: 'Varadero',    stars: '4', chainId: 'iberostar',  categories: ['4'] },
+  'melia-internacional':        { name: 'Meliá Internacional Varadero',   country: 'cu', city: 'Varadero',    stars: '5', chainId: 'melia',      categories: ['5'] },
+  'havana-libre':               { name: 'Gran Hotel Manzana Kempinski',   country: 'cu', city: 'Havana',      stars: '5', chainId: null,         categories: ['5'] },
+  // Dominican Republic
+  'hyatt-ziva-cap-cana':        { name: 'Hyatt Ziva Cap Cana',            country: 'do', city: 'Punta Cana',  stars: '5', chainId: 'hyatt',     categories: ['5'] },
+  'catalonia-royal-bavaro':     { name: 'Catalonia Royal Bávaro',         country: 'do', city: 'Bávaro',      stars: '4', chainId: null,         categories: ['4'] },
+  'iberostar-selection-bavaro': { name: 'Iberostar Selection Bávaro',     country: 'do', city: 'Bávaro',      stars: '5', chainId: 'iberostar',  categories: ['5'] },
+  'riu-palace-bavaro':          { name: 'Riu Palace Bávaro',              country: 'do', city: 'Bávaro',      stars: '5', chainId: 'riu',        categories: ['5'] },
+  'marriott-punta-cana':        { name: 'Courtyard Marriott Punta Cana',  country: 'do', city: 'Punta Cana',  stars: '3', chainId: 'marriott',   categories: ['3'] },
+  // Spain — multiple cities so the cascade visibly narrows
+  'hotel-arts-barcelona':       { name: 'Hotel Arts Barcelona',           country: 'es', city: 'Barcelona',   stars: '5', chainId: 'marriott',   categories: ['5'] },
+  'w-barcelona':                { name: 'W Barcelona',                    country: 'es', city: 'Barcelona',   stars: '5', chainId: null,         categories: ['5'] },
+  'melia-barcelona-sky':        { name: 'Meliá Barcelona Sky',            country: 'es', city: 'Barcelona',   stars: '4', chainId: 'melia',      categories: ['4'] },
+  'iberostar-las-letras':       { name: 'Iberostar las Letras Madrid',    country: 'es', city: 'Madrid',      stars: '4', chainId: 'iberostar',  categories: ['4'] },
+  'hotel-ritz-madrid':          { name: 'Mandarin Oriental Ritz Madrid',  country: 'es', city: 'Madrid',      stars: '5', chainId: null,         categories: ['5'] },
+  'paradores-leon':             { name: 'Parador de León',                country: 'es', city: 'Seville',     stars: '3', chainId: null,         categories: ['3'] },
+  'hotel-alfonso-xiii':         { name: 'Hotel Alfonso XIII Seville',     country: 'es', city: 'Seville',     stars: '5', chainId: 'marriott',   categories: ['5'] },
+  // Mexico
+  'iberostar-cancun':           { name: 'Iberostar Cancún',               country: 'mx', city: 'Cancún',      stars: '5', chainId: 'iberostar',  categories: ['5'] },
+  'riu-palace-peninsula':       { name: 'Riu Palace Peninsula Cancún',    country: 'mx', city: 'Cancún',      stars: '5', chainId: 'riu',        categories: ['5'] },
+  'hyatt-ziva-riviera':         { name: 'Hyatt Ziva Riviera Cancún',      country: 'mx', city: 'Riviera Maya', stars: '5', chainId: 'hyatt',    categories: ['5'] },
+  'grand-palladium-maya':       { name: 'Grand Palladium Maya Resort',    country: 'mx', city: 'Riviera Maya', stars: '4', chainId: null,        categories: ['4'] },
+  // Colombia
+  'iberostar-cartagena':        { name: 'Iberostar Hotel Cartagena',      country: 'co', city: 'Cartagena',   stars: '5', chainId: 'iberostar',  categories: ['5'] },
+  'marriott-cartagena':         { name: 'Marriott Cartagena',             country: 'co', city: 'Cartagena',   stars: '4', chainId: 'marriott',   categories: ['4'] },
+  'hyatt-cali':                 { name: 'Hyatt Regency Cali',             country: 'co', city: 'Cali',        stars: '5', chainId: 'hyatt',      categories: ['5'] },
 };
 
 /* ---------- Mutable rules state ---------- */
@@ -225,6 +251,140 @@ const MR_TIER_LABELS = {
   country:  'Tier 4 — geographic',
   default:  'Tier 5 — catch-all',
 };
+
+/* ---------- Hotel cascading picker ----------
+   Injected into the drawer when tier = hotel.
+   DOM structure (created once, reused across open/close cycles):
+     #mr-hotel-picker
+       .mr-hp-filters          — Country | City | Stars | Name search
+       .mr-hp-results          — scrollable list of matched hotels
+       #mr-hotel-picker-selected  — hidden input, value = selected hotel name
+*/
+
+function mrHotelPickerInit() {
+  const fieldEl = document.getElementById('mr-target-label')?.closest('.acct-field');
+  if (!fieldEl) return;
+
+  // Reuse existing picker if already created; just show it and reset.
+  let picker = document.getElementById('mr-hotel-picker');
+  if (!picker) {
+    picker = document.createElement('div');
+    picker.id = 'mr-hotel-picker';
+    picker.innerHTML = `
+      <p class="mr-hp-hint"><i class="ti ti-info-circle"></i> Per-hotel rules are the exception — most hotels are priced by the broader tiers above. Use this to pin a specific property.</p>
+      <div class="mr-hp-filters">
+        <div class="mr-hp-filter-row">
+          <div class="mr-hp-filter-cell">
+            <label class="mr-hp-filter-label">Country</label>
+            <select id="mr-hp-country" onchange="mrHotelPickerFilter()">
+              <option value="">All countries</option>
+              ${MR_COUNTRIES.map(c => `<option value="${c.id}">${c.name}</option>`).join('')}
+            </select>
+          </div>
+          <div class="mr-hp-filter-cell">
+            <label class="mr-hp-filter-label">City</label>
+            <select id="mr-hp-city" onchange="mrHotelPickerFilter()" disabled>
+              <option value="">All cities</option>
+            </select>
+          </div>
+          <div class="mr-hp-filter-cell">
+            <label class="mr-hp-filter-label">Stars</label>
+            <select id="mr-hp-stars" onchange="mrHotelPickerFilter()">
+              <option value="">Any</option>
+              <option value="5">5 ★</option>
+              <option value="4">4 ★</option>
+              <option value="3">3 ★</option>
+            </select>
+          </div>
+        </div>
+        <div class="mr-hp-search-row">
+          <i class="ti ti-search mr-hp-search-icon"></i>
+          <input type="text" id="mr-hp-name" placeholder="Search by name (works without a country)" oninput="mrHotelPickerFilter()">
+        </div>
+      </div>
+      <div class="mr-hp-results" id="mr-hp-results">
+        <!-- populated by mrHotelPickerRender() -->
+      </div>
+      <input type="hidden" id="mr-hotel-picker-selected" value="">
+    `;
+    fieldEl.appendChild(picker);
+  }
+
+  picker.style.display = '';
+  // Reset filters
+  document.getElementById('mr-hp-country').value = '';
+  document.getElementById('mr-hp-city').value = '';
+  document.getElementById('mr-hp-city').disabled = true;
+  document.getElementById('mr-hp-stars').value = '';
+  document.getElementById('mr-hp-name').value = '';
+  document.getElementById('mr-hotel-picker-selected').value = '';
+  mrHotelPickerRender();
+}
+
+function mrHotelPickerFilter() {
+  const country = document.getElementById('mr-hp-country')?.value || '';
+  const cityEl = document.getElementById('mr-hp-city');
+
+  // Repopulate city options for selected country
+  if (cityEl) {
+    const cities = country
+      ? [...new Set(Object.values(MR_DEMO_HOTELS).filter(h => h.country === country).map(h => h.city))].sort()
+      : [];
+    const prevCity = cityEl.value;
+    cityEl.innerHTML = `<option value="">All cities</option>` + cities.map(c => `<option value="${c}">${c}</option>`).join('');
+    cityEl.disabled = !country;
+    // Restore selection if city still in list
+    if (cities.includes(prevCity)) cityEl.value = prevCity;
+  }
+
+  mrHotelPickerRender();
+}
+
+function mrHotelPickerRender() {
+  const country = document.getElementById('mr-hp-country')?.value || '';
+  const city = document.getElementById('mr-hp-city')?.value || '';
+  const stars = document.getElementById('mr-hp-stars')?.value || '';
+  const name = (document.getElementById('mr-hp-name')?.value || '').toLowerCase().trim();
+  const selectedName = document.getElementById('mr-hotel-picker-selected')?.value || '';
+
+  const results = Object.values(MR_DEMO_HOTELS).filter(h => {
+    if (country && h.country !== country) return false;
+    if (city && h.city !== city) return false;
+    if (stars && h.stars !== stars) return false;
+    if (name && !h.name.toLowerCase().includes(name)) return false;
+    return true;
+  });
+
+  const resultsEl = document.getElementById('mr-hp-results');
+  if (!resultsEl) return;
+
+  if (results.length === 0) {
+    resultsEl.innerHTML = `<div class="mr-hp-empty"><i class="ti ti-mood-empty"></i> No hotels match these filters.</div>`;
+    return;
+  }
+
+  const countLabel = `<div class="mr-hp-count">${results.length} hotel${results.length !== 1 ? 's' : ''}</div>`;
+  const rows = results.map(h => {
+    const isSelected = h.name === selectedName;
+    const countryName = mrCountryById(h.country)?.name || h.country;
+    const chain = h.chainId ? mrChainById(h.chainId)?.name : null;
+    const stars = '★'.repeat(parseInt(h.stars, 10));
+    return `<button class="mr-hp-row${isSelected ? ' mr-hp-row--selected' : ''}" onclick="mrHotelPickerSelect(${JSON.stringify(h.name)})">
+      <span class="mr-hp-name">${h.name}</span>
+      <span class="mr-hp-meta">${h.city}, ${countryName} · <span class="mr-hp-stars">${stars}</span>${chain ? ` · ${chain}` : ''}</span>
+      ${isSelected ? `<span class="mr-hp-check"><i class="ti ti-check"></i></span>` : ''}
+    </button>`;
+  }).join('');
+
+  resultsEl.innerHTML = countLabel + rows;
+}
+
+function mrHotelPickerSelect(hotelName) {
+  const hidden = document.getElementById('mr-hotel-picker-selected');
+  if (hidden) hidden.value = hotelName;
+  mrHotelPickerRender();   // re-render to show the selection highlight
+  mrCoverageUpdate();
+}
 
 /* ---------- Country filter ---------- */
 let MR_COUNTRY_FILTER = '';  // '' = all countries
@@ -388,8 +548,14 @@ function mrOpenDrawer(opts) {
     const r = (MR_STATE[MR_DRAWER.type] || []).find(x => x.id === MR_DRAWER.editId);
     if (r) {
       document.getElementById('mr-pct-input').value = r.pct;
-      const sel = document.getElementById('mr-target-select');
-      if (sel) sel.value = r.target;
+      if (MR_DRAWER.type === 'hotel') {
+        // Pre-select in the hotel picker
+        const pickerSel = document.getElementById('mr-hotel-picker-selected');
+        if (pickerSel) { pickerSel.value = r.target; mrHotelPickerRender(); }
+      } else {
+        const sel = document.getElementById('mr-target-select');
+        if (sel) sel.value = r.target;
+      }
       mrCoverageUpdate();
     }
   } else {
@@ -423,9 +589,13 @@ function mrSetType(type) {
       `<option value="${o.id}">${o.name}${o.count != null ? ` — ${o.count} hotels` : ''}</option>`
     ).join('');
     sel.style.display = '';
+    // Hide hotel picker if visible
+    const picker = document.getElementById('mr-hotel-picker');
+    if (picker) picker.style.display = 'none';
   } else {
-    // Hotel — free-text input replaces select
-    sel.outerHTML = `<input type="text" id="mr-target-select" placeholder="Search hotel by name…" oninput="mrCoverageUpdate()">`;
+    // Hotel tier — replace the select with a cascading picker
+    sel.style.display = 'none';
+    mrHotelPickerInit();
   }
   mrCoverageUpdate();
 }
@@ -449,8 +619,17 @@ function mrCoverageUpdate() {
     html = `<div class="mr-coverage-title"><i class="ti ti-chart-bar"></i> This rule will apply to ${c.count} hotels</div>
       <div class="mr-coverage-stats">${c.count} hotels graded as <strong>${c.name}</strong>. <span class="mr-coverage-warn">Hotels without a category fall through to a more general tier.</span></div>`;
   } else if (MR_DRAWER.type === 'hotel') {
-    html = `<div class="mr-coverage-title"><i class="ti ti-chart-bar"></i> This rule will apply to 1 hotel</div>
-      <div class="mr-coverage-stats">Most surgical option. Beats every rule above.</div>`;
+    const pickerSel = document.getElementById('mr-hotel-picker-selected');
+    const selName = pickerSel ? pickerSel.value : '';
+    if (selName) {
+      const h = Object.values(MR_DEMO_HOTELS).find(x => x.name === selName);
+      const cityStr = h ? `${h.city}, ${mrCountryById(h.country)?.name || h.country}` : '';
+      html = `<div class="mr-coverage-title"><i class="ti ti-bed"></i> 1 hotel selected</div>
+        <div class="mr-coverage-stats"><strong>${selName}</strong>${cityStr ? ` · ${cityStr}` : ''} · Tier 1 — overrides every other rule.</div>`;
+    } else {
+      html = `<div class="mr-coverage-title"><i class="ti ti-chart-bar"></i> No hotel selected yet</div>
+        <div class="mr-coverage-stats">Use the filters above to find and pick a specific hotel. Most surgical option — beats every rule above.</div>`;
+    }
   }
   cov.innerHTML = html;
 }
@@ -458,9 +637,18 @@ function mrSaveRule() {
   const drawer = document.getElementById('mr-create-drawer');
   const pct = parseInt(document.getElementById('mr-pct-input')?.value || '0', 10);
   if (isNaN(pct) || pct < 0 || pct > 200) { protoToast('Markup must be a whole number 0–200', 'error'); return; }
-  const sel = document.getElementById('mr-target-select');
-  const target = (sel?.value || '').trim();
-  if (!target) { protoToast('Pick a target before saving', 'error'); return; }
+  let target, hotelCity;
+  if (MR_DRAWER.type === 'hotel') {
+    const pickerSel = document.getElementById('mr-hotel-picker-selected');
+    target = (pickerSel?.value || '').trim();
+    if (!target) { protoToast('Select a hotel from the picker before saving', 'error'); return; }
+    const h = Object.values(MR_DEMO_HOTELS).find(x => x.name === target);
+    hotelCity = h ? `${h.city}, ${mrCountryById(h.country)?.name || h.country}` : 'Per-hotel';
+  } else {
+    const sel = document.getElementById('mr-target-select');
+    target = (sel?.value || '').trim();
+    if (!target) { protoToast('Pick a target before saving', 'error'); return; }
+  }
   const today = new Date().toISOString().slice(0, 10);
   if (MR_DRAWER.editId) {
     const list = MR_STATE[MR_DRAWER.type];
@@ -476,7 +664,7 @@ function mrSaveRule() {
       updated: today,
       by: 'patria@',
     };
-    if (MR_DRAWER.type === 'hotel') newRule.city = 'Edited via prototype';
+    if (MR_DRAWER.type === 'hotel') newRule.city = hotelCity || 'Per-hotel';
     MR_STATE[MR_DRAWER.type].push(newRule);
     let displayTarget = target;
     if (MR_DRAWER.type === 'chain') displayTarget = mrChainById(target)?.name || target;
