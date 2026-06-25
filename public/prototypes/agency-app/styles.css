@@ -818,6 +818,11 @@ body.modal-open { overflow: hidden; }
 
 /* ========== TOAST NOTIFICATION ========== */
 .toast {
+  /* Notification only — must never capture clicks. The hidden state uses
+     transform: translateY(120%), which doesn't fully clear the viewport, so
+     without this the invisible toast intercepted clicks on the drawer footer
+     (Cancel/Save) beneath it. */
+  pointer-events: none;
   position: fixed; bottom: 80px; right: 32px; z-index: 20000;
   background: var(--white); border-radius: var(--radius-lg); padding: 18px 24px;
   box-shadow: var(--shadow-xl); display: flex; align-items: center; gap: 14px;
@@ -2627,7 +2632,11 @@ body.modal-open { overflow: hidden; }
 .mr-drawer {
   position: fixed;
   inset: 0;
-  z-index: 100;
+  /* Above page chrome — the floating "Need help?" button (z:9998) was layered
+     over the open drawer's footer and intercepted clicks on Save. An open modal
+     must be the top interactive layer. The toast (z:20000) renders above but is
+     pointer-events:none, so it never blocks. */
+  z-index: 10000;
   pointer-events: none;
   opacity: 0;
   transition: opacity 200ms;
