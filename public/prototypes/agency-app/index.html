@@ -2332,17 +2332,17 @@
           </div>
         </div>
 
-        <!-- Functionality In Development banner — entirely prototype-only -->
-        <div class="in-dev-banner">
-          <div class="in-dev-icon"><i class="ti ti-tool"></i></div>
+        <!-- Shipped notice — this feature is now live in production -->
+        <div class="in-dev-banner" style="background:#f0fdf4;border-color:#16a34a;border-left-color:#16a34a;">
+          <div class="in-dev-icon" style="color:#16a34a;"><i class="ti ti-circle-check"></i></div>
           <div class="in-dev-body">
-            <div class="in-dev-title">Functionality In Development — Country-Rooted Markup Rules</div>
-            <div class="in-dev-msg">The <strong>Markup Rules</strong> page is not yet in production — the real agency-app only stores a single <code>defaultMarkupPct</code>. This prototype designs the country-rooted cascade editor. Flows being prototyped:
+            <div class="in-dev-title" style="color:#14532d;">&#x2705; Now LIVE in production — shipped 2026-06-29</div>
+            <div class="in-dev-msg" style="color:#166534;">The <strong>Markup Rules</strong> page (<code>/markup-rules</code>) is now live in the real agency-app. This prototype was the design source. Shipped as USER_STORIES A1 (#205). What was prototyped here is now in production:
               <ul>
-                <li>5-tier cascade: <strong>Hotel › Chain·Country › Category·Country › Country › Default</strong> — chain and category rules are always scoped to a country</li>
-                <li>Cascade preview hero — pick a hotel → see the full 5-step resolution walk + customer price on a $200 supplier-net sample</li>
-                <li>Country cards — one collapsible card per configured country containing its rate, category rules, chain rules, and per-hotel overrides</li>
-                <li>Audit trail — every create/edit/delete recorded with timestamp + user; surfaced under P&amp;L</li>
+                <li>5-tier country-rooted cascade: <strong>Hotel › Chain·Country › Category·Country › Country › Default</strong></li>
+                <li>Cascade preview hero — full 5-step resolution walk + customer price on a $200 supplier-net sample</li>
+                <li>Country cards — one collapsible card per configured country</li>
+                <li>Audit trail — every create/edit/delete recorded with timestamp + user; full trail in P&amp;L → Audit</li>
               </ul>
             </div>
           </div>

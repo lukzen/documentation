@@ -170,17 +170,27 @@
     <h3 class="lang-en">Building your search</h3>
     <h3 class="lang-es">Armar tu búsqueda</h3>
     <ul class="lang-en">
-      <li><strong>Destination:</strong> type a city, region, or hotel name. Suggestions appear as you type.</li>
+      <li><strong>Destination:</strong> open the dropdown to choose from <strong>193 countries</strong> drawn from the live hotel inventory — the same list used by Markup Rules country pickers — or type to search. Selecting "All Countries" searches the full catalog at once.</li>
       <li><strong>Dates:</strong> pick a check-in and check-out date. The minimum stay is 1 night.</li>
       <li><strong>Rooms &amp; guests:</strong> click the rooms selector to add multiple rooms; for each room set adults + children + child ages.</li>
       <li><strong>Click Search.</strong> Results stream in as each supplier responds (Restel and Roibos take ~14 round-trips per search and may take a few seconds longer than Dingus/Hotetec).</li>
     </ul>
     <ul class="lang-es">
-      <li><strong>Destino:</strong> escribí una ciudad, región o nombre de hotel. Aparecen sugerencias mientras escribís.</li>
+      <li><strong>Destino:</strong> abrí el dropdown para elegir entre <strong>193 países</strong> tomados del inventario hotelero en vivo — la misma lista que usan los selectores de país en Markup Rules — o escribí para buscar. Seleccionar "All Countries" busca en todo el catálogo a la vez.</li>
       <li><strong>Fechas:</strong> elegí una fecha de check-in y check-out. La estadía mínima es de 1 noche.</li>
       <li><strong>Habitaciones y huéspedes:</strong> hacé clic en el selector de habitaciones para sumar varias; para cada habitación poné adultos + niños + edades de niños.</li>
       <li><strong>Hacé clic en Buscar.</strong> Los resultados van apareciendo a medida que cada proveedor responde (Restel y Roibos hacen ~14 round-trips por búsqueda y pueden tardar unos segundos más que Dingus/Hotetec).</li>
     </ul>
+
+    <figure class="screenshot">
+      <div class="screenshot-frame">
+        <img src="a1-country-dropdown.png"
+             alt="Home hotel-search showing the Destination dropdown open with the full 193-country inventory-derived list."
+             loading="lazy" onerror="this.style.display='none'" />
+      </div>
+      <figcaption class="lang-en">The Destination dropdown shows all 193 countries from the live hotel catalog. The same list is shared with the Markup Rules country pickers — one consistent source of truth.</figcaption>
+      <figcaption class="lang-es">El dropdown de Destino muestra los 193 países del catálogo hotelero en vivo. La misma lista se comparte con los selectores de país en Markup Rules — una única fuente de verdad coherente.</figcaption>
+    </figure>
 
     <figure class="screenshot">
       <div class="screenshot-frame">
@@ -547,6 +557,16 @@
       <span class="lang-es"> Tenés una regla de <em>cadena</em> Meliá-en-Cuba (20%), una regla de <em>país</em> Cuba (12%) y una regla de <em>categoría</em> 5★-en-Cuba (18%). Un cliente reserva un hotel Meliá 5★ en Cuba. La regla de cadena gana — está por encima de país y categoría en la cascada — y al cliente se le cobra un 20% sobre el precio de venta de Ergos. Las reglas de país y categoría se ignoran para esa reserva.</span>
     </div>
 
+    <figure class="screenshot">
+      <div class="screenshot-frame">
+        <img src="a1-markup-rules.png"
+             alt="Markup Rules page showing the resolution order legend, cascade preview widget, Default markup card, and Markup by country section."
+             loading="lazy" onerror="this.style.display='none'" />
+      </div>
+      <figcaption class="lang-en">The Markup Rules page. From top: the 5-tier resolution order legend, the cascade preview widget (pick any hotel to see which rule wins), the Default markup card (Tier 5 catch-all), and the Markup by country section. Every change is recorded in the audit trail under P&amp;L → Audit.</figcaption>
+      <figcaption class="lang-es">La página Markup Rules. De arriba hacia abajo: la leyenda de orden de resolución de 5 niveles, el widget de vista previa de la cascada (elegí cualquier hotel para ver qué regla gana), la tarjeta de markup Default (catch-all Nivel 5) y la sección Markup by country. Cada cambio queda registrado en la trazabilidad de auditoría en P&amp;L → Audit.</figcaption>
+    </figure>
+
     <div class="callout callout-warning">
       <strong class="lang-en">A 0% rule is not the same as no rule.</strong>
       <strong class="lang-es">Una regla de 0% no es lo mismo que no tener regla.</strong>
@@ -577,6 +597,16 @@
         <li>Para descartar sin guardar, hacé clic en <strong>Cancelar</strong> o presioná Escape.</li>
       </ol>
     </div>
+
+    <figure class="screenshot">
+      <div class="screenshot-frame">
+        <img src="a1-markup-add-rule.png"
+             alt="Add rule drawer open — rule type picker (Chain / Country / Category / Hotel), markup %, and optional note field."
+             loading="lazy" onerror="this.style.display='none'" />
+      </div>
+      <figcaption class="lang-en">The Add rule drawer. Pick a type (Chain · Country · Category · Hotel), fill in the target and markup %, and optionally add a note explaining why the rule exists. The helper line shows the full resolution order as a reminder.</figcaption>
+      <figcaption class="lang-es">El cajón de Agregar regla. Elegí el tipo (Chain · Country · Category · Hotel), completá el objetivo y el markup %, y opcionalmente sumá una nota que explique por qué existe la regla. La línea de ayuda muestra el orden de resolución completo como recordatorio.</figcaption>
+    </figure>
 
     <h3 class="lang-en">Finding a hotel for a per-hotel rule</h3>
     <h3 class="lang-es">Encontrar un hotel para una regla por hotel</h3>
@@ -609,8 +639,24 @@
 
     <h3 class="lang-en">Cascade preview</h3>
     <h3 class="lang-es">Vista previa de la cascada</h3>
-    <p class="lang-en">Before relying on your rule set for real bookings, use the <strong>cascade preview</strong> at the bottom of the Markup Rules page. Pick any sample hotel and the preview shows which rule wins for that hotel, the Ergos net price, your markup percentage, and the resulting customer price — so you can sanity-check the outcome before a customer ever sees it.</p>
-    <p class="lang-es">Antes de confiar en tu conjunto de reglas para reservas reales, usá la <strong>vista previa de la cascada</strong> al pie de la página de Reglas de Markup. Elegí cualquier hotel de muestra y la vista previa muestra qué regla gana para ese hotel, el precio neto de Ergos, tu porcentaje de markup y el precio resultante al cliente — para que puedas verificar el resultado antes de que cualquier cliente lo vea.</p>
+    <p class="lang-en">Before relying on your rule set for real bookings, use the <strong>cascade preview</strong> at the top of the Markup Rules page. Pick any hotel and the preview walks the full 5-tier resolution — checking each tier in order, marking misses with ✗ and the winner with ✓ — then shows the Ergos net, your markup percentage, and the customer-facing price.</p>
+    <p class="lang-es">Antes de confiar en tu conjunto de reglas para reservas reales, usá la <strong>vista previa de la cascada</strong> al tope de la página de Markup Rules. Elegí cualquier hotel y la vista previa recorre la resolución completa de 5 niveles — comprobando cada nivel en orden, marcando los que no coinciden con ✗ y el ganador con ✓ — y luego muestra el net de Ergos, tu porcentaje de markup y el precio al cliente.</p>
+
+    <h4 class="lang-en">Worked example — Cuba country rule</h4>
+    <h4 class="lang-es">Ejemplo práctico — regla de país Cuba</h4>
+
+    <p class="lang-en">An agency sets a <strong>15% Cuba country rule</strong>. When they pick any Cuba hotel in the cascade preview — say, Meliá Varadero (5★) — the preview shows the full resolution walk and the resulting price:</p>
+    <p class="lang-es">Una agencia configura una <strong>regla de país Cuba al 15%</strong>. Cuando elige cualquier hotel en Cuba en la vista previa — por ejemplo, Meliá Varadero (5★) — la vista previa muestra el recorrido completo de resolución y el precio resultante:</p>
+
+    <figure class="screenshot">
+      <div class="screenshot-frame">
+        <img src="a1-markup-cascade-price.png"
+             alt="Cascade preview resolving for Meliá Varadero Cuba: Ergos supplier net $200 + 15% markup (Tier 4 Country) = customer pays $230. Resolution walk shows Tier 1 per-hotel ✗, Tier 2 chain×country ✗, Tier 3 category×country ✗, Tier 4 country Cuba ✓ 15%, Tier 5 catch-all ✗."
+             loading="lazy" onerror="this.style.display='none'" />
+      </div>
+      <figcaption class="lang-en"><strong>Cascade preview — Cuba 15% country rule applied to Meliá Varadero.</strong> The resolver walks most-specific-first: Tier 1 per-hotel ✗ → Tier 2 chain×country ✗ → Tier 3 category×country ✗ → <strong>Tier 4 country · Cuba ✓ 15%</strong> → Tier 5 catch-all skipped. Result: Ergos supplier net $200.00 + 15% markup = <strong>customer pays $230.00</strong>.</figcaption>
+      <figcaption class="lang-es"><strong>Vista previa de cascada — regla de país Cuba 15% aplicada a Meliá Varadero.</strong> El resolutor recorre de más específico a menos: Nivel 1 por hotel ✗ → Nivel 2 cadena×país ✗ → Nivel 3 categoría×país ✗ → <strong>Nivel 4 país · Cuba ✓ 15%</strong> → Nivel 5 catch-all omitido. Resultado: net proveedor Ergos $200,00 + 15% markup = <strong>el cliente paga $230,00</strong>.</figcaption>
+    </figure>
 
     <div class="callout callout-teal">
       <strong class="lang-en">Tip: set your Default first, then add exceptions.</strong>

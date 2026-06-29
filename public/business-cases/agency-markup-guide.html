@@ -218,6 +218,24 @@ body.es .lang-es { display: revert; }
   vertical-align: middle;
   margin-left: 8px;
 }
+t/* Live pill — feature is now in production */
+.live-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  background: var(--green-light);
+  border: 1px solid #86efac;
+  border-left: 3px solid var(--green);
+  border-radius: 12px;
+  color: #14532d;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  vertical-align: middle;
+  margin-left: 8px;
+}
 </style>
 </head>
 <body>
@@ -245,8 +263,8 @@ body.es .lang-es { display: revert; }
   <!-- LEAD -->
   <!-- ============================================================ -->
   <div class="lead">
-    <p class="lang-en"><strong>What this document covers.</strong> Travel agencies set the markup they earn over Ergos's wholesale price (the <em>Ergos sell</em>) using a 4-tier cascade: <strong>Brand → Country → Category → Hotel</strong>, with a default catch-all. The most-specific matching rule wins. This guide explains the tiers, the resolver, where it's edited, where it's audited, and the booking-time snapshot. <span class="in-dev-pill">Prototype</span></p>
-    <p class="lang-es"><strong>Qué cubre este documento.</strong> Las agencias de viajes configuran el markup que ganan sobre el precio mayorista de Ergos (el <em>Ergos sell</em>) usando una cascada de 4 niveles: <strong>Marca → País → Categoría → Hotel</strong>, con un valor por defecto como catch-all. La regla más específica que coincida gana. Esta guía explica los niveles, el resolutor, dónde se edita, dónde se audita y la instantánea al momento de la reserva. <span class="in-dev-pill">Prototipo</span></p>
+    <p class="lang-en"><strong>What this document covers.</strong> Travel agencies set the markup they earn over Ergos's wholesale price (the <em>Ergos sell</em>) using a 5-tier cascade: <strong>Hotel › Chain·Country › Category·Country › Country › Default</strong>. The most-specific matching rule wins. Chain and Category rules are always scoped to a country — that is what "country-rooted" means. This guide explains the tiers, the resolver, where it's edited, where it's audited, and the booking-time snapshot. <span class="live-pill">Live — shipped 2026-06-29</span></p>
+    <p class="lang-es"><strong>Qué cubre este documento.</strong> Las agencias de viajes configuran el markup que ganan sobre el precio mayorista de Ergos (el <em>Ergos sell</em>) usando una cascada de 5 niveles: <strong>Hotel › Cadena·País › Categoría·País › País › Default</strong>. La regla más específica que coincida gana. Las reglas de Cadena y Categoría siempre están limitadas a un país — eso es lo que significa "country-rooted". Esta guía explica los niveles, el resolutor, dónde se edita, dónde se audita y la instantánea al momento de la reserva. <span class="live-pill">En producción — lanzado el 2026-06-29</span></p>
   </div>
 
   <!-- ============================================================ -->
@@ -274,8 +292,8 @@ body.es .lang-es { display: revert; }
   <!-- ============================================================ -->
   <section>
     <h2>
-      <span class="lang-en">2. The four tiers (most specific → least specific)</span>
-      <span class="lang-es">2. Los cuatro niveles (de más específico → menos específico)</span>
+      <span class="lang-en">2. The five tiers (most specific → least specific)</span>
+      <span class="lang-es">2. Los cinco niveles (de más específico → menos específico)</span>
     </h2>
 
     <table class="lang-en">
@@ -284,10 +302,10 @@ body.es .lang-es { display: revert; }
       </thead>
       <tbody>
         <tr><td><strong>1. Hotel</strong></td><td>A single hotel by id</td><td>"Iberostar Grand Packard → 22%"</td><td>0–10 (surgical overrides)</td></tr>
-        <tr><td><strong>2. Category</strong></td><td>A property classification (e.g. 5-star All-Inclusive)</td><td>"5-star AI → 20%"</td><td>0–5</td></tr>
-        <tr><td><strong>3. Country</strong></td><td>An ISO country code</td><td>"Cuba → 14%"</td><td>0–20</td></tr>
-        <tr><td><strong>4. Brand</strong></td><td>A hotel chain by id</td><td>"Iberostar → 18%"</td><td>0–50</td></tr>
-        <tr><td><em>Default</em></td><td>Catch-all on the agency profile</td><td><code>defaultMarkupPct</code> = 0%</td><td>Always 1</td></tr>
+        <tr><td><strong>2. Chain · Country</strong></td><td>A hotel chain scoped to one country</td><td>"Iberostar in Cuba → 18%"</td><td>0–30</td></tr>
+        <tr><td><strong>3. Category · Country</strong></td><td>A star-rating category scoped to one country</td><td>"5-star in Cuba → 20%"</td><td>0–15</td></tr>
+        <tr><td><strong>4. Country</strong></td><td>All hotels in an ISO country</td><td>"Cuba → 14%"</td><td>0–20</td></tr>
+        <tr><td><em>5. Default</em></td><td>Catch-all on the agency profile</td><td><code>defaultMarkupPct</code> = 0%</td><td>Always 1</td></tr>
       </tbody>
     </table>
 
@@ -297,15 +315,15 @@ body.es .lang-es { display: revert; }
       </thead>
       <tbody>
         <tr><td><strong>1. Hotel</strong></td><td>Un único hotel por id</td><td>"Iberostar Grand Packard → 22%"</td><td>0–10 (overrides puntuales)</td></tr>
-        <tr><td><strong>2. Categoría</strong></td><td>Una clasificación de propiedad (ej. 5 estrellas Todo Incluido)</td><td>"5 estrellas AI → 20%"</td><td>0–5</td></tr>
-        <tr><td><strong>3. País</strong></td><td>Un código de país ISO</td><td>"Cuba → 14%"</td><td>0–20</td></tr>
-        <tr><td><strong>4. Marca</strong></td><td>Una cadena hotelera por id</td><td>"Iberostar → 18%"</td><td>0–50</td></tr>
-        <tr><td><em>Por defecto</em></td><td>Catch-all en el perfil de la agencia</td><td><code>defaultMarkupPct</code> = 0%</td><td>Siempre 1</td></tr>
+        <tr><td><strong>2. Cadena · País</strong></td><td>Una cadena hotelera limitada a un país</td><td>"Iberostar en Cuba → 18%"</td><td>0–30</td></tr>
+        <tr><td><strong>3. Categoría · País</strong></td><td>Una categoría de estrellas limitada a un país</td><td>"5 estrellas en Cuba → 20%"</td><td>0–15</td></tr>
+        <tr><td><strong>4. País</strong></td><td>Todos los hoteles de un país ISO</td><td>"Cuba → 14%"</td><td>0–20</td></tr>
+        <tr><td><em>5. Default</em></td><td>Catch-all en el perfil de la agencia</td><td><code>defaultMarkupPct</code> = 0%</td><td>Siempre 1</td></tr>
       </tbody>
     </table>
 
-    <p class="lang-en">Tier 1 is the most specific — a rule for one hotel beats a rule that targets that hotel's brand. Tiers 2 and 3 are orthogonal at the conceptual level (a hotel can be a 5-star property <em>and</em> in Cuba), but the resolver picks <strong>Category before Country</strong>, on the rule that "what the property is" is a stronger commercial signal than "where the property is." Brand is the broadest tier — it covers a chain's entire inventory.</p>
-    <p class="lang-es">El nivel 1 es el más específico — una regla para un hotel gana a una regla que apunta a la marca de ese hotel. Los niveles 2 y 3 son ortogonales a nivel conceptual (un hotel puede ser una propiedad de 5 estrellas <em>y</em> estar en Cuba), pero el resolutor elige <strong>Categoría antes que País</strong>, bajo la regla de que "qué es la propiedad" es una señal comercial más fuerte que "dónde está la propiedad". Marca es el nivel más amplio — cubre todo el inventario de una cadena.</p>
+    <p class="lang-en">Tier 1 (Hotel) is the most specific — a rule for one property beats every broader rule. Tiers 2 and 3 are "country-rooted": a Chain rule for Iberostar in Cuba is distinct from Iberostar in Spain, and a Category rule for 5-star in Cuba is distinct from 5-star in Mexico. This lets an agency price the same brand or star rating differently per market without any ambiguity. Tier 4 (Country) covers every hotel in that country not already claimed by a chain or category rule. Tier 5 (Default) is the safety net — it always applies when no other tier matched.</p>
+    <p class="lang-es">El nivel 1 (Hotel) es el más específico — una regla para una propiedad gana sobre cualquier regla más amplia. Los niveles 2 y 3 son "country-rooted": una regla de Cadena para Iberostar en Cuba es distinta de Iberostar en España, y una regla de Categoría para 5 estrellas en Cuba es distinta de 5 estrellas en México. Esto permite a la agencia poner precios diferentes a la misma marca o calificación de estrellas por mercado, sin ambigüedad. El nivel 4 (País) cubre todos los hoteles de ese país que no hayan sido reclamados por una regla de cadena o categoría. El nivel 5 (Default) es la red de seguridad — siempre aplica cuando ningún otro nivel coincidió.</p>
   </section>
 
   <!-- ============================================================ -->
@@ -317,42 +335,34 @@ body.es .lang-es { display: revert; }
       <span class="lang-es">3. El editor de Markup Rules (agency-app)</span>
     </h2>
 
-    <p class="lang-en">Agency staff edit their rules on the agency-app's <code>/markup-rules</code> page, accessed from <em>My Account → Workspace → Markup Rules</em>. The page lists rules grouped by tier and includes a <strong>cascade preview widget</strong> that lets the agency check, before saving, exactly which rule will apply to any given hotel.</p>
-    <p class="lang-es">El personal de la agencia edita sus reglas en la página <code>/markup-rules</code> de la agency-app, accesible desde <em>Mi Cuenta → Workspace → Markup Rules</em>. La página lista las reglas agrupadas por nivel e incluye un <strong>widget de vista previa de la cascada</strong> que permite a la agencia comprobar, antes de guardar, exactamente qué regla aplicará a cualquier hotel dado.</p>
+    <p class="lang-en">Agency staff edit their rules on the agency-app's <code>/markup-rules</code> page — accessible from the sidebar under <em>My Account → Markup Rules</em> (between Account Info and User Management). The page lists the resolution order legend, the cascade preview widget, the Default markup card, and then rules grouped by country. The header reads: <em>"Set markup over Ergos's wholesale price — rules are country-rooted. Most specific match wins."</em></p>
+    <p class="lang-es">El personal de la agencia edita sus reglas en la página <code>/markup-rules</code> de la agency-app — accesible desde la barra lateral en <em>Mi Cuenta → Markup Rules</em> (entre Account Info y User Management). La página lista la leyenda del orden de resolución, el widget de vista previa de la cascada, la tarjeta de markup Default y luego las reglas agrupadas por país. El encabezado dice: <em>"Set markup over Ergos's wholesale price — rules are country-rooted. Most specific match wins."</em></p>
 
     <div class="shot">
-      <img src="agency-markup-screenshots/01-markup-rules-overview.png" alt="Markup Rules page — overview">
+      <img src="../user-guide/a1-markup-rules.png" alt="Markup Rules page — live production view">
       <div class="shot-caption">
-        <span class="lang-en"><strong>Markup Rules page (full view).</strong> Red banner at top makes clear this is prototype-only — the real agency-app does not yet ship this page. Below: cascade preview widget, default-markup card, then rule groups (Brand · Country · Category · Hotel) each with a row count and Add button.</span>
-        <span class="lang-es"><strong>Página Markup Rules (vista completa).</strong> El banner rojo en la parte superior deja claro que esto es solo prototipo — la agency-app real todavía no incluye esta página. Abajo: widget de vista previa de la cascada, tarjeta de markup por defecto, luego grupos de reglas (Marca · País · Categoría · Hotel) cada uno con un conteo de filas y un botón Añadir.</span>
+        <span class="lang-en"><strong>Markup Rules page — live in production.</strong> Resolution order legend at top (Hotel › Chain·Country › Category·Country › Country › Default), cascade preview widget, Default markup card (Tier 5 catch-all), and Markup by country section. Every create / edit / delete is audited; full trail in P&amp;L → Audit.</span>
+        <span class="lang-es"><strong>Página Markup Rules — en producción.</strong> Leyenda de orden de resolución arriba (Hotel › Cadena·País › Categoría·País › País › Default), widget de vista previa de la cascada, tarjeta de markup Default (catch-all Nivel 5) y sección Markup by country. Cada crear / editar / eliminar queda auditado; trazabilidad completa en P&amp;L → Audit.</span>
       </div>
     </div>
 
     <h3 class="lang-en">Cascade preview widget</h3>
     <h3 class="lang-es">Widget de vista previa de la cascada</h3>
 
-    <p class="lang-en">The preview widget removes guesswork. The agency picks any hotel from the inventory, and the widget shows: which of their rules wins, the resulting markup percentage, and the customer-facing price on a sample $200 supplier-net booking. Changes save once committed — the preview is a dry run.</p>
-    <p class="lang-es">El widget de vista previa elimina la incertidumbre. La agencia elige cualquier hotel del inventario, y el widget muestra: cuál de sus reglas gana, el porcentaje de markup resultante y el precio cliente sobre una reserva de muestra de $200 net del proveedor. Los cambios se guardan una vez confirmados — la vista previa es una simulación.</p>
-
-    <div class="shot">
-      <img src="agency-markup-screenshots/02-cascade-preview-widget.png" alt="Cascade preview widget close-up">
-      <div class="shot-caption">
-        <span class="lang-en"><strong>Cascade preview widget.</strong> Pick a hotel from the dropdown, see exactly which rule applies, the markup percent, the cascade source, and the customer-facing price.</span>
-        <span class="lang-es"><strong>Widget de vista previa de la cascada.</strong> Elegí un hotel del dropdown, ves exactamente qué regla aplica, el porcentaje de markup, el origen en la cascada y el precio cliente.</span>
-      </div>
-    </div>
+    <p class="lang-en">The preview widget removes guesswork. The prompt reads: <em>"Pick a hotel to see which rule applies and what your customer would pay on a $200 supplier-net booking."</em> The agency selects any hotel and the widget walks the full 5-tier resolution, highlighting the winning rule and computing the customer-facing price. Changes save once committed — the preview is a dry run.</p>
+    <p class="lang-es">El widget de vista previa elimina la incertidumbre. El mensaje dice: <em>"Pick a hotel to see which rule applies and what your customer would pay on a $200 supplier-net booking."</em> La agencia selecciona cualquier hotel y el widget recorre la resolución completa de 5 niveles, resaltando la regla ganadora y calculando el precio al cliente. Los cambios se guardan una vez confirmados — la vista previa es una simulación.</p>
 
     <h3 class="lang-en">Adding a rule</h3>
     <h3 class="lang-es">Añadir una regla</h3>
 
-    <p class="lang-en">Clicking <strong>+ Add rule</strong> opens a side drawer where the agency picks a tier (Brand / Country / Category / Hotel), then picks the target within that tier (e.g. "Cuba" for Country), and enters the markup percent (whole-percent integer, 0–200). The drawer can also delete or edit existing rules.</p>
-    <p class="lang-es">Al hacer clic en <strong>+ Añadir regla</strong> se abre un cajón lateral donde la agencia elige un nivel (Marca / País / Categoría / Hotel), luego elige el objetivo dentro de ese nivel (ej. "Cuba" para País), e ingresa el porcentaje de markup (entero porcentual, 0–200). El cajón también permite eliminar o editar reglas existentes.</p>
+    <p class="lang-en">Clicking <strong>+ Add rule</strong> opens a side drawer. The rule <strong>type</strong> picker offers: Chain · Country · Category · Hotel. A helper note reads: <em>"Most specific wins: Hotel › Chain×Country › Category×Country › Country › Default."</em> The drawer then asks for the target (e.g. the specific hotel, or "Cuba" for Country), the <strong>Markup %</strong> (whole-percent integer, 0–200), and an optional <strong>Note</strong> ("Why this rule? e.g. premium positioning, partnership rate, brand contract"). Click <strong>Save rule</strong> to apply.</p>
+    <p class="lang-es">Al hacer clic en <strong>+ Add rule</strong> se abre un cajón lateral. El selector de <strong>tipo</strong> de regla ofrece: Chain · Country · Category · Hotel. Una nota de ayuda dice: <em>"Most specific wins: Hotel › Chain×Country › Category×Country › Country › Default."</em> El cajón luego pide el objetivo (ej. el hotel específico, o "Cuba" para Country), el <strong>Markup %</strong> (entero porcentual, 0–200) y una <strong>Note</strong> opcional ("¿Por qué esta regla? ej. posicionamiento premium, tarifa de partnership, contrato de marca"). Hacé clic en <strong>Save rule</strong> para aplicar.</p>
 
     <div class="shot">
-      <img src="agency-markup-screenshots/03-add-rule-drawer.png" alt="Add rule drawer">
+      <img src="../user-guide/a1-markup-add-rule.png" alt="Add rule drawer — live production">
       <div class="shot-caption">
-        <span class="lang-en"><strong>Add Rule drawer.</strong> Tier picker on the left, target picker dependent on the chosen tier, markup percentage input on the right. Save is disabled until all three are populated.</span>
-        <span class="lang-es"><strong>Cajón de Añadir regla.</strong> Selector de nivel a la izquierda, selector de objetivo dependiente del nivel elegido, input de porcentaje de markup a la derecha. Guardar queda deshabilitado hasta que los tres estén completos.</span>
+        <span class="lang-en"><strong>Add Rule drawer.</strong> Rule type (Chain · Country · Category · Hotel), target, Markup % (0–200 whole-percent integer), and optional Note. The helper line reminds the agent of the resolution order before saving.</span>
+        <span class="lang-es"><strong>Cajón de Añadir regla.</strong> Tipo de regla (Chain · Country · Category · Hotel), objetivo, Markup % (entero porcentual 0–200) y Note opcional. La línea de ayuda recuerda al agente el orden de resolución antes de guardar.</span>
       </div>
     </div>
   </section>
@@ -369,47 +379,55 @@ body.es .lang-es { display: revert; }
     <p class="lang-en">For every booking, the resolver walks the agency's rules in order of specificity. The <strong>first match wins</strong>; remaining tiers are skipped. If no tier matches, the default is used.</p>
     <p class="lang-es">Para cada reserva, el resolutor recorre las reglas de la agencia en orden de especificidad. <strong>La primera coincidencia gana</strong>; los niveles restantes se omiten. Si ningún nivel coincide, se usa el valor por defecto.</p>
 
-    <pre class="lang-en"><code>// Pseudocode — agency-side resolver (mirrors d1ResolveAgencyTier in the prototype)
+    <pre class="lang-en"><code>// Pseudocode — agency-side resolver (5-tier country-rooted cascade)
 function resolveAgencyMarkupPct(agency, hotel) {
-  // 1. Hotel-specific override
+  // Tier 1 — Hotel-specific override (most specific)
   const hotelRule = agency.rules.hotel.find(r =&gt; r.targetId === hotel._id);
   if (hotelRule) return { pct: hotelRule.pct, source: 'hotel', label: hotel.name };
 
-  // 2. Category match (e.g. 5-star AI)
-  const catRule = agency.rules.category.find(r =&gt; hotel.categories.includes(r.targetId));
-  if (catRule) return { pct: catRule.pct, source: 'category', label: categoryName(catRule.targetId) };
+  // Tier 2 — Chain × Country (chain scoped to this hotel's country)
+  const chainRule = agency.rules.chain.find(
+    r =&gt; r.chainId === hotel.hotelChainId &amp;&amp; r.countryCode === hotel.country
+  );
+  if (chainRule) return { pct: chainRule.pct, source: 'chain', label: `${chainName(chainRule.chainId)} in ${countryName(chainRule.countryCode)}` };
 
-  // 3. Country match (ISO code)
-  const countryRule = agency.rules.country.find(r =&gt; r.targetId === hotel.country);
-  if (countryRule) return { pct: countryRule.pct, source: 'country', label: countryName(countryRule.targetId) };
+  // Tier 3 — Category × Country (star rating scoped to this hotel's country)
+  const catRule = agency.rules.category.find(
+    r =&gt; hotel.starRating === r.starRating &amp;&amp; r.countryCode === hotel.country
+  );
+  if (catRule) return { pct: catRule.pct, source: 'category', label: `${catRule.starRating}★ in ${countryName(catRule.countryCode)}` };
 
-  // 4. Brand / chain match
-  const brandRule = agency.rules.brand.find(r =&gt; r.targetId === hotel.hotelChainId);
-  if (brandRule) return { pct: brandRule.pct, source: 'brand', label: brandName(brandRule.targetId) };
+  // Tier 4 — Country (all hotels in the ISO country)
+  const countryRule = agency.rules.country.find(r =&gt; r.countryCode === hotel.country);
+  if (countryRule) return { pct: countryRule.pct, source: 'country', label: countryName(countryRule.countryCode) };
 
-  // 5. Default — always wins if nothing else matched
+  // Tier 5 — Default — always wins if nothing else matched
   return { pct: agency.defaultMarkupPct, source: 'default', label: 'Agency default' };
 }</code></pre>
 
-    <pre class="lang-es"><code>// Pseudocódigo — resolutor del lado de la agencia (espeja d1ResolveAgencyTier en el prototipo)
+    <pre class="lang-es"><code>// Pseudocódigo — resolutor del lado de la agencia (cascada de 5 niveles country-rooted)
 function resolveAgencyMarkupPct(agency, hotel) {
-  // 1. Override por hotel específico
+  // Nivel 1 — Override por hotel específico (más específico)
   const hotelRule = agency.rules.hotel.find(r =&gt; r.targetId === hotel._id);
   if (hotelRule) return { pct: hotelRule.pct, source: 'hotel', label: hotel.name };
 
-  // 2. Coincidencia por categoría (ej. 5 estrellas AI)
-  const catRule = agency.rules.category.find(r =&gt; hotel.categories.includes(r.targetId));
-  if (catRule) return { pct: catRule.pct, source: 'category', label: categoryName(catRule.targetId) };
+  // Nivel 2 — Cadena × País (cadena limitada al país de este hotel)
+  const chainRule = agency.rules.chain.find(
+    r =&gt; r.chainId === hotel.hotelChainId &amp;&amp; r.countryCode === hotel.country
+  );
+  if (chainRule) return { pct: chainRule.pct, source: 'chain', label: `${chainName(chainRule.chainId)} en ${countryName(chainRule.countryCode)}` };
 
-  // 3. Coincidencia por país (código ISO)
-  const countryRule = agency.rules.country.find(r =&gt; r.targetId === hotel.country);
-  if (countryRule) return { pct: countryRule.pct, source: 'country', label: countryName(countryRule.targetId) };
+  // Nivel 3 — Categoría × País (calificación de estrellas limitada al país de este hotel)
+  const catRule = agency.rules.category.find(
+    r =&gt; hotel.starRating === r.starRating &amp;&amp; r.countryCode === hotel.country
+  );
+  if (catRule) return { pct: catRule.pct, source: 'category', label: `${catRule.starRating}★ en ${countryName(catRule.countryCode)}` };
 
-  // 4. Coincidencia por marca / cadena
-  const brandRule = agency.rules.brand.find(r =&gt; r.targetId === hotel.hotelChainId);
-  if (brandRule) return { pct: brandRule.pct, source: 'brand', label: brandName(brandRule.targetId) };
+  // Nivel 4 — País (todos los hoteles del país ISO)
+  const countryRule = agency.rules.country.find(r =&gt; r.countryCode === hotel.country);
+  if (countryRule) return { pct: countryRule.pct, source: 'country', label: countryName(countryRule.countryCode) };
 
-  // 5. Por defecto — siempre gana si nada más coincide
+  // Nivel 5 — Default — siempre gana si nada más coincidió
   return { pct: agency.defaultMarkupPct, source: 'default', label: 'Por defecto' };
 }</code></pre>
 
@@ -438,6 +456,20 @@ function resolveAgencyMarkupPct(agency, hotel) {
       <strong class="lang-es">¿Qué pasa si Sol Mar elimina la regla específica del hotel?</strong>
       <span class="lang-en">The next-best match (Country · Cuba → 14%) wins. Customer pays $200 × 1.14 = $228.00. Markup income drops from $36 to $28. The cascade preview widget visualises this drop before save — the agency sees the price change before committing.</span>
       <span class="lang-es">La siguiente mejor coincidencia (País · Cuba → 14%) gana. El cliente paga $200 × 1,14 = $228,00. El ingreso por markup cae de $36 a $28. El widget de vista previa de la cascada visualiza esta caída antes de guardar — la agencia ve el cambio de precio antes de confirmar.</span>
+    </div>
+
+    <h3 class="lang-en">What the cascade preview looks like in practice</h3>
+    <h3 class="lang-es">Cómo se ve la vista previa de la cascada en la práctica</h3>
+
+    <p class="lang-en">The screenshot below shows the cascade preview resolving a real Cuba hotel against a simple <strong>Country · Cuba → 15%</strong> rule. The resolver walks each tier top-down, marks non-matching tiers ✗, and highlights the winning tier in green. The price math is shown explicitly so the agency knows exactly what the customer will pay before any booking is made.</p>
+    <p class="lang-es">La captura siguiente muestra la vista previa de la cascada resolviendo un hotel real en Cuba contra una simple regla <strong>País · Cuba → 15%</strong>. El resolutor recorre cada nivel de arriba hacia abajo, marca los niveles que no coinciden con ✗ y resalta el nivel ganador en verde. La matemática del precio se muestra explícitamente para que la agencia sepa exactamente lo que pagará el cliente antes de hacer cualquier reserva.</p>
+
+    <div class="shot">
+      <img src="../user-guide/a1-markup-cascade-price.png" alt="Cascade preview — Cuba 15% country rule resolved for Meliá Varadero">
+      <div class="shot-caption">
+        <span class="lang-en"><strong>Cascade preview — live production.</strong> Meliá Varadero, Cuba. Resolution walk: Tier 1 per-hotel ✗ → Tier 2 chain×country ✗ → Tier 3 category×country ✗ → <strong>Tier 4 country · Cuba ✓ 15%</strong> → Tier 5 catch-all skipped. Math: Ergos supplier net $200.00 + 15% = <strong>customer pays $230.00</strong>.</span>
+        <span class="lang-es"><strong>Vista previa de cascada — en producción.</strong> Meliá Varadero, Cuba. Recorrido: Nivel 1 por hotel ✗ → Nivel 2 cadena×país ✗ → Nivel 3 categoría×país ✗ → <strong>Nivel 4 país · Cuba ✓ 15%</strong> → Nivel 5 catch-all omitido. Matemática: net proveedor Ergos $200,00 + 15% = <strong>el cliente paga $230,00</strong>.</span>
+      </div>
     </div>
   </section>
 
@@ -480,23 +512,23 @@ function resolveAgencyMarkupPct(agency, hotel) {
     <table class="lang-en">
       <thead><tr><th>Field</th><th>Type</th><th>Meaning</th></tr></thead>
       <tbody>
-        <tr><td><code>tier</code></td><td><code>'hotel' | 'category' | 'country' | 'brand' | 'default'</code></td><td>Which tier of the cascade won</td></tr>
+        <tr><td><code>tier</code></td><td><code>'hotel' | 'chain' | 'category' | 'country' | 'default'</code></td><td>Which tier of the cascade won</td></tr>
         <tr><td><code>targetId</code></td><td><code>string | null</code></td><td>The id that matched (hotel id, chain id, country code, etc.). <code>null</code> when tier is <code>'default'</code>.</td></tr>
-        <tr><td><code>label</code></td><td><code>string</code></td><td>Human-readable label captured for display ("Iberostar Group", "Cuba", "5-star AI", etc.) — robust against later renames of the source entity.</td></tr>
+        <tr><td><code>label</code></td><td><code>string</code></td><td>Human-readable label captured for display ("Iberostar in Cuba", "5★ in Cuba", "Cuba", etc.) — robust against later renames of the source entity.</td></tr>
       </tbody>
     </table>
 
     <table class="lang-es">
       <thead><tr><th>Campo</th><th>Tipo</th><th>Significado</th></tr></thead>
       <tbody>
-        <tr><td><code>tier</code></td><td><code>'hotel' | 'category' | 'country' | 'brand' | 'default'</code></td><td>Qué nivel de la cascada ganó</td></tr>
+        <tr><td><code>tier</code></td><td><code>'hotel' | 'chain' | 'category' | 'country' | 'default'</code></td><td>Qué nivel de la cascada ganó</td></tr>
         <tr><td><code>targetId</code></td><td><code>string | null</code></td><td>El id que coincidió (id de hotel, id de cadena, código de país, etc.). <code>null</code> cuando el nivel es <code>'default'</code>.</td></tr>
-        <tr><td><code>label</code></td><td><code>string</code></td><td>Etiqueta legible capturada para visualización ("Iberostar Group", "Cuba", "5 estrellas AI", etc.) — resistente a renombrados posteriores de la entidad origen.</td></tr>
+        <tr><td><code>label</code></td><td><code>string</code></td><td>Etiqueta legible capturada para visualización ("Iberostar en Cuba", "5★ en Cuba", "Cuba", etc.) — resistente a renombrados posteriores de la entidad origen.</td></tr>
       </tbody>
     </table>
 
-    <p class="lang-en">This makes after-the-fact disputes answerable without re-running the resolver against possibly-different current rules. If Sol Mar changed their Country · Cuba rule from 14% to 10% last week, the bookings that froze before the change still report <code>agencyMarkupPctSnapshot: 18</code> and <code>agencyMarkupSourceSnapshot: { tier: 'hotel', targetId: 'IBE-GP-HAV', label: 'Iberostar Grand Packard' }</code> — the historical truth, not what the resolver would compute today.</p>
-    <p class="lang-es">Esto hace que las disputas posteriores sean respondibles sin tener que volver a ejecutar el resolutor contra reglas actuales posiblemente diferentes. Si Sol Mar cambió su regla País · Cuba de 14% a 10% la semana pasada, las reservas que se congelaron antes del cambio aún reportan <code>agencyMarkupPctSnapshot: 18</code> y <code>agencyMarkupSourceSnapshot: { tier: 'hotel', targetId: 'IBE-GP-HAV', label: 'Iberostar Grand Packard' }</code> — la verdad histórica, no lo que el resolutor calcularía hoy.</p>
+    <p class="lang-en">This makes after-the-fact disputes answerable without re-running the resolver against possibly-different current rules. If Sol Mar changed their Country · Cuba rule from 14% to 10% last week, the bookings that froze before the change still report <code>agencyMarkupPctSnapshot: 18</code> and <code>agencyMarkupSourceSnapshot: { tier: 'hotel', targetId: 'IBE-GP-HAV', label: 'Iberostar Grand Packard' }</code> — the historical truth, not what the resolver would compute today. For a chain-scoped rule, <code>tier</code> is <code>'chain'</code> and the label would be something like <code>'Iberostar in Cuba'</code>.</p>
+    <p class="lang-es">Esto hace que las disputas posteriores sean respondibles sin tener que volver a ejecutar el resolutor contra reglas actuales posiblemente diferentes. Si Sol Mar cambió su regla País · Cuba de 14% a 10% la semana pasada, las reservas que se congelaron antes del cambio aún reportan <code>agencyMarkupPctSnapshot: 18</code> y <code>agencyMarkupSourceSnapshot: { tier: 'hotel', targetId: 'IBE-GP-HAV', label: 'Iberostar Grand Packard' }</code> — la verdad histórica, no lo que el resolutor calcularía hoy. Para una regla de cadena limitada por país, <code>tier</code> es <code>'chain'</code> y el label sería algo como <code>'Iberostar en Cuba'</code>.</p>
   </section>
 
   <!-- ============================================================ -->
@@ -518,19 +550,21 @@ function resolveAgencyMarkupPct(agency, hotel) {
     <h3 class="lang-en">Status &amp; implementation</h3>
     <h3 class="lang-es">Estado e implementación</h3>
 
-    <p class="lang-en"><span class="in-dev-pill">Prototype</span> This page (<code>/markup-rules</code>) is not yet in production. The real agency-app today only stores a single <code>TravelAgency.defaultMarkupPct</code>. Implementation tracked as <strong>USER_STORIES A1</strong> — see <code>documentation/_user_stories_pending/USER_STORIES.md</code>. The simplification decisions captured during prototyping (no GDS axis, tier semantics, snapshot fields) appear in the Design decisions log at the bottom of that file.</p>
-    <p class="lang-es"><span class="in-dev-pill">Prototipo</span> Esta página (<code>/markup-rules</code>) aún no está en producción. La agency-app real hoy solo almacena un único <code>TravelAgency.defaultMarkupPct</code>. La implementación se rastrea como <strong>USER_STORIES A1</strong> — ver <code>documentation/_user_stories_pending/USER_STORIES.md</code>. Las decisiones de simplificación capturadas durante el prototipado (sin eje GDS, semántica de niveles, campos del snapshot) aparecen en el log de decisiones de diseño al final de ese archivo.</p>
+    <p class="lang-en"><span class="live-pill">Live in production</span> The <code>/markup-rules</code> page is now live. Agencies manage the full country-rooted cascade — Default markup, Markup by country (with Chain and Category sub-rules), per-hotel overrides, cascade preview, and audit trail — exactly as described in this guide. Shipped as <strong>USER_STORIES A1</strong> (ticket #205), deployed <strong>2026-06-29</strong>. The prototype design decisions (no GDS axis, 5-tier semantics, snapshot fields) were carried through to the production implementation without change.</p>
+    <p class="lang-es"><span class="live-pill">En producción</span> La página <code>/markup-rules</code> ya está en producción. Las agencias gestionan la cascada country-rooted completa — markup Default, Markup by country (con sub-reglas de Cadena y Categoría), overrides por hotel, vista previa de la cascada y trazabilidad de auditoría — exactamente como se describe en esta guía. Lanzada como <strong>USER_STORIES A1</strong> (ticket #205), desplegada el <strong>2026-06-29</strong>. Las decisiones de diseño del prototipo (sin eje GDS, semántica de 5 niveles, campos del snapshot) se mantuvieron en la implementación de producción sin cambios.</p>
 
     <h3 class="lang-en">Where to click through</h3>
     <h3 class="lang-es">Por dónde hacer clic</h3>
 
     <ul class="lang-en">
-      <li><strong>Agency-app prototype:</strong> <a href="../prototypes/agency-app/">/prototypes/agency-app/</a> → <em>My Account → Workspace → Markup Rules</em></li>
+      <li><strong>Agency-app (live):</strong> <code>/markup-rules</code> — accessible from the Account sidebar → Markup Rules</li>
+      <li><strong>Agency-app design prototype:</strong> <a href="../prototypes/agency-app/">/prototypes/agency-app/</a> → <em>Markup Rules</em> screen (now flagged as shipped)</li>
       <li><strong>Backoffice prototype:</strong> <a href="../prototypes/backoffice/">/prototypes/backoffice/</a> → <em>Hotel Price</em> tab</li>
       <li><strong>Sibling document:</strong> <a href="pricing-policy-guide.html">Ergos-side pricing policy &amp; hotel brands</a> — the backoffice cascade that produces <em>Ergos sell</em>, which this agency cascade then marks up.</li>
     </ul>
     <ul class="lang-es">
-      <li><strong>Prototipo agency-app:</strong> <a href="../prototypes/agency-app/">/prototypes/agency-app/</a> → <em>Mi Cuenta → Workspace → Markup Rules</em></li>
+      <li><strong>Agency-app (en producción):</strong> <code>/markup-rules</code> — accesible desde el sidebar de Cuenta → Markup Rules</li>
+      <li><strong>Prototipo de diseño agency-app:</strong> <a href="../prototypes/agency-app/">/prototypes/agency-app/</a> → pantalla <em>Markup Rules</em> (ya marcada como enviada a producción)</li>
       <li><strong>Prototipo backoffice:</strong> <a href="../prototypes/backoffice/">/prototypes/backoffice/</a> → pestaña <em>Hotel Price</em></li>
       <li><strong>Documento hermano:</strong> <a href="pricing-policy-guide.html">Política de precios del lado de Ergos y marcas hoteleras</a> — la cascada del backoffice que produce <em>Ergos sell</em>, sobre el cual esta cascada de la agencia luego aplica markup.</li>
     </ul>
