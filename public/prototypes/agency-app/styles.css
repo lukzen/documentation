@@ -2515,13 +2515,9 @@ body.modal-open { overflow: hidden; }
   display: none; /* hidden by default — toggle ON via .rs-show-ergos-cost on #screen-rooms */
   align-items: baseline;
   gap: 6px;
-  padding: 4px 8px;
-  margin-bottom: 6px;
-  background: rgba(13,148,136,0.08);
-  border: 1px dashed rgba(13,148,136,0.35);
-  border-radius: 6px;
+  margin-bottom: 4px;
   font-size: 11px;
-  color: var(--teal-dark, #115e59);
+  color: #6b7280; /* dimmed grey — matches the app's Mantine Text c="dimmed" (not a chip) */
   cursor: help;
 }
 #screen-rooms.rs-show-ergos-cost .rs-ergos-cost { display: inline-flex; }
