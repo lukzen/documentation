@@ -498,12 +498,80 @@ function resolveAgencyMarkupPct(agency, hotel) {
   </section>
 
   <!-- ============================================================ -->
-  <!-- 6. BOOKING-TIME SNAPSHOT -->
+  <!-- 6. ERGOS COST ON THE ROOM PAGE (A2) -->
   <!-- ============================================================ -->
   <section>
     <h2>
-      <span class="lang-en">6. Booking-time snapshot</span>
-      <span class="lang-es">6. Instantánea al momento de la reserva</span>
+      <span class="lang-en">6. Seeing the Ergos cost on the room page <span class="live-pill">Live — shipped 2026-07-12</span></span>
+      <span class="lang-es">6. Ver el costo Ergos en la página de habitaciones <span class="live-pill">En producción — lanzado el 2026-07-12</span></span>
+    </h2>
+
+    <p class="lang-en">On the room-selection page (<code>/rooms/:hotelId</code>), each room-rate card can display the <strong>Ergos cost</strong> — what the agency pays Ergos (the wholesale <em>Ergos sell</em> price) — as a small secondary line <strong>above</strong> the bold customer-facing price. This gives agency staff an at-a-glance view of their cost basis without any calculation. The feature is per-page and behind a <strong>"Show Ergos cost"</strong> toggle in the rooms header, which is <strong>off by default</strong> so the line is never visible when a customer is looking at the screen over an agent's shoulder.</p>
+    <p class="lang-es">En la página de selección de habitaciones (<code>/rooms/:hotelId</code>), cada tarjeta de tarifa puede mostrar el <strong>costo Ergos</strong> — lo que la agencia le paga a Ergos (el precio mayorista <em>Ergos sell</em>) — como una pequeña línea secundaria <strong>sobre</strong> el precio al cliente en negrita. Esto da al personal de la agencia una vista rápida de su base de costo sin necesidad de cálculos. La función está por página y detrás de un toggle <strong>"Show Ergos cost"</strong> en el encabezado de habitaciones, que está <strong>desactivado por defecto</strong> para que la línea nunca sea visible cuando un cliente esté mirando la pantalla junto al agente.</p>
+
+    <h3 class="lang-en">The price relationship</h3>
+    <h3 class="lang-es">La relación de precios</h3>
+
+    <p class="lang-en">The two prices on the card are linked by the agency's effective markup percentage resolved by the cascade (section 4): <code>customer price = Ergos cost × (1 + markup%)</code>. For example, if Ergos cost is $412 and the agency's markup resolves to 17.5%, the customer price is $412 × 1.175 = $484. The Ergos cost line is display-only — it does not change the booking; the booking still sends the cost as normal.</p>
+    <p class="lang-es">Los dos precios en la tarjeta están vinculados por el porcentaje de markup efectivo de la agencia resuelto por la cascada (sección 4): <code>precio al cliente = costo Ergos × (1 + markup%)</code>. Por ejemplo, si el costo Ergos es $412 y el markup de la agencia es 17,5%, el precio al cliente es $412 × 1,175 = $484. La línea de costo Ergos es solo de visualización — no cambia la reserva; la reserva sigue enviando el costo con normalidad.</p>
+
+    <h3 class="lang-en">Default: toggle off — customer price only</h3>
+    <h3 class="lang-es">Por defecto: toggle desactivado — solo precio al cliente</h3>
+
+    <p class="lang-en">By default the toggle is off and only the customer price appears, exactly as the customer would see it. This is the safe starting state: a customer glancing at the screen cannot see the agency's cost.</p>
+    <p class="lang-es">Por defecto el toggle está desactivado y solo aparece el precio al cliente, exactamente como lo vería el cliente. Este es el estado seguro inicial: un cliente que mire la pantalla no puede ver el costo de la agencia.</p>
+
+    <div class="shot">
+      <img src="agency-markup-screenshots/05-ergos-cost-off.png" alt="Room selection page — toggle OFF, customer price only">
+      <div class="shot-caption">
+        <span class="lang-en"><strong>Toggle OFF (default).</strong> Each room-rate card shows only the bold customer price. The "Show Ergos cost" toggle in the rooms header is off. Safe for customer-facing use.</span>
+        <span class="lang-es"><strong>Toggle desactivado (por defecto).</strong> Cada tarjeta de tarifa muestra solo el precio al cliente en negrita. El toggle "Show Ergos cost" en el encabezado de habitaciones está desactivado. Seguro para uso con el cliente presente.</span>
+      </div>
+    </div>
+
+    <h3 class="lang-en">Toggle on — dual price: Ergos cost + customer price</h3>
+    <h3 class="lang-es">Toggle activado — precio dual: costo Ergos + precio al cliente</h3>
+
+    <p class="lang-en">When the agent turns the toggle on, a secondary line appears above each customer price showing the Ergos cost as small, dimmed grey text. It is visually subordinate to the bold customer price, making it clear which number is for the customer and which is the agency's internal cost.</p>
+    <p class="lang-es">Cuando el agente activa el toggle, aparece una línea secundaria sobre cada precio al cliente mostrando el costo Ergos como texto pequeño en gris tenue. Es visualmente subordinado al precio al cliente en negrita, dejando claro qué número es para el cliente y cuál es el costo interno de la agencia.</p>
+
+    <div class="shot">
+      <img src="agency-markup-screenshots/06-ergos-cost-on.png" alt="Room selection page — toggle ON, dual price visible">
+      <div class="shot-caption">
+        <span class="lang-en"><strong>Toggle ON.</strong> Each room-rate card now shows two prices: the Ergos cost (secondary, dimmed grey text above) and the customer price (bold, below). Relationship: <code>customer = Ergos cost × (1 + markup%)</code>. The cost line is for agency eyes only.</span>
+        <span class="lang-es"><strong>Toggle activado.</strong> Cada tarjeta de tarifa ahora muestra dos precios: el costo Ergos (secundario, texto gris tenue arriba) y el precio al cliente (negrita, abajo). Relación: <code>cliente = costo Ergos × (1 + markup%)</code>. La línea de costo es solo para el personal de la agencia.</span>
+      </div>
+    </div>
+
+    <h3 class="lang-en">The info-icon tooltip</h3>
+    <h3 class="lang-es">El tooltip del ícono de información</h3>
+
+    <p class="lang-en">The Ergos cost line includes a small <strong>ⓘ</strong> icon. Hovering over it shows the tooltip: <em>"Your cost — not shown to the customer."</em> This reinforces the visibility rule at a glance: this label and its tooltip are always a reminder that this number is internal to the agency.</p>
+    <p class="lang-es">La línea de costo Ergos incluye un pequeño ícono <strong>ⓘ</strong>. Al pasar el cursor sobre él aparece el tooltip (que siempre aparece en inglés en la app): <em>"Your cost — not shown to the customer."</em> Esto refuerza la regla de visibilidad de un vistazo: esta etiqueta y su tooltip son siempre un recordatorio de que este número es interno de la agencia.</p>
+
+    <div class="shot">
+      <img src="agency-markup-screenshots/07-ergos-cost-tooltip.png" alt="Ergos cost line with tooltip visible">
+      <div class="shot-caption">
+        <span class="lang-en"><strong>Ergos cost tooltip.</strong> The ⓘ icon on the cost line shows "Your cost — not shown to the customer." on hover, reminding agency staff of the visibility boundary.</span>
+        <span class="lang-es"><strong>Tooltip del costo Ergos.</strong> El ícono ⓘ en la línea de costo muestra "Your cost — not shown to the customer." al pasar el cursor, recordando al personal de la agencia el límite de visibilidad.</span>
+      </div>
+    </div>
+
+    <div class="callout callout-info">
+      <strong class="lang-en">Why default OFF?</strong>
+      <strong class="lang-es">¿Por qué desactivado por defecto?</strong>
+      <span class="lang-en">The toggle resets to OFF each time the rooms page loads. This is intentional: it prevents the scenario where an agent showed a customer the room options while the toggle was accidentally left on from a previous session, exposing the agency's cost margin. The agent must actively opt in to seeing the Ergos cost — it is never on by accident.</span>
+      <span class="lang-es">El toggle se restablece a desactivado cada vez que se carga la página de habitaciones. Esto es intencional: previene el escenario en que un agente muestre al cliente las opciones de habitaciones mientras el toggle quedó activado accidentalmente de una sesión anterior, exponiendo el margen de costo de la agencia. El agente debe optar activamente por ver el costo Ergos — nunca está activado por accidente.</span>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- 7. BOOKING-TIME SNAPSHOT (was 6) -->
+  <!-- ============================================================ -->
+  <section>
+    <h2>
+      <span class="lang-en">7. Booking-time snapshot</span>
+      <span class="lang-es">7. Instantánea al momento de la reserva</span>
     </h2>
 
     <p class="lang-en">When a booking freezes, the agency's effective markup is captured as <code>agencyMarkupPctSnapshot</code> on the booking document — same field name as today. The new addition is <code>agencyMarkupSourceSnapshot</code>, which records:</p>
@@ -532,12 +600,12 @@ function resolveAgencyMarkupPct(agency, hotel) {
   </section>
 
   <!-- ============================================================ -->
-  <!-- 7. CONVENTIONS + LINKS -->
+  <!-- 8. CONVENTIONS + LINKS (was 7) -->
   <!-- ============================================================ -->
   <section>
     <h2>
-      <span class="lang-en">7. Conventions, status, links</span>
-      <span class="lang-es">7. Convenciones, estado, enlaces</span>
+      <span class="lang-en">8. Conventions, status, links</span>
+      <span class="lang-es">8. Convenciones, estado, enlaces</span>
     </h2>
 
     <div class="callout callout-info">
