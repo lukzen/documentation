@@ -850,103 +850,107 @@
           </div>
           <div class="page-head-actions">
             <button class="btn btn-outline" onclick="hpbExportCsv()"><i class="ti ti-download"></i> Export CSV</button>
-            <button class="btn btn-outline" onclick="hpbExportPdf()"><i class="ti ti-file-type-pdf"></i> Export PDF</button>
+            <button class="btn btn-outline" onclick="hpbExportPdf()"><i class="ti ti-printer"></i> Print / PDF</button>
           </div>
         </div>
 
-        <!-- Functionality In Development banner — D1 is prototype-only -->
-        <div class="in-dev-banner">
-          <div class="in-dev-icon"><i class="ti ti-tool"></i></div>
-          <div class="in-dev-body">
-            <div class="in-dev-title">Functionality In Development</div>
-            <div class="in-dev-msg">The <strong>Hotel Price Composition</strong> auditor is not yet in production. Cascade math is computed in the backend (<code>commission-policy.service.ts</code>) but the per-hotel breakdown UI is being prototyped here. Flows being designed:
-              <ul>
-                <li>Ergos-side cascade waterfall: GDS net → chain discount → markup → Ergos sell → rebate</li>
-                <li>Per-agency table — two-state <strong>Custom</strong> / <strong>Default</strong> badge tells you at a glance whether the agency overrode the default; the "Rule reason" column carries the inline cascade trace (e.g. <em>Country · Cuba</em>, <em>Chain · Iberostar Group</em>) for audit</li>
-                <li>Export CSV / PDF with the full trace ("why is Agency A's price different from Agency B's for the same room?")</li>
-              </ul>
-            </div>
-          </div>
-        </div>
-
-        <!-- Hotel + filter row -->
+        <!-- Cascading controls — Supplier → Country → Hotel, then dates + room.
+             The selected room's real live supplier net drives every dollar. -->
         <div class="card hpb-filter-card">
           <div class="hpb-filter-row">
+            <div class="hpb-field">
+              <label>Supplier</label>
+              <select class="hpb-supplier" onchange="hpbOnSupplierChange()">
+                <option value="dingus">Dingus</option>
+                <option value="hotetec">Hotetec</option>
+                <option value="restel">Restel</option>
+                <option value="roibos" selected>Roibos</option>
+              </select>
+            </div>
+            <div class="hpb-field">
+              <label>Country</label>
+              <select class="hpb-country" onchange="hpbOnCountryChange()">
+                <!-- options scoped to supplier, filled by hpbOnSupplierChange() -->
+              </select>
+            </div>
             <div class="hpb-field hpb-field-grow">
               <label>Hotel</label>
               <select class="hpb-select" onchange="hpbRecompute()">
-                <option>Iberostar Grand Packard · IB-GP-HAV · Havana, Cuba</option>
-                <option>Hyatt Ziva Cap Cana · HZ-CC-DOM · Punta Cana, DR</option>
-                <option>Memories Varadero · MM-VAR-CUB · Varadero, Cuba</option>
+                <!-- pre-populated once supplier + country chosen; type to narrow -->
               </select>
+              <span class="hpb-field-hint">Showing first 15 — type to narrow</span>
             </div>
             <div class="hpb-field">
-              <label>Sample supplier net (USD)</label>
-              <input type="number" value="200" min="1" step="1">
+              <label>Check-in</label>
+              <input type="date" class="hpb-checkin" onchange="hpbRecompute()">
             </div>
             <div class="hpb-field">
-              <label>Agency activity</label>
-              <select>
-                <option>Last 90 days</option>
-                <option>Last 30 days</option>
-                <option>All time</option>
+              <label>Check-out</label>
+              <input type="date" class="hpb-checkout" onchange="hpbRecompute()">
+            </div>
+            <div class="hpb-field hpb-field-grow">
+              <label>Room</label>
+              <select class="hpb-room" onchange="hpbRecompute()">
+                <!-- cheapest auto-selected; drives the net, filled per hotel -->
               </select>
             </div>
-            <button class="btn btn-primary" onclick="hpbRecompute()">↻ Recompute</button>
           </div>
         </div>
 
-        <!-- Cascade waterfall card -->
+        <!-- Price Waterfall card — GDS net down to Ergos net -->
         <div class="card hpb-cascade-card">
           <div class="card-head">
-            <h3>Cascade for <strong>Iberostar Grand Packard</strong></h3>
-            <span class="badge badge-grey">Brand: IBEROSTAR</span>
+            <h3>Price Waterfall — <strong>Iberostar Grand Packard</strong></h3>
+            <span class="badge badge-grey">Chain: Iberostar</span>
           </div>
           <table class="tbl hpb-cascade">
             <thead>
-              <tr><th>Layer</th><th>%</th><th>Source</th><th class="text-right">Running cost (USD)</th></tr>
+              <tr><th>Layer</th><th>%</th><th>Source</th><th class="text-right">Running (USD)</th></tr>
             </thead>
             <tbody>
-              <tr class="hpb-row-net"><td><strong>GDS supplier net</strong></td><td>—</td><td class="bb-mono">hotetec / IB-GP-HAV</td><td class="text-right hpb-amt">$200.00</td></tr>
-              <tr><td>Chain discount</td><td class="hpb-neg">−10.0%</td><td><span class="hpb-source-tag">chain_rule</span> Iberostar Group</td><td class="text-right">$180.00</td></tr>
-              <tr><td>Ergos markup</td><td class="hpb-pos">+17.5%</td><td><span class="hpb-source-tag hpb-source-cascade">gds_rule → chain_rule</span></td><td class="text-right">$211.50</td></tr>
-              <tr class="hpb-row-sell"><td><strong>Ergos sell</strong></td><td>—</td><td class="muted">price agencies pay Ergos</td><td class="text-right hpb-amt hpb-amt-bold">$211.50</td></tr>
-              <tr><td>Agency rebate (typical)</td><td class="hpb-neg">−3.0%</td><td><span class="hpb-source-tag">agency_default</span></td><td class="text-right">$205.16</td></tr>
-              <tr><td>Sales agent earning (typical)</td><td class="hpb-neg">−22.0% of gross</td><td><span class="hpb-source-tag">agent_tier_elite</span></td><td class="text-right">—</td></tr>
-              <tr><td>Ops expense</td><td class="hpb-neg">−7.0% of gross</td><td><span class="hpb-source-tag">platform_default</span></td><td class="text-right">—</td></tr>
+              <tr class="hpb-row-net"><td><strong>GDS supplier net</strong></td><td>—</td><td class="bb-mono">roibos / IB-GP-HAV</td><td class="text-right hpb-amt">$200.00</td></tr>
+              <tr><td>Chain discount</td><td class="hpb-neg">−10.0%</td><td><a class="hpb-source-tag" href="hotel-brands">hotel rule</a></td><td class="text-right">$180.00</td></tr>
+              <tr><td>Ergos markup</td><td class="hpb-pos">+17.5%</td><td><a class="hpb-source-tag" href="commission-config.html">country rule</a></td><td class="text-right">$211.50</td></tr>
+              <tr class="hpb-row-sell"><td><strong>Ergos sell (agency pays)</strong></td><td>—</td><td class="muted">price agencies pay Ergos</td><td class="text-right hpb-amt hpb-amt-bold">$211.50</td></tr>
+              <tr><td>Sales agent earning</td><td class="hpb-neg">−10.0%</td><td><a class="hpb-source-tag" href="commission-config.html">policy</a></td><td class="text-right">$21.15</td></tr>
+              <tr><td>Ops expense</td><td class="hpb-neg">−5.0%</td><td><a class="hpb-source-tag" href="commission-config.html">policy</a></td><td class="text-right">$10.58</td></tr>
+              <tr class="hpb-row-net-final"><td><strong>Ergos net</strong></td><td>—</td><td class="muted">what Ergos keeps</td><td class="text-right hpb-amt hpb-amt-bold">$179.78</td></tr>
             </tbody>
           </table>
           <div class="hpb-cascade-foot">
-            <span class="muted">Cascade source links lead to the markup_rule / chain registry / agency profile that produced each percentage.</span>
+            <span class="muted">Each source chip links to the screen that owns the rule (Pricing Policy / Hotel Brands).</span>
           </div>
         </div>
 
-        <!-- Per-agency effective customer price -->
+        <!-- Agency Prices — all active agencies -->
         <div class="card hpb-agency-card">
           <div class="card-head row">
             <div>
-              <h3>Per-agency effective customer price</h3>
-              <p class="muted">Each row shows whether the agency overrode the default for this hotel, the resulting markup, and what their customer pays. <strong id="hpb-agency-count">5 agencies</strong> have booked or quoted this hotel in the last 90 days.</p>
+              <h3>Agency Prices <span class="muted" id="hpb-agency-count">(5)</span></h3>
+              <p class="muted">Every active agency, with a teal <strong>Custom</strong> badge where they overrode the default and grey <strong>Default</strong> where they inherit it. Answers "why is Agency A's price different from Agency B's for the same room?"</p>
             </div>
-            <label class="hpb-toggle"><input type="checkbox" checked onchange="hpbFilterActiveAgencies(this.checked)"> Show only agencies with recent bookings</label>
+          </div>
+          <div class="hpb-agency-toolbar">
+            <input type="search" class="hpb-agency-filter" placeholder="Filter by agency name or email…" oninput="hpbFilterAgencies(this.value)">
+            <label class="hpb-toggle"><input type="checkbox" onchange="hpbFilterActiveAgencies(this.checked)"> Show only agencies with recent bookings (90d)</label>
           </div>
           <table class="tbl hpb-agencies">
             <thead>
               <tr>
                 <th>Agency</th>
                 <th>Rule</th>
-                <th>Rule reason</th>
                 <th class="text-right">Markup %</th>
+                <th class="text-right">Rebate %</th>
                 <th class="text-right">Customer pays</th>
                 <th class="text-right">Markup income</th>
-                <th class="text-right">Bookings (90d)</th>
+                <th class="text-right">Bookings</th>
               </tr>
             </thead>
             <tbody id="hpb-agencies-tbody">
               <!-- Filled by hpbRecompute() — rows clickable, swap drilldown below -->
             </tbody>
           </table>
-          <p class="muted hpb-table-hint"><i class="ti ti-info-circle"></i> Click any agency row to see its full cascade trace below — which tiers were considered, which won, and the exact math.</p>
+          <p class="muted hpb-table-hint"><i class="ti ti-info-circle"></i> Click any agency row to see its markup cascade below — which tiers were considered, which won, and the exact math.</p>
         </div>
 
         <!-- Per-agency drilldown — full cascade trace + math for selected agency -->
