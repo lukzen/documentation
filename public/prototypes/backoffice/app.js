@@ -965,6 +965,24 @@ document.addEventListener('click', e => {
   if(b) setCpTab(b.dataset.cp);
 });
 
+/* ---------- D1 Stay chip (backoffice-app#57) ---------- */
+function hpbToggleStay(chipBtn){
+  const panel = chipBtn.nextElementSibling;
+  const open = panel.hidden;
+  panel.hidden = !open;
+  chipBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+}
+function hpbApplyStay(applyBtn){
+  const panel = applyBtn.closest('.hpb-stay-panel');
+  const chip = panel.previousElementSibling;
+  const room = panel.querySelector('.hpb-room');
+  const roomLabel = room ? room.options[room.selectedIndex].text : 'Classic Room';
+  chip.innerHTML = `Stay: 2026-07-17 → 2026-07-19 · ${roomLabel} <span class="hpb-stay-chevron">›</span>`;
+  panel.hidden = true;
+  chip.setAttribute('aria-expanded', 'false');
+  if(typeof hpbRecompute === 'function') hpbRecompute();
+}
+
 /* ---------- init ---------- */
 document.getElementById('proto-tabs').addEventListener('click',e=>{const b=e.target.closest('.proto-tab');if(b)showScreen(b.dataset.screen);});
 document.querySelectorAll('.role-opt').forEach(b=>b.onclick=()=>{document.querySelectorAll('.role-opt').forEach(x=>x.classList.remove('active'));b.classList.add('active');});

@@ -854,7 +854,7 @@
           </div>
         </div>
 
-        <!-- Cascading controls — Supplier → Country → Hotel, then dates + room.
+        <!-- Cascading controls — Supplier → Country → Hotel, then collapsed Stay chip.
              The selected room's real live supplier net drives every dollar. -->
         <div class="card hpb-filter-card">
           <div class="hpb-filter-row">
@@ -880,19 +880,41 @@
               </select>
               <span class="hpb-field-hint">Showing first 15 — type to narrow</span>
             </div>
-            <div class="hpb-field">
-              <label>Check-in</label>
-              <input type="date" class="hpb-checkin" onchange="hpbRecompute()">
-            </div>
-            <div class="hpb-field">
-              <label>Check-out</label>
-              <input type="date" class="hpb-checkout" onchange="hpbRecompute()">
-            </div>
-            <div class="hpb-field hpb-field-grow">
-              <label>Room</label>
-              <select class="hpb-room" onchange="hpbRecompute()">
-                <!-- cheapest auto-selected; drives the net, filled per hotel -->
-              </select>
+            <!-- Stay chip — collapsed by default, expands range calendar + room picker -->
+            <div class="hpb-stay-wrap">
+              <button class="btn btn-outline hpb-stay-chip" onclick="hpbToggleStay(this)" aria-expanded="false">
+                Stay: 2026-07-17 → 2026-07-19 · Classic Room <span class="hpb-stay-chevron">›</span>
+              </button>
+              <div class="hpb-stay-panel" hidden>
+                <!-- Static range calendar — visual fidelity mock (July 2026) -->
+                <div class="hpb-cal">
+                  <div class="hpb-cal-head">
+                    <button class="hpb-cal-nav" aria-label="Previous month">‹</button>
+                    <span class="hpb-cal-month">July 2026</span>
+                    <button class="hpb-cal-nav" aria-label="Next month">›</button>
+                  </div>
+                  <div class="hpb-cal-grid">
+                    <span class="hpb-cal-dow">Mo</span><span class="hpb-cal-dow">Tu</span><span class="hpb-cal-dow">We</span><span class="hpb-cal-dow">Th</span><span class="hpb-cal-dow">Fr</span><span class="hpb-cal-dow">Sa</span><span class="hpb-cal-dow">Su</span>
+                    <span class="hpb-cal-empty"></span><span class="hpb-cal-empty"></span><span class="hpb-cal-day hpb-cal-past">1</span><span class="hpb-cal-day hpb-cal-past">2</span><span class="hpb-cal-day hpb-cal-past">3</span><span class="hpb-cal-day hpb-cal-past">4</span><span class="hpb-cal-day hpb-cal-past">5</span>
+                    <span class="hpb-cal-day hpb-cal-past">6</span><span class="hpb-cal-day hpb-cal-past">7</span><span class="hpb-cal-day hpb-cal-past">8</span><span class="hpb-cal-day hpb-cal-past">9</span><span class="hpb-cal-day hpb-cal-past">10</span><span class="hpb-cal-day hpb-cal-past">11</span><span class="hpb-cal-day hpb-cal-past">12</span>
+                    <span class="hpb-cal-day hpb-cal-past">13</span><span class="hpb-cal-day hpb-cal-past">14</span><span class="hpb-cal-day hpb-cal-past">15</span><span class="hpb-cal-day hpb-cal-past">16</span><span class="hpb-cal-day hpb-cal-start">17</span><span class="hpb-cal-day hpb-cal-range">18</span><span class="hpb-cal-day hpb-cal-end">19</span>
+                    <span class="hpb-cal-day">20</span><span class="hpb-cal-day">21</span><span class="hpb-cal-day">22</span><span class="hpb-cal-day">23</span><span class="hpb-cal-day">24</span><span class="hpb-cal-day">25</span><span class="hpb-cal-day">26</span>
+                    <span class="hpb-cal-day">27</span><span class="hpb-cal-day">28</span><span class="hpb-cal-day">29</span><span class="hpb-cal-day">30</span><span class="hpb-cal-day">31</span>
+                  </div>
+                </div>
+                <div class="hpb-stay-room-row">
+                  <label class="hpb-stay-room-label">Room</label>
+                  <select class="hpb-room" onchange="hpbRecompute()">
+                    <option selected>Classic Room</option>
+                    <option>Superior Room</option>
+                    <option>Junior Suite</option>
+                  </select>
+                </div>
+                <div class="hpb-stay-actions">
+                  <button class="btn btn-primary btn-sm" onclick="hpbApplyStay(this)">Apply</button>
+                  <button class="btn btn-ghost btn-sm" onclick="hpbToggleStay(this.closest('.hpb-stay-panel').previousElementSibling)">Cancel</button>
+                </div>
+              </div>
             </div>
           </div>
         </div>

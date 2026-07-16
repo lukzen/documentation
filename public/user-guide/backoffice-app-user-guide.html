@@ -599,24 +599,34 @@
         <li>Open <strong>Hotel Price Composition</strong> from the Finance &amp; Audit group in the sidebar.</li>
         <li>Choose a <strong>Supplier</strong> (Dingus, Hotetec, Restel, or Roibos). The <strong>Country</strong> dropdown then lists only the countries that supplier covers.</li>
         <li>Pick a <strong>Country</strong>. The <strong>Hotel</strong> dropdown pre-populates with the first 15 hotels for that supplier + country — start typing to narrow it to the one you want.</li>
-        <li>Adjust the <strong>Check-in</strong> / <strong>Check-out</strong> dates if needed (they default to tomorrow for 2 nights) and pick a <strong>Room</strong>. The cheapest room is auto-selected; the chosen room's real live net is what drives every dollar on the page.</li>
+        <li>Click the <strong>Stay chip</strong> in the controls row — a collapsed button showing the current stay window and room (e.g. <em>"Stay: 2026-07-17 → 2026-07-19 · Classic Room ›"</em>). An inline panel expands with a <strong>date-range calendar</strong> (click a check-in date, then a check-out date) and a <strong>Room</strong> selector. Defaults are tomorrow + 2 nights, cheapest room auto-selected. The chosen room's real live net drives every dollar on the page.</li>
       </ol>
       <ol class="lang-es">
         <li>Abrí <strong>Hotel Price Composition</strong> desde el grupo Finance &amp; Audit en el panel.</li>
         <li>Elegí un <strong>Supplier</strong> (Dingus, Hotetec, Restel o Roibos). El dropdown de <strong>Country</strong> lista solo los países que cubre ese proveedor.</li>
         <li>Elegí un <strong>Country</strong>. El dropdown de <strong>Hotel</strong> se pre-carga con los primeros 15 hoteles de ese proveedor + país — empezá a escribir para acotarlo al que buscás.</li>
-        <li>Ajustá las fechas de <strong>Check-in</strong> / <strong>Check-out</strong> si hace falta (por defecto mañana, 2 noches) y elegí una <strong>Room</strong>. La habitación más barata queda auto-seleccionada; el net real en vivo de esa habitación es lo que impulsa cada dólar de la página.</li>
+        <li>Hacé clic en el <strong>chip Stay</strong> de la fila de controles — un botón compacto que muestra la estadía y habitación actuales (ej. <em>"Stay: 2026-07-17 → 2026-07-19 · Classic Room ›"</em>). Se expande un panel inline con un <strong>calendario de rango de fechas</strong> (clic en check-in, luego en check-out) y un selector de <strong>Room</strong>. Los valores por defecto son mañana + 2 noches, con la habitación más barata auto-seleccionada. El net real en vivo de esa habitación impulsa cada dólar de la página.</li>
       </ol>
     </div>
 
     <figure class="screenshot">
       <div class="screenshot-frame">
-        <img src="d1-cascading-filters.png"
-             alt="Hotel Price Composition — cascading filters: Supplier=Roibos, Country=Cuba, and the Hotel dropdown pre-populated with Cuban hotels (Aparthotel Azul, Hotel Playa Paraiso, Iberostar Selection Varadero…) ready to narrow by typing."
+        <img src="d1-cascading-filters-v2.png"
+             alt="Hotel Price Composition — controls row: cascading Supplier → Country → Hotel dropdowns with the Hotel field pre-populated, and a collapsed Stay chip button reading 'Stay: 2026-07-17 → 2026-07-19 · Classic Room' with a chevron."
              loading="lazy" onerror="this.style.display='none'" />
       </div>
-      <figcaption class="lang-en">The cascading filters: Supplier → Country → Hotel. Once a supplier and country are chosen, the hotel list pre-populates (first 15, "type to narrow"). Dates and room complete the selection.</figcaption>
-      <figcaption class="lang-es">Los filtros en cascada: Supplier → Country → Hotel. Al elegir proveedor y país, la lista de hoteles se pre-carga (primeros 15, "escribí para acotar"). Las fechas y la habitación completan la selección.</figcaption>
+      <figcaption class="lang-en">The controls row: cascading Supplier → Country → Hotel filters, then the collapsed <strong>Stay chip</strong> showing the active dates and room. Click the chip to expand the range calendar and room picker.</figcaption>
+      <figcaption class="lang-es">La fila de controles: filtros en cascada Supplier → Country → Hotel, y luego el <strong>chip Stay</strong> colapsado mostrando las fechas y habitación activas. Hacé clic en el chip para expandir el calendario de rango y el selector de habitación.</figcaption>
+    </figure>
+
+    <figure class="screenshot">
+      <div class="screenshot-frame">
+        <img src="d1-range-widget.png"
+             alt="The Stay chip expanded — an inline panel with a date-range calendar showing a highlighted range and a Room selector below it."
+             loading="lazy" onerror="this.style.display='none'" />
+      </div>
+      <figcaption class="lang-en">Clicking the Stay chip expands an inline panel: a date-range calendar (click check-in then check-out; past dates disabled) and the Room selector. Confirm to collapse and reload the waterfall.</figcaption>
+      <figcaption class="lang-es">Al hacer clic en el chip Stay se expande un panel inline: un calendario de rango de fechas (clic en check-in, luego check-out; fechas pasadas deshabilitadas) y el selector de Room. Confirmá para colapsar y recargar la cascada.</figcaption>
     </figure>
 
     <h3 class="lang-en">The Price Waterfall</h3>
@@ -642,18 +652,18 @@
 
     <figure class="screenshot">
       <div class="screenshot-frame">
-        <img src="d1-waterfall-live.png"
-             alt="Hotel Price Composition for Melia Internacional Varadero — Price Waterfall showing a real $144.00 GDS net, −15% chain discount, +10% Ergos markup, $134.64 Ergos sell, agent and ops payouts, and $10.40 Ergos net; below it the Agency Prices table lists 27 agencies with their markup, rebate, customer-pays and markup-income dollars."
+        <img src="d1-waterfall-live-v2.png"
+             alt="Hotel Price Composition full page — Stay chip in the controls row showing 'Stay: 2026-07-17 → 2026-07-19 · Classic Room', the Price Waterfall card below it, and the Agency Prices table."
              loading="lazy" onerror="this.style.display='none'" />
       </div>
-      <figcaption class="lang-en">Melia Internacional Varadero on a real $144.00 supplier net: the full waterfall down to $10.40 Ergos net, and the Agency Prices table showing what every active agency's customer would pay.</figcaption>
-      <figcaption class="lang-es">Melia Internacional Varadero sobre un net real del proveedor de $144.00: la cascada completa hasta $10.40 de Ergos net, y la tabla Agency Prices mostrando lo que pagaría el cliente de cada agencia activa.</figcaption>
+      <figcaption class="lang-en">Full page with the Stay chip (controls row) and the live Price Waterfall. The waterfall runs from GDS supplier net down to Ergos net; each adjusted layer carries a source chip linking to the owning rule screen.</figcaption>
+      <figcaption class="lang-es">Página completa con el chip Stay (fila de controles) y el Price Waterfall en vivo. La cascada va del GDS supplier net hasta el Ergos net; cada capa ajustada lleva un chip de origen que enlaza a la pantalla de la regla correspondiente.</figcaption>
     </figure>
 
     <h3 class="lang-en">The Agency Prices table</h3>
     <h3 class="lang-es">La tabla Agency Prices</h3>
-    <p class="lang-en">Below the waterfall, the <strong>Agency Prices</strong> table lists <strong>all active agencies</strong> (not just those that have booked this hotel). For each one you see whether they overrode the default — a teal <strong>Custom</strong> badge means they set their own markup, grey <strong>Default</strong> means they inherit it — their <strong>Markup %</strong>, <strong>Rebate %</strong> (which links to that agency's PnL when overridden or coming from the agency default), what their <strong>Customer pays</strong>, the <strong>Markup income</strong>, and their <strong>Bookings</strong> for this hotel. Use the <strong>filter input</strong> to narrow by agency <em>name</em> or contact <em>email</em>, toggle <strong>"show only agencies with recent bookings (90d)"</strong>, and click any column header to sort. <strong>Export CSV</strong> and <strong>Print / PDF</strong> capture exactly what's on screen.</p>
-    <p class="lang-es">Debajo de la cascada, la tabla <strong>Agency Prices</strong> lista <strong>todas las agencias activas</strong> (no solo las que reservaron este hotel). Para cada una ves si sobrescribieron el default — un badge <strong>Custom</strong> teal significa que fijaron su propio markup, el gris <strong>Default</strong> significa que lo heredan — su <strong>Markup %</strong>, <strong>Rebate %</strong> (que enlaza al PnL de esa agencia cuando está sobrescrito o viene del default de la agencia), lo que su <strong>Customer pays</strong>, el <strong>Markup income</strong>, y sus <strong>Bookings</strong> para este hotel. Usá el <strong>campo de filtro</strong> para acotar por <em>nombre</em> de agencia o <em>email</em> de contacto, activá <strong>"show only agencies with recent bookings (90d)"</strong>, y hacé clic en cualquier encabezado para ordenar. <strong>Export CSV</strong> y <strong>Print / PDF</strong> capturan exactamente lo que está en pantalla.</p>
+    <p class="lang-en">Below the waterfall, the <strong>Agency Prices</strong> table lists <strong>all active agencies</strong> (not just those that have booked this hotel). For each one you see whether they overrode the default — a teal <strong>Custom</strong> badge means they set their own markup, grey <strong>Default</strong> means they inherit it — their <strong>Markup %</strong>, <strong>Rebate %</strong> (which links to that agency's PnL when overridden or coming from the agency default), what their <strong>Customer pays</strong>, the <strong>Markup income</strong>, and their <strong>Bookings</strong> for this hotel. Use the <strong>filter input</strong> to narrow by agency <em>name</em> or contact <em>email</em>, toggle <strong>"show only agencies with recent bookings (90d)"</strong>, and click any column header to sort. <strong>Export CSV</strong> and <strong>Print / PDF</strong> export exactly the filtered and sorted view currently on screen — both include a shared context header (hotel, room, net/night, generated-at timestamp); CSV also notes any active filter so the file is self-documenting.</p>
+    <p class="lang-es">Debajo de la cascada, la tabla <strong>Agency Prices</strong> lista <strong>todas las agencias activas</strong> (no solo las que reservaron este hotel). Para cada una ves si sobrescribieron el default — un badge <strong>Custom</strong> teal significa que fijaron su propio markup, el gris <strong>Default</strong> significa que lo heredan — su <strong>Markup %</strong>, <strong>Rebate %</strong> (que enlaza al PnL de esa agencia cuando está sobrescrito o viene del default de la agencia), lo que su <strong>Customer pays</strong>, el <strong>Markup income</strong>, y sus <strong>Bookings</strong> para este hotel. Usá el <strong>campo de filtro</strong> para acotar por <em>nombre</em> de agencia o <em>email</em> de contacto, activá <strong>"show only agencies with recent bookings (90d)"</strong>, y hacé clic en cualquier encabezado para ordenar. <strong>Export CSV</strong> y <strong>Print / PDF</strong> exportan exactamente la vista filtrada y ordenada que hay en pantalla — ambos incluyen un encabezado de contexto compartido (hotel, habitación, net/noche, timestamp de generación); el CSV además indica el filtro activo para que el archivo sea auto-documentado.</p>
 
     <figure class="screenshot">
       <div class="screenshot-frame">
