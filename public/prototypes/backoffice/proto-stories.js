@@ -238,19 +238,35 @@ function frApplySort() {
 }
 
 /* ============================================================
-   D1: Hotel Price Composition — enriched with 4-tier resolver
+   D1: Hotel Price Composition — SHIPPED 2026-07-16
+   (backend-service#94 + backoffice-app#56, closes documentation#12)
+
+   Live at /finance/price-composition in the backoffice.
 
    For each hotel:
-   1. Compute the Ergos-side cascade (GDS net → chain discount → Ergos markup
-      → Ergos sell)
-   2. For each agency that books on this hotel, resolve THEIR markup using
-      the 4-tier rule cascade (hotel > category > country > chain > default)
-   3. Show the winning tier + reason + resulting customer price per row
+   1. Compute the Ergos-side waterfall (GDS supplier net → chain discount →
+      Ergos markup → Ergos sell → sales-agent earning → ops expense → Ergos net)
+   2. For each active agency, resolve THEIR markup using the 5-tier rule
+      cascade (hotel > brand > category > country > default)
+   3. Show the winning tier + resulting customer price per row
 
    Demo data wires real tier matches per hotel + per agency, so picking
    different hotels in the select rewires which tier wins for which
    agency — admin can audit "why is X paying $244 vs Y paying $230 for
    the same hotel?" in one screen.
+
+   Design history (kept intact):
+   - 2026-06-03: collapsed the 5-tier icon vocabulary to a 2-state
+     Custom/Default badge in the aggregate table (see d1RuleBadge note below);
+     dropped the tier-coverage card and the "this hotel matches" card;
+     restored the per-agency drilldown with plain state icons.
+   - 2026-07-16 (post-prototype, as shipped): sample-net input dropped for
+     real-supplier-only pricing (the selected room's live net drives dollars);
+     cascading Supplier → Country → Hotel filters added; agency table filter
+     now matches agency NAME or contact EMAIL; the inline "Rule reason" column
+     was removed (that trace now lives only in the drilldown). Related:
+     Pricing Policy's Simulate tab was removed — Live Hotel Supplier is the
+     only price preview there now.
    ============================================================ */
 
 const D1_CHAINS = {
@@ -267,31 +283,61 @@ const D1_CATEGORIES = {
   '4star-ai': { name: '4-star · All-Inclusive', count: 280 },
 };
 
-// Hotels now carry chainId/country/categories so the resolver can match.
+// Hotels carry supplier/chainId/country/categories so the cascade filters
+// (Supplier → Country → Hotel) scope correctly and the resolver can match.
+// Each hotel lists real-shaped rooms; the cheapest net is auto-selected and
+// drives every dollar (no sample-net input — matches the shipped app).
 const _hpbHotels = {
   'Iberostar Grand Packard': {
     code: 'IB-GP-HAV', city: 'Havana, Cuba',
-    chainPct: 10, ergosPct: 17.5, brand: 'IBEROSTAR',
+    supplier: 'roibos', chainPct: 10, ergosPct: 17.5, brand: 'Iberostar',
     chainId: 'iberostar', country: 'cu', categories: ['5star-ai'],
+    rooms: [
+      { label: 'Classic Room — All Inclusive AI', net: 200 },
+      { label: 'Deluxe Ocean View — AI', net: 268 },
+      { label: 'Grand Suite — AI', net: 355 },
+    ],
   },
   'Hyatt Ziva Cap Cana': {
     code: 'HZ-CC-DOM', city: 'Punta Cana, DR',
-    chainPct: 7, ergosPct: 19.4, brand: 'HYATT',
+    supplier: 'hotetec', chainPct: 7, ergosPct: 19.4, brand: 'Hyatt',
     chainId: 'hyatt', country: 'do', categories: ['5star-ai'],
+    rooms: [
+      { label: 'King Room — All Inclusive', net: 242 },
+      { label: 'Ocean Front Suite — AI', net: 318 },
+    ],
   },
   'Memories Varadero': {
     code: 'MM-VAR-CUB', city: 'Varadero, Cuba',
-    chainPct: 0, ergosPct: 18.4, brand: '— (independent)',
+    supplier: 'roibos', chainPct: 0, ergosPct: 18.4, brand: '— (independent)',
     chainId: null, country: 'cu', categories: ['4star-ai'],
+    rooms: [
+      { label: 'Standard Room — All Inclusive', net: 144 },
+      { label: 'Junior Suite — AI', net: 189 },
+    ],
   },
 };
+
+// Supplier labels + the countries each supplier covers (scopes the Country
+// select). Country options for the Hotel select are derived from _hpbHotels.
+const _hpbSuppliers = { dingus:'Dingus', hotetec:'Hotetec', restel:'Restel', roibos:'Roibos' };
+const _hpbCountryNames = { cu:'Cuba', do:'Dominican Republic' };
+function _hpbCountriesForSupplier(sup) {
+  return [...new Set(Object.values(_hpbHotels).filter(h => h.supplier === sup).map(h => h.country))];
+}
+function _hpbHotelsFor(sup, country) {
+  return Object.entries(_hpbHotels)
+    .filter(([, h]) => h.supplier === sup && h.country === country)
+    .map(([name]) => name);
+}
 
 // Each agency carries its own 4-tier ruleset. The resolver walks
 // hotel → category → country → chain → default for each agency
 // against the currently-selected hotel.
 const D1_AGENCIES = [
   {
-    name: 'Demo Agency', lic: 'ag1 · LIC-12345', bookings: 12, defaultPct: 15,
+    name: 'Demo Agency', lic: 'ag1 · LIC-12345', email: 'ops@demoagency.com',
+    bookings: 12, defaultPct: 15, rebatePct: 3, rebateCustom: true,
     rules: {
       chain:    [{ target: 'iberostar', pct: 18 }],
       country:  [{ target: 'cu', pct: 12 }],
@@ -303,24 +349,28 @@ const D1_AGENCIES = [
     },
   },
   {
-    name: 'Caribe Tours', lic: 'ag7 · LIC-23488', bookings: 8, defaultPct: 15,
+    name: 'Caribe Tours', lic: 'ag7 · LIC-23488', email: 'book@caribetours.cu',
+    bookings: 8, defaultPct: 15, rebatePct: 2, rebateCustom: false,
     rules: {
       chain: [{ target: 'iberostar', pct: 18 }, { target: 'hyatt', pct: 20 }],
     },
   },
   {
-    name: 'Sol Mar Travel', lic: 'ag14 · LIC-31202', bookings: 5, defaultPct: 15,
+    name: 'Sol Mar Travel', lic: 'ag14 · LIC-31202', email: 'hola@solmar.travel',
+    bookings: 5, defaultPct: 15, rebatePct: 3, rebateCustom: true,
     rules: {
       country: [{ target: 'cu', pct: 14 }],
       hotel:   [{ target: 'Iberostar Grand Packard', pct: 18 }],
     },
   },
   {
-    name: 'Viajes Mediterráneo', lic: 'ag22 · LIC-44120', bookings: 3, defaultPct: 12,
+    name: 'Viajes Mediterráneo', lic: 'ag22 · LIC-44120', email: 'info@viajesmed.es',
+    bookings: 3, defaultPct: 12, rebatePct: 2, rebateCustom: false,
     rules: {},
   },
   {
-    name: 'Destinos Ibérica', lic: 'ag31 · LIC-55708', bookings: 2, defaultPct: 15,
+    name: 'Destinos Ibérica', lic: 'ag31 · LIC-55708', email: 'reservas@destinosiberica.es',
+    bookings: 2, defaultPct: 15, rebatePct: 2, rebateCustom: false,
     rules: {
       country:  [{ target: 'cu', pct: 10 }],
       category: [{ target: '5star-ai', pct: 22 }],
@@ -425,15 +475,23 @@ function hpbSelectAgency(idx) {
   if (card) card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }
 
-function hpbRenderAgencyDrilldown(idx) {
+/* Read the currently-selected hotel + its live room net from the cascade
+   controls. Falls back to the first hotel / cheapest room so the demo always
+   renders even before a full selection is made. */
+function _hpbCurrent() {
   const screen = document.getElementById('screen-hotel-price-breakdown');
+  const sel = screen?.querySelector('.hpb-select');
+  let hotelKey = sel?.value;
+  if (!hotelKey || !_hpbHotels[hotelKey]) hotelKey = Object.keys(_hpbHotels)[0];
+  const hotelInfo = _hpbHotels[hotelKey];
+  const roomSel = screen?.querySelector('.hpb-room');
+  const net = parseFloat(roomSel?.value) || Math.min(...hotelInfo.rooms.map(r => r.net));
+  return { screen, hotelKey, hotelInfo, hotelMeta: { name: hotelKey, ...hotelInfo }, net };
+}
+
+function hpbRenderAgencyDrilldown(idx) {
+  const { screen, hotelKey, hotelInfo, hotelMeta, net: supplierNet } = _hpbCurrent();
   if (!screen) return;
-  const sel = screen.querySelector('.hpb-select');
-  const supNetInput = screen.querySelector('.hpb-field input[type="number"]');
-  const hotelKey = sel?.value?.split(' · ')[0] || 'Iberostar Grand Packard';
-  const hotelInfo = _hpbHotels[hotelKey] || _hpbHotels['Iberostar Grand Packard'];
-  const hotelMeta = { name: hotelKey, ...hotelInfo };
-  const supplierNet = parseFloat(supNetInput?.value || '200');
   const ergosSell = supplierNet * (1 - hotelInfo.chainPct / 100) * (1 + hotelInfo.ergosPct / 100);
 
   const agency = D1_AGENCIES[idx];
@@ -471,7 +529,7 @@ function hpbRenderAgencyDrilldown(idx) {
   const mathEl = document.getElementById('hpb-drilldown-math');
   if (mathEl) {
     mathEl.innerHTML = `
-      <div class="hpb-math-row"><span>Ergos sell (this hotel)</span><strong>$${ergosSell.toFixed(2)}</strong></div>
+      <div class="hpb-math-row"><span>Ergos sell (agency pays)</span><strong>$${ergosSell.toFixed(2)}</strong></div>
       <div class="hpb-math-row hpb-math-op"><span>× (1 + ${winner?.pct ?? agency.defaultPct}% markup)</span><strong class="hpb-pos">+ $${income.toFixed(2)}</strong></div>
       <div class="hpb-math-row hpb-math-total"><span>Customer pays</span><strong>$${customer.toFixed(2)}</strong></div>
       <div class="hpb-math-row hpb-math-foot"><span>${agency.name} earns per booking</span><strong class="hpb-pos">+$${income.toFixed(2)}</strong></div>
@@ -480,50 +538,58 @@ function hpbRenderAgencyDrilldown(idx) {
   }
 }
 
-function hpbRecompute() {
-  const screen = document.getElementById('screen-hotel-price-breakdown');
-  if (!screen) return;
-  const sel = screen.querySelector('.hpb-select');
-  const supNetInput = screen.querySelector('.hpb-field input[type="number"]');
-  const hotelKey = sel?.value?.split(' · ')[0] || 'Iberostar Grand Packard';
-  const hotelInfo = _hpbHotels[hotelKey] || _hpbHotels['Iberostar Grand Packard'];
-  const hotelMeta = { name: hotelKey, ...hotelInfo };
-  const supplierNet = parseFloat(supNetInput?.value || '200');
+/* Ergos markup source chip — mirrors the shipped label set
+   (hotel|hotel rule|chain rule|stars rule|country rule|GDS rule|default). */
+function _hpbMarkupChip(hotelInfo) {
+  const label = hotelInfo.chainId ? 'chain rule'
+    : hotelInfo.categories?.length ? 'stars rule' : 'country rule';
+  return `<a class="hpb-source-tag" href="commission-config.html">${label}</a>`;
+}
 
-  // 1. Ergos-side cascade (unchanged) ----------
+function hpbRecompute() {
+  const { screen, hotelKey, hotelInfo, hotelMeta, net: supplierNet } = _hpbCurrent();
+  if (!screen) return;
+
+  const afterChain = supplierNet * (1 - hotelInfo.chainPct / 100);
+  const ergosSell  = afterChain * (1 + hotelInfo.ergosPct / 100);
+  const agentPct   = 10, opsPct = 5; // policy payouts, % of Ergos sell (gross)
+  const agentCost  = ergosSell * agentPct / 100;
+  const opsCost    = ergosSell * opsPct / 100;
+  const ergosNet   = ergosSell - agentCost - opsCost;
+  const chainChip  = hotelInfo.chainPct ? '<a class="hpb-source-tag" href="hotel-brands">hotel rule</a>' : '<span class="muted">—</span>';
+
+  // 1. Price Waterfall — GDS net down to Ergos net ----------
   const cascadeBody = screen.querySelector('.hpb-cascade tbody');
   if (cascadeBody) {
-    const afterChain = supplierNet * (1 - hotelInfo.chainPct / 100);
-    const afterMarkup = afterChain * (1 + hotelInfo.ergosPct / 100);
-    const afterRebate = afterMarkup * (1 - 0.03);
     cascadeBody.innerHTML = `
-      <tr class="hpb-row-net"><td><strong>GDS supplier net</strong></td><td>—</td><td class="bb-mono">${hotelInfo.code}</td><td class="text-right hpb-amt">$${supplierNet.toFixed(2)}</td></tr>
-      <tr><td>Chain discount</td><td class="hpb-neg">−${hotelInfo.chainPct.toFixed(1)}%</td><td><span class="hpb-source-tag">chain_rule</span> ${hotelInfo.brand}</td><td class="text-right">$${afterChain.toFixed(2)}</td></tr>
-      <tr><td>Ergos markup</td><td class="hpb-pos">+${hotelInfo.ergosPct.toFixed(1)}%</td><td><span class="hpb-source-tag hpb-source-cascade">gds_rule → chain_rule</span></td><td class="text-right">$${afterMarkup.toFixed(2)}</td></tr>
-      <tr class="hpb-row-sell"><td><strong>Ergos sell</strong></td><td>—</td><td class="muted">price agencies pay Ergos</td><td class="text-right hpb-amt hpb-amt-bold">$${afterMarkup.toFixed(2)}</td></tr>
-      <tr><td>Agency rebate (typical)</td><td class="hpb-neg">−3.0%</td><td><span class="hpb-source-tag">agency_default</span></td><td class="text-right">$${afterRebate.toFixed(2)}</td></tr>
-      <tr><td>Sales agent earning (typical)</td><td class="hpb-neg">−22.0% of gross</td><td><span class="hpb-source-tag">agent_tier_elite</span></td><td class="text-right">—</td></tr>
-      <tr><td>Ops expense</td><td class="hpb-neg">−7.0% of gross</td><td><span class="hpb-source-tag">platform_default</span></td><td class="text-right">—</td></tr>`;
+      <tr class="hpb-row-net"><td><strong>GDS supplier net</strong></td><td>—</td><td class="bb-mono">${hotelInfo.supplier} / ${hotelInfo.code}</td><td class="text-right hpb-amt">$${supplierNet.toFixed(2)}</td></tr>
+      <tr><td>Chain discount</td><td class="hpb-neg">−${hotelInfo.chainPct.toFixed(1)}%</td><td>${chainChip}</td><td class="text-right">$${afterChain.toFixed(2)}</td></tr>
+      <tr><td>Ergos markup</td><td class="hpb-pos">+${hotelInfo.ergosPct.toFixed(1)}%</td><td>${_hpbMarkupChip(hotelInfo)}</td><td class="text-right">$${ergosSell.toFixed(2)}</td></tr>
+      <tr class="hpb-row-sell"><td><strong>Ergos sell (agency pays)</strong></td><td>—</td><td class="muted">price agencies pay Ergos</td><td class="text-right hpb-amt hpb-amt-bold">$${ergosSell.toFixed(2)}</td></tr>
+      <tr><td>Sales agent earning</td><td class="hpb-neg">−${agentPct.toFixed(1)}%</td><td><a class="hpb-source-tag" href="commission-config.html">policy</a></td><td class="text-right">$${agentCost.toFixed(2)}</td></tr>
+      <tr><td>Ops expense</td><td class="hpb-neg">−${opsPct.toFixed(1)}%</td><td><a class="hpb-source-tag" href="commission-config.html">policy</a></td><td class="text-right">$${opsCost.toFixed(2)}</td></tr>
+      <tr class="hpb-row-net-final"><td><strong>Ergos net</strong></td><td>—</td><td class="muted">what Ergos keeps</td><td class="text-right hpb-amt hpb-amt-bold">$${ergosNet.toFixed(2)}</td></tr>`;
   }
   const cardHead = screen.querySelector('.hpb-cascade-card .card-head h3');
-  if (cardHead) cardHead.innerHTML = 'Cascade for <strong>' + hotelKey + '</strong>';
+  if (cardHead) cardHead.innerHTML = 'Price Waterfall — <strong>' + hotelKey + '</strong>';
   const brandBadge = screen.querySelector('.hpb-cascade-card .card-head .badge');
-  if (brandBadge) brandBadge.textContent = 'Brand: ' + hotelInfo.brand;
+  if (brandBadge) brandBadge.textContent = 'Chain: ' + hotelInfo.brand;
 
-  // 2. Per-agency rows ----------
-  const afterChain = supplierNet * (1 - hotelInfo.chainPct / 100);
-  const ergosSell = afterChain * (1 + hotelInfo.ergosPct / 100);
+  // 2. Agency Prices rows — all active agencies ----------
   const agencyBody = document.getElementById('hpb-agencies-tbody');
   if (agencyBody) {
     agencyBody.innerHTML = D1_AGENCIES.map((a, idx) => {
       const r = d1ResolveAgencyTier(a, hotelMeta);
       const customer = ergosSell * (1 + r.pct / 100);
       const income = customer - ergosSell;
-      return `<tr onclick="hpbSelectAgency(${idx})">
-        <td><strong>${a.name}</strong><span class="hpb-agency-id">${a.lic}</span></td>
+      const rebateCell = a.rebateCustom
+        ? `<a class="hpb-rebate-link" href="commission-config.html?agency=${encodeURIComponent(a.name)}">${a.rebatePct}%</a>`
+        : `${a.rebatePct}%`;
+      return `<tr onclick="hpbSelectAgency(${idx})" data-search="${(a.name + ' ' + a.email).toLowerCase()}">
+        <td><strong>${a.name}</strong><span class="hpb-agency-id">${a.email}</span></td>
         <td>${d1RuleBadge(r.tier)}</td>
-        <td><span class="hpb-rule-reason">${r.reason}</span></td>
         <td class="text-right hpb-mk-pct">${r.pct}%</td>
+        <td class="text-right">${rebateCell}</td>
         <td class="text-right hpb-mk-amt">$${customer.toFixed(2)}</td>
         <td class="text-right hpb-pos">+$${income.toFixed(2)}</td>
         <td class="text-right">${a.bookings}</td>
@@ -537,66 +603,48 @@ function hpbRecompute() {
 
   // 3. Agency count
   const countEl = document.getElementById('hpb-agency-count');
-  if (countEl) countEl.textContent = D1_AGENCIES.length + ' agencies';
-
-  boToast('Recomputed for ' + hotelKey + ' at $' + supplierNet.toFixed(2) + ' supplier net', 'success');
+  if (countEl) countEl.textContent = `(${D1_AGENCIES.length})`;
 }
 function hpbExportCsv() {
-  const screen = document.getElementById('screen-hotel-price-breakdown');
-  // Header block: which hotel + supplier net
-  const hotelName = screen.querySelector('.hpb-cascade-card .card-head h3 strong')?.textContent || '';
-  const supplierNet = screen.querySelector('.hpb-field input[type="number"]')?.value || '';
+  const { screen, hotelKey } = _hpbCurrent();
+  const roomLabel = screen.querySelector('.hpb-room')?.value || '';
   const rows = [
     ['Hotel Price Composition'],
-    ['Hotel', hotelName],
-    ['Supplier net (USD)', supplierNet],
+    ['Hotel', hotelKey],
+    ['Room', roomLabel],
     [''],
-    ['Ergos-side cascade'],
-    ['Layer', 'Pct', 'Source', 'Running cost USD'],
+    ['Price Waterfall'],
+    ['Layer', 'Pct', 'Source', 'Running USD'],
   ];
   screen.querySelectorAll('.hpb-cascade tbody tr').forEach(tr => {
     const cells = Array.from(tr.querySelectorAll('td')).map(td => td.textContent.replace(/\s+/g, ' ').trim());
     rows.push(cells);
   });
-  // "This hotel matches" chips
   rows.push(['']);
-  rows.push(['Hotel matches']);
-  const chips = Array.from(screen.querySelectorAll('.hpb-match-chip'))
-    .map(c => c.textContent.replace(/\s+/g, ' ').trim());
-  chips.forEach(c => rows.push([c]));
-  // Per-agency rows — now includes Applied tier + Rule reason
-  rows.push(['']);
-  rows.push(['Per-agency effective customer price']);
-  rows.push([
-    'Agency',
-    'Applied tier',
-    'Rule reason',
-    'Markup %',
-    'Customer pays',
-    'Markup income',
-    'Bookings (90d)',
-  ]);
+  rows.push(['Agency Prices']);
+  rows.push(['Agency', 'Rule', 'Markup %', 'Rebate %', 'Customer pays', 'Markup income', 'Bookings']);
   screen.querySelectorAll('.hpb-agencies tbody tr').forEach(tr => {
+    if (tr.style.display === 'none') return; // export what's on screen
     const cells = Array.from(tr.querySelectorAll('td')).map(td =>
       td.textContent.replace(/\s+/g, ' ').trim()
     );
     rows.push(cells);
   });
-  // Tier coverage stats trailing block
-  rows.push(['']);
-  rows.push(['Tier coverage across active agencies']);
-  rows.push(['Tier', 'Agency count']);
-  screen.querySelectorAll('.hpb-tier-cell').forEach(cell => {
-    const label = cell.querySelector('.hpb-tier-cell-label')?.textContent?.trim() || '';
-    const count = cell.querySelector('.hpb-tier-cell-count')?.textContent?.trim() || '0';
-    rows.push([label, count]);
-  });
   boTriggerCsv(rows, 'hotel-price-composition.csv');
-  const agencyCount = screen.querySelectorAll('.hpb-agencies tbody tr').length;
-  boToast(`Exported full breakdown for ${hotelName} (${agencyCount} agencies, tier + reason included)`, 'success');
+  const agencyCount = Array.from(screen.querySelectorAll('.hpb-agencies tbody tr')).filter(tr => tr.style.display !== 'none').length;
+  boToast(`Exported breakdown for ${hotelKey} (${agencyCount} agencies)`, 'success');
 }
 function hpbExportPdf() {
-  boToast('PDF export sent to your downloads (stub in prototype)', 'info');
+  boToast('Opening print dialog — choose "Save as PDF" (stub in prototype)', 'info');
+}
+/* Filter the Agency Prices table by agency name OR contact email (client-side,
+   matches the shipped filter input). */
+function hpbFilterAgencies(value) {
+  const q = (value || '').trim().toLowerCase();
+  document.querySelectorAll('#hpb-agencies-tbody tr').forEach(tr => {
+    const hay = tr.getAttribute('data-search') || '';
+    tr.style.display = (!q || hay.includes(q)) ? '' : 'none';
+  });
 }
 /* Toggle: hide agency rows whose 90d-booking count is 0 — for THIS demo
    they all have ≥2 so the toggle visibly affects the count in 'Show all'
@@ -614,6 +662,61 @@ function hpbFilterActiveAgencies(showActiveOnly) {
   boToast(showActiveOnly ? `Showing ${visible} agencies with bookings in last 90 days` : `Showing all ${visible} agencies (incl. quote-only)`, 'info');
 }
 
+/* ---- Cascading controls: Supplier → Country → Hotel → Room ---- */
+
+// Fill the Room select for the current hotel; cheapest is auto-selected first.
+function _hpbPopulateRooms() {
+  const { screen, hotelInfo } = _hpbCurrent();
+  const roomSel = screen?.querySelector('.hpb-room');
+  if (!roomSel || !hotelInfo) return;
+  const rooms = [...hotelInfo.rooms].sort((a, b) => a.net - b.net); // cheapest first
+  roomSel.innerHTML = rooms.map(r => `<option value="${r.net}">${r.label} — $${r.net}</option>`).join('');
+  roomSel.value = String(rooms[0].net); // cheapest auto-selected
+}
+
+// Fill the Hotel select from the chosen supplier + country (first 15).
+function hpbOnCountryChange() {
+  const screen = document.getElementById('screen-hotel-price-breakdown');
+  const sup = screen?.querySelector('.hpb-supplier')?.value;
+  const country = screen?.querySelector('.hpb-country')?.value;
+  const hotelSel = screen?.querySelector('.hpb-select');
+  if (!hotelSel) return;
+  const hotels = _hpbHotelsFor(sup, country).slice(0, 15); // first 15, type to narrow
+  hotelSel.innerHTML = hotels.map(name => {
+    const h = _hpbHotels[name];
+    return `<option value="${name}">${name} · ${h.code} · ${h.city}</option>`;
+  }).join('');
+  _hpbPopulateRooms();
+  hpbRecompute();
+}
+
+// Country options are scoped to the chosen supplier.
+function hpbOnSupplierChange() {
+  const screen = document.getElementById('screen-hotel-price-breakdown');
+  const sup = screen?.querySelector('.hpb-supplier')?.value;
+  const countrySel = screen?.querySelector('.hpb-country');
+  if (!countrySel) return;
+  const countries = _hpbCountriesForSupplier(sup);
+  countrySel.innerHTML = countries.map(c => `<option value="${c}">${_hpbCountryNames[c] || c}</option>`).join('');
+  hpbOnCountryChange();
+}
+
+// One-time control setup: default dates (tomorrow + 2 nights) + populate cascade.
+function _hpbInitControls() {
+  const screen = document.getElementById('screen-hotel-price-breakdown');
+  if (!screen) return;
+  const ci = screen.querySelector('.hpb-checkin');
+  const co = screen.querySelector('.hpb-checkout');
+  if (ci && !ci.value) {
+    const t = new Date(); t.setDate(t.getDate() + 1);
+    const o = new Date(); o.setDate(o.getDate() + 3);
+    ci.value = t.toISOString().slice(0, 10);
+    co.value = o.toISOString().slice(0, 10);
+  }
+  // Room select drives recompute; when it changes, only re-derive dollars.
+  hpbOnSupplierChange(); // cascades: supplier→country→hotel→room→recompute
+}
+
 /* Auto-render D1 when the screen is shown. Wraps showScreen non-destructively
    so we don't lose the existing pricing-policy / sidebar logic. */
 (function () {
@@ -626,7 +729,7 @@ function hpbFilterActiveAgencies(showActiveOnly) {
         // Silent first-render — don't fire a toast on simple navigation
         const wasToast = window.boToast;
         window.boToast = () => {};
-        try { hpbRecompute(); } finally { window.boToast = wasToast; }
+        try { _hpbInitControls(); } finally { window.boToast = wasToast; }
       }, 30);
     }
   };

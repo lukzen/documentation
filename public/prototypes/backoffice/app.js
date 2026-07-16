@@ -61,9 +61,10 @@ const NAV_GROUPS = [
   ]},
   {title:'Finance & Audit', items:[
     {id:'pricing-policy',icon:'⚙',label:'Pricing Policy'},
+    {id:'hotel-price-breakdown',icon:'⊟',label:'Hotel Price Composition'},
+    {divider:true},
     {id:'hotel-brands',icon:'⌘',label:'Hotel Brands'},
     {id:'booking-breakdown',icon:'⊞',label:'Booking Breakdown'},
-    {id:'hotel-price-breakdown',icon:'⊟',label:'Hotel Price Composition'},
     {id:'finance-remittances',icon:'$',label:'Agency Remittances'},
     {id:'audit-log',icon:'⊜',label:'Booking Audit Log'}
   ]},
@@ -79,7 +80,9 @@ function renderSidebars(activeId){
   // Empty title => no group header (live's Dashboard sits ungrouped at top).
   const groupsHTML = NAV_GROUPS.map(g=>`
     ${g.title ? `<div class="nav-group-title">${g.title}</div>` : ''}
-    ${g.items.map(n => n.href
+    ${g.items.map(n => n.divider
+      ? `<div class="nav-divider" role="separator"></div>`
+      : n.href
       ? `<a class="nav-link" href="${n.href}" data-label="${n.label}"><span class="nav-icon">${n.icon}</span><span>${n.label}</span><span class="nav-ext">↗</span></a>`
       : `<a class="nav-link ${n.id===activeId?'active':''}" data-label="${n.label}" onclick="showScreen('${n.id}');closeSidebar()"><span class="nav-icon">${n.icon}</span><span>${n.label}</span></a>`
     ).join('')}

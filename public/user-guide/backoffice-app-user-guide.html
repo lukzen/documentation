@@ -39,9 +39,10 @@
         <a href="#pricing-policy"><span class="toc-num">8.</span><span>Pricing Policy (commission)</span></a>
         <a href="#hotel-brands"><span class="toc-num">9.</span><span>Hotel Brands (chains)</span></a>
         <a href="#finance"><span class="toc-num">10.</span><span>Finance &amp; booking breakdown</span></a>
-        <a href="#audit-log"><span class="toc-num">11.</span><span>Audit logs &amp; compliance</span></a>
-        <a href="#vendor-management"><span class="toc-num">12.</span><span>Hotel Suppliers</span></a>
-        <a href="#troubleshooting"><span class="toc-num">13.</span><span>Common tasks &amp; troubleshooting</span></a>
+        <a href="#price-composition"><span class="toc-num">11.</span><span>Hotel Price Composition</span></a>
+        <a href="#audit-log"><span class="toc-num">12.</span><span>Audit logs &amp; compliance</span></a>
+        <a href="#vendor-management"><span class="toc-num">13.</span><span>Hotel Suppliers</span></a>
+        <a href="#troubleshooting"><span class="toc-num">14.</span><span>Common tasks &amp; troubleshooting</span></a>
       </div>
       <div class="toc-grid lang-es">
         <a href="#welcome"><span class="toc-num">1.</span><span>Bienvenida y vista de roles</span></a>
@@ -54,9 +55,10 @@
         <a href="#pricing-policy"><span class="toc-num">8.</span><span>Política de Precios (comisión)</span></a>
         <a href="#hotel-brands"><span class="toc-num">9.</span><span>Marcas Hoteleras (cadenas)</span></a>
         <a href="#finance"><span class="toc-num">10.</span><span>Finanzas y desglose de reservas</span></a>
-        <a href="#audit-log"><span class="toc-num">11.</span><span>Registros de auditoría y cumplimiento</span></a>
-        <a href="#vendor-management"><span class="toc-num">12.</span><span>Proveedores Hoteleros</span></a>
-        <a href="#troubleshooting"><span class="toc-num">13.</span><span>Tareas comunes y solución</span></a>
+        <a href="#price-composition"><span class="toc-num">11.</span><span>Composición de Precio del Hotel</span></a>
+        <a href="#audit-log"><span class="toc-num">12.</span><span>Registros de auditoría y cumplimiento</span></a>
+        <a href="#vendor-management"><span class="toc-num">13.</span><span>Proveedores Hoteleros</span></a>
+        <a href="#troubleshooting"><span class="toc-num">14.</span><span>Tareas comunes y solución</span></a>
       </div>
     </nav>
   </aside>
@@ -422,8 +424,8 @@
 
     <h3 class="lang-en">Live (GDS) price simulation</h3>
     <h3 class="lang-es">Simulación de precios en vivo (GDS)</h3>
-    <p class="lang-en">The right rail has three tabs: <strong>Simulate</strong>, <strong>Live (GDS)</strong>, and <strong>Audit Trail</strong>. The <strong>Simulate</strong> tab runs the cascade on a hypothetical net price you type in. The <strong>Live (GDS)</strong> tab runs the <em>exact same</em> cascade, but against the hotel's <strong>real, live GDS prices</strong> for every available room type — so you can see precisely how your pricing policy lands on the rooms a guest would actually book. It works the same way for every GDS (Restel, Roibos, Hotetec, Dingus).</p>
-    <p class="lang-es">El panel derecho tiene tres pestañas: <strong>Simulate</strong>, <strong>Live (GDS)</strong> y <strong>Audit Trail</strong>. La pestaña <strong>Simulate</strong> corre la cascada sobre un precio neto hipotético que vos ingresás. La pestaña <strong>Live (GDS)</strong> corre <em>exactamente la misma</em> cascada, pero contra los <strong>precios reales y en vivo del GDS</strong> del hotel para cada tipo de habitación disponible — así ves con precisión cómo tu política de precios aterriza sobre las habitaciones que un huésped realmente reservaría. Funciona igual para cada GDS (Restel, Roibos, Hotetec, Dingus).</p>
+    <p class="lang-en">The right rail has two tabs: <strong>Live (GDS)</strong> and <strong>Audit Trail</strong>. The <strong>Live (GDS)</strong> tab runs the cascade against the hotel's <strong>real, live GDS prices</strong> for every available room type — so you can see precisely how your pricing policy lands on the rooms a guest would actually book. It works the same way for every GDS (Restel, Roibos, Hotetec, Dingus). There is no hypothetical "Simulate" input any more — the live supplier price is the only preview here.</p>
+    <p class="lang-es">El panel derecho tiene dos pestañas: <strong>Live (GDS)</strong> y <strong>Audit Trail</strong>. La pestaña <strong>Live (GDS)</strong> corre la cascada contra los <strong>precios reales y en vivo del GDS</strong> del hotel para cada tipo de habitación disponible — así ves con precisión cómo tu política de precios aterriza sobre las habitaciones que un huésped realmente reservaría. Funciona igual para cada GDS (Restel, Roibos, Hotetec, Dingus). Ya no hay un campo hipotético "Simulate" — el precio real del proveedor es la única vista previa acá.</p>
 
     <div class="task">
       <h4 class="lang-en">Checking live prices for a hotel</h4>
@@ -582,10 +584,114 @@
     </div>
   </section>
 
-  <!-- SECTION 11: AUDIT LOG -->
+  <!-- SECTION 11: HOTEL PRICE COMPOSITION -->
+  <section id="price-composition">
+    <h2 class="lang-en">11. Hotel Price Composition <span class="label">/finance/price-composition</span></h2>
+    <h2 class="lang-es">11. Composición de Precio del Hotel <span class="label">/finance/price-composition</span></h2>
+
+    <p class="lang-en">Where <em>Booking Breakdown</em> (§10) answers "where did the money go on <strong>this booking</strong>", <strong>Hotel Price Composition</strong> answers a forward-looking question for a whole hotel: <em>"for the same room, why does Agency A's customer pay a different price than Agency B's?"</em> Pick a real hotel, load its live supplier rate, and the page shows the GDS net, every cascade layer Ergos applies, and — for every active agency — the exact price their customer would pay. It sits under <strong>Finance &amp; Audit</strong> in the sidebar, directly below Pricing Policy.</p>
+    <p class="lang-es">Donde <em>Desglose de Reservas</em> (§10) responde "adónde fue el dinero en <strong>esta reserva</strong>", <strong>Composición de Precio del Hotel</strong> responde una pregunta a futuro para todo un hotel: <em>"para la misma habitación, ¿por qué el cliente de la Agencia A paga un precio distinto al de la Agencia B?"</em> Elegí un hotel real, cargá su tarifa en vivo del proveedor, y la página muestra el net del GDS, cada capa de la cascada que aplica Ergos y — para cada agencia activa — el precio exacto que pagaría su cliente. Está bajo <strong>Finance &amp; Audit</strong> en el panel, justo debajo de Pricing Policy.</p>
+
+    <div class="task">
+      <h4 class="lang-en">Auditing a hotel's pricing end-to-end</h4>
+      <h4 class="lang-es">Auditar el precio de un hotel de punta a punta</h4>
+      <ol class="lang-en">
+        <li>Open <strong>Hotel Price Composition</strong> from the Finance &amp; Audit group in the sidebar.</li>
+        <li>Choose a <strong>Supplier</strong> (Dingus, Hotetec, Restel, or Roibos). The <strong>Country</strong> dropdown then lists only the countries that supplier covers.</li>
+        <li>Pick a <strong>Country</strong>. The <strong>Hotel</strong> dropdown pre-populates with the first 15 hotels for that supplier + country — start typing to narrow it to the one you want.</li>
+        <li>Adjust the <strong>Check-in</strong> / <strong>Check-out</strong> dates if needed (they default to tomorrow for 2 nights) and pick a <strong>Room</strong>. The cheapest room is auto-selected; the chosen room's real live net is what drives every dollar on the page.</li>
+      </ol>
+      <ol class="lang-es">
+        <li>Abrí <strong>Hotel Price Composition</strong> desde el grupo Finance &amp; Audit en el panel.</li>
+        <li>Elegí un <strong>Supplier</strong> (Dingus, Hotetec, Restel o Roibos). El dropdown de <strong>Country</strong> lista solo los países que cubre ese proveedor.</li>
+        <li>Elegí un <strong>Country</strong>. El dropdown de <strong>Hotel</strong> se pre-carga con los primeros 15 hoteles de ese proveedor + país — empezá a escribir para acotarlo al que buscás.</li>
+        <li>Ajustá las fechas de <strong>Check-in</strong> / <strong>Check-out</strong> si hace falta (por defecto mañana, 2 noches) y elegí una <strong>Room</strong>. La habitación más barata queda auto-seleccionada; el net real en vivo de esa habitación es lo que impulsa cada dólar de la página.</li>
+      </ol>
+    </div>
+
+    <figure class="screenshot">
+      <div class="screenshot-frame">
+        <img src="d1-cascading-filters.png"
+             alt="Hotel Price Composition — cascading filters: Supplier=Roibos, Country=Cuba, and the Hotel dropdown pre-populated with Cuban hotels (Aparthotel Azul, Hotel Playa Paraiso, Iberostar Selection Varadero…) ready to narrow by typing."
+             loading="lazy" onerror="this.style.display='none'" />
+      </div>
+      <figcaption class="lang-en">The cascading filters: Supplier → Country → Hotel. Once a supplier and country are chosen, the hotel list pre-populates (first 15, "type to narrow"). Dates and room complete the selection.</figcaption>
+      <figcaption class="lang-es">Los filtros en cascada: Supplier → Country → Hotel. Al elegir proveedor y país, la lista de hoteles se pre-carga (primeros 15, "escribí para acotar"). Las fechas y la habitación completan la selección.</figcaption>
+    </figure>
+
+    <h3 class="lang-en">The Price Waterfall</h3>
+    <h3 class="lang-es">El Price Waterfall</h3>
+    <p class="lang-en">The <strong>Price Waterfall</strong> card walks the money from the raw supplier rate down to what Ergos keeps, one row per layer. Each adjusted layer carries a small <strong>source chip</strong> naming the rule that produced it (e.g. <em>hotel rule</em>, <em>country rule</em>, <em>chain rule</em>); the chip links to the screen that owns that rule (Pricing Policy or Hotel Brands), so you can jump straight to the setting behind any number.</p>
+    <p class="lang-es">La tarjeta <strong>Price Waterfall</strong> recorre el dinero desde la tarifa bruta del proveedor hasta lo que Ergos retiene, una fila por capa. Cada capa ajustada lleva un pequeño <strong>chip de origen</strong> que nombra la regla que la produjo (ej. <em>hotel rule</em>, <em>country rule</em>, <em>chain rule</em>); el chip enlaza a la pantalla dueña de esa regla (Pricing Policy o Hotel Brands), así podés saltar directo al ajuste detrás de cualquier número.</p>
+    <ul class="lang-en">
+      <li><strong>GDS supplier net</strong> — the live rate from the chosen supplier for the selected room.</li>
+      <li><strong>Chain discount</strong> — the negotiated chain rebate (source chip, e.g. <em>hotel rule</em>).</li>
+      <li><strong>Ergos markup</strong> — the cascade markup (source chip: hotel / hotel rule / chain rule / stars rule / country rule / GDS rule / default).</li>
+      <li><strong>Ergos sell (agency pays)</strong> — the price agencies pay Ergos.</li>
+      <li><strong>Sales agent earning</strong> and <strong>Ops expense</strong> — the policy payouts.</li>
+      <li><strong>Ergos net</strong> — what Ergos keeps after all payouts.</li>
+    </ul>
+    <ul class="lang-es">
+      <li><strong>GDS supplier net</strong> — la tarifa en vivo del proveedor elegido para la habitación seleccionada.</li>
+      <li><strong>Chain discount</strong> — el rebate de cadena negociado (chip de origen, ej. <em>hotel rule</em>).</li>
+      <li><strong>Ergos markup</strong> — el markup de la cascada (chip de origen: hotel / hotel rule / chain rule / stars rule / country rule / GDS rule / default).</li>
+      <li><strong>Ergos sell (agency pays)</strong> — el precio que las agencias le pagan a Ergos.</li>
+      <li><strong>Sales agent earning</strong> y <strong>Ops expense</strong> — los payouts de la política.</li>
+      <li><strong>Ergos net</strong> — lo que Ergos retiene tras todos los payouts.</li>
+    </ul>
+
+    <figure class="screenshot">
+      <div class="screenshot-frame">
+        <img src="d1-waterfall-live.png"
+             alt="Hotel Price Composition for Melia Internacional Varadero — Price Waterfall showing a real $144.00 GDS net, −15% chain discount, +10% Ergos markup, $134.64 Ergos sell, agent and ops payouts, and $10.40 Ergos net; below it the Agency Prices table lists 27 agencies with their markup, rebate, customer-pays and markup-income dollars."
+             loading="lazy" onerror="this.style.display='none'" />
+      </div>
+      <figcaption class="lang-en">Melia Internacional Varadero on a real $144.00 supplier net: the full waterfall down to $10.40 Ergos net, and the Agency Prices table showing what every active agency's customer would pay.</figcaption>
+      <figcaption class="lang-es">Melia Internacional Varadero sobre un net real del proveedor de $144.00: la cascada completa hasta $10.40 de Ergos net, y la tabla Agency Prices mostrando lo que pagaría el cliente de cada agencia activa.</figcaption>
+    </figure>
+
+    <h3 class="lang-en">The Agency Prices table</h3>
+    <h3 class="lang-es">La tabla Agency Prices</h3>
+    <p class="lang-en">Below the waterfall, the <strong>Agency Prices</strong> table lists <strong>all active agencies</strong> (not just those that have booked this hotel). For each one you see whether they overrode the default — a teal <strong>Custom</strong> badge means they set their own markup, grey <strong>Default</strong> means they inherit it — their <strong>Markup %</strong>, <strong>Rebate %</strong> (which links to that agency's PnL when overridden or coming from the agency default), what their <strong>Customer pays</strong>, the <strong>Markup income</strong>, and their <strong>Bookings</strong> for this hotel. Use the <strong>filter input</strong> to narrow by agency <em>name</em> or contact <em>email</em>, toggle <strong>"show only agencies with recent bookings (90d)"</strong>, and click any column header to sort. <strong>Export CSV</strong> and <strong>Print / PDF</strong> capture exactly what's on screen.</p>
+    <p class="lang-es">Debajo de la cascada, la tabla <strong>Agency Prices</strong> lista <strong>todas las agencias activas</strong> (no solo las que reservaron este hotel). Para cada una ves si sobrescribieron el default — un badge <strong>Custom</strong> teal significa que fijaron su propio markup, el gris <strong>Default</strong> significa que lo heredan — su <strong>Markup %</strong>, <strong>Rebate %</strong> (que enlaza al PnL de esa agencia cuando está sobrescrito o viene del default de la agencia), lo que su <strong>Customer pays</strong>, el <strong>Markup income</strong>, y sus <strong>Bookings</strong> para este hotel. Usá el <strong>campo de filtro</strong> para acotar por <em>nombre</em> de agencia o <em>email</em> de contacto, activá <strong>"show only agencies with recent bookings (90d)"</strong>, y hacé clic en cualquier encabezado para ordenar. <strong>Export CSV</strong> y <strong>Print / PDF</strong> capturan exactamente lo que está en pantalla.</p>
+
+    <figure class="screenshot">
+      <div class="screenshot-frame">
+        <img src="d1-agency-filter.png"
+             alt="The Agency Prices filter input narrowing the table to a single agency (Ergos Continental Test) by an email fragment — the row shows a teal Custom badge, 12% markup, a linked 2% rebate, $150.80 customer pays and $16.16 markup income."
+             loading="lazy" onerror="this.style.display='none'" />
+      </div>
+      <figcaption class="lang-en">Filtering by name or email narrows the table instantly. Here one agency remains: teal <strong>Custom</strong> badge (it overrode the default), 12% markup, a linked 2% rebate, $150.80 customer price.</figcaption>
+      <figcaption class="lang-es">Filtrar por nombre o email acota la tabla al instante. Acá queda una agencia: badge <strong>Custom</strong> teal (sobrescribió el default), 12% de markup, un rebate del 2% enlazado, $150.80 de precio al cliente.</figcaption>
+    </figure>
+
+    <h3 class="lang-en">Markup cascade drilldown</h3>
+    <h3 class="lang-es">Drilldown de la cascada de markup</h3>
+    <p class="lang-en">Click any agency row to open the <strong>Markup cascade</strong> drilldown. The left side is the 5-tier trace the resolver walked — <strong>Hotel &gt; Brand &gt; Category &gt; Country &gt; Default</strong>: a <strong>trophy</strong> marks the winning tier, a <strong>check</strong> marks a tier that matched but was beaten by a more specific one, and a <strong>struck-through</strong> tier had no rule. The right side is a single math block for the winning tier — Ergos sell × the winning markup % = what the customer pays, plus the markup income and booking count.</p>
+    <p class="lang-es">Hacé clic en cualquier fila de agencia para abrir el drilldown <strong>Markup cascade</strong>. El lado izquierdo es la traza de 5 niveles que recorrió el resolver — <strong>Hotel &gt; Brand &gt; Category &gt; Country &gt; Default</strong>: un <strong>trofeo</strong> marca el nivel ganador, un <strong>check</strong> marca un nivel que coincidió pero fue superado por uno más específico, y un nivel <strong>tachado</strong> no tenía regla. El lado derecho es un único bloque de cálculo para el nivel ganador — Ergos sell × el markup % ganador = lo que paga el cliente, más el markup income y la cantidad de reservas.</p>
+
+    <figure class="screenshot">
+      <div class="screenshot-frame">
+        <img src="d1-drilldown-live.png"
+             alt="Markup cascade drilldown for Ergos Continental Test — left column: Hotel, Brand, Category struck through (no rule), Country marked with a trophy as the 12% winner, Default checked but beaten at 0%; right column: a Country Markup math block showing $134.64 Ergos sell × 12% = $150.80 customer pays, $16.16 markup income, 0 bookings."
+             loading="lazy" onerror="this.style.display='none'" />
+      </div>
+      <figcaption class="lang-en">Drilldown for Ergos Continental Test: the Country tier wins (trophy, 12%); Hotel/Brand/Category had no rule (struck through); Default matched but was beaten (check). The math block shows $134.64 × 12% = $150.80.</figcaption>
+      <figcaption class="lang-es">Drilldown para Ergos Continental Test: gana el nivel Country (trofeo, 12%); Hotel/Brand/Category no tenían regla (tachados); Default coincidió pero fue superado (check). El bloque de cálculo muestra $134.64 × 12% = $150.80.</figcaption>
+    </figure>
+
+    <div class="callout callout-info">
+      <strong class="lang-en">When the supplier returns no availability:</strong>
+      <strong class="lang-es">Cuando el proveedor no devuelve disponibilidad:</strong>
+      <span class="lang-en"> the percentages, badges, and the whole cascade trace still render — the rule audit never depends on live availability. Only the dollar cells show <code>—</code>, and CSV / PDF export is disabled (nothing exports with missing dollars).</span>
+      <span class="lang-es"> los porcentajes, los badges y toda la traza de la cascada igual se renderizan — la auditoría de reglas nunca depende de la disponibilidad en vivo. Solo las celdas de dólares muestran <code>—</code>, y la exportación CSV / PDF queda deshabilitada (nada se exporta con dólares faltantes).</span>
+    </div>
+  </section>
+
+  <!-- SECTION 12: AUDIT LOG -->
   <section id="audit-log">
-    <h2 class="lang-en">11. Audit logs &amp; compliance</h2>
-    <h2 class="lang-es">11. Registros de auditoría y cumplimiento</h2>
+    <h2 class="lang-en">12. Audit logs &amp; compliance</h2>
+    <h2 class="lang-es">12. Registros de auditoría y cumplimiento</h2>
 
     <p class="lang-en">There are two audit logs in the Backoffice:</p>
     <p class="lang-es">Hay dos logs de auditoría en el Backoffice:</p>
@@ -630,8 +736,8 @@
 
   <!-- SECTION 12: VENDOR MANAGEMENT -->
   <section id="vendor-management">
-    <h2 class="lang-en">12. Hotel Suppliers <span class="label">/vendor-management</span></h2>
-    <h2 class="lang-es">12. Proveedores Hoteleros <span class="label">/vendor-management</span></h2>
+    <h2 class="lang-en">13. Hotel Suppliers <span class="label">/vendor-management</span></h2>
+    <h2 class="lang-es">13. Proveedores Hoteleros <span class="label">/vendor-management</span></h2>
     <span class="audience lang-en">Admin only</span>
     <span class="audience lang-es">Solo Admin</span>
 
@@ -663,8 +769,8 @@
 
   <!-- SECTION 13: TROUBLESHOOTING -->
   <section id="troubleshooting">
-    <h2 class="lang-en">13. Common tasks &amp; troubleshooting</h2>
-    <h2 class="lang-es">13. Tareas comunes y solución</h2>
+    <h2 class="lang-en">14. Common tasks &amp; troubleshooting</h2>
+    <h2 class="lang-es">14. Tareas comunes y solución</h2>
 
     <h3 class="lang-en">An agency's bookings stopped going through</h3>
     <h3 class="lang-es">Las reservas de una agencia dejaron de pasar</h3>
