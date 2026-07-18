@@ -39,6 +39,7 @@
         <a href="#vouchers-invoices"><span class="toc-num">8.</span><span>Vouchers &amp; invoices</span></a>
         <a href="#markup-rules"><span class="toc-num">9.</span><span>Setting your markup (pricing rules)</span></a>
         <a href="#pnl"><span class="toc-num">10.</span><span>Tracking your earnings (P&amp;L)</span></a>
+        <a href="#remittances"><span class="toc-num">10b.</span><span>My Earnings &amp; remittances</span></a>
         <a href="#employees"><span class="toc-num">11.</span><span>Adding employees to your agency</span></a>
         <a href="#account"><span class="toc-num">12.</span><span>Account &amp; profile settings</span></a>
         <a href="#troubleshooting"><span class="toc-num">13.</span><span>Common issues &amp; troubleshooting</span></a>
@@ -54,6 +55,7 @@
         <a href="#vouchers-invoices"><span class="toc-num">8.</span><span>Vouchers y facturas</span></a>
         <a href="#markup-rules"><span class="toc-num">9.</span><span>Configurar tu markup (reglas de precio)</span></a>
         <a href="#pnl"><span class="toc-num">10.</span><span>Seguir tus ganancias (P&amp;L)</span></a>
+        <a href="#remittances"><span class="toc-num">10b.</span><span>Mis Ganancias &amp; remesas</span></a>
         <a href="#employees"><span class="toc-num">11.</span><span>Sumar empleados a tu agencia</span></a>
         <a href="#account"><span class="toc-num">12.</span><span>Cuenta y configuración del perfil</span></a>
         <a href="#troubleshooting"><span class="toc-num">13.</span><span>Problemas comunes y solución</span></a>
@@ -698,6 +700,168 @@
       <strong class="lang-es">Cuando los números no coinciden con lo que dice tu contabilidad:</strong>
       <span class="lang-en"> the most common reasons are (a) bookings cancelled with penalty (still appear in P&amp;L with the partial cost), (b) modifications that changed the room/dates after the original booking was made, and (c) currency conversion timing if your booking and your bookkeeping use different exchange rates. Contact Ergos support with a specific locator to investigate.</span>
       <span class="lang-es"> las razones más comunes son (a) reservas canceladas con penalización (siguen apareciendo en el P&amp;L con el costo parcial), (b) modificaciones que cambiaron la habitación/fechas después de hacer la reserva original, y (c) timing de conversión de moneda si tu reserva y tu contabilidad usan tasas de cambio distintas. Contactá al soporte de Ergos con un locator específico para investigar.</span>
+    </div>
+  </section>
+
+  <!-- SECTION 10b: MY EARNINGS & REMITTANCES -->
+  <section id="remittances">
+    <h2 class="lang-en">10b. My Earnings &amp; remittances <span class="label">New — B2.1</span></h2>
+    <h2 class="lang-es">10b. Mis Ganancias &amp; remesas <span class="label">Nuevo — B2.1</span></h2>
+    <span class="audience lang-en">Agency owner only</span>
+    <span class="audience lang-es">Solo dueño de la agencia</span>
+
+    <p class="lang-en">The <strong>My Earnings</strong> page is a dedicated view for agency owners that combines your full P&amp;L with remittance tracking — the monthly amounts you owe Ergos for the rebate they've already paid out on your behalf. Find it in the account sidebar, listed as <em>My Earnings (P&amp;L)</em>, above Markup Rules.</p>
+    <p class="lang-es">La página <strong>Mis Ganancias</strong> es una vista exclusiva para dueños de agencia que combina tu P&amp;L completo con el seguimiento de remesas — los montos mensuales que le debés a Ergos por el rebate que ya te pagaron por adelantado. Encontrala en la barra lateral de la cuenta, listada como <em>Mis Ganancias (P&amp;L)</em>, encima de Markup Rules.</p>
+
+    <h3 class="lang-en">The remittance banner</h3>
+    <h3 class="lang-es">El banner de remesas</h3>
+    <p class="lang-en">At the top of the page, an amber card shows the amount due for the most recently closed calendar month: <strong>"Remit USD X to Ergos by [date]"</strong>. Below the headline you'll see which period it covers and a link to scroll directly to the history table. The banner carries a status pill:</p>
+    <p class="lang-es">En la parte superior de la página, una tarjeta ámbar muestra el monto adeudado por el mes calendario cerrado más recientemente: <strong>"Remit USD X to Ergos by [fecha]"</strong>. Debajo del título ves el período que cubre y un link para desplazarte directo a la tabla de historial. El banner lleva una pastilla de estado:</p>
+    <ul class="lang-en">
+      <li><strong>Pending</strong> (amber) — payment not yet registered.</li>
+      <li><strong>Overdue</strong> (red) — the due date has passed and no payment has been recorded.</li>
+    </ul>
+    <ul class="lang-es">
+      <li><strong>Pendiente</strong> (ámbar) — pago aún no registrado.</li>
+      <li><strong>Vencido</strong> (rojo) — la fecha de vencimiento pasó y no se registró ningún pago.</li>
+    </ul>
+    <p class="lang-en">The banner disappears automatically once the remittance is marked paid, or when the amount owed is $0 (e.g., a month with no non-cancelled bookings).</p>
+    <p class="lang-es">El banner desaparece automáticamente una vez que la remesa se marca como pagada, o cuando el monto adeudado es $0 (por ejemplo, un mes sin reservas no canceladas).</p>
+
+    <figure class="screenshot">
+      <div class="screenshot-frame">
+        <img src="b2-pnl-restyled-top.png"
+             alt="My Earnings page — remittance banner at top showing USD owed and due date with Pending status pill, stat tiles (Total Profit, Markup Income, Rebate Income, Bookings), date filter toggle, and daily-earnings bar chart."
+             loading="lazy" onerror="this.style.display='none'" />
+      </div>
+      <figcaption class="lang-en">Top of the My Earnings page: the amber remittance banner (amount + due date + status), the four KPI stat tiles, the By month / Date range filter toggle, and the daily earnings bar chart.</figcaption>
+      <figcaption class="lang-es">Parte superior de la página Mis Ganancias: el banner de remesas ámbar (monto + fecha de vencimiento + estado), los cuatro tiles de KPI, el filtro con alternancia Por mes / Rango de fechas, y el gráfico de barras de ganancias diarias.</figcaption>
+    </figure>
+
+    <h3 class="lang-en">Date filter: By month vs. Date range</h3>
+    <h3 class="lang-es">Filtro de fecha: Por mes vs. Rango de fechas</h3>
+    <p class="lang-en">A two-button toggle above the stat tiles lets you switch how you slice the data:</p>
+    <p class="lang-es">Un toggle de dos botones sobre los tiles de KPI te permite cambiar cómo analizás los datos:</p>
+    <ul class="lang-en">
+      <li><strong>By month</strong> (default) — selects a whole calendar month. The picker defaults to the current month and snaps automatically to the first and last day of whichever month you choose.</li>
+      <li><strong>Date range</strong> — lets you pick a custom From / To date, useful when you need to compare a partial month or a cross-month window.</li>
+    </ul>
+    <ul class="lang-es">
+      <li><strong>Por mes</strong> (predeterminado) — selecciona un mes calendario completo. El selector apunta al mes actual por defecto y se ajusta automáticamente al primer y último día del mes que elijas.</li>
+      <li><strong>Rango de fechas</strong> — te permite elegir un rango Desde / Hasta personalizado, útil para comparar un mes parcial o una ventana que cruza meses.</li>
+    </ul>
+
+    <h3 class="lang-en">Charts</h3>
+    <h3 class="lang-es">Gráficos</h3>
+    <ul class="lang-en">
+      <li><strong>Daily earnings</strong> — a teal bar chart showing profit per check-in date across the selected period. Hover over any bar to see the exact USD amount; the most recent bar is highlighted in gold.</li>
+      <li><strong>Top hotels by profit</strong> — a horizontal bar chart showing your top 10 hotels by profit for the period, plus an <em>Other</em> rollup for the rest of the catalog.</li>
+    </ul>
+    <ul class="lang-es">
+      <li><strong>Ganancias diarias</strong> — un gráfico de barras teal que muestra la ganancia por fecha de check-in en el período seleccionado. Pasá el mouse sobre cualquier barra para ver el monto exacto en USD; la barra más reciente se resalta en dorado.</li>
+      <li><strong>Top hoteles por ganancia</strong> — un gráfico de barras horizontal con tus 10 mejores hoteles por ganancia en el período, más un agrupador <em>Otros</em> para el resto del catálogo.</li>
+    </ul>
+
+    <h3 class="lang-en">Remittance history table</h3>
+    <h3 class="lang-es">Tabla de historial de remesas</h3>
+    <p class="lang-en">Scroll past the booking breakdown to find the <strong>Remittance history</strong> table. It shows one row per closed calendar month with the following columns:</p>
+    <p class="lang-es">Desplazate más allá del desglose de reservas para encontrar la tabla de <strong>Historial de remesas</strong>. Muestra una fila por mes calendario cerrado con las siguientes columnas:</p>
+    <ul class="lang-en">
+      <li><strong>Month</strong> — the month name plus a sub-label with the exact period (e.g., "Jun 1 – Jun 30").</li>
+      <li><strong>Amount (USD)</strong> — what your agency owes Ergos for that month.</li>
+      <li><strong>Bookings</strong> — how many non-cancelled bookings contributed to the amount.</li>
+      <li><strong>Due date</strong> — the 15th of the following month (e.g., a June remittance is due July 15). Ergos can configure a different day per agency in the future.</li>
+      <li><strong>Status</strong> — Pending, Paid, or Overdue (overdue is derived automatically when the due date passes without a paid record).</li>
+      <li><strong>Paid at</strong> — timestamp when payment was registered.</li>
+      <li><strong>Reference</strong> — the wire transfer ID recorded at the time of payment.</li>
+      <li><strong>Action</strong> — a <em>Modify status</em> button on every row (see below).</li>
+    </ul>
+    <ul class="lang-es">
+      <li><strong>Mes</strong> — el nombre del mes más una sub-etiqueta con el período exacto (ej. "Jun 1 – Jun 30").</li>
+      <li><strong>Monto (USD)</strong> — lo que tu agencia le debe a Ergos por ese mes.</li>
+      <li><strong>Reservas</strong> — cuántas reservas no canceladas contribuyeron al monto.</li>
+      <li><strong>Fecha de vencimiento</strong> — el día 15 del mes siguiente (ej., una remesa de junio vence el 15 de julio). Ergos puede configurar un día distinto por agencia en el futuro.</li>
+      <li><strong>Estado</strong> — Pendiente, Pagado o Vencido (vencido se deriva automáticamente cuando pasa la fecha de vencimiento sin un registro de pago).</li>
+      <li><strong>Pagado el</strong> — marca de tiempo cuando se registró el pago.</li>
+      <li><strong>Referencia</strong> — el ID de la transferencia bancaria registrado al momento del pago.</li>
+      <li><strong>Acción</strong> — un botón <em>Modificar estado</em> en cada fila (ver más abajo).</li>
+    </ul>
+    <p class="lang-en">Click any column header to sort the table. The <strong>Export CSV</strong> button (top right of the history card) downloads the full remittance history as a spreadsheet.</p>
+    <p class="lang-es">Hacé clic en cualquier encabezado de columna para ordenar la tabla. El botón <strong>Exportar CSV</strong> (arriba a la derecha de la tarjeta de historial) descarga el historial completo de remesas como una planilla.</p>
+
+    <figure class="screenshot">
+      <div class="screenshot-frame">
+        <img src="b2-pnl-restyled-history.png"
+             alt="My Earnings page lower half — remittance history table showing Month, Amount, Bookings, Due date, Status pill, Paid at, Reference, and Modify status action column; below it the per-booking P&L breakdown table."
+             loading="lazy" onerror="this.style.display='none'" />
+      </div>
+      <figcaption class="lang-en">The remittance history table (bottom of the My Earnings page). Each closed month gets a row with its amount, due date, status, and payment record. Below the history the per-booking P&amp;L breakdown continues as usual.</figcaption>
+      <figcaption class="lang-es">La tabla de historial de remesas (parte inferior de la página Mis Ganancias). Cada mes cerrado tiene una fila con su monto, fecha de vencimiento, estado y registro de pago. Debajo del historial continúa el desglose de P&amp;L por reserva como siempre.</figcaption>
+    </figure>
+
+    <h3 class="lang-en">How amounts are calculated</h3>
+    <h3 class="lang-es">Cómo se calculan los montos</h3>
+    <p class="lang-en">The amount owed each month equals the <strong>total rebate earned on non-cancelled bookings</strong> that month, minus any rebate adjustment in your agency's contract. In plain terms: Ergos pre-pays your rebate each time a booking is confirmed, and the remittance is how you settle that balance monthly. Cancelled bookings are excluded — their rebate is reversed before the remittance is calculated.</p>
+    <p class="lang-es">El monto adeudado cada mes equivale al <strong>total del rebate ganado en reservas no canceladas</strong> ese mes, menos cualquier ajuste de rebate en el contrato de tu agencia. En términos simples: Ergos pre-paga tu rebate cada vez que se confirma una reserva, y la remesa es cómo liquidás ese saldo mensualmente. Las reservas canceladas se excluyen — su rebate se revierte antes de calcular la remesa.</p>
+
+    <h3 class="lang-en">Marking a remittance as paid (Modify status)</h3>
+    <h3 class="lang-es">Marcar una remesa como pagada (Modificar estado)</h3>
+    <p class="lang-en">Once your agency sends the wire transfer to Ergos, you record it directly in the app:</p>
+    <p class="lang-es">Una vez que tu agencia envía la transferencia bancaria a Ergos, la registrás directamente en la app:</p>
+
+    <div class="task">
+      <h4 class="lang-en">To mark a remittance as paid</h4>
+      <h4 class="lang-es">Para marcar una remesa como pagada</h4>
+      <ol class="lang-en">
+        <li>Find the row for the relevant month in the Remittance history table.</li>
+        <li>Click <strong>Modify status</strong> in the Action column.</li>
+        <li>In the modal that opens, select <strong>Paid</strong> as the new status.</li>
+        <li>Enter the <strong>wire reference</strong> (your bank's transfer ID) — this field is required.</li>
+        <li>Enter a <strong>reason</strong> of at least 6 characters (e.g. "Wire sent May 12 via Banco X") — this is required and is stored in the audit log.</li>
+        <li>Click <strong>Save change</strong>. The row status updates immediately and the banner disappears if this was the outstanding month.</li>
+      </ol>
+      <ol class="lang-es">
+        <li>Buscá la fila del mes correspondiente en la tabla de Historial de remesas.</li>
+        <li>Hacé clic en <strong>Modificar estado</strong> en la columna de Acción.</li>
+        <li>En el modal que se abre, seleccioná <strong>Pagado</strong> como nuevo estado.</li>
+        <li>Ingresá la <strong>referencia de la transferencia</strong> (el ID de transferencia de tu banco) — este campo es obligatorio.</li>
+        <li>Ingresá un <strong>motivo</strong> de al menos 6 caracteres (ej. "Transferencia enviada el 12 de mayo por Banco X") — es obligatorio y se guarda en el registro de auditoría.</li>
+        <li>Hacé clic en <strong>Guardar cambio</strong>. El estado de la fila se actualiza en el momento y el banner desaparece si este era el mes pendiente.</li>
+      </ol>
+    </div>
+
+    <div class="callout callout-warning">
+      <strong class="lang-en">Reverting a paid remittance</strong>
+      <strong class="lang-es">Revertir una remesa pagada</strong>
+      <span class="lang-en"> If a wire bounced or was recorded in error, click <strong>Modify status</strong> on the paid row, select <strong>Revert to pending</strong>, and provide a reason (minimum 6 characters — e.g. "Wire bounced June 1, bank confirmed reversal"). No wire reference is needed when reverting. Every change is audited with a timestamp and your user account.</span>
+      <span class="lang-es"> Si una transferencia rebotó o se registró por error, hacé clic en <strong>Modificar estado</strong> en la fila pagada, seleccioná <strong>Revertir a pendiente</strong> e ingresá un motivo (mínimo 6 caracteres — ej. "Transferencia rebotó el 1 de junio, banco confirmó reversión"). No se necesita referencia de transferencia al revertir. Cada cambio queda auditado con marca de tiempo y tu cuenta de usuario.</span>
+    </div>
+
+    <div class="callout callout-info">
+      <strong class="lang-en">Everything is audited.</strong>
+      <strong class="lang-es">Todo queda auditado.</strong>
+      <span class="lang-en"> Every status change — mark paid, revert to pending — is recorded with the acting user, timestamp, wire reference (when provided), and the reason text. This log is available to Ergos support if there's ever a dispute.</span>
+      <span class="lang-es"> Cada cambio de estado — marcar pagado, revertir a pendiente — queda registrado con el usuario que actuó, la marca de tiempo, la referencia de la transferencia (cuando se proporcionó) y el texto del motivo. Este log está disponible para el soporte de Ergos si alguna vez hay una disputa.</span>
+    </div>
+
+    <h3 class="lang-en">Export CSV</h3>
+    <h3 class="lang-es">Exportar CSV</h3>
+    <p class="lang-en">Two export buttons are available on the My Earnings page:</p>
+    <p class="lang-es">Hay dos botones de exportación disponibles en la página Mis Ganancias:</p>
+    <ul class="lang-en">
+      <li><strong>Export CSV</strong> on the P&amp;L header — downloads the per-booking breakdown rows for the selected date range.</li>
+      <li><strong>Export CSV</strong> on the Remittance history card — downloads the full month-by-month remittance table including status, paid date, and wire reference.</li>
+    </ul>
+    <ul class="lang-es">
+      <li><strong>Exportar CSV</strong> en el encabezado de P&amp;L — descarga las filas del desglose por reserva para el rango de fechas seleccionado.</li>
+      <li><strong>Exportar CSV</strong> en la tarjeta de Historial de remesas — descarga la tabla completa de remesas mes a mes incluyendo estado, fecha de pago y referencia de transferencia.</li>
+    </ul>
+
+    <div class="callout callout-teal">
+      <strong class="lang-en">Language support:</strong>
+      <strong class="lang-es">Soporte de idioma:</strong>
+      <span class="lang-en"> All remittance labels, status pills, modal fields, and notifications are available in English and Spanish — switch language at any time with the globe button at the top right.</span>
+      <span class="lang-es"> Todas las etiquetas de remesas, pastillas de estado, campos del modal y notificaciones están disponibles en inglés y español — cambiá de idioma en cualquier momento con el botón del globo en la parte superior derecha.</span>
     </div>
   </section>
 

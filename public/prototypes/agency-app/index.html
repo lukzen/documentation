@@ -2810,14 +2810,11 @@
         <div class="in-dev-icon"><i class="ti ti-tool"></i></div>
         <div class="in-dev-body">
           <div class="in-dev-title">Some Functionality In Development</div>
-          <div class="in-dev-msg">The <strong>P&amp;L page exists in production</strong> (<code>AgencyPnLPage.tsx</code>) but the enhancements below are still being prototyped:
+          <div class="in-dev-msg">The <strong>P&amp;L page exists in production</strong> (<code>AgencyPnLPage.tsx</code>) but the enhancement below is still being prototyped:
             <ul>
               <li>Clickable KPI/stat cards → drill down into the rows that produced them (Markup, Rebate, Profit)</li>
-              <li>Sortable columns across the full date range (date, booking ID, hotel, markup, rebate, profit)</li>
-              <li>Hover values on the daily-earnings bar chart — exact USD per day</li>
-              <li>Modify the status of an <em>already-paid</em> remittance (revert to pending with reason — for wire reversals / disputes)</li>
-              <li>Monthly remittance banner + remittance-history audit trail at the bottom of the page</li>
             </ul>
+            <em style="color:#5a5a5a">Shipped in B2.1 (2026-07): sortable columns; hover values on the daily-earnings chart; modify-status on paid remittances (revert to pending); monthly remittance banner + remittance-history audit trail.</em>
           </div>
         </div>
       </div>
@@ -2845,6 +2842,13 @@
       </div>
 
       <div class="pnl-date-filter">
+        <div class="acct-field" style="max-width:fit-content;align-self:flex-end">
+          <label>Filter by</label>
+          <div class="mr-type-toggle" style="grid-template-columns:repeat(2,1fr);gap:4px;margin-top:4px">
+            <button class="mr-type-btn active" onclick="this.classList.add('active');this.nextElementSibling.classList.remove('active')">By month</button>
+            <button class="mr-type-btn" onclick="this.classList.add('active');this.previousElementSibling.classList.remove('active')">Date range</button>
+          </div>
+        </div>
         <div class="acct-field" style="max-width:200px">
           <label>From</label>
           <input type="date" value="2026-02-28">
