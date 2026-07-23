@@ -670,36 +670,84 @@
 
   <!-- SECTION 10: P&L -->
   <section id="pnl">
-    <h2 class="lang-en">10. Tracking your earnings (P&amp;L)</h2>
-    <h2 class="lang-es">10. Seguir tus ganancias (P&amp;L)</h2>
+    <h2 class="lang-en">10. Tracking your earnings (P&amp;L) <span class="label">Updated — B1</span></h2>
+    <h2 class="lang-es">10. Seguir tus ganancias (P&amp;L) <span class="label">Actualizado — B1</span></h2>
 
-    <p class="lang-en">The <strong>P&amp;L</strong> page (accessed from your account menu, or directly at <code>/pnl</code>) shows you what your agency earned over any date range you choose.</p>
-    <p class="lang-es">La página de <strong>P&amp;L</strong> (accesible desde el menú de cuenta, o directo en <code>/pnl</code>) te muestra lo que ganó tu agencia en cualquier rango de fechas que elijas.</p>
+    <p class="lang-en">The <strong>P&amp;L</strong> page (accessed from your account menu, or directly at <code>/pnl</code>) shows you what your agency earned over any booking month you choose. Earnings group by <strong>booking date</strong> — the date the reservation was made — not by check-in date.</p>
+    <p class="lang-es">La página de <strong>P&amp;L</strong> (accesible desde el menú de cuenta, o directo en <code>/pnl</code>) te muestra lo que ganó tu agencia en cualquier mes de reserva que elijas. Las ganancias se agrupan por <strong>fecha de reserva</strong> — la fecha en que se hizo la reserva — no por fecha de check-in.</p>
 
-    <h3 class="lang-en">Two sources of income per booking</h3>
-    <h3 class="lang-es">Dos fuentes de ingreso por reserva</h3>
+    <h3 class="lang-en">The six summary cards</h3>
+    <h3 class="lang-es">Las seis tarjetas de resumen</h3>
+    <p class="lang-en">At the top of the dashboard, six stat cards give you an instant read of the selected booking month:</p>
+    <p class="lang-es">En la parte superior del dashboard, seis tarjetas de resumen te dan una lectura instantánea del mes de reserva seleccionado:</p>
     <ul class="lang-en">
-      <li><strong>Markup income</strong> — the difference between what your customer paid and what your agency paid Ergos. You set this markup; you keep 100% of it.</li>
-      <li><strong>Rebate income</strong> — the cashback Ergos pays your agency on every booking. The percentage is set in your contract (typical: 4% of Ergos sell). Settled monthly.</li>
+      <li><strong>Total Profit</strong> — your net earnings for the month: markup income plus rebate income.</li>
+      <li><strong>Markup Income</strong> — the difference between what your customers paid and what your agency paid Ergos. You set this markup; you keep 100% of it.</li>
+      <li><strong>Rebate Income</strong> — the cashback Ergos pays your agency on every booking. The percentage is set in your contract (typical: 4% of Ergos sell). Settled monthly.</li>
+      <li><strong>Customer Paid</strong> — the total your customers paid across all bookings in the month. This is the gross revenue your agency collected.</li>
+      <li><strong>Ergos Cost</strong> — what your agency paid Ergos for those bookings (net supplier cost before markup). Total Profit = Customer Paid − Ergos Cost + Rebate.</li>
+      <li><strong>Bookings</strong> — the count of bookings (including cancelled ones) in the selected month.</li>
     </ul>
     <ul class="lang-es">
-      <li><strong>Ingreso por markup</strong> — la diferencia entre lo que pagó tu cliente y lo que tu agencia le pagó a Ergos. Vos fijás este markup; te quedás con el 100%.</li>
-      <li><strong>Ingreso por rebate</strong> — el cashback que Ergos le paga a tu agencia en cada reserva. El porcentaje está fijado en tu contrato (típico: 4% del Ergos sell). Liquidado mensualmente.</li>
+      <li><strong>Ganancia Total</strong> — tus ganancias netas del mes: ingreso por markup más ingreso por rebate.</li>
+      <li><strong>Ingreso por Markup</strong> — la diferencia entre lo que pagaron tus clientes y lo que tu agencia le pagó a Ergos. Vos fijás este markup; te quedás con el 100%.</li>
+      <li><strong>Ingreso por Rebate</strong> — el cashback que Ergos le paga a tu agencia en cada reserva. El porcentaje está fijado en tu contrato (típico: 4% del Ergos sell). Liquidado mensualmente.</li>
+      <li><strong>Cobrado al Cliente</strong> — el total que cobraron tus clientes en todas las reservas del mes. Es el ingreso bruto que recaudó tu agencia.</li>
+      <li><strong>Costo Ergos</strong> — lo que tu agencia le pagó a Ergos por esas reservas (costo neto de proveedor antes del markup). Ganancia Total = Cobrado al Cliente − Costo Ergos + Rebate.</li>
+      <li><strong>Reservas</strong> — la cantidad de reservas (incluyendo las canceladas) en el mes seleccionado.</li>
     </ul>
+
+    <figure class="screenshot">
+      <div class="screenshot-frame">
+        <img src="pnl-cards-charts-fintest.png"
+             alt="P&amp;L dashboard — six stat cards across the top: Total Profit $270.00, Markup Income $180.00, Rebate Income $90.00, Customer Paid $2,240.00, Ergos Cost $1,970.00, Bookings 4; below them the Daily earnings bar chart and Top hotels by profit horizontal bar chart; month picker shows June 2026."
+             loading="lazy" onerror="this.style.display='none'" />
+      </div>
+      <figcaption class="lang-en">P&amp;L dashboard for June 2026 (Fintest demo dataset). Six stat cards at top: Total Profit, Markup Income, Rebate Income, Customer Paid, Ergos Cost, Bookings. Below: daily earnings bar chart and top hotels by profit chart.</figcaption>
+      <figcaption class="lang-es">Dashboard de P&amp;L para junio 2026 (dataset demo Fintest). Seis tarjetas de resumen en la parte superior: Ganancia Total, Ingreso por Markup, Ingreso por Rebate, Cobrado al Cliente, Costo Ergos, Reservas. Abajo: gráfico de barras de ganancias diarias y gráfico de mejores hoteles por ganancia.</figcaption>
+    </figure>
+
+    <figure class="screenshot">
+      <div class="screenshot-frame">
+        <img src="pnl-dashboard-fintest.png"
+             alt="Full P&amp;L page view showing the month picker labeled 'Booking month', the six stat cards, the two charts, and the per-booking breakdown table below."
+             loading="lazy" onerror="this.style.display='none'" />
+      </div>
+      <figcaption class="lang-en">Full P&amp;L page. The month picker is labeled <strong>Booking month</strong> — the filter applies to the date the booking was created, not the guest check-in date.</figcaption>
+      <figcaption class="lang-es">Página completa de P&amp;L. El selector de mes está etiquetado como <strong>Mes de reserva</strong> — el filtro se aplica a la fecha en que se creó la reserva, no a la fecha de check-in del huésped.</figcaption>
+    </figure>
+
+    <h3 class="lang-en">Clickable income cards — drill into contributing bookings</h3>
+    <h3 class="lang-es">Tarjetas de ingreso con clic — desglosar en reservas contribuyentes</h3>
+    <p class="lang-en">The three income cards — <strong>Total Profit</strong>, <strong>Markup Income</strong>, and <strong>Rebate Income</strong> — are clickable. Clicking one filters the booking table below to show only the rows that contributed to that figure. A caption appears above the table confirming the active filter, for example:</p>
+    <p class="lang-es">Las tres tarjetas de ingreso — <strong>Ganancia Total</strong>, <strong>Ingreso por Markup</strong> e <strong>Ingreso por Rebate</strong> — se pueden hacer clic. Al hacer clic en una, la tabla de reservas se filtra para mostrar solo las filas que contribuyeron a ese número. Aparece un subtítulo encima de la tabla confirmando el filtro activo, por ejemplo:</p>
+    <blockquote class="lang-en"><em>Showing 3 of 4 bookings contributing to markup income — click the card again to clear</em></blockquote>
+    <blockquote class="lang-es"><em>Mostrando 3 de 4 reservas que contribuyen al ingreso por markup — hacé clic en la tarjeta de nuevo para limpiar</em></blockquote>
+    <p class="lang-en">Click the same card again to clear the filter and return to the full table. Navigating away or reloading the page also clears the filter.</p>
+    <p class="lang-es">Hacé clic en la misma tarjeta de nuevo para limpiar el filtro y volver a la tabla completa. Navegar a otra página o recargar la página también limpia el filtro.</p>
 
     <h3 class="lang-en">Reading the P&amp;L table</h3>
     <h3 class="lang-es">Leer la tabla de P&amp;L</h3>
-    <p class="lang-en">Each row is one booking. Columns, in order: Hotel Name, Check-in Date, Booking Reference, GDS Sell, Agency Markup %, Customer Price, Commission, Rebate, Net Revenue. At the bottom: aggregate totals for the selected date range.</p>
-    <p class="lang-es">Cada fila es una reserva. Columnas, en orden: Nombre del Hotel, Fecha de Check-in, Referencia de Reserva, Venta GDS, % de Markup de la Agencia, Precio al Cliente, Comisión, Rebate, Ingreso Neto. Al pie: totales agregados para el rango de fechas seleccionado.</p>
+    <p class="lang-en">Each row is one booking. Click any column header to sort — locator, hotel, dates, every financial column. Sort applies across the entire selected month, not just the visible page.</p>
+    <p class="lang-es">Cada fila es una reserva. Hacé clic en cualquier encabezado de columna para ordenar — locator, hotel, fechas, cada columna financiera. El ordenamiento se aplica a todo el mes seleccionado, no solo a la página visible.</p>
+    <p class="lang-en"><strong>Cancelled bookings</strong> stay visible in the table but show <strong>$0.00</strong> income — their markup and rebate are reversed to zero so P&amp;L totals reconcile exactly with your monthly remittance. Bookings imported from a legacy system before income tracking was enabled show a dash (—) in the income columns.</p>
+    <p class="lang-es">Las <strong>reservas canceladas</strong> permanecen visibles en la tabla pero muestran ingresos de <strong>$0,00</strong> — su markup y rebate se revierten a cero para que los totales del P&amp;L coincidan exactamente con tu remesa mensual. Las reservas importadas de un sistema anterior antes de que se habilitara el seguimiento de ingresos muestran un guión (—) en las columnas de ingresos.</p>
 
-    <p class="lang-en">Click any column header in the P&amp;L table to sort — locator, hotel, dates, every financial column. Sort applies across the entire date range, not just the visible page.</p>
-    <p class="lang-es">Hacé clic en cualquier encabezado de columna en la tabla de P&amp;L para ordenar — locator, hotel, fechas, cada columna financiera. El ordenamiento se aplica a todo el rango de fechas, no solo a la página visible.</p>
+    <figure class="screenshot">
+      <div class="screenshot-frame">
+        <img src="pnl-table-fintest.png"
+             alt="P&amp;L per-booking table showing four rows: three active bookings with markup and rebate income figures, one CANCELLED booking row showing $0.00 in all income columns, and one legacy row showing dashes in income columns."
+             loading="lazy" onerror="this.style.display='none'" />
+      </div>
+      <figcaption class="lang-en">The per-booking P&amp;L table. The <em>CANCELLED</em> row shows $0.00 across all income columns — it stays visible for audit purposes but contributes nothing to totals. A legacy row with "—" indicates a booking predating income tracking.</figcaption>
+      <figcaption class="lang-es">La tabla de P&amp;L por reserva. La fila <em>CANCELADA</em> muestra $0,00 en todas las columnas de ingresos — permanece visible con fines de auditoría pero no contribuye a los totales. Una fila legacy con "—" indica una reserva anterior al seguimiento de ingresos.</figcaption>
+    </figure>
 
     <div class="callout callout-teal">
-      <strong class="lang-en">When the numbers don't add up to what your bookkeeping says:</strong>
-      <strong class="lang-es">Cuando los números no coinciden con lo que dice tu contabilidad:</strong>
-      <span class="lang-en"> the most common reasons are (a) bookings cancelled with penalty (still appear in P&amp;L with the partial cost), (b) modifications that changed the room/dates after the original booking was made, and (c) currency conversion timing if your booking and your bookkeeping use different exchange rates. Contact Ergos support with a specific locator to investigate.</span>
-      <span class="lang-es"> las razones más comunes son (a) reservas canceladas con penalización (siguen apareciendo en el P&amp;L con el costo parcial), (b) modificaciones que cambiaron la habitación/fechas después de hacer la reserva original, y (c) timing de conversión de moneda si tu reserva y tu contabilidad usan tasas de cambio distintas. Contactá al soporte de Ergos con un locator específico para investigar.</span>
+      <strong class="lang-en">When the totals don't match your remittance statement:</strong>
+      <strong class="lang-es">Cuando los totales no coinciden con tu estado de remesa:</strong>
+      <span class="lang-en"> check that you are looking at the same <strong>booking month</strong> as the remittance period. Earnings group by booking date, not check-in date, so a guest who checked in during May but booked in April will appear in April's P&amp;L and April's remittance. Cancelled bookings show $0.00, so they do not inflate the totals.</span>
+      <span class="lang-es"> verificá que estés mirando el mismo <strong>mes de reserva</strong> que el período de la remesa. Las ganancias se agrupan por fecha de reserva, no por fecha de check-in; así que un huésped que hizo check-in en mayo pero reservó en abril aparece en el P&amp;L de abril y en la remesa de abril. Las reservas canceladas muestran $0,00, por lo que no inflan los totales.</span>
     </div>
   </section>
 

@@ -2805,16 +2805,20 @@
       </aside>
 
       <main class="acct-content">
-      <!-- Functionality In Development — page exists but recent enhancements don't -->
-      <div class="in-dev-banner">
-        <div class="in-dev-icon"><i class="ti ti-tool"></i></div>
+      <!-- Shipped notice — all P&L enhancements are now live in production -->
+      <div class="in-dev-banner" style="border-color:#86efac;background:#f0fdf4;">
+        <div class="in-dev-icon" style="color:#16a34a;"><i class="ti ti-circle-check"></i></div>
         <div class="in-dev-body">
-          <div class="in-dev-title">Some Functionality In Development</div>
-          <div class="in-dev-msg">The <strong>P&amp;L page exists in production</strong> (<code>AgencyPnLPage.tsx</code>) but the enhancement below is still being prototyped:
+          <div class="in-dev-title" style="color:#14532d;">&#x2705; Now LIVE in production — shipped 2026-07-23</div>
+          <div class="in-dev-msg" style="color:#166534;">The <strong>P&amp;L page enhancements</strong> are live in the agency app at <code>/pnl</code>. This prototype was the design source. What was prototyped here is now in production:
             <ul>
-              <li>Clickable KPI/stat cards → drill down into the rows that produced them (Markup, Rebate, Profit)</li>
+              <li>Six stat cards: Total Profit, Markup Income, Rebate Income, Customer Paid, Ergos Cost, Bookings &#x2713;</li>
+              <li>Clickable Profit / Markup / Rebate cards filter the booking table to contributing rows &#x2713;</li>
+              <li>Caption confirms active filter ("Showing N of M bookings contributing to markup income — click the card again to clear") &#x2713;</li>
+              <li>Cancelled bookings show $0.00 income so P&amp;L totals reconcile exactly with the monthly remittance &#x2713;</li>
+              <li>Month picker labeled <strong>Booking month</strong> (earnings group by booking date, not check-in) &#x2713;</li>
+              <li><em>Shipped in B2.1 (2026-07):</em> sortable columns; hover values on the daily-earnings chart; modify-status on paid remittances (revert to pending); monthly remittance banner + remittance-history audit trail.</li>
             </ul>
-            <em style="color:#5a5a5a">Shipped in B2.1 (2026-07): sortable columns; hover values on the daily-earnings chart; modify-status on paid remittances (revert to pending); monthly remittance banner + remittance-history audit trail.</em>
           </div>
         </div>
       </div>
@@ -2882,6 +2886,22 @@
             <div class="pnl-stat-label">Rebate Income</div>
             <div class="pnl-stat-value">USD 5,640</div>
             <div class="pnl-stat-hint">Cashback from Ergos</div>
+          </div>
+        </div>
+        <div class="pnl-stat">
+          <div class="pnl-stat-icon"><i class="ti ti-users"></i></div>
+          <div>
+            <div class="pnl-stat-label">Customer Paid</div>
+            <div class="pnl-stat-value">USD 24,000</div>
+            <div class="pnl-stat-hint">Gross revenue collected from customers</div>
+          </div>
+        </div>
+        <div class="pnl-stat">
+          <div class="pnl-stat-icon"><i class="ti ti-building"></i></div>
+          <div>
+            <div class="pnl-stat-label">Ergos Cost</div>
+            <div class="pnl-stat-value">USD 14,820</div>
+            <div class="pnl-stat-hint">Net supplier cost paid to Ergos</div>
           </div>
         </div>
         <div class="pnl-stat pnl-stat-clickable" onclick="pnlDrilldown('bookings')" title="Click to see all bookings for this period">
