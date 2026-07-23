@@ -40,6 +40,7 @@
         <a href="#hotel-brands"><span class="toc-num">9.</span><span>Hotel Brands (chains)</span></a>
         <a href="#finance"><span class="toc-num">10.</span><span>Finance &amp; booking breakdown</span></a>
         <a href="#price-composition"><span class="toc-num">11.</span><span>Hotel Price Composition</span></a>
+        <a href="#remittances"><span class="toc-num">11b.</span><span>Agency Remittances</span></a>
         <a href="#audit-log"><span class="toc-num">12.</span><span>Audit logs &amp; compliance</span></a>
         <a href="#vendor-management"><span class="toc-num">13.</span><span>Hotel Suppliers</span></a>
         <a href="#troubleshooting"><span class="toc-num">14.</span><span>Common tasks &amp; troubleshooting</span></a>
@@ -56,6 +57,7 @@
         <a href="#hotel-brands"><span class="toc-num">9.</span><span>Marcas Hoteleras (cadenas)</span></a>
         <a href="#finance"><span class="toc-num">10.</span><span>Finanzas y desglose de reservas</span></a>
         <a href="#price-composition"><span class="toc-num">11.</span><span>Composición de Precio del Hotel</span></a>
+        <a href="#remittances"><span class="toc-num">11b.</span><span>Remesas de Agencias</span></a>
         <a href="#audit-log"><span class="toc-num">12.</span><span>Registros de auditoría y cumplimiento</span></a>
         <a href="#vendor-management"><span class="toc-num">13.</span><span>Proveedores Hoteleros</span></a>
         <a href="#troubleshooting"><span class="toc-num">14.</span><span>Tareas comunes y solución</span></a>
@@ -699,6 +701,66 @@
   </section>
 
   <!-- SECTION 12: AUDIT LOG -->
+  <section id="remittances">
+    <h2 class="lang-en">11b. Agency Remittances <span class="label">/finance/remittances</span></h2>
+    <h2 class="lang-es">11b. Remesas de Agencias <span class="label">/finance/remittances</span></h2>
+
+    <p class="lang-en"><strong>Agency Remittances</strong> is where Finance runs the monthly collection cycle: for every travel agency, how much they owe Ergos for each closed month, by when, and a one-click <strong>Mark Paid</strong> once the wire lands. Rows are generated automatically on the 1st of each month (04:00 UTC) — one row per agency per closed month — and the generator is insert-only: it never overwrites an existing row, so payments and manual adjustments always survive. The same data appears agency-side on their <em>My Earnings</em> page (agency-app §10b): a status you change here is what the agency sees on their next page load.</p>
+    <p class="lang-es"><strong>Remesas de Agencias</strong> es donde Finanzas corre el ciclo mensual de cobro: para cada agencia de viajes, cuánto le debe a Ergos por cada mes cerrado, para cuándo, y un <strong>Mark Paid</strong> de un clic cuando llega la transferencia. Las filas se generan automáticamente el 1° de cada mes (04:00 UTC) — una fila por agencia por mes cerrado — y el generador es solo-inserción: nunca sobrescribe una fila existente, así que los pagos y ajustes manuales siempre se conservan. Los mismos datos aparecen del lado de la agencia en su página <em>My Earnings</em> (agency-app §10b): un estado que cambiás acá es lo que la agencia ve en su próxima carga de página.</p>
+
+    <h3 class="lang-en">The cross-agency queue</h3>
+    <h3 class="lang-es">La cola multi-agencia</h3>
+    <p class="lang-en">The top of the page shows three <strong>clickable KPI cards</strong> — <em>Outstanding</em>, <em>Overdue</em>, and <em>Collected MTD</em> — click one to filter the queue to that bucket (click again to reset). The queue lists every remittance with Agency, Period, Amount (USD), Bookings, Due Date, and Status; every column header sorts, and <strong>Status sorts by severity</strong> (Overdue → Pending → Paid), not alphabetically. A row's status is <em>Pending</em> or <em>Paid</em>; <strong>Overdue is derived</strong> — a pending row past its due date displays as Overdue automatically, nothing to set.</p>
+    <p class="lang-es">Arriba hay tres <strong>tarjetas KPI clicables</strong> — <em>Outstanding</em>, <em>Overdue</em> y <em>Collected MTD</em> — hacé clic en una para filtrar la cola a ese grupo (clic de nuevo para resetear). La cola lista cada remesa con Agencia, Período, Monto (USD), Reservas, Vencimiento y Estado; cada encabezado ordena, y <strong>Estado ordena por severidad</strong> (Overdue → Pending → Paid), no alfabéticamente. El estado de una fila es <em>Pending</em> o <em>Paid</em>; <strong>Overdue es derivado</strong> — una fila pendiente pasada su vencimiento se muestra Overdue automáticamente, no hay nada que configurar.</p>
+
+    <figure class="screenshot">
+      <div class="screenshot-frame">
+        <img src="c1-remittances-queue.png"
+             alt="Agency Remittances queue — three KPI cards (Outstanding, Overdue, Collected MTD) above a sortable table of remittances with OVERDUE badges and per-row Mark Paid / Adjust buttons."
+             loading="lazy" onerror="this.style.display='none'" />
+      </div>
+      <figcaption class="lang-en">The queue: clickable KPI cards filter the list; each row carries its own <strong>Mark Paid</strong> and <strong>Adjust</strong> actions. Click a row to open the drilldown below it.</figcaption>
+      <figcaption class="lang-es">La cola: las tarjetas KPI filtran la lista; cada fila lleva sus propias acciones <strong>Mark Paid</strong> y <strong>Adjust</strong>. Hacé clic en una fila para abrir el detalle debajo.</figcaption>
+    </figure>
+
+    <div class="task">
+      <h4 class="lang-en">Collecting a payment (Mark Paid → Revert if needed)</h4>
+      <h4 class="lang-es">Cobrar un pago (Mark Paid → Revert si hace falta)</h4>
+      <ol class="lang-en">
+        <li>Find the row — the <strong>Overdue</strong> KPI card is the fastest filter for the collection run.</li>
+        <li>Click <strong>Mark Paid</strong>. The dialog requires a <strong>Payment Reference</strong> (free text — e.g. the bank wire ID) and a <strong>Reason / Notes</strong> of at least 6 characters. Both go into the audit trail with your user and a timestamp.</li>
+        <li>The row flips to <strong>PAID</strong> and its action becomes <strong>Revert</strong>. The agency sees Paid, the paid-at date, and your reference on their next <em>My Earnings</em> load — no extra step.</li>
+        <li>Wire bounced or reconciled wrong? <strong>Revert</strong> puts the row back to Pending — a reason (≥ 6 characters) is required and audited, and the paid-at/reference fields are cleared.</li>
+      </ol>
+      <ol class="lang-es">
+        <li>Encontrá la fila — la tarjeta KPI <strong>Overdue</strong> es el filtro más rápido para la ronda de cobro.</li>
+        <li>Hacé clic en <strong>Mark Paid</strong>. El diálogo exige una <strong>Payment Reference</strong> (texto libre — ej. el ID de la transferencia) y un <strong>Reason / Notes</strong> de al menos 6 caracteres. Ambos van al registro de auditoría con tu usuario y fecha-hora.</li>
+        <li>La fila pasa a <strong>PAID</strong> y su acción se convierte en <strong>Revert</strong>. La agencia ve Paid, la fecha de pago y tu referencia en su próxima carga de <em>My Earnings</em> — sin pasos extra.</li>
+        <li>¿La transferencia rebotó o se concilió mal? <strong>Revert</strong> devuelve la fila a Pending — se exige un motivo (≥ 6 caracteres) que queda auditado, y se limpian la fecha de pago y la referencia.</li>
+      </ol>
+    </div>
+
+    <h3 class="lang-en">Adjusting an amount &amp; the audit trail</h3>
+    <h3 class="lang-es">Ajustar un monto y el registro de auditoría</h3>
+    <p class="lang-en"><strong>Adjust</strong> sets a new absolute amount for the remittance (≥ $0 — a zero override is allowed) and requires a reason of at least 6 characters. The audit trail records the old and new values. Adjusted rows are safe: the monthly generator never touches an existing row. Clicking any queue row opens the <strong>drilldown</strong> — the agency's stats plus the full <strong>audit timeline</strong>: every creation, Mark Paid, Revert, and adjustment, with who did it and when.</p>
+    <p class="lang-es"><strong>Adjust</strong> fija un nuevo monto absoluto para la remesa (≥ $0 — se permite dejarla en cero) y exige un motivo de al menos 6 caracteres. La auditoría registra el valor anterior y el nuevo. Las filas ajustadas están a salvo: el generador mensual nunca toca una fila existente. Al hacer clic en cualquier fila de la cola se abre el <strong>detalle</strong> — las estadísticas de la agencia más la <strong>línea de tiempo de auditoría</strong> completa: cada creación, Mark Paid, Revert y ajuste, con quién lo hizo y cuándo.</p>
+
+    <h3 class="lang-en">Per-agency view &amp; the remittance due day</h3>
+    <h3 class="lang-es">Vista por agencia y el día de vencimiento</h3>
+    <p class="lang-en">The same remittances also live inside each agency's record: <strong>Travel Agencies → Edit → Remittances tab</strong>. There you get that agency's history with the same Mark Paid / Revert / Adjust actions, plus the <strong>Remittance Due Day</strong> editor — the day of the month (1–28) by which that agency's remittance is due each period. Leave it blank to use the system default (the 15th of the month after the period closes).</p>
+    <p class="lang-es">Las mismas remesas también viven dentro de la ficha de cada agencia: <strong>Travel Agencies → Edit → pestaña Remittances</strong>. Ahí tenés el historial de esa agencia con las mismas acciones Mark Paid / Revert / Adjust, más el editor de <strong>Remittance Due Day</strong> — el día del mes (1–28) para el cual vence la remesa de esa agencia en cada período. Dejalo vacío para usar el valor por defecto del sistema (el 15 del mes siguiente al cierre del período).</p>
+
+    <figure class="screenshot">
+      <div class="screenshot-frame">
+        <img src="c1-remittances-agency-tab.png"
+             alt="Edit Travel Agency modal — Remittances tab with the Remittance Due Day editor (1–28) above the agency's remittance history table with Mark Paid and Adjust actions."
+             loading="lazy" onerror="this.style.display='none'" />
+      </div>
+      <figcaption class="lang-en">The per-agency Remittances tab: the due-day editor (1–28) on top, the agency's own remittance history with the same actions below.</figcaption>
+      <figcaption class="lang-es">La pestaña Remittances por agencia: el editor de día de vencimiento (1–28) arriba, y debajo el historial de remesas de esa agencia con las mismas acciones.</figcaption>
+    </figure>
+  </section>
+
   <section id="audit-log">
     <h2 class="lang-en">12. Audit logs &amp; compliance</h2>
     <h2 class="lang-es">12. Registros de auditoría y cumplimiento</h2>

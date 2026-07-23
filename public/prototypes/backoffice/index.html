@@ -1019,18 +1019,20 @@
           <button class="btn btn-outline" onclick="frExportCsv()"><i class="ti ti-download"></i> Export CSV</button>
         </div>
 
-        <!-- Functionality In Development banner — C1 is prototype-only -->
-        <div class="in-dev-banner">
-          <div class="in-dev-icon"><i class="ti ti-tool"></i></div>
+        <!-- Shipped notice — this feature is now live in production -->
+        <div class="in-dev-banner" style="border-color:#86efac;background:#f0fdf4;">
+          <div class="in-dev-icon" style="color:#16a34a;"><i class="ti ti-circle-check"></i></div>
           <div class="in-dev-body">
-            <div class="in-dev-title">Functionality In Development</div>
-            <div class="in-dev-msg">The <strong>Agency Remittances</strong> module is not yet in production. Real backoffice <code>finance/</code> module only ships <code>BookingBreakdownPage</code>. Flows being prototyped here:
+            <div class="in-dev-title" style="color:#14532d;">&#x2705; Now LIVE in production — shipped 2026-07-23</div>
+            <div class="in-dev-msg" style="color:#166534;">The <strong>Agency Remittances</strong> module is live in the real backoffice-app at <code>/finance/remittances</code>. This prototype was the design source. Shipped as USER_STORIES C1 (backoffice-app#63 + backend-service#108). What was prototyped here is now in production:
               <ul>
-                <li>Click an agency in the top table → bottom drilldown swaps to that agency's stats + audit trail</li>
-                <li>Click a KPI card (Outstanding / Overdue / Collected MTD) → list filters to that bucket</li>
-                <li>Sortable columns: Agency, Period, Amount, Status, Due, Last action</li>
-                <li>Per-row <i class="ti ti-edit"></i> Modify Status (revert paid → pending with reason) + <i class="ti ti-adjustments"></i> Adjust amount</li>
-                <li>Mark Paid records wire reference + writes to audit trail</li>
+                <li>Click a row in the queue → drilldown swaps to that agency's stats + audit trail &#x2713;</li>
+                <li>Clickable KPI cards (Outstanding / Overdue / Collected MTD) filter the queue &#x2713;</li>
+                <li>Sortable columns, with Status ordered by severity (overdue &rarr; pending &rarr; paid) &#x2713;</li>
+                <li>Per-row Modify Status (revert paid &rarr; pending, reason &ge; 6 chars) + Adjust amount (&ge; $0, reason &ge; 6 chars) &#x2713;</li>
+                <li>Mark Paid records a wire reference + reason and writes to the audit trail &#x2713;</li>
+                <li><em>Shipped beyond the prototype:</em> a per-agency <strong>Remittances tab</strong> (Travel Agencies &rarr; Edit) with the same actions + a <strong>Remittance Due Day</strong> editor (1&ndash;28).</li>
+                <li><em>Prototype-only (not shipped):</em> the queue-level Export CSV button, the "Average days to pay" KPI, and the "Last action" column. The agency-side history has its own CSV export (agency-app &sect;10b).</li>
               </ul>
             </div>
           </div>
