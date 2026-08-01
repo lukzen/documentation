@@ -37,6 +37,7 @@
         <a href="#hotels"><span class="toc-num">6.</span><span>Hotel catalog</span></a>
         <a href="#reservations"><span class="toc-num">7.</span><span>Reservations &amp; bookings</span></a>
         <a href="#pricing-policy"><span class="toc-num">8.</span><span>Pricing Policy (commission)</span></a>
+        <a href="#commissions"><span class="toc-num">8b.</span><span>Sales Agent Commissions</span></a>
         <a href="#hotel-brands"><span class="toc-num">9.</span><span>Hotel Brands (chains)</span></a>
         <a href="#finance"><span class="toc-num">10.</span><span>Finance &amp; booking breakdown</span></a>
         <a href="#price-composition"><span class="toc-num">11.</span><span>Hotel Price Composition</span></a>
@@ -54,6 +55,7 @@
         <a href="#hotels"><span class="toc-num">6.</span><span>Catálogo de hoteles</span></a>
         <a href="#reservations"><span class="toc-num">7.</span><span>Reservas</span></a>
         <a href="#pricing-policy"><span class="toc-num">8.</span><span>Política de Precios (comisión)</span></a>
+        <a href="#commissions"><span class="toc-num">8b.</span><span>Comisiones de Agentes</span></a>
         <a href="#hotel-brands"><span class="toc-num">9.</span><span>Marcas Hoteleras (cadenas)</span></a>
         <a href="#finance"><span class="toc-num">10.</span><span>Finanzas y desglose de reservas</span></a>
         <a href="#price-composition"><span class="toc-num">11.</span><span>Composición de Precio del Hotel</span></a>
@@ -369,7 +371,7 @@
              alt="Pricing Policy page — 3-panel layout with left scope rail (Hotels/Travel Agencies/Agents tabs), center inheritance stack, right simulate panel with waterfall."
              loading="lazy" onerror="this.style.display='none'" />
       </div>
-      <figcaption class="lang-en">Pricing Policy page — 3 panels: left rail (pick what you're configuring), center (the 5 cascade layers), right (live math simulation showing how a $200 booking would land).</figcaption>
+      <figcaption class="lang-en">Pricing Policy page — 3 panels: left rail (pick what you're configuring: Hotels, Travel Agencies or Agents), center (the inheritance stack + Effective Configuration), right (Live Hotel Supplier prices and the Audit Trail).</figcaption>
       <figcaption class="lang-es">Página de Política de Precios — 3 paneles: panel izquierdo (elegir qué estás configurando), centro (las 5 capas de la cascada), derecho (simulación matemática en vivo mostrando cómo aterrizaría una reserva de $200).</figcaption>
     </figure>
 
@@ -474,6 +476,70 @@
       <span class="lang-en"> when a hotel belongs to a chain with a negotiated discount (shown in the center cascade), Ergos's real cost drops below the raw GDS rate, so the Ergos price can land under the displayed Cost. That's the chain discount working — check the center "Effective Configuration" to see it applied.</span>
       <span class="lang-es"> cuando un hotel pertenece a una cadena con descuento negociado (mostrado en la cascada central), el costo real de Ergos baja por debajo de la tarifa bruta del GDS, así que el precio Ergos puede quedar por debajo del Costo mostrado. Eso es el descuento de cadena funcionando — mirá la "Effective Configuration" central para verlo aplicado.</span>
     </div>
+
+    <h3 class="lang-en">How the money flows — a worked example</h3>
+    <h3 class="lang-es">Cómo fluye el dinero — ejemplo completo</h3>
+
+    <p class="lang-en">Every booking runs through the same waterfall, using exactly the knobs this page configures. Here is a real booking from the demo data (reference <code>FIN-S3-BOTH</code> — you can open it yourself in <a href="#finance">Booking Breakdown §10</a> and see the identical numbers):</p>
+    <p class="lang-es">Cada reserva pasa por la misma cascada, usando exactamente las perillas que esta página configura. Este es una reserva real de los datos demo (referencia <code>FIN-S3-BOTH</code> — podés abrirla vos mismo en <a href="#finance">Booking Breakdown §10</a> y ver los números idénticos):</p>
+
+    <table>
+      <thead><tr><th class="lang-en">Step</th><th class="lang-es">Paso</th><th class="lang-en">Formula</th><th class="lang-es">Fórmula</th><th>USD</th></tr></thead>
+      <tbody>
+        <tr><td class="lang-en">Supplier net (GDS cost)</td><td class="lang-es">Neto del proveedor (costo GDS)</td><td colspan="2"><code>what the hotel supplier charges</code></td><td>$800.00</td></tr>
+        <tr><td class="lang-en">Adjusted cost</td><td class="lang-es">Costo ajustado</td><td colspan="2"><code>$800 × (1 − 20% chain discount)</code> <span class="lang-en">(the Hotel Brands §9 discount)</span><span class="lang-es">(el descuento de Marcas Hoteleras §9)</span></td><td>$640.00</td></tr>
+        <tr><td class="lang-en"><strong>Ergos sell</strong> (what the agency pays)</td><td class="lang-es"><strong>Precio Ergos</strong> (lo que paga la agencia)</td><td colspan="2"><code>$640 × (1 + 25% Ergos markup)</code> <span class="lang-en">(THIS page's markup cascade)</span><span class="lang-es">(la cascada de markup de ESTA página)</span></td><td>$800.00</td></tr>
+        <tr><td class="lang-en">Agency rebate</td><td class="lang-es">Rebate de agencia</td><td colspan="2"><code>$800 × 3%</code> <span class="lang-en">(returned to the agency — the Travel Agencies tab)</span><span class="lang-es">(devuelto a la agencia — pestaña Agencias)</span></td><td>−$24.00</td></tr>
+        <tr><td class="lang-en">Ergos gross</td><td class="lang-es">Bruto Ergos</td><td colspan="2"><code>($800 − $24) − $640</code></td><td>$136.00</td></tr>
+        <tr><td class="lang-en">Sales-agent earning</td><td class="lang-es">Comisión del agente</td><td colspan="2"><code>$136 × 5%</code> <span class="lang-en">(the Agents tab / tier)</span><span class="lang-es">(pestaña Agentes / tier)</span></td><td>−$6.80</td></tr>
+        <tr><td class="lang-en">Agent ops expense</td><td class="lang-es">Gasto operativo del agente</td><td colspan="2"><code>$136 × 2%</code></td><td>−$2.72</td></tr>
+        <tr><td class="lang-en"><strong>Ergos net</strong></td><td class="lang-es"><strong>Neto Ergos</strong></td><td colspan="2"></td><td><strong>$126.48</strong></td></tr>
+      </tbody>
+    </table>
+
+    <div class="callout callout-info">
+      <strong class="lang-en">Two different markups — don't mix them up:</strong>
+      <strong class="lang-es">Dos markups distintos — no los confundas:</strong>
+      <span class="lang-en"> the <b>Ergos markup</b> (this page) is the platform's margin on the supplier cost and produces the <b>Ergos sell</b> price the agency pays. The <b>agency markup</b> is the agency's OWN margin, configured by each agency in the agency app on top of the Ergos sell — in this booking the agency added 12.5%, so its customer paid <b>$900</b> and the agency kept <b>$100</b> markup income plus the <b>$24</b> rebate. The agency overlay is shown on every booking in §10 but is never on Ergos's books.</span>
+      <span class="lang-es"> el <b>markup de Ergos</b> (esta página) es el margen de la plataforma sobre el costo del proveedor y produce el precio <b>Ergos sell</b> que paga la agencia. El <b>markup de agencia</b> es el margen PROPIO de la agencia, configurado por cada agencia en la app de agencias sobre el Ergos sell — en esta reserva la agencia agregó 12,5%, su cliente pagó <b>$900</b> y la agencia se quedó <b>$100</b> de markup más los <b>$24</b> de rebate. El overlay de agencia se muestra en cada reserva en §10 pero nunca está en los libros de Ergos.</span>
+    </div>
+  </section>
+
+  <!-- SECTION 8B: SALES AGENT COMMISSIONS GRID -->
+  <section id="commissions">
+    <h2 class="lang-en">8b. Sales Agent Commissions <span class="label">/commissions</span></h2>
+    <h2 class="lang-es">8b. Comisiones de Agentes <span class="label">/commissions</span></h2>
+
+    <p class="lang-en">The Commissions page is the per-(sales&nbsp;agent, travel&nbsp;agency, hotel) working grid: pick an agent and one of their agencies, and every hotel shows the three percentages that drive that combination's earnings, plus two derived columns computed live.</p>
+    <p class="lang-es">La página Comisiones es la grilla de trabajo por (agente, agencia, hotel): elegí un agente y una de sus agencias, y cada hotel muestra los tres porcentajes que determinan las ganancias de esa combinación, más dos columnas derivadas calculadas en vivo.</p>
+
+    <figure class="screenshot">
+      <div class="screenshot-frame">
+        <img src="12-commissions-page.png"
+             alt="Commissions page — sales agent + travel agency selectors and a per-hotel grid with Base Commission, Percentage of Base, Shared Earned, Total and Sales Agent Commission columns."
+             loading="lazy" onerror="this.style.display='none'" />
+      </div>
+      <figcaption class="lang-en">The Commissions grid for E2E Fin Agent A × Agency A: every hotel row joins three real sources — the hotel's Ergos markup, the agent's per-hotel earning override (30%), and the agency's rebate (5%).</figcaption>
+      <figcaption class="lang-es">La grilla de Comisiones para el Agente A × Agencia A: cada fila junta tres fuentes reales — el markup Ergos del hotel, el override de comisión del agente por hotel (30%) y el rebate de la agencia (5%).</figcaption>
+    </figure>
+
+    <ul>
+      <li class="lang-en"><b>Base Commission (%)</b> — the hotel's Ergos markup. Read-only here: it belongs to the hotel (edit it from the Hotels admin or the Pricing Policy cascade), not to this agent/agency pair.</li>
+      <li class="lang-en"><b>Percentage of Base (%)</b> — the sales agent's earning override for that hotel. Editable; saving writes only this field to the agent's commission record.</li>
+      <li class="lang-en"><b>Shared Earned (%)</b> — the agency's rebate for that hotel. Editable; saving writes only this field to the agency's commission record.</li>
+      <li class="lang-en"><b>Total / Sales Agent Commission</b> — derived live: <code>Total = Base + Shared</code>; <code>Agent = Base × Percentage of Base + Shared ÷ 2</code> (the shared earning splits 50/50).</li>
+      <li class="lang-es"><b>Base Commission (%)</b> — el markup Ergos del hotel. Solo lectura acá: pertenece al hotel (se edita desde Hoteles o la cascada de Política de Precios), no al par agente/agencia.</li>
+      <li class="lang-es"><b>Percentage of Base (%)</b> — el override de comisión del agente para ese hotel. Editable; al guardar se escribe solo este campo en el registro del agente.</li>
+      <li class="lang-es"><b>Shared Earned (%)</b> — el rebate de la agencia para ese hotel. Editable; al guardar se escribe solo este campo en el registro de la agencia.</li>
+      <li class="lang-es"><b>Total / Sales Agent Commission</b> — derivadas en vivo: <code>Total = Base + Shared</code>; <code>Agente = Base × Percentage of Base + Shared ÷ 2</code> (lo compartido se divide 50/50).</li>
+    </ul>
+
+    <div class="callout callout-info">
+      <strong class="lang-en">Worked example (the screenshot's numbers):</strong>
+      <strong class="lang-es">Ejemplo (los números de la captura):</strong>
+      <span class="lang-en"> Base Commission 0 (these demo hotels have no hotel-level Ergos markup — the cascade falls through to other layers), Percentage of Base 30, Shared Earned 5 → Total = 0 + 5 = <b>5.00</b>; Sales Agent Commission = 0 × 30% + 5 × ½ = <b>2.50</b>. Leaving a field untouched on save changes nothing — the platform only writes the fields you actually edit, so an inherited default is never accidentally frozen into an explicit 0.</span>
+      <span class="lang-es"> Base Commission 0 (estos hoteles demo no tienen markup Ergos a nivel hotel — la cascada cae a otras capas), Percentage of Base 30, Shared Earned 5 → Total = 0 + 5 = <b>5.00</b>; Comisión del Agente = 0 × 30% + 5 × ½ = <b>2.50</b>. Dejar un campo sin tocar al guardar no cambia nada — la plataforma solo escribe los campos que editás, así un valor heredado nunca se congela por accidente en un 0 explícito.</span>
+    </div>
   </section>
 
   <!-- SECTION 9: HOTEL BRANDS -->
@@ -545,6 +611,30 @@
       <li><strong>Per-agency revenue</strong> — group by travel agency to see who's bringing in the most volume.</li>
       <li><strong>Per-agent commission</strong> — group by sales agent to see commission paid.</li>
     </ul>
+
+    <figure class="screenshot">
+      <div class="screenshot-frame">
+        <img src="14-booking-breakdown-waterfall.png"
+             alt="Booking Breakdown detail for FIN-S3-BOTH — snapshot chips (Ergos markup 25%, chain discount 20%, rebate 3%, agent share 5%, ops 2%) and the full price waterfall from $800 supplier net to $126.48 Ergos net, with the agency overlay below."
+             loading="lazy" onerror="this.style.display='none'" />
+      </div>
+      <figcaption class="lang-en">The per-booking waterfall, line by line: $800 supplier net × (1 − 20% chain discount) = $640 adjusted cost × (1 + 25% Ergos markup) = $800 Ergos sell − $24 rebate (3%) = $776 agency effective − $640 cost = $136 Ergos gross − $6.80 agent (5%) − $2.72 ops (2%) = <b>$126.48 Ergos net</b>. The percentages are frozen at booking time (the "Snapshot" chips), so later policy changes never rewrite history.</figcaption>
+      <figcaption class="lang-es">La cascada por reserva, línea por línea: $800 neto proveedor × (1 − 20% descuento cadena) = $640 costo ajustado × (1 + 25% markup Ergos) = $800 Ergos sell − $24 rebate (3%) = $776 efectivo agencia − $640 costo = $136 bruto Ergos − $6.80 agente (5%) − $2.72 ops (2%) = <b>$126.48 neto Ergos</b>. Los porcentajes se congelan al reservar (los chips de "Snapshot"), así los cambios de política posteriores nunca reescriben la historia.</figcaption>
+    </figure>
+
+    <h3 class="lang-en">Per-agency Bookings &amp; P&amp;L</h3>
+    <h3 class="lang-es">Reservas y P&amp;L por agencia</h3>
+    <p class="lang-en">From <b>Travel Agencies → Actions → Bookings &amp; P&amp;L</b> you get the same numbers grouped for ONE agency: booking count, customer revenue, the agency's markup income and its rebate income from Ergos, plus the per-booking ledger (cancelled bookings show $0 income and are excluded from the totals).</p>
+    <p class="lang-es">Desde <b>Agencias de Viajes → Acciones → Bookings &amp; P&amp;L</b> tenés los mismos números agrupados para UNA agencia: cantidad de reservas, ingresos de clientes, el markup de la agencia y su rebate de Ergos, más el libro por reserva (las canceladas muestran $0 de ingreso y quedan fuera de los totales).</p>
+    <figure class="screenshot">
+      <div class="screenshot-frame">
+        <img src="13-agency-pnl.png"
+             alt="Agency Bookings & P&L page — date range, four summary cards (bookings, customer revenue, markup income, rebate income) and the per-booking table."
+             loading="lazy" onerror="this.style.display='none'" />
+      </div>
+      <figcaption class="lang-en">Agency A's P&amp;L: 23 bookings, $6,780 customer revenue, $380 markup income and $110 rebate income for the selected range — the same rebate dollars that appear as a deduction on Ergos's side of each waterfall.</figcaption>
+      <figcaption class="lang-es">P&amp;L de la Agencia A: 23 reservas, $6.780 de ingresos de clientes, $380 de markup y $110 de rebate en el rango elegido — los mismos dólares de rebate que aparecen como deducción del lado de Ergos en cada cascada.</figcaption>
+    </figure>
     <ul class="lang-es">
       <li><strong>Detalle por reserva</strong> — escribí o pegá un locator de reserva para ver la cascada completa.</li>
       <li><strong>Reporting agregado</strong> — elegí un rango de fechas para ver totales mensuales en todas las reservas. La fecha "to" es inclusiva de fin de día (23:59:59 UTC), así las reservas del mismo día creadas después de medianoche aparecen en los reportes por rango de fechas.</li>
