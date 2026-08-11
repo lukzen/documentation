@@ -50,6 +50,7 @@
     <button class="proto-tab" data-screen="pricing-policy">Pricing Policy</button>
     <button class="proto-tab" data-screen="hotel-price-breakdown">Hotel Price</button>
     <button class="proto-tab" data-screen="finance-remittances">Remittances</button>
+    <button class="proto-tab" data-screen="finance-settlement">Settlement 🚧</button>
   </div>
   <div class="proto-toolbar-right"></div>
 </div>
@@ -1001,6 +1002,70 @@
 <!-- =========================================================
      C1 — Agency Remittances (admin list + per-agency drilldown)
      ========================================================= -->
+<!-- =========================================================
+     Payments & Settlement (NOT IMPLEMENTED — target design)
+     Lane 2: agency credit statements (agency → Ergos)
+     Lane 1: commission payouts (Ergos → agency)
+     ========================================================= -->
+<section class="screen" id="screen-finance-settlement">
+  <div class="app-layout">
+    <aside class="sidebar"></aside>
+    <main class="app-main">
+      <div class="topbar">
+        <button class="hamburger" onclick="toggleSidebar()" aria-label="Menu">☰</button>
+        <div class="breadcrumb"><span>Finance &amp; Audit</span> / <span>Payments &amp; Settlement</span></div>
+        <div class="topbar-right"><div class="avatar">AD</div></div>
+      </div>
+      <div class="page">
+        <style>
+          .st-ribbon{background:repeating-linear-gradient(135deg,#8a6a1e,#8a6a1e 10px,#a97f24 10px,#a97f24 20px);color:#fff;font-weight:700;font-size:13px;padding:9px 14px;border-radius:8px;margin-bottom:18px}
+          .st-dir{display:inline-block;font-family:ui-monospace,Menlo,monospace;font-weight:800;font-size:12px;padding:2px 9px;border-radius:99px;margin-bottom:8px}
+          .st-in{background:#ccfbf1;color:#115e59}.st-out{background:#f7ecd0;color:#8a6a1e}
+          .st-table{width:100%;border-collapse:collapse;font-size:13px;margin-top:6px}
+          .st-table th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:#78716c;padding:7px 10px;border-bottom:1px solid #e8e5e0}
+          .st-table td{padding:8px 10px;border-bottom:1px solid #f0eee9;font-family:ui-monospace,Menlo,monospace;font-size:12.5px}
+          .st-pill{font-family:'DM Sans',sans-serif;font-size:11px;font-weight:800;text-transform:uppercase;padding:2px 9px;border-radius:99px}
+          .st-pending{background:#fef3c7;color:#b45309}.st-paid{background:#dcfce7;color:#15803d}
+          .st-card{background:#fff;border:1px solid #e8e5e0;border-radius:12px;padding:18px;margin-bottom:18px}
+        </style>
+        <div class="page-head row">
+          <div>
+            <h1>Payments &amp; Settlement</h1>
+            <p class="muted">The two settlement directions between Ergos and each agency, settled gross (no netting). This is the target design.</p>
+          </div>
+        </div>
+        <div class="st-ribbon">🚧 Not implemented yet — target design for how Ergos and agencies settle balances.</div>
+
+        <div class="st-card">
+          <span class="st-dir st-in">Agency → Ergos</span>
+          <h2 style="margin:0 0 2px">Lane 2 — agency credit statements</h2>
+          <p class="muted" style="margin:0 0 6px">Trusted agencies book on a capped line; each week Ergos issues a statement and sends the agency a TropiPay payment link. Reuses the existing remittances model.</p>
+          <table class="st-table">
+            <thead><tr><th>Statement</th><th>Agency</th><th>Total</th><th>Bookings</th><th>Due</th><th>Status</th></tr></thead>
+            <tbody>
+              <tr><td>ERG-2026-W32-01</td><td>Sunshine Travel LLC</td><td>$7,500.00</td><td>3</td><td>day 7</td><td><span class="st-pill st-pending">Pending</span></td></tr>
+              <tr><td>ERG-2026-W31-04</td><td>Coral Voyages</td><td>$2,150.00</td><td>1</td><td>day 7</td><td><span class="st-pill st-paid">Paid</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="st-card">
+          <span class="st-dir st-out">Ergos → Agency</span>
+          <h2 style="margin:0 0 2px">Lane 1 — commission payouts</h2>
+          <p class="muted" style="margin:0 0 6px">On client-paid bookings Ergos collects the full price, so Ergos owes the agency its markup. Monthly, Ergos runs a payout and transfers the accrued commission (bank / RTP-FedNow). Backoffice initiates and marks it Paid with an outbound reference.</p>
+          <table class="st-table">
+            <thead><tr><th>Payout</th><th>Agency</th><th>Amount</th><th>Bookings</th><th>Method</th><th>Status</th></tr></thead>
+            <tbody>
+              <tr><td>PAYOUT-2026-08-01</td><td>Sunshine Travel LLC</td><td>$150.00</td><td>1</td><td>bank / RTP-FedNow</td><td><span class="st-pill st-pending">Pending</span></td></tr>
+              <tr><td>PAYOUT-2026-07-01</td><td>Coral Voyages</td><td>$430.00</td><td>3</td><td>bank / RTP-FedNow</td><td><span class="st-pill st-paid">Paid · TX-40987</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+</section>
+
 <section class="screen" id="screen-finance-remittances">
   <div class="app-layout">
     <aside class="sidebar"></aside>
