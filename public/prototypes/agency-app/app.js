@@ -2831,6 +2831,20 @@ function updatePaymentForServices() {
 (function() {
   const _origConfirm = confirmBooking;
   confirmBooking = function() {
+    // Two-lane payment (target design): the confirm action depends on how the
+    // booking is paid. Lane 1 (client pays by card) does NOT confirm now — Ergos
+    // sends the client a TropiPay link and the booking confirms when they pay.
+    // Lane 2 (agency credit) confirms immediately on credit.
+    const creditEl = document.getElementById('pmCredit');
+    const isCredit = !!(creditEl && creditEl.querySelector('input') && creditEl.querySelector('input').checked);
+    if (!isCredit) {
+      if (typeof protoToast === 'function') protoToast('TropiPay payment link sent to the client — the booking confirms once they pay.', 'default');
+      const btn = document.getElementById('pay-confirm-btn');
+      if (btn) { btn.textContent = 'Payment link sent ✓ — awaiting client'; btn.disabled = true; }
+      return; // pending client payment; no confirmation screen yet
+    }
+    if (typeof protoToast === 'function') protoToast('Booked on agency credit — settles on the weekly statement.', 'success');
+
     // Capture guest info
     const guestScreen = document.getElementById('screen-guest');
     const inputs = guestScreen.querySelectorAll('.form-input');

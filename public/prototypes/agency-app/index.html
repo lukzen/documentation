@@ -1390,6 +1390,8 @@
               document.getElementById('pmLink').querySelector('input').checked=m==='link';
               document.getElementById('pmCredit').querySelector('input').checked=m==='credit';
               document.getElementById('pmHandoff').style.display=m==='link'?'':'none';
+              var b=document.getElementById('pay-confirm-btn');
+              if(b){b.textContent=m==='link'?'Send payment link to client':'Confirm on credit';b.disabled=false;}
             }
           </script>
         </div>
@@ -1410,7 +1412,7 @@
               <div class="os-divider"></div>
             </div>
             <div class="os-row os-total"><span>Total Client Price</span><span id="pay-os-total">USD 194.40</span></div>
-            <button class="confirm-btn" onclick="confirmBooking()">Confirm Booking</button>
+            <button class="confirm-btn" id="pay-confirm-btn" onclick="confirmBooking()">Send payment link to client</button>
             <!-- F1 — alternative path: confirm hotel now, decide transfer later (max 48h) -->
             <button class="confirm-btn confirm-btn-alt" id="pay-confirm-hotel-only" onclick="confirmHotelOnly()" style="display:none">
               Confirm Hotel Only — Decide Transfer Later
