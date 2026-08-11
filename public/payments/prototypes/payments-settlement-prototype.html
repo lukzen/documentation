@@ -1,0 +1,320 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Ergos · Payments &amp; Settlement — clickable prototype</title>
+<style>
+:root{
+  --primary:#1a1a4e; --primary-light:#2d2d7c; --primary-bright:#4f46e5;
+  --accent:#c4962c; --accent-light:#f7ecd0; --accent-dark:#8a6a1e;
+  --teal:#0d9488; --teal-light:#ccfbf1; --teal-dark:#115e59;
+  --warm-50:#fcfbfa; --warm-100:#f5f3f0; --warm-200:#e8e5e0; --warm-300:#d6d0c8;
+  --warm-400:#a8a093; --warm-500:#78716c; --warm-600:#57534e; --warm-700:#44403c; --warm-800:#292524;
+  --red-50:#fef2f2; --red-100:#fee2e2; --red-500:#ef4444; --red-600:#dc2626; --red-700:#b91c1c;
+  --green-50:#f0fdf4; --green-100:#dcfce7; --green-600:#16a34a; --green-700:#15803d;
+  --amber-50:#fffbeb; --amber-100:#fef3c7; --amber-500:#f59e0b; --amber-700:#b45309;
+  --font-display:Georgia,'Times New Roman',serif;
+  --font-body:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+  --font-mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --radius:6px; --radius-lg:10px; --shadow-sm:0 1px 2px rgba(0,0,0,.05);
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:var(--font-body);background:var(--warm-100);color:var(--warm-800);font-size:15px;line-height:1.5}
+h1,h2{font-family:var(--font-display);font-weight:400;margin:0}
+.proto-banner{background:repeating-linear-gradient(135deg,#7f1d1d,#7f1d1d 12px,#991b1b 12px,#991b1b 24px);color:#fff;padding:10px 16px;font-size:13px;font-weight:700;letter-spacing:.02em;text-align:center}
+.proto-banner span{display:block;font-weight:400;opacity:.92;letter-spacing:0}
+/* Tab nav — navy bar, matches tropipay-prototype's stepper chrome */
+.tabs{display:flex;gap:4px;background:var(--primary);padding:12px 20px;flex-wrap:wrap}
+.tab{font:inherit;font-size:13px;font-weight:600;color:rgba(255,255,255,.55);background:transparent;border:0;border-radius:99px;padding:8px 16px;cursor:pointer}
+.tab:hover{color:#fff}
+.tab.is-active{background:var(--accent);color:#1a1200}
+.wrap{max-width:1180px;margin:0 auto;padding:24px 20px 64px}
+h1.page-title{font-size:28px;margin:0 0 4px}
+.sub{color:var(--warm-500);font-size:14px;margin:0 0 18px}
+.pane{display:none}.pane.is-active{display:block}
+.dirbar{display:flex;gap:10px;align-items:center;border-radius:var(--radius-lg);padding:11px 15px;margin:0 0 18px;font-size:13.5px}
+.dirbar.in{background:var(--teal-light);border:1px solid #7fd8cd;color:var(--teal-dark)}
+.dirbar.out{background:var(--accent-light);border:1px solid #e3cf9b;color:var(--accent-dark)}
+.dirbar .arrow{font-family:var(--font-mono);font-weight:800;white-space:nowrap}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:22px;align-items:start}
+@media (max-width:900px){.cols{grid-template-columns:1fr}}
+.card{background:#fff;border:1px solid var(--warm-200);border-radius:var(--radius-lg);box-shadow:var(--shadow-sm);padding:22px;margin-bottom:20px}
+.card h2{font-size:19px;margin:0 0 10px}
+.card-head{display:flex;align-items:baseline;gap:10px}
+.card-head .clock{margin-left:auto;font-family:var(--font-mono);font-size:12.5px;font-weight:700;color:var(--primary-bright)}
+.roletag{display:inline-block;font-size:10.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:3px 9px;border-radius:99px;margin-bottom:8px}
+.roletag.bo{background:#e0e7ff;color:#3730a3}
+.roletag.ag{background:var(--teal-light);color:var(--teal-dark)}
+.roletag.client{background:#e0e7ff;color:#3730a3}
+.roletag.sys{background:var(--warm-200);color:var(--warm-600)}
+.kv{display:flex;justify-content:space-between;gap:12px;font-size:13.5px;padding:6px 0;border-bottom:1px solid var(--warm-200)}
+.kv:last-of-type{border-bottom:0}.kv .k{color:var(--warm-500)}
+.kv b{font-family:var(--font-mono);font-size:13px;font-weight:600}
+.kv b.big{font-family:var(--font-display);font-size:19px;color:var(--accent-dark)}
+.status{display:inline-block;font-size:11.5px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;padding:3px 10px;border-radius:99px}
+.st-active,.st-accruing{background:var(--amber-100);color:var(--amber-700)}
+.st-susp{background:var(--red-100);color:var(--red-700)}
+.st-paid{background:var(--green-100);color:var(--green-700)}
+.barwrap{background:var(--warm-200);border-radius:99px;height:18px;margin:12px 0 4px;overflow:hidden}
+.bar{height:100%;background:var(--teal);width:0%;transition:width .4s;border-radius:99px}
+.bar.warn{background:var(--amber-500)}.bar.full{background:var(--red-600)}
+.hint{font-size:12px;color:var(--warm-500);margin-top:6px}
+input[type=number]{font:inherit;font-size:14px;padding:9px 11px;border:1px solid var(--warm-300);border-radius:var(--radius);background:#fff;color:var(--warm-800);width:120px;font-family:var(--font-mono)}
+.btn{font:inherit;font-weight:600;border:1px solid transparent;border-radius:var(--radius);padding:11px 18px;cursor:pointer;background:var(--warm-200);color:var(--warm-800);margin:8px 8px 0 0}
+.btn:hover{filter:brightness(.97)}.btn[disabled]{opacity:.5;cursor:not-allowed;filter:none}
+.btn-primary{background:var(--primary);color:#fff}.btn-accent{background:var(--accent);color:#1a1200}
+.btn-teal{background:var(--teal);color:#fff}.btn-ghost{background:transparent;color:var(--warm-600);border-color:var(--warm-300)}
+table{width:100%;border-collapse:collapse;font-size:13px;margin-top:8px}
+th{font-size:11.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--warm-500);text-align:left;padding:6px 8px;border-bottom:1px solid var(--warm-200)}
+td{padding:7px 8px;border-bottom:1px solid var(--warm-200);font-family:var(--font-mono);font-size:12.5px}
+.pill{display:inline-block;font-size:11px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;padding:2px 9px;border-radius:99px;font-family:var(--font-body)}
+.p-open,.p-accrued{background:var(--amber-100);color:var(--amber-700)}
+.p-issued,.p-inpayout{background:#e0e7ff;color:#3730a3}
+.p-due{background:var(--red-100);color:var(--red-700)}
+.p-settled,.p-paid{background:var(--green-100);color:var(--green-700)}
+.note{border-radius:var(--radius);padding:13px 15px;font-size:13.5px;border:1px solid;margin-top:12px;display:none}
+.note h3{font-family:var(--font-body);font-size:12px;font-weight:800;margin:0 0 4px;text-transform:uppercase;letter-spacing:.05em}
+.note-good{display:block;background:var(--green-50);border-color:#a7e8bd;color:var(--green-700)}
+.note-bad{display:block;background:var(--red-50);border-color:#f3b4b4;color:var(--red-700)}
+.note-info{display:block;background:var(--teal-light);border-color:#7fd8cd;color:var(--teal-dark)}
+.note-gold{display:block;background:var(--accent-light);border-color:#e3cf9b;color:var(--accent-dark)}
+.opt{display:flex;gap:12px;align-items:flex-start;border:1px solid var(--warm-300);border-radius:var(--radius-lg);padding:14px 16px;cursor:pointer;background:#fff;margin-bottom:12px}
+.opt.is-sel{border-color:var(--primary);background:var(--warm-50);box-shadow:0 0 0 1px var(--primary)}
+.opt.is-off{opacity:.55;cursor:not-allowed;border-style:dashed}
+.opt input{margin:3px 0 0;width:18px;height:18px;accent-color:var(--primary);flex-shrink:0}
+.opt .t{font-weight:700;font-size:15px}.opt .d{font-size:13px;color:var(--warm-500);margin-top:2px}
+.tag{display:inline-block;font-size:10.5px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;padding:2px 7px;border-radius:99px;margin-left:8px}
+.tag-rec{background:var(--teal-light);color:var(--teal-dark)}.tag-off{background:var(--red-100);color:var(--red-700)}
+/* inbound statement link (teal) vs outbound payout advice (gold) */
+.stmt,.payout{border-radius:var(--radius-lg);overflow:hidden;margin-top:12px;font-size:13.5px}
+.stmt{border:2px solid var(--teal)}.payout{border:2px solid var(--accent)}
+.stmt-bar,.payout-bar{color:#fff;padding:8px 13px;font-size:12.5px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.stmt-bar{background:var(--teal-dark)}.payout-bar{background:var(--accent-dark)}
+.stmt-url,.payout-ref{font-family:var(--font-mono);font-size:11.5px;background:rgba(255,255,255,.16);padding:3px 8px;border-radius:99px}
+.stmt-body,.payout-body{padding:12px 14px;background:#fff}.ref{font-family:var(--font-mono)}
+a{color:var(--primary-bright)}
+</style>
+</head>
+<body>
+
+<div class="proto-banner" role="note">
+  NON-FUNCTIONAL PROTOTYPE — NO REAL PAYMENT PROCESSING
+  <span>Ergos payments &amp; settlement — the unified payment step and both settlement directions in one place. Nothing here calls a network or TropiPay. For the client card-entry flow see the <a href="tropipay-prototype.html" style="color:#fff;text-decoration:underline">TropiPay card prototype</a>.</span>
+</div>
+
+<nav class="tabs" role="tablist" aria-label="Payment flows">
+  <button class="tab is-active" data-pane="pane-book" role="tab">1 · Unified payment step</button>
+  <button class="tab" data-pane="pane-l2" role="tab">2 · Lane 2 — agency credit (agency → Ergos)</button>
+  <button class="tab" data-pane="pane-cp" role="tab">3 · Lane 1 — commission payout (Ergos → agency)</button>
+</nav>
+
+<div class="wrap">
+
+<!-- ============ PANE 1 — unified payment step ============ -->
+<section class="pane is-active" id="pane-book">
+  <h1 class="page-title">Payment — one step, two methods</h1>
+  <p class="sub">Every booking ends on this screen. The second option is enabled only for a trusted agency with headroom. No separate flows to learn.</p>
+  <div class="cols">
+    <div class="card">
+      <span class="roletag ag">Agency view</span>
+      <h2>How is this booking paid?</h2>
+      <label class="opt is-sel" id="bkOptLink"><input type="radio" name="bkpm" checked>
+        <span><span class="t">Client pays by card <span class="tag tag-rec">Recommended</span></span>
+        <span class="d">Ergos sends your client a secure TropiPay payment link. You never front money; the booking confirms when the client pays. Your markup is paid back to you monthly (see tab 3).</span></span></label>
+      <label class="opt" id="bkOptCredit"><input type="radio" name="bkpm" id="bkRb">
+        <span><span class="t">Book on agency credit <span class="tag" id="bkTag"></span></span>
+        <span class="d" id="bkDesc"></span></span></label>
+      <button class="btn btn-primary" id="bkContinue">Continue</button>
+      <div class="hint">Demo: <label><input type="checkbox" id="bkHas" checked> agency has a credit line</label> · <label><input type="checkbox" id="bkDue"> past-due statement</label></div>
+      <div class="note" id="bkBanner"></div>
+    </div>
+    <div class="card">
+      <span class="roletag sys">Booking · Meliá Punta Cana · 3 nights</span>
+      <div class="kv"><span class="k">Net rate (Ergos ↔ supplier)</span><b>$850.00</b></div>
+      <div class="kv"><span class="k">Ergos sell price</span><b>$1,000.00</b></div>
+      <div class="kv"><span class="k">Agency markup (15%)</span><b>$150.00</b></div>
+      <div class="kv"><span class="k" id="bkTotK">Client pays</span><b class="big" id="bkTot">$1,150.00</b></div>
+      <div class="hint" id="bkTotHint">Lane 1: the client pays the selling price; your $150.00 markup is commission <b>Ergos pays out to you</b> monthly (tab 3).</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PANE 2 — Lane 2 agency credit (inbound) ============ -->
+<section class="pane" id="pane-l2">
+  <h1 class="page-title">Lane 2 — Agency credit &amp; statement settlement</h1>
+  <p class="sub">A trusted agency books on a capped line; each week Ergos issues a statement and sends a TropiPay payment link for the total. Ergos initiates every collection.</p>
+  <div class="dirbar in"><span class="arrow">Agency → Ergos</span><span>Inbound collection — reuses the existing remittance model.</span></div>
+  <div class="cols">
+    <div>
+      <div class="card">
+        <span class="roletag bo">Backoffice</span>
+        <div class="card-head"><h2>Agency credit profile</h2><span class="clock" id="l2clock">Week 32 · Day 0</span></div>
+        <div class="kv"><span class="k">Agency</span><b>Sunshine Travel LLC</b></div>
+        <div class="kv"><span class="k">creditLimitUsd (manual; 0 = none)</span><b>$10,000.00</b></div>
+        <div class="kv"><span class="k">Open exposure</span><b id="l2expo">$0.00</b></div>
+        <div class="kv"><span class="k">Credit status</span><span class="status st-active" id="l2stat">ACTIVE</span></div>
+        <div class="barwrap"><div class="bar" id="l2bar"></div></div>
+        <div class="hint" id="l2barnote">0% of credit line used</div>
+        <div class="note" id="l2bo"></div>
+      </div>
+      <div class="card">
+        <span class="roletag ag">Agency</span><h2>New booking on credit</h2>
+        <div>Amount (gross) $ <input type="number" id="l2amt" value="2500" min="100" step="100">
+          <button class="btn btn-primary" id="l2book">Book on credit</button></div>
+        <div class="hint">Gate: ① no past-due statement · ② exposure + new ≤ creditLimit. Refusal falls back to Lane 1.</div>
+        <div class="note" id="l2gate"></div>
+      </div>
+      <div class="card">
+        <span class="roletag sys">Controls</span><h2>Time &amp; settlement</h2>
+        <button class="btn btn-accent" id="l2week">Run weekly statement job</button>
+        <button class="btn btn-ghost" id="l2day">Advance 1 day</button>
+        <button class="btn btn-teal" id="l2pay" disabled>Agency pays the statement link</button>
+        <div class="hint">Statement due N=7 days after issue. Past-due ⇒ auto-suspension.</div>
+      </div>
+    </div>
+    <div><div class="card"><span class="roletag sys">Ledger</span><h2>Credit bookings &amp; statements</h2>
+      <table id="l2tbl"><tr><th>Ref</th><th>Amount</th><th>Statement</th><th>Status</th></tr></table>
+      <div id="l2stmtBox"></div></div></div>
+  </div>
+</section>
+
+<!-- ============ PANE 3 — Lane 1 commission payout (outbound) ============ -->
+<section class="pane" id="pane-cp">
+  <h1 class="page-title">Lane 1 — Commission payout (Ergos → Agency)</h1>
+  <p class="sub">The client pays Ergos the full selling price, so Ergos owes the agency its markup. Each month Ergos runs a payout and transfers the accrued commission to the agency.</p>
+  <div class="dirbar out"><span class="arrow">Ergos → Agency</span><span>Outbound — the reverse of Lane 2. Backoffice initiates and marks the transfer, with an outbound reference. Pilot rail = bank transfer; RTP/FedNow is the target (see settlement-rails).</span></div>
+  <div class="cols">
+    <div>
+      <div class="card">
+        <span class="roletag bo">Backoffice</span>
+        <div class="card-head"><h2>Agency commission account</h2><span class="clock">Aug 2026</span></div>
+        <div class="kv"><span class="k">Agency</span><b>Sunshine Travel LLC</b></div>
+        <div class="kv"><span class="k">Accrued commission Ergos owes</span><b class="big" id="cpPayable">$0.00</b></div>
+        <div class="kv"><span class="k">Payout status</span><span class="status st-accruing" id="cpStat">ACCRUING</span></div>
+        <div class="note" id="cpBo"></div>
+      </div>
+      <div class="card">
+        <span class="roletag ag">Agency</span><h2>New client-paid booking (Lane 1)</h2>
+        <div>Selling price (gross) $ <input type="number" id="cpSell" value="1150" min="100" step="50">
+          <button class="btn btn-primary" id="cpBook">Confirm client-paid booking</button></div>
+        <div class="hint">The client pays Ergos the full price; your 15% markup accrues as commission Ergos owes you.</div>
+        <div class="note" id="cpBook2"></div>
+      </div>
+      <div class="card">
+        <span class="roletag sys">Monthly settlement</span><h2>Payout</h2>
+        <button class="btn btn-accent" id="cpRun">Run monthly payout job</button>
+        <button class="btn btn-accent" id="cpPay" disabled>Ergos pays the agency (backoffice)</button>
+        <div class="hint">Backoffice initiates the outbound transfer (bank / RTP-FedNow) and marks it PAID with an outbound reference. No agency onboarding — the agency just receives to its bank.</div>
+      </div>
+    </div>
+    <div><div class="card"><span class="roletag sys">Ledger</span><h2>Client-paid bookings &amp; accrued commission</h2>
+      <table id="cpTbl"><tr><th>Ref</th><th>Sell</th><th>Commission</th><th>Status</th></tr></table>
+      <div id="cpPayoutBox"></div></div></div>
+  </div>
+</section>
+
+<p class="sub" style="margin-top:8px">See also: <a href="tropipay-prototype.html">TropiPay card prototype</a> · .</p>
+</div>
+
+<script>
+const $=id=>document.getElementById(id);
+const fmt=n=>"$"+n.toLocaleString("en-US",{minimumFractionDigits:2});
+// ---- tabs ----
+document.querySelectorAll(".tab").forEach(t=>t.onclick=()=>{
+  document.querySelectorAll(".tab").forEach(x=>x.classList.remove("is-active"));
+  document.querySelectorAll(".pane").forEach(x=>x.classList.remove("is-active"));
+  t.classList.add("is-active"); $(t.dataset.pane).classList.add("is-active");
+});
+
+// ---- Pane 1: unified payment step ----
+(function(){
+  const LIMIT=10000, EXPO=6500, AMT=1150; let method="link";
+  function paint(){
+    const has=$("bkHas").checked, due=$("bkDue").checked, room=LIMIT-EXPO, ok=has&&!due&&AMT<=room;
+    $("bkOptCredit").classList.toggle("is-off",!ok); $("bkRb").disabled=!ok;
+    $("bkTag").className="tag "+(ok?"tag-rec":"tag-off"); $("bkTag").textContent=ok?"Available":"Unavailable";
+    $("bkDesc").textContent=has?`Book now, settle on your weekly statement. Line $${LIMIT.toLocaleString()} · in use $${EXPO.toLocaleString()} · available $${room.toLocaleString()}.`:"No credit line yet — earned with history or ARC accreditation. Until then, bookings are client-paid.";
+    if(!ok&&method==="credit"){method="link";sel("link");}
+  }
+  function sel(m){method=m;$("bkOptLink").classList.toggle("is-sel",m==="link");$("bkOptCredit").classList.toggle("is-sel",m==="credit");
+    $("bkOptLink").querySelector("input").checked=m==="link"; if(m==="credit")$("bkRb").checked=true;}
+  $("bkHas").onchange=paint; $("bkDue").onchange=paint;
+  $("bkOptLink").onclick=()=>sel("link");
+  $("bkOptCredit").onclick=()=>{if(!$("bkRb").disabled)sel("credit");};
+  $("bkContinue").onclick=()=>{
+    if(method==="link"){$("bkTotK").textContent="Client pays";$("bkTot").textContent="$1,150.00";
+      $("bkTotHint").innerHTML="Lane 1: the client pays the selling price; your $150.00 markup is commission <b>Ergos pays out to you</b> monthly (tab 3).";
+      $("bkBanner").className="note note-info";$("bkBanner").innerHTML="<h3>Client pays by card</h3>Ergos creates a TropiPay link and sends it to the client. Booking confirms when funds are secured; then your commission accrues (tab 3).";}
+    else{$("bkTotK").textContent="On credit";
+      $("bkBanner").className="note note-good";$("bkBanner").innerHTML="<h3>Booked on credit</h3>No payment now — this lands on the weekly statement the agency pays Ergos (tab 2).";}
+  };
+  paint();
+})();
+
+// ---- Pane 2: Lane 2 agency credit (inbound) ----
+(function(){
+  const LIMIT=10000, DUE=7; let expo=0,day=0,bookings=[],stmts=[],seq=1,susp=false;
+  function paint(){
+    $("l2expo").textContent=fmt(expo);
+    const pct=Math.min(100,Math.round(expo/LIMIT*100));const bar=$("l2bar");bar.style.width=pct+"%";
+    bar.className="bar"+(pct>=100?" full":pct>=70?" warn":"");
+    $("l2barnote").textContent=pct+"% of credit line used";
+    $("l2stat").className="status "+(susp?"st-susp":"st-active");$("l2stat").textContent=susp?"SUSPENDED":"ACTIVE";
+    $("l2clock").textContent="Week 32 · Day "+day;
+    const t=$("l2tbl");t.innerHTML="<tr><th>Ref</th><th>Amount</th><th>Statement</th><th>Status</th></tr>";
+    bookings.forEach(b=>t.innerHTML+=`<tr><td>${b.ref}</td><td>${fmt(b.amt)}</td><td>${b.stmt||"—"}</td><td><span class="pill p-${b.st}">${b.st.toUpperCase()}</span></td></tr>`);
+    $("l2stmtBox").innerHTML=stmts.map(s=>`<div class="stmt"><div class="stmt-bar"><span>🔒</span> Statement payment link <span class="stmt-url">https://tppay.me/erg-${s.ref}</span></div>
+      <div class="stmt-body"><b class="ref">${s.ref}</b> — ${fmt(s.total)} · ${s.n} booking(s) · due day ${s.due} · <span class="pill p-${s.st}">${s.st.toUpperCase()}</span></div></div>`).join("");
+    $("l2pay").disabled=!stmts.some(s=>s.st==="issued"||s.st==="due");
+  }
+  $("l2book").onclick=()=>{const amt=Number($("l2amt").value)||0;if(amt<=0)return;
+    if(susp||stmts.some(s=>s.st==="due")){$("l2gate").className="note note-bad";$("l2gate").innerHTML="<h3>Credit refused</h3>Past-due statement — credit suspended → fallback: client link (Lane 1).";return;}
+    if(expo+amt>LIMIT){$("l2gate").className="note note-bad";$("l2gate").innerHTML=`<h3>Credit refused</h3>${fmt(expo)} + ${fmt(amt)} exceeds ${fmt(LIMIT)} → fallback: Lane 1.`;return;}
+    expo+=amt;bookings.push({ref:"BK-88"+(200+seq++),amt,st:"open",stmt:null});
+    $("l2gate").className="note note-good";$("l2gate").innerHTML="<h3>Gate passed</h3>Booking CONFIRMED on credit, added to the open week.";paint();};
+  $("l2week").onclick=()=>{const open=bookings.filter(b=>b.st==="open");
+    if(!open.length){$("l2bo").className="note note-bad";$("l2bo").innerHTML="<h3>Nothing to statement</h3>No open credit bookings.";return;}
+    const ref="ERG-2026-W32-"+String(stmts.length+1).padStart(2,"0");const total=open.reduce((a,b)=>a+b.amt,0);
+    open.forEach(b=>{b.st="issued";b.stmt=ref;});stmts.push({ref,total,n:open.length,st:"issued",due:day+DUE});
+    $("l2bo").className="note note-good";$("l2bo").innerHTML="<h3>Statement issued</h3>"+ref+" for "+fmt(total)+" — TropiPay link emailed to the agency.";paint();};
+  $("l2day").onclick=()=>{day++;stmts.forEach(s=>{if(s.st==="issued"&&day>s.due){s.st="due";susp=true;
+    bookings.filter(b=>b.stmt===s.ref).forEach(b=>b.st="due");
+    $("l2bo").className="note note-bad";$("l2bo").innerHTML="<h3>Past due</h3>"+s.ref+" PAST DUE → credit AUTO-SUSPENDED.";}});paint();};
+  $("l2pay").onclick=()=>{const s=stmts.find(x=>x.st==="issued"||x.st==="due");if(!s)return;s.st="settled";
+    bookings.filter(b=>b.stmt===s.ref).forEach(b=>{b.st="settled";expo-=b.amt;});
+    $("l2bo").className="note note-good";$("l2bo").innerHTML="<h3>Settled</h3>Statement link paid — webhook verified, "+s.ref+" marked PAID. Exposure released.";paint();};
+  paint();
+})();
+
+// ---- Pane 3: Lane 1 commission payout (outbound) ----
+(function(){
+  const MARKUP=0.15; let payable=0,bookings=[],payouts=[],seq=1;
+  function paint(){
+    $("cpPayable").textContent=fmt(payable);
+    const paid=bookings.length>0&&bookings.every(b=>b.st==="paid");
+    $("cpStat").className="status "+(paid?"st-paid":"st-accruing");$("cpStat").textContent=paid?"PAID":"ACCRUING";
+    const t=$("cpTbl");t.innerHTML="<tr><th>Ref</th><th>Sell</th><th>Commission</th><th>Status</th></tr>";
+    bookings.forEach(b=>t.innerHTML+=`<tr><td>${b.ref}</td><td>${fmt(b.sell)}</td><td>${fmt(b.comm)}</td><td><span class="pill p-${b.st}">${b.st.toUpperCase()}</span></td></tr>`);
+    $("cpPayoutBox").innerHTML=payouts.map(p=>`<div class="payout"><div class="payout-bar"><span class="arrow">Ergos → Agency</span> Payout advice <span class="payout-ref">${p.ref}</span></div>
+      <div class="payout-body"><b class="ref">${p.ref}</b> — ${fmt(p.total)} · ${p.n} booking(s) · via ${p.method} · <span class="pill p-${p.st==="paid"?"paid":"inpayout"}">${p.st==="paid"?"PAID":"PENDING"}</span>${p.out?` · outbound ref <b class="ref">${p.out}</b>`:""}</div></div>`).join("");
+    $("cpPay").disabled=!payouts.some(p=>p.st==="pending");
+  }
+  $("cpBook").onclick=()=>{const sell=Number($("cpSell").value)||0;if(sell<=0)return;
+    const comm=Math.round(sell/(1+MARKUP)*MARKUP*100)/100;
+    bookings.push({ref:"BK-88"+(300+seq++),sell,comm,st:"accrued"});payable=Math.round((payable+comm)*100)/100;
+    $("cpBook2").className="note note-good";$("cpBook2").innerHTML="<h3>Client paid — booking confirmed</h3>Client paid "+fmt(sell)+" to Ergos. Commission "+fmt(comm)+" accrues as a payable <b>Ergos owes you</b>.";paint();};
+  $("cpRun").onclick=()=>{const acc=bookings.filter(b=>b.st==="accrued");
+    if(!acc.length){$("cpBo").className="note note-bad";$("cpBo").innerHTML="<h3>Nothing to pay out</h3>No accrued commission.";return;}
+    const ref="PAYOUT-2026-08-"+String(payouts.length+1).padStart(2,"0");const total=Math.round(acc.reduce((a,b)=>a+b.comm,0)*100)/100;
+    acc.forEach(b=>b.st="inpayout");payouts.push({ref,total,n:acc.length,st:"pending",method:"bank / RTP-FedNow transfer",out:null});
+    $("cpBo").className="note note-gold";$("cpBo").innerHTML="<h3>Payout generated</h3>"+ref+" for "+fmt(total)+" — Ergos owes the agency. Awaiting the outbound transfer.";paint();};
+  $("cpPay").onclick=()=>{const p=payouts.find(x=>x.st==="pending");if(!p)return;p.st="paid";p.out="TX-"+(41000+seq);
+    bookings.filter(b=>b.st==="inpayout").forEach(b=>b.st="paid");payable=Math.round((payable-p.total)*100)/100;if(payable<0.005)payable=0;
+    $("cpBo").className="note note-good";$("cpBo").innerHTML="<h3>Paid</h3>Backoffice transferred "+fmt(p.total)+" to the agency ("+p.method+"), marked "+p.ref+" PAID · outbound ref <b>"+p.out+"</b>.";paint();};
+  paint();
+})();
+</script>
+</body>
+</html>

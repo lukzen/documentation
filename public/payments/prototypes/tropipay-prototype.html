@@ -1,0 +1,1332 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Ergos · TropiPay card-payment flow — clickable prototype</title>
+<style>
+:root{
+  --primary:#1a1a4e; --primary-light:#2d2d7c; --primary-bright:#4f46e5;
+  --accent:#c4962c; --accent-hover:#a87d1f;
+  --teal:#0d9488; --teal-light:#ccfbf1; --teal-dark:#115e59;
+  --terracotta:#b04e21; --terracotta-light:#fdf0ea;
+  --warm-50:#fcfbfa; --warm-100:#f5f3f0; --warm-200:#e8e5e0; --warm-300:#d6d0c8;
+  --warm-400:#a8a093; --warm-500:#78716c; --warm-600:#57534e; --warm-700:#44403c; --warm-800:#292524;
+  --red-50:#fef2f2; --red-100:#fee2e2; --red-500:#ef4444; --red-600:#dc2626; --red-700:#b91c1c;
+  --green-50:#f0fdf4; --green-100:#dcfce7; --green-600:#16a34a; --green-700:#15803d;
+  --amber-50:#fffbeb; --amber-100:#fef3c7; --amber-500:#f59e0b; --amber-700:#b45309;
+  --white:#fff;
+  --font-display:Georgia,'Times New Roman',serif;
+  --font-body:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+  --font-mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --radius:6px; --radius-lg:10px; --radius-xl:14px;
+  --shadow-sm:0 1px 2px rgba(0,0,0,.05);
+  --shadow:0 1px 3px rgba(0,0,0,.08),0 1px 2px rgba(0,0,0,.04);
+  --shadow-md:0 4px 16px rgba(0,0,0,.07);
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;font-family:var(--font-body);background:var(--warm-100);color:var(--warm-800);font-size:15px;line-height:1.5}
+h1,h2,h3,h4{font-family:var(--font-display);font-weight:400;margin:0}
+p{margin:0 0 .75em}
+p:last-child{margin-bottom:0}
+:focus-visible{outline:3px solid var(--primary-bright);outline-offset:2px;border-radius:3px}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+
+/* ---------- prototype banner ---------- */
+.proto-banner{background:repeating-linear-gradient(135deg,#7f1d1d,#7f1d1d 12px,#991b1b 12px,#991b1b 24px);color:#fff;padding:10px 16px;font-size:13px;font-weight:700;letter-spacing:.02em;text-align:center}
+.proto-banner span{display:block;font-weight:400;opacity:.92;letter-spacing:0}
+
+/* ---------- stepper ---------- */
+.stepper{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:4px;background:var(--primary);padding:18px 24px}
+.step{display:flex;align-items:center;gap:10px}
+.step .dot{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;border:2px solid rgba(255,255,255,.2);color:rgba(255,255,255,.4);background:transparent}
+.step.is-done .dot{border-color:var(--teal);background:var(--teal);color:#fff}
+.step.is-active .dot{border-color:var(--accent);color:var(--accent);background:rgba(196,150,44,.12)}
+.step .lbl{font-size:13px;font-weight:500;color:rgba(255,255,255,.4)}
+.step.is-done .lbl{color:rgba(255,255,255,.7)}
+.step.is-active .lbl{color:#fff;font-weight:600}
+.step-bar{width:48px;height:2px;background:rgba(255,255,255,.15);margin:0 8px}
+.step-bar.is-done{background:var(--teal)}
+
+/* ---------- layout ---------- */
+.wrap{max-width:1180px;margin:0 auto;padding:24px 20px 96px}
+.cols{display:flex;gap:28px;align-items:flex-start}
+.main-col{flex:1;min-width:0}
+.side-col{width:340px;flex-shrink:0;position:sticky;top:20px}
+@media (max-width:900px){.cols{flex-direction:column}.side-col{width:100%;position:static}}
+
+.card{background:#fff;border:1px solid var(--warm-200);border-radius:var(--radius-lg);box-shadow:var(--shadow-sm)}
+.card-pad{padding:24px}
+@media (max-width:520px){.card-pad{padding:16px}.wrap{padding:16px 12px 96px}}
+h1.page-title{font-size:30px;color:var(--warm-800);margin:0 0 18px}
+h2.sec{font-size:20px;margin:0 0 4px}
+.sub{color:var(--warm-500);font-size:14px;margin:0 0 18px}
+.divider{height:1px;background:var(--warm-200);margin:20px 0}
+
+/* The `hidden` attribute is how every screen and conditional control here is
+   toggled, but it only works via the UA stylesheet's low-priority
+   `[hidden]{display:none}` — ANY author `display` rule beats it. `.btn-block`
+   below sets `display:block`, which silently un-hid all three sidebar CTAs at
+   once and left them overlapping. Restate it as author CSS so `hidden` wins. */
+[hidden]{display:none !important}
+
+/* ---------- buttons ---------- */
+.btn{font:inherit;font-weight:600;border:1px solid transparent;border-radius:var(--radius);padding:11px 18px;cursor:pointer;background:var(--warm-200);color:var(--warm-800)}
+.btn:hover{filter:brightness(.97)}
+.btn[disabled]{opacity:.5;cursor:not-allowed;filter:none}
+.btn-primary{background:var(--primary);color:#fff}
+.btn-accent{background:var(--accent);color:#1a1200}
+.btn-teal{background:var(--teal);color:#fff}
+.btn-ghost{background:transparent;color:var(--warm-600);border-color:var(--warm-300)}
+.btn-link{background:none;border:0;color:var(--primary-bright);text-decoration:underline;cursor:pointer;font:inherit;padding:4px 2px}
+.btn-block{display:block;width:100%}
+.btn-sm{padding:7px 12px;font-size:13px;font-weight:600}
+.back-btn{background:none;border:0;color:var(--warm-500);font:inherit;font-weight:500;cursor:pointer;padding:6px 4px;margin-bottom:8px}
+
+/* ---------- forms ---------- */
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px 16px}
+@media (max-width:600px){.grid{grid-template-columns:1fr}}
+.f-full{grid-column:1/-1}
+.field label{display:block;font-size:13px;font-weight:600;margin-bottom:5px;color:var(--warm-700)}
+.field .req{color:var(--red-600)}
+.field input,.field select{width:100%;font:inherit;font-size:14px;padding:9px 11px;border:1px solid var(--warm-300);border-radius:var(--radius);background:#fff;color:var(--warm-800)}
+.field input:focus-visible,.field select:focus-visible{border-color:var(--primary-bright)}
+.field input[aria-invalid="true"]{border-color:var(--red-500);background:var(--red-50)}
+.hint{font-size:12px;color:var(--warm-500);margin-top:4px}
+.err{font-size:12.5px;color:var(--red-700);margin-top:5px;font-weight:600;min-height:0}
+.err:empty{display:none}
+.pan-wrap{position:relative}
+.pan-wrap input{padding-right:96px;font-family:var(--font-mono);letter-spacing:.04em}
+.brand-chip{position:absolute;right:8px;top:50%;transform:translateY(-50%);font-size:10.5px;font-weight:800;letter-spacing:.08em;padding:4px 8px;border-radius:4px;background:var(--warm-200);color:var(--warm-600);text-transform:uppercase}
+.brand-chip[data-brand="visa"]{background:#1a1f71;color:#fff}
+.brand-chip[data-brand="mastercard"]{background:#eb001b;color:#fff}
+.brand-chip[data-brand="amex"]{background:#006fcf;color:#fff}
+.brand-chip[data-brand="discover"]{background:#e6772e;color:#fff}
+
+/* ---------- method options ---------- */
+.methods{display:flex;flex-direction:column;gap:12px;margin:0;padding:0;border:0}
+.methods legend{font-size:13px;font-weight:600;color:var(--warm-700);padding:0 0 10px}
+.opt{display:flex;gap:12px;align-items:flex-start;border:1px solid var(--warm-300);border-radius:var(--radius-lg);padding:14px 16px;cursor:pointer;background:#fff}
+.opt:hover{border-color:var(--warm-400);background:var(--warm-50)}
+.opt.is-sel,.opt:has(input:checked){border-color:var(--primary);background:var(--warm-50);box-shadow:0 0 0 1px var(--primary)}
+.opt:has(input:focus-visible){outline:3px solid var(--primary-bright);outline-offset:2px}
+.opt input{margin:3px 0 0;width:18px;height:18px;accent-color:var(--primary);flex-shrink:0}
+.opt .t{font-weight:700;font-size:15px}
+.opt .d{font-size:13px;color:var(--warm-500);margin-top:2px}
+.opt.is-retired{border-style:dashed;background:var(--red-50);border-color:#f3b4b4}
+.opt.is-retired.is-sel,.opt.is-retired:has(input:checked){box-shadow:0 0 0 1px var(--red-500);border-color:var(--red-500)}
+.tag{display:inline-block;font-size:10.5px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;padding:2px 7px;border-radius:99px;margin-left:8px;vertical-align:1px}
+.tag-rec{background:var(--teal-light);color:var(--teal-dark)}
+.tag-risk{background:#fee2e2;color:var(--red-700)}
+.tag-soon{background:var(--warm-200);color:var(--warm-600)}
+
+/* ---------- notes / alerts ---------- */
+.note{border-radius:var(--radius);padding:13px 15px;font-size:13.5px;border:1px solid}
+.note h3{font-family:var(--font-body);font-size:13.5px;font-weight:800;margin:0 0 5px;text-transform:uppercase;letter-spacing:.04em}
+.note-pci{background:var(--red-50);border-color:#f3b4b4;color:#7f1d1d}
+.note-saqa{background:var(--teal-light);border-color:#7fd8cd;color:var(--teal-dark)}
+.note-info{background:var(--warm-50);border-color:var(--warm-200);color:var(--warm-600)}
+.note-warn{background:var(--amber-50);border-color:#fcd996;color:var(--amber-700)}
+.note+.note{margin-top:12px}
+.note code{font-family:var(--font-mono);font-size:12.5px;background:rgba(0,0,0,.06);padding:1px 4px;border-radius:3px}
+
+/* ---------- legend table ---------- */
+.legend{margin-top:18px}
+.legend table{width:100%;border-collapse:collapse;font-size:13px}
+.legend th,.legend td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--warm-200);vertical-align:top}
+.legend th{font-weight:700;color:var(--warm-600);font-size:11.5px;text-transform:uppercase;letter-spacing:.05em}
+.legend td.pan{font-family:var(--font-mono);white-space:nowrap}
+.legend tr:last-child td{border-bottom:0}
+details.legend-d>summary{cursor:pointer;font-weight:700;font-size:13.5px;padding:8px 0;color:var(--primary)}
+
+/* ---------- hosted frame ---------- */
+.hosted{border:2px solid var(--teal);border-radius:var(--radius-lg);overflow:hidden;background:#fff}
+.hosted-bar{background:var(--teal-dark);color:#fff;padding:9px 14px;font-size:12.5px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.hosted-bar .lock{font-weight:800}
+.hosted-url{font-family:var(--font-mono);font-size:11.5px;background:rgba(255,255,255,.14);padding:3px 8px;border-radius:99px}
+.ourdom{border:2px dashed var(--red-500);border-radius:var(--radius-lg);overflow:hidden;background:#fff}
+.ourdom-bar{background:#7f1d1d;color:#fff;padding:9px 14px;font-size:12.5px;font-weight:700}
+
+/* ---------- spinner ---------- */
+.spinner{width:44px;height:44px;border-radius:50%;border:4px solid var(--warm-200);border-top-color:var(--primary);animation:spin 900ms linear infinite;margin:0 auto}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.spinner{animation-duration:2.4s}}
+.lanes{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:18px}
+@media (max-width:600px){.lanes{grid-template-columns:1fr}}
+.lane{border:1px solid var(--warm-200);border-radius:var(--radius);padding:12px 14px;font-size:13px;background:var(--warm-50)}
+.lane h4{font-family:var(--font-body);font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;color:var(--warm-500);margin:0 0 6px}
+.lane.authoritative{background:var(--teal-light);border-color:#7fd8cd}
+.lane.authoritative h4{color:var(--teal-dark)}
+
+/* ---------- outcome ---------- */
+.outcome-head{display:flex;gap:14px;align-items:flex-start;padding:18px;border-radius:var(--radius-lg);border:1px solid}
+.outcome-head .ic{font-size:26px;line-height:1}
+.outcome-head h2{font-size:22px;margin:0 0 4px}
+.o-paid{background:var(--green-50);border-color:#a7e8bd;color:var(--green-700)}
+.o-failed{background:var(--red-50);border-color:#f3b4b4;color:var(--red-700)}
+.o-processing,.o-pending{background:var(--amber-50);border-color:#fcd996;color:var(--amber-700)}
+.o-expired{background:var(--warm-100);border-color:var(--warm-300);color:var(--warm-600)}
+.o-hotel{background:var(--teal-light);border-color:#7fd8cd;color:var(--teal-dark)}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:8px 18px;font-size:14px;margin-top:18px}
+.kv dt{color:var(--warm-500)}
+.kv dd{margin:0;font-weight:600;font-family:var(--font-mono);font-size:13.5px}
+
+/* ---------- sidebar ---------- */
+.sum-head{background:var(--primary);color:#fff;padding:16px 18px}
+.sum-head h2{font-size:18px;color:#fff}
+.sum-head .hotel{font-size:13px;opacity:.8;margin-top:2px}
+.sum-body{padding:16px 18px}
+.sum-row{display:flex;justify-content:space-between;gap:12px;font-size:13.5px;margin-bottom:7px}
+.sum-row .k{color:var(--warm-500)}
+.sum-row .v{font-weight:600;text-align:right}
+.sum-total{display:flex;justify-content:space-between;align-items:baseline;margin:6px 0 14px}
+.sum-total .k{font-weight:700;font-size:14px}
+.sum-total .v{font-family:var(--font-display);font-size:24px;font-weight:400}
+.sum-note{font-size:11.5px;color:var(--warm-500);margin-top:10px;text-align:center}
+
+/* ---------- backoffice ---------- */
+.bo-grid{display:grid;grid-template-columns:auto 1fr auto 1fr;gap:10px 16px;font-size:14px}
+@media (max-width:600px){.bo-grid{grid-template-columns:auto 1fr}}
+.bo-grid dt{color:var(--warm-500);font-size:13px}
+.bo-grid dd{margin:0;font-weight:600}
+.pill{display:inline-block;font-size:11.5px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;padding:3px 9px;border-radius:99px}
+.pill-paid{background:var(--green-100);color:var(--green-700)}
+.pill-failed{background:var(--red-100);color:var(--red-700)}
+.pill-pending{background:var(--amber-100);color:var(--amber-700)}
+table.attempts{width:100%;border-collapse:collapse;font-size:13px;margin-top:8px}
+table.attempts th,table.attempts td{text-align:left;padding:7px 9px;border-bottom:1px solid var(--warm-200)}
+table.attempts th{font-size:11.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--warm-500)}
+table.attempts td.mono{font-family:var(--font-mono)}
+
+/* ---------- control panel ---------- */
+.proto-panel{position:fixed;right:14px;bottom:14px;z-index:60;width:min(330px,calc(100vw - 28px));font-size:13px}
+.proto-panel>summary{list-style:none;cursor:pointer;background:var(--primary);color:#fff;padding:10px 14px;border-radius:var(--radius);font-weight:700;box-shadow:var(--shadow-md);text-align:center}
+.proto-panel>summary::-webkit-details-marker{display:none}
+.proto-panel[open]>summary{border-radius:var(--radius) var(--radius) 0 0}
+.proto-body{background:#12123a;color:#e8e8f5;border-radius:0 0 var(--radius) var(--radius);padding:14px;max-height:min(70vh,560px);overflow:auto;box-shadow:var(--shadow-md)}
+.proto-body h4{font-family:var(--font-body);font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:#9a9ac8;margin:14px 0 7px;font-weight:800}
+.proto-body h4:first-child{margin-top:0}
+.proto-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.proto-body button{font:inherit;font-size:12px;font-weight:600;padding:7px 8px;border-radius:5px;border:1px solid #33336b;background:#1e1e50;color:#e8e8f5;cursor:pointer;text-align:left}
+.proto-body button:hover{background:#2a2a66}
+.proto-body button[aria-pressed="true"]{background:var(--accent);color:#1a1200;border-color:var(--accent)}
+.proto-body button.danger{border-color:#6b2020;background:#3a1414}
+.proto-body button.danger:hover{background:#521c1c}
+.proto-body :focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.proto-meta{font-family:var(--font-mono);font-size:11px;color:#9a9ac8;margin-top:12px;border-top:1px solid #33336b;padding-top:10px;line-height:1.7}
+.proto-meta b{color:#e8e8f5;font-weight:700}
+</style>
+</head>
+<body>
+
+<div class="proto-banner" data-testid="prototype-banner" role="note">
+  NON-FUNCTIONAL PROTOTYPE — NO REAL PAYMENT PROCESSING
+  <span>Design &amp; QA artifact for the Ergos TropiPay card-payment flow. Nothing here calls a network, a bank, or TropiPay. No card is ever charged, stored or transmitted. Do not enter a real card number. Business context &amp; lane prototypes: <a href="payments-settlement-prototype.html">Payments &amp; settlement prototype</a>.</span>
+</div>
+
+<nav class="stepper" data-testid="booking-flow-progress" aria-label="Booking progress">
+  <div class="step" id="stp-0"><span class="dot" aria-hidden="true">1</span><span class="lbl">Room Selection</span></div>
+  <div class="step-bar" id="bar-0" aria-hidden="true"></div>
+  <div class="step" id="stp-1"><span class="dot" aria-hidden="true">2</span><span class="lbl">Guest Details</span></div>
+  <div class="step-bar" id="bar-1" aria-hidden="true"></div>
+  <div class="step" id="stp-2"><span class="dot" aria-hidden="true">3</span><span class="lbl">Payment</span></div>
+  <div class="step-bar" id="bar-2" aria-hidden="true"></div>
+  <div class="step" id="stp-3"><span class="dot" aria-hidden="true">4</span><span class="lbl">Confirmation</span></div>
+</nav>
+
+<div class="wrap">
+  <div class="cols">
+    <main class="main-col">
+      <button type="button" class="back-btn" id="backBtn" data-testid="booking-back">&larr; <span id="backLabel">Back to Rooms</span></button>
+      <h1 class="page-title" id="pageTitle" data-testid="booking-flow-title" tabindex="-1">Who&rsquo;s checking in?</h1>
+
+      <!-- ============ SCREEN 0 · GUEST DETAILS ============ -->
+      <section class="card card-pad" data-screen="guest" hidden aria-labelledby="pageTitle">
+        <h2 class="sec">Main guest information</h2>
+        <p class="sub">The lead guest on the reservation. Fields marked * are required.</p>
+        <form id="guestForm" novalidate>
+          <div class="grid">
+            <div class="field">
+              <label for="guestName">Guest Name <span class="req">*</span></label>
+              <input id="guestName" data-testid="booking-guest-name" name="guestName" type="text" autocomplete="name" value="Testing Guest" aria-describedby="err-guestName">
+              <p class="err" aria-live="polite" id="err-guestName"></p>
+            </div>
+            <div class="field">
+              <label for="guestEmail">Guest Email <span class="req">*</span></label>
+              <input id="guestEmail" data-testid="booking-guest-email" name="guestEmail" type="email" autocomplete="email" value="testing@testing.com" aria-describedby="err-guestEmail">
+              <p class="err" aria-live="polite" id="err-guestEmail"></p>
+            </div>
+            <div class="field">
+              <label for="phone">Phone <span class="req">*</span></label>
+              <input id="phone" data-testid="booking-phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" value="+34 971 123 456" aria-describedby="err-phone hint-phone">
+              <p class="hint" id="hint-phone">Include the country code, e.g. +1 555 123 4567.</p>
+              <p class="err" aria-live="polite" id="err-phone"></p>
+            </div>
+            <div class="field">
+              <label for="country">Country <span class="req">*</span></label>
+              <select id="country" data-testid="booking-country-select" name="country" autocomplete="country" aria-describedby="err-country">
+                <option value="">Select country</option>
+                <option value="ES" selected>Spain</option>
+                <option value="US">United States</option>
+                <option value="CU">Cuba</option>
+                <option value="MX">Mexico</option>
+                <option value="GB">United Kingdom</option>
+                <option value="DE">Germany</option>
+              </select>
+              <p class="err" aria-live="polite" id="err-country"></p>
+            </div>
+            <div class="field">
+              <label for="postalCode">Postal Code</label>
+              <input id="postalCode" data-testid="booking-postal-code" name="postalCode" type="text" inputmode="numeric" autocomplete="postal-code" value="07001" aria-describedby="err-postalCode">
+              <p class="err" aria-live="polite" id="err-postalCode"></p>
+            </div>
+          </div>
+
+          <div class="divider"></div>
+          <h2 class="sec">Occupants</h2>
+          <p class="sub">Adult 1 &middot; Room 1 &mdash; Deluxe Ocean View</p>
+          <div class="grid">
+            <div class="field">
+              <label for="g0first">Adult 1 &mdash; First Name <span class="req">*</span></label>
+              <input id="g0first" data-testid="guest-guest-0-firstname" type="text" autocomplete="given-name" aria-describedby="err-g0first">
+              <p class="err" aria-live="polite" id="err-g0first"></p>
+            </div>
+            <div class="field">
+              <label for="g0last">Last Name <span class="req">*</span></label>
+              <input id="g0last" data-testid="guest-guest-0-lastname" type="text" autocomplete="family-name" aria-describedby="err-g0last">
+              <p class="err" aria-live="polite" id="err-g0last"></p>
+            </div>
+            <div class="field">
+              <label for="g0age">Age (13+) <span class="req">*</span></label>
+              <input id="g0age" data-testid="guest-guest-0-age" type="number" inputmode="numeric" min="13" max="120" value="30" aria-describedby="err-g0age">
+              <p class="err" aria-live="polite" id="err-g0age"></p>
+            </div>
+          </div>
+
+          <div class="divider"></div>
+          <h2 class="sec">Emergency contact</h2>
+          <p class="sub">Optional.</p>
+          <div class="grid">
+            <div class="field">
+              <label for="emName">Name</label>
+              <input id="emName" data-testid="booking-emergency-name" type="text" autocomplete="off">
+            </div>
+            <div class="field">
+              <label for="emPhone">Phone</label>
+              <input id="emPhone" data-testid="booking-emergency-phone" type="tel" inputmode="tel" autocomplete="off">
+            </div>
+          </div>
+          <button type="submit" class="sr-only">Continue to payment</button>
+        </form>
+      </section>
+
+      <!-- ============ SCREEN 1 · PAYMENT METHOD ============ -->
+      <section class="card card-pad" data-screen="method" hidden aria-labelledby="pageTitle">
+        <h2 class="sec">Choose payment method</h2>
+        <p class="sub">Exactly one method. The amount is derived server-side and only displayed here &mdash; the browser never sends it.</p>
+        <form id="methodForm" novalidate>
+        <fieldset class="methods">
+          <legend>Payment method</legend>
+
+          <label class="opt" data-testid="payment-method-hotel" for="pm-hotel">
+            <input type="radio" name="paymentMethod" id="pm-hotel" value="hotel">
+            <span><span class="t">Pay at hotel</span><span class="tag tag-soon">no card taken</span>
+            <span class="d">The guest settles directly with the property at check-in. Ergos captures no card data and no payment is processed now.</span></span>
+          </label>
+
+          <label class="opt" data-testid="payment-method-tropipay" for="pm-tropipay">
+            <input type="radio" name="paymentMethod" id="pm-tropipay" value="tropipay" checked>
+            <span><span class="t">Card via TropiPay</span><span class="tag tag-rec">recommended &middot; PCI SAQ-A</span>
+            <span class="d">Card payment on TropiPay&rsquo;s hosted page. The card never touches an Ergos-controlled DOM; the webhook confirms the booking server-side.</span></span>
+          </label>
+
+          <label class="opt" data-testid="payment-method-wompi" for="pm-wompi">
+            <input type="radio" name="paymentMethod" id="pm-wompi" value="wompi">
+            <span><span class="t">Wompi Payment</span><span class="tag tag-soon">out of scope this iteration</span>
+            <span class="d">Cards via Wompi. Present so the data-driven method list has a second hosted provider; not specified in this iteration.</span></span>
+          </label>
+
+          <label class="opt is-retired" data-testid="payment-method-direct" for="pm-direct">
+            <input type="radio" name="paymentMethod" id="pm-direct" value="direct">
+            <span><span class="t">Direct Card Payment</span><span class="tag tag-risk">to be retired &middot; PCI SAQ-D</span>
+            <span class="d">Card number and CVV captured in <em>our own</em> form and transmitted to our backend. Architecture gap <strong>P0-0</strong>. Included here only so the higher-PCI-scope alternative can be seen and compared.</span></span>
+          </label>
+        </fieldset>
+        </form>
+
+        <div class="divider"></div>
+        <div class="note note-saqa" data-testid="pci-scope-note">
+          <h3>Where the card is captured &mdash; and why it matters</h3>
+          <p><strong>Recommended (SAQ-A):</strong> the card form is served and rendered by <strong>TropiPay</strong> on their own domain. Ergos only ever holds a payment <em>reference</em> and a <em>checkout link</em>. PCI scope is ~22 controls, and 3-D Secure / SCA is the provider&rsquo;s problem.</p>
+          <p style="margin-top:.6em"><strong>Direct capture (SAQ-D):</strong> the identical-looking form lives in <em>our</em> DOM (<code>payment-card-number</code>, <code>payment-cvv</code>&hellip;) and posts the PAN to our backend. ~300 controls, annual audit, pen-testing. The card-entry screen in this prototype is that direct-capture form &mdash; it is drawn inside a red dashed frame whenever it is ours, and inside a teal &ldquo;hosted&rdquo; frame when it stands in for TropiPay&rsquo;s page.</p>
+        </div>
+      </section>
+
+      <!-- ============ SCREEN 2a · TROPIPAY HANDOFF ============ -->
+      <section class="card card-pad" data-screen="handoff" hidden aria-labelledby="pageTitle" data-testid="tropipay-widget">
+        <h2 class="sec">TropiPay checkout</h2>
+        <p class="sub">Total amount <strong data-testid="tropipay-amount">$900.00 USD</strong></p>
+
+        <div id="tpLoading" data-testid="tropipay-loading" hidden aria-live="polite" aria-busy="true" style="text-align:center;padding:26px 0">
+          <div class="spinner"></div>
+          <p style="margin-top:14px;color:var(--warm-600)">Preparing TropiPay payment&hellip;</p>
+          <p class="hint">Creating the payment link on our backend. The amount is read from the booking, never from this page.</p>
+        </div>
+
+        <div id="tpReady" hidden>
+          <div class="note note-info">
+            <h3>You are about to leave Ergos</h3>
+            <p>You&rsquo;ll be redirected to TropiPay&rsquo;s secure payment page to complete payment. <strong>Do not close this window.</strong> If you do, the payment can still complete &mdash; TropiPay&rsquo;s webhook confirms the booking on our servers.</p>
+          </div>
+          <p style="margin:16px 0 8px"><button type="button" class="btn btn-teal btn-block" data-testid="tropipay-pay-button" id="tpPayBtn">Pay with TropiPay &nearr;</button></p>
+          <p class="hint" style="text-align:center">
+            Popup blocked? Use this direct link:
+            <button type="button" class="btn-link" id="tpManualLink" data-testid="tropipay-manual-link">sandbox.tropipay.example/pay/&hellip;</button>
+          </p>
+          <p class="hint" style="text-align:center">Prototype note: no window is opened and no URL is loaded. The next screen simulates TropiPay&rsquo;s hosted page.</p>
+        </div>
+
+        <div id="tpError" hidden>
+          <div class="note note-pci" data-testid="tropipay-error" role="alert">
+            <h3>Payment link could not be created</h3>
+            <p>Failed to reach the payment provider (simulated HTTP 502). No booking was modified and no payment attempt was recorded as paid.</p>
+          </div>
+          <p style="margin-top:14px"><button type="button" class="btn btn-primary" data-testid="tropipay-retry" id="tpRetryBtn">Try Again</button></p>
+          <p class="hint">Each retry issues one &mdash; and only one &mdash; new link request. Requests so far: <strong data-testid="proto-link-request-count" id="linkCount">0</strong></p>
+        </div>
+      </section>
+
+      <!-- ============ SCREEN 2b · CARD ENTRY ============ -->
+      <section data-screen="card" hidden aria-labelledby="pageTitle">
+        <div id="cardFrame" class="hosted">
+          <div class="hosted-bar" id="cardFrameBar">
+            <span class="lock" aria-hidden="true">&#128274;</span>
+            <span id="cardFrameLabel">Simulated TropiPay hosted page &mdash; not an Ergos surface</span>
+            <span class="hosted-url" id="cardFrameUrl">sandbox.tropipay.example</span>
+          </div>
+          <div class="card-pad">
+            <div class="note note-saqa" id="cardScopeNote">
+              <h3>PCI scope of this form</h3>
+              <p id="cardScopeText">In production this page is <strong>served by TropiPay on their domain</strong> after a full-page redirect. The PAN and CVV never enter Ergos&rsquo; DOM, never reach our backend, and never appear in our logs &mdash; that is what keeps us in <strong>PCI SAQ-A</strong>. The fields below are a <em>visual stand-in</em> so the interaction can be reviewed and tested; they are not what we would build.</p>
+            </div>
+
+            <h2 class="sec" style="margin-top:18px">Card details</h2>
+            <p class="sub">Total to pay <strong>$900.00 USD</strong> &middot; Booking <span style="font-family:var(--font-mono)">OCA-48213</span></p>
+
+            <form id="cardForm" novalidate autocomplete="on">
+              <div class="grid">
+                <div class="field f-full">
+                  <label for="cardNumber">Card Number <span class="req">*</span></label>
+                  <div class="pan-wrap">
+                    <input id="cardNumber" data-testid="payment-card-number" name="cardnumber" type="text" inputmode="numeric" autocomplete="cc-number"
+                           placeholder="4242 4242 4242 4242" maxlength="23" aria-describedby="err-cardNumber card-brand-live" aria-invalid="false">
+                    <span class="brand-chip" data-testid="card-brand" id="cardBrand" data-brand="">Card</span>
+                  </div>
+                  <span class="sr-only" id="card-brand-live" aria-live="polite"></span>
+                  <p class="err" aria-live="polite" id="err-cardNumber" data-testid="card-error-number"></p>
+                </div>
+
+                <div class="field">
+                  <label for="cardExpiry">Expiry Date (MM/YY) <span class="req">*</span></label>
+                  <input id="cardExpiry" data-testid="payment-expiry-date" name="cc-exp" type="text" inputmode="numeric" autocomplete="cc-exp"
+                         placeholder="MM/YY" maxlength="5" aria-describedby="err-cardExpiry" aria-invalid="false">
+                  <p class="err" aria-live="polite" id="err-cardExpiry" data-testid="card-error-expiry"></p>
+                </div>
+
+                <div class="field">
+                  <label for="cardCvv" id="cvvLabel">CVV <span class="req">*</span></label>
+                  <input id="cardCvv" data-testid="payment-cvv" name="cvc" type="text" inputmode="numeric" autocomplete="cc-csc"
+                         placeholder="123" maxlength="4" aria-describedby="err-cardCvv hint-cvv" aria-invalid="false">
+                  <p class="hint" id="hint-cvv">3 digits on the back of the card (4 on the front for American Express).</p>
+                  <p class="err" aria-live="polite" id="err-cardCvv" data-testid="card-error-cvv"></p>
+                </div>
+
+                <div class="field f-full">
+                  <label for="cardName">Cardholder Name <span class="req">*</span></label>
+                  <input id="cardName" data-testid="payment-cardholder-name" name="ccname" type="text" autocomplete="cc-name"
+                         placeholder="As printed on the card" aria-describedby="err-cardName" aria-invalid="false">
+                  <p class="err" aria-live="polite" id="err-cardName" data-testid="card-error-name"></p>
+                </div>
+              </div>
+
+              <p class="hint" id="cardFormStatus" aria-live="polite" style="margin:14px 0 0"></p>
+              <p style="margin-top:14px">
+                <button type="submit" class="btn btn-teal btn-block" data-testid="card-submit" id="cardSubmit" disabled>Pay $900.00 USD</button>
+              </p>
+            </form>
+
+            <details class="legend legend-d" data-testid="trigger-card-legend" open>
+              <summary>Trigger cards for this prototype</summary>
+              <table>
+                <caption class="sr-only">Card numbers that force a specific outcome in this prototype</caption>
+                <thead><tr><th scope="col">Card number</th><th scope="col">Outcome</th></tr></thead>
+                <tbody>
+                  <tr><td class="pan" data-testid="trigger-card-success">4242 4242 4242 4242</td><td><strong>Approved</strong> &mdash; no 3-D Secure challenge, straight to processing then success.</td></tr>
+                  <tr><td class="pan" data-testid="trigger-card-3ds">4000 0000 0000 0002</td><td><strong>3-D Secure required</strong> &mdash; bank challenge (any 6-digit code), then success.</td></tr>
+                  <tr><td class="pan" data-testid="trigger-card-declined">4100 0000 0000 0001</td><td><strong>Declined</strong> &mdash; issuer decline, retry offered, booking stays PENDING.</td></tr>
+                  <tr><td class="pan">any other Luhn-valid PAN</td><td>Treated as approved.</td></tr>
+                </tbody>
+              </table>
+              <p class="hint" style="margin-top:10px"><strong>Known discrepancy, stated deliberately:</strong> <code>4100 0000 0000 0001</code> does <em>not</em> satisfy the Luhn checksum (its correct check digit is <code>2</code>). It is accepted here as an explicit documented trigger so the decline path stays reachable while the Luhn gate remains real. <code>4100 0000 0000 0002</code> is the Luhn-valid equivalent and triggers the same decline &mdash; prefer it in new Cypress specs.</p>
+              <p class="hint">Expiry: any future MM/YY. CVV: any 3 digits (4 for American Express). Cardholder name: any 2+ characters.</p>
+            </details>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ SCREEN 3 · 3-D SECURE CHALLENGE ============ -->
+      <section data-screen="threeds" hidden aria-labelledby="pageTitle">
+        <div class="hosted" style="border-color:var(--primary)">
+          <div class="hosted-bar" style="background:var(--primary)">
+            <span class="lock" aria-hidden="true">&#128274;</span>
+            <span>Simulated issuing-bank 3-D Secure page &mdash; neither Ergos nor TropiPay</span>
+            <span class="hosted-url">acs.example-bank.invalid</span>
+          </div>
+          <div class="card-pad" data-testid="threeds-panel">
+            <h2 class="sec">Verify it&rsquo;s you</h2>
+            <p class="sub">Your bank needs to confirm this payment. Strong Customer Authentication (PSD2 / 3-D Secure 2) is mandatory for EEA and UK cardholders.</p>
+
+            <div class="note note-info">
+              <p><strong>Example Bank</strong> &middot; Card ending <span style="font-family:var(--font-mono)" data-testid="threeds-card-last4">0002</span> &middot; Merchant <strong>Ergos Travel</strong> &middot; Amount <strong>$900.00 USD</strong></p>
+              <p style="margin-top:.5em">We sent a 6-digit code to the mobile number ending 456.</p>
+            </div>
+
+            <form id="threedsForm" novalidate style="margin-top:18px">
+              <div class="field" style="max-width:260px">
+                <label for="threedsCode">One-time code (6 digits) <span class="req">*</span></label>
+                <input id="threedsCode" data-testid="threeds-code" type="text" inputmode="numeric" autocomplete="one-time-code"
+                       maxlength="6" placeholder="123456" style="font-family:var(--font-mono);letter-spacing:.4em;font-size:17px"
+                       aria-describedby="err-threeds hint-threeds" aria-invalid="false">
+                <p class="hint" id="hint-threeds">Any 6 digits are accepted in this prototype.</p>
+                <p class="err" aria-live="polite" id="err-threeds" data-testid="threeds-error"></p>
+              </div>
+              <p style="margin-top:16px;display:flex;gap:10px;flex-wrap:wrap">
+                <button type="submit" class="btn btn-primary" data-testid="threeds-submit" id="threedsSubmit">Confirm</button>
+                <button type="button" class="btn btn-ghost" data-testid="threeds-cancel" id="threedsCancel">Cancel authentication</button>
+              </p>
+              <p class="hint" style="margin-top:12px">Cancelling returns an authentication failure &mdash; the payment is not attempted, the booking stays PENDING and a retry is offered.</p>
+            </form>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ SCREEN 4 · PROCESSING / POLLING ============ -->
+      <section class="card card-pad" data-screen="processing" hidden aria-labelledby="pageTitle" data-testid="payment-processing">
+        <div style="text-align:center;padding:12px 0 4px" aria-busy="true">
+          <div class="spinner"></div>
+          <h2 class="sec" style="margin-top:16px">We are confirming your payment</h2>
+          <p class="sub" style="margin-bottom:0">This usually takes a few seconds. Please don&rsquo;t close this window &mdash; but if you do, your booking is safe.</p>
+        </div>
+
+        <p class="hint" style="text-align:center;margin-top:14px" data-testid="payment-poll-attempts" id="pollAttempts" aria-live="polite">Checking our API&hellip; attempt 1</p>
+
+        <div class="lanes">
+          <div class="lane">
+            <h4>This browser &mdash; advisory</h4>
+            <p>Polls <span style="font-family:var(--font-mono);font-size:12px">GET /api/bookings/&hellip;/payment</span> on our own API. It only <em>reports</em> state. Closing the tab, losing the network, or paying on another device changes nothing about the outcome.</p>
+          </div>
+          <div class="lane authoritative">
+            <h4>TropiPay webhook &mdash; authoritative</h4>
+            <p>TropiPay POSTs a signed notification to our backend. <strong>That</strong> is what moves the booking to CONFIRMED and sends the voucher &mdash; once, idempotently, even if the webhook is retried and even if the browser never returns.</p>
+          </div>
+        </div>
+
+        <div class="note note-info" style="margin-top:16px">
+          <p>Prototype note: no request is made. The timer below stands in for the poll loop so the waiting state, the timeout and the &ldquo;webhook never arrived&rdquo; state can all be reviewed. Force any of them from the control panel.</p>
+        </div>
+      </section>
+
+      <!-- ============ SCREEN 5 · OUTCOME ============ -->
+      <section class="card card-pad" data-screen="outcome" hidden aria-labelledby="pageTitle">
+        <div class="outcome-head" id="outcomeHead" data-testid="payment-outcome-status" role="status" aria-live="polite">
+          <span class="ic" id="outcomeIcon" aria-hidden="true">&#10003;</span>
+          <div>
+            <h2 id="outcomeTitle">Booking confirmed</h2>
+            <p id="outcomeMsg" style="margin:0;font-size:14px"></p>
+          </div>
+        </div>
+
+        <dl class="kv">
+          <dt>Booking reference</dt><dd data-testid="payment-outcome-reference" id="outRef">OCA-48213</dd>
+          <dt>Amount</dt><dd data-testid="payment-outcome-amount" id="outAmount">$900.00 USD</dd>
+          <dt>Payment state</dt><dd data-testid="payment-outcome-state" id="outState">paid</dd>
+          <dt id="outReasonLabel" hidden>Reason</dt><dd data-testid="payment-outcome-reason" id="outReason" hidden></dd>
+        </dl>
+
+        <div id="outcomeNote" style="margin-top:18px"></div>
+
+        <p style="margin-top:20px;display:flex;gap:10px;flex-wrap:wrap" id="outcomeActions">
+          <button type="button" class="btn btn-primary" data-testid="payment-retry" id="retryBtn" hidden>Retry payment</button>
+          <button type="button" class="btn btn-ghost" data-testid="payment-change-method" id="changeMethodBtn" hidden>Change payment method</button>
+          <button type="button" class="btn btn-accent" data-testid="download-voucher" id="voucherBtn" hidden>Download voucher</button>
+          <button type="button" class="btn btn-ghost" data-testid="view-backoffice" id="backofficeBtn">View in backoffice &rarr;</button>
+        </p>
+      </section>
+
+      <!-- ============ BACKOFFICE PAYMENT BLOCK ============ -->
+      <section class="card card-pad" data-screen="backoffice" hidden aria-labelledby="pageTitle">
+        <h2 class="sec">Booking <span style="font-family:var(--font-mono);font-size:18px">OCA-48213</span></h2>
+        <p class="sub">Backoffice view &mdash; payment block (backoffice-app#13).</p>
+
+        <dl class="bo-grid" data-testid="booking-payment-status">
+          <dt>Payment status</dt><dd><span class="pill" id="boPill">&mdash;</span></dd>
+          <dt>Method</dt><dd id="boMethod">TropiPay</dd>
+          <dt>Amount paid</dt><dd id="boPaid">$0.00 USD</dd>
+          <dt>Transaction</dt><dd style="font-family:var(--font-mono);font-size:13px" id="boTxn">&mdash;</dd>
+          <dt>Amount pending</dt><dd id="boPending">$900.00 USD</dd>
+          <dt>Paid at</dt><dd id="boPaidAt">&mdash;</dd>
+          <dt>Payment deadline</dt><dd>2026-08-04 18:00 UTC</dd>
+          <dt>Currency</dt><dd>USD (amounts held as integer minor units)</dd>
+        </dl>
+
+        <div class="divider"></div>
+        <h3 class="sec" style="font-size:16px">Attempts</h3>
+        <table class="attempts" data-testid="booking-payment-attempts">
+          <caption class="sr-only">Payment attempts for booking OCA-48213</caption>
+          <thead><tr><th scope="col">When (UTC)</th><th scope="col">State</th><th scope="col">Detail</th><th scope="col">Amount</th></tr></thead>
+          <tbody id="boAttempts"></tbody>
+        </table>
+        <p class="hint" style="margin-top:10px">Requires the payment ledger (architecture &sect;6.2). Without it only the latest state is displayable, which is why &ldquo;amount pending&rdquo; and this history are not implementable today.</p>
+      </section>
+    </main>
+
+    <!-- ============ SIDEBAR · BOOKING SUMMARY ============ -->
+    <aside class="side-col" aria-labelledby="sumTitle">
+      <div class="card" data-testid="order-summary" style="overflow:hidden">
+        <div class="sum-head">
+          <h2 id="sumTitle">Booking Summary</h2>
+          <div class="hotel">Iberostar Selecci&oacute;n B&aacute;varo &#9733;&#9733;&#9733;&#9733;&#9733; &middot; Punta Cana</div>
+        </div>
+        <div class="sum-body">
+          <div class="sum-row"><span class="k">Check-in</span><span class="v">Mon, Sep 14, 2026</span></div>
+          <div class="sum-row"><span class="k">Check-out</span><span class="v">Fri, Sep 18, 2026</span></div>
+          <div class="sum-row"><span class="k">Duration</span><span class="v">4 Nights</span></div>
+          <div class="sum-row"><span class="k">Room</span><span class="v">Deluxe Ocean View &times; 1</span></div>
+          <div class="sum-row"><span class="k">Meal Plan</span><span class="v">All Inclusive</span></div>
+          <div class="sum-row"><span class="k">Guests</span><span class="v">2 Adults</span></div>
+          <div class="divider" style="margin:14px 0"></div>
+          <div class="sum-total">
+            <span class="k">Total Client Price</span>
+            <span class="v" data-testid="order-total">$900.00 <span style="font-size:13px;font-family:var(--font-body)">USD</span></span>
+          </div>
+
+          <button type="button" class="btn btn-accent btn-block" data-testid="sidebar-continue-payment" id="sbContinue" hidden>Continue &rarr;</button>
+          <button type="button" class="btn btn-primary btn-block" data-testid="sidebar-proceed-payment" id="sbProceed" hidden>Proceed to Payment &rarr;</button>
+          <button type="button" class="btn btn-primary btn-block" data-testid="sidebar-confirm-booking" id="sbConfirm" hidden>Confirm Booking</button>
+
+          <p class="sum-note" id="sbNote">The amount is resolved server-side from the booking. This page displays it; it never sends it.</p>
+        </div>
+      </div>
+    </aside>
+  </div>
+</div>
+
+<p class="sr-only" role="status" aria-live="polite" id="liveStatus"></p>
+
+<!-- ============ PROTOTYPE CONTROL PANEL ============ -->
+<details class="proto-panel" data-testid="proto-panel" id="protoPanel">
+  <summary data-testid="proto-panel-toggle">&#9881; Prototype control panel</summary>
+  <div class="proto-body">
+    <h4>Jump to screen</h4>
+    <div class="proto-grid">
+      <button type="button" data-testid="proto-goto-guest" data-goto="guest">1 &middot; Guest details</button>
+      <button type="button" data-testid="proto-goto-method" data-goto="method">2 &middot; Payment method</button>
+      <button type="button" data-testid="proto-goto-handoff" data-goto="handoff">3 &middot; TropiPay handoff</button>
+      <button type="button" data-testid="proto-goto-card" data-goto="card">4 &middot; Card entry</button>
+      <button type="button" data-testid="proto-goto-threeds" data-goto="threeds">5 &middot; 3-D Secure</button>
+      <button type="button" data-testid="proto-goto-processing" data-goto="processing">6 &middot; Processing</button>
+      <button type="button" data-testid="proto-goto-outcome" data-goto="outcome">7 &middot; Outcome</button>
+      <button type="button" data-testid="proto-goto-backoffice" data-goto="backoffice">8 &middot; Backoffice</button>
+    </div>
+
+    <h4>Force an outcome</h4>
+    <div class="proto-grid">
+      <button type="button" data-testid="proto-force-paid" data-force="paid">&#10003; Paid</button>
+      <button type="button" class="danger" data-testid="proto-force-declined" data-force="declined">&#10007; Declined</button>
+      <button type="button" class="danger" data-testid="proto-force-timeout" data-force="timeout">&#9200; Timeout / expired</button>
+      <button type="button" class="danger" data-testid="proto-force-webhook-lost" data-force="webhook-lost">&#8635; Webhook lost</button>
+      <button type="button" class="danger" data-testid="proto-force-3ds-failed" data-force="3ds-failed">&#128274; 3-D Secure failed</button>
+      <button type="button" data-testid="proto-force-processing" data-force="processing">&#8987; Still processing</button>
+    </div>
+
+    <h4>Force a handoff state</h4>
+    <div class="proto-grid">
+      <button type="button" data-testid="proto-force-link-loading" data-link="loading">Link: loading</button>
+      <button type="button" data-testid="proto-force-link-ready" data-link="ready">Link: ready</button>
+      <button type="button" class="danger" data-testid="proto-force-link-error" data-link="error">Link: 502 error</button>
+      <button type="button" data-testid="proto-fill-card" data-fill="success">Fill card: approve</button>
+      <button type="button" data-testid="proto-fill-card-3ds" data-fill="3ds">Fill card: 3-D Secure</button>
+      <button type="button" class="danger" data-testid="proto-fill-card-declined" data-fill="declined">Fill card: decline</button>
+    </div>
+
+    <h4>Reset</h4>
+    <div class="proto-grid">
+      <button type="button" data-testid="proto-reset" id="protoReset">&#8635; Reset prototype</button>
+      <button type="button" data-testid="proto-toggle-method" id="protoToggleMethod">Toggle direct / hosted</button>
+    </div>
+
+    <p class="proto-meta" data-testid="proto-state">
+      screen <b id="mState">guest</b><br>
+      method <b id="mMethod">tropipay</b><br>
+      outcome <b id="mOutcome">&mdash;</b><br>
+      forced <b id="mForced">none</b><br>
+      link requests <b id="mLink">0</b>
+    </p>
+  </div>
+</details>
+
+<script>
+(function () {
+  "use strict";
+
+  /* ============================================================
+     PROTOTYPE ONLY. No network, no storage, no credentials.
+     There is deliberately no merchant id, API key, token or
+     secret anywhere in this file — any such value would be a
+     leak waiting to happen in a document that gets shared.
+     ============================================================ */
+
+  var $ = function (sel, root) { return (root || document).querySelector(sel); };
+  var $$ = function (sel, root) { return Array.prototype.slice.call((root || document).querySelectorAll(sel)); };
+
+  var AMOUNT_MINOR = 90000;
+  var CURRENCY = "USD";
+  var REFERENCE = "OCA-48213";
+  var TXN = "bankOrderCode-PROTOTYPE";
+
+  function money(minor) { return "$" + (minor / 100).toFixed(2) + " " + CURRENCY; }
+
+  /* Documented trigger cards. Keyed by digits only. */
+  var TRIGGERS = {
+    "4242424242424242": "approve",
+    "4000000000000002": "3ds",
+    "4100000000000001": "decline",
+    "4100000000000002": "decline"
+  };
+  /* PANs accepted despite failing Luhn, because the spec names them.
+     See the on-screen legend — this is surfaced, not silently patched. */
+  var LUHN_EXEMPT = { "4100000000000001": true };
+
+  var state = {
+    screen: "guest",
+    method: "tropipay",
+    link: "idle",          /* idle | loading | ready | error */
+    outcome: null,         /* paid | failed | processing | pending | expired | hotel */
+    reason: "",
+    forced: null,
+    linkRequests: 0,
+    threeds: false,
+    attempts: []
+  };
+
+  var timers = [];
+  function clearTimers() { timers.forEach(clearTimeout); timers.forEach(clearInterval); timers = []; }
+  function later(fn, ms) { var t = setTimeout(fn, ms); timers.push(t); return t; }
+  function every(fn, ms) { var t = setInterval(fn, ms); timers.push(t); return t; }
+
+  function announce(msg) { var el = $("#liveStatus"); el.textContent = ""; later(function () { el.textContent = msg; }, 40); }
+
+  /* ---------------- card domain helpers ---------------- */
+
+  function digits(v) { return (v || "").replace(/\D+/g, ""); }
+
+  function luhnValid(d) {
+    if (!d.length) return false;
+    var sum = 0, alt = false, i, n;
+    for (i = d.length - 1; i >= 0; i--) {
+      n = +d.charAt(i);
+      if (alt) { n *= 2; if (n > 9) n -= 9; }
+      sum += n; alt = !alt;
+    }
+    return sum % 10 === 0;
+  }
+
+  var UNKNOWN_BRAND = { id: "", label: "Card", lengths: [12,13,14,15,16,17,18,19], cvv: [3,4], gaps: [4,8,12,16] };
+
+  function brandOf(d) {
+    if (/^4/.test(d)) return { id: "visa", label: "Visa", lengths: [16], cvv: [3], gaps: [4,8,12] };
+    if (/^(5[1-5]|222[1-9]|22[3-9]|2[3-6]|27[01]|2720)/.test(d)) return { id: "mastercard", label: "Mastercard", lengths: [16], cvv: [3], gaps: [4,8,12] };
+    if (/^3[47]/.test(d)) return { id: "amex", label: "American Express", lengths: [15], cvv: [4], gaps: [4,10] };
+    if (/^(6011|65|64[4-9])/.test(d)) return { id: "discover", label: "Discover", lengths: [16], cvv: [3], gaps: [4,8,12] };
+    if (/^3(0[0-5]|[68])/.test(d)) return { id: "diners", label: "Diners Club", lengths: [14], cvv: [3], gaps: [4,10] };
+    return UNKNOWN_BRAND;
+  }
+
+  function formatPan(d, gaps) {
+    var out = "", i;
+    for (i = 0; i < d.length; i++) { if (gaps.indexOf(i) !== -1) out += " "; out += d.charAt(i); }
+    return out;
+  }
+
+  function panError(raw) {
+    var d = digits(raw);
+    if (!d.length) return "Card number is required";
+    var b = brandOf(d);
+    var max = b.lengths[b.lengths.length - 1];
+    if (d.length < b.lengths[0]) return "Card number is incomplete";
+    if (b.lengths.indexOf(d.length) === -1 && d.length <= max) return "Card number is incomplete";
+    if (LUHN_EXEMPT[d]) return "";
+    if (!luhnValid(d)) return "Card number is not valid (checksum failed)";
+    return "";
+  }
+
+  function expiryError(raw) {
+    var d = digits(raw);
+    if (!d.length) return "Expiry date is required";
+    if (d.length < 4) return "Enter the expiry as MM/YY";
+    var mm = +d.slice(0, 2), yy = +d.slice(2, 4);
+    if (mm < 1 || mm > 12) return "Month must be between 01 and 12";
+    var now = new Date();
+    var curY = now.getFullYear() % 100, curM = now.getMonth() + 1;
+    if (yy < curY || (yy === curY && mm < curM)) return "This card has expired";
+    if (yy > curY + 20) return "Expiry date is too far in the future";
+    return "";
+  }
+
+  function cvvError(raw, brand) {
+    var d = digits(raw);
+    if (!d.length) return "CVV is required";
+    if (brand.cvv.indexOf(d.length) === -1) {
+      return brand.cvv.length === 1
+        ? "CVV must be " + brand.cvv[0] + " digits for " + brand.label
+        : "CVV must be 3 or 4 digits";
+    }
+    return "";
+  }
+
+  function nameError(raw) {
+    var v = (raw || "").trim();
+    if (!v) return "Cardholder name is required";
+    if (v.length < 2) return "Cardholder name is too short";
+    return "";
+  }
+
+  /* ---------------- guest-details validation (spec 8.1) ---------------- */
+
+  var GUEST_RULES = [
+    { id: "guestName",   err: "err-guestName",   test: function (v) { return v.trim().length >= 2; },              msg: "Guest name is required" },
+    { id: "guestEmail",  err: "err-guestEmail",  test: function (v) { return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v.trim()); }, msg: "Enter a valid email address" },
+    { id: "phone",       err: "err-phone",       test: function (v) { var t = v.trim(); return /^\+?[\d\s()-]{7,20}$/.test(t) && digits(t).length >= 7; }, msg: "Enter a valid phone number" },
+    { id: "country",     err: "err-country",     test: function (v) { return !!v; },                                msg: "Select a country" },
+    { id: "postalCode",  err: "err-postalCode",  test: function (v) { return v.trim() === "" || /^[A-Za-z0-9 -]{3,10}$/.test(v.trim()); }, msg: "Enter a valid postal code" },
+    { id: "g0first",     err: "err-g0first",     test: function (v) { return v.trim().length >= 1; },               msg: "First name is required" },
+    { id: "g0last",      err: "err-g0last",      test: function (v) { return v.trim().length >= 1; },               msg: "Last name is required" },
+    { id: "g0age",       err: "err-g0age",       test: function (v) { var n = +v; return v !== "" && n >= 13 && n <= 120; }, msg: "Age must be between 13 and 120" }
+  ];
+
+  function validateGuest(show) {
+    var firstBad = null;
+    GUEST_RULES.forEach(function (r) {
+      var el = $("#" + r.id), ok = r.test(el.value);
+      if (!ok && !firstBad) firstBad = el;
+      el.setAttribute("aria-invalid", ok ? "false" : "true");
+      if (show) $("#" + r.err).textContent = ok ? "" : r.msg;
+    });
+    if (show && firstBad) firstBad.focus();
+    return !firstBad;
+  }
+
+  /* ---------------- card form wiring ---------------- */
+
+  var panEl = $("#cardNumber"), expEl = $("#cardExpiry"), cvvEl = $("#cardCvv"), nameEl = $("#cardName");
+  var brandEl = $("#cardBrand"), brandLive = $("#card-brand-live"), submitEl = $("#cardSubmit");
+  var touched = {};
+
+  function currentBrand() { return brandOf(digits(panEl.value)); }
+
+  function setFieldError(el, errId, msg, show) {
+    el.setAttribute("aria-invalid", msg ? "true" : "false");
+    $(errId).textContent = show ? msg : "";
+  }
+
+  function validateCard(showAll) {
+    var b = currentBrand();
+    var e = {
+      pan: panError(panEl.value),
+      exp: expiryError(expEl.value),
+      cvv: cvvError(cvvEl.value, b),
+      name: nameError(nameEl.value)
+    };
+    setFieldError(panEl, "#err-cardNumber", e.pan, showAll || touched.pan);
+    setFieldError(expEl, "#err-cardExpiry", e.exp, showAll || touched.exp);
+    setFieldError(cvvEl, "#err-cardCvv", e.cvv, showAll || touched.cvv);
+    setFieldError(nameEl, "#err-cardName", e.name, showAll || touched.name);
+
+    var ok = !e.pan && !e.exp && !e.cvv && !e.name;
+    submitEl.disabled = !ok;
+    $("#cardFormStatus").textContent = ok
+      ? "All card details look valid. " + submitEl.textContent.trim() + " is enabled."
+      : "Payment stays disabled until the card number, expiry, CVV and cardholder name are all valid.";
+    return { ok: ok, errors: e };
+  }
+
+  function onPanInput() {
+    var el = panEl;
+    var before = el.value.slice(0, el.selectionStart || 0);
+    var digitsBefore = digits(before).length;
+    var b = brandOf(digits(el.value));
+    var d = digits(el.value).slice(0, b.lengths[b.lengths.length - 1]);
+    el.value = formatPan(d, b.gaps);
+    var pos = 0, seen = 0;
+    while (pos < el.value.length && seen < digitsBefore) { if (/\d/.test(el.value.charAt(pos))) seen++; pos++; }
+    try { el.setSelectionRange(pos, pos); } catch (err) { /* non-text input */ }
+
+    if (brandEl.getAttribute("data-brand") !== b.id) {
+      brandEl.setAttribute("data-brand", b.id);
+      brandEl.textContent = b.id ? (b.id === "amex" ? "AMEX" : b.label) : "Card";
+      brandLive.textContent = b.id ? b.label + " card detected" : "";
+    }
+    cvvEl.setAttribute("maxlength", String(b.cvv[b.cvv.length - 1]));
+    $("#cvvLabel").innerHTML = "CVV" + (b.id === "amex" ? " (4 digits)" : "") + ' <span class="req">*</span>';
+    validateCard(false);
+  }
+
+  function onExpInput() {
+    var d = digits(expEl.value).slice(0, 4);
+    if (d.length >= 3) expEl.value = d.slice(0, 2) + "/" + d.slice(2);
+    else if (d.length === 2 && /\/$/.test(expEl.value) === false && expEl.value.length === 2) expEl.value = d + "/";
+    else expEl.value = d;
+    validateCard(false);
+  }
+
+  panEl.addEventListener("input", onPanInput);
+  expEl.addEventListener("input", onExpInput);
+  cvvEl.addEventListener("input", function () { cvvEl.value = digits(cvvEl.value); validateCard(false); });
+  nameEl.addEventListener("input", function () { validateCard(false); });
+  panEl.addEventListener("blur", function () { touched.pan = true; validateCard(false); });
+  expEl.addEventListener("blur", function () { touched.exp = true; validateCard(false); });
+  cvvEl.addEventListener("blur", function () { touched.cvv = true; validateCard(false); });
+  nameEl.addEventListener("blur", function () { touched.name = true; validateCard(false); });
+
+  /* ---------------- navigation / render ---------------- */
+
+  var TITLES = {
+    guest: "Who’s checking in?",
+    method: "Secure your booking",
+    handoff: "Secure your booking",
+    card: "Secure your booking",
+    threeds: "Secure your booking",
+    processing: "Secure your booking",
+    outcome: "Booking outcome",
+    backoffice: "Backoffice — payment status"
+  };
+  var BACK = {
+    method: { to: "guest", label: "Back to Guest Info" },
+    handoff: { to: "method", label: "Back to Payment Method" },
+    card: { to: "handoff", label: "Back to TropiPay checkout" },
+    threeds: { to: "card", label: "Back to Card Details" },
+    outcome: { to: "method", label: "Back to Payment Method" },
+    backoffice: { to: "outcome", label: "Back to Outcome" }
+  };
+  var STEP_OF = { guest: 1, method: 2, handoff: 2, card: 2, threeds: 2, processing: 2, outcome: 3, backoffice: 3 };
+
+  function render() {
+    $$("[data-screen]").forEach(function (s) { s.hidden = s.getAttribute("data-screen") !== state.screen; });
+
+    $("#pageTitle").textContent = TITLES[state.screen];
+
+    var step = STEP_OF[state.screen];
+    [0, 1, 2, 3].forEach(function (i) {
+      var el = $("#stp-" + i);
+      el.className = "step" + (i < step ? " is-done" : i === step ? " is-active" : "");
+      if (i < 3) $("#bar-" + i).className = "step-bar" + (i < step ? " is-done" : "");
+    });
+
+    var back = BACK[state.screen];
+    $("#backBtn").hidden = !back;
+    if (back) $("#backLabel").textContent = back.label;
+
+    $("#sbContinue").hidden = state.screen !== "guest";
+    $("#sbProceed").hidden = state.screen !== "method";
+    $("#sbConfirm").hidden = !(state.screen === "card" && state.method === "direct");
+    $("#sbNote").textContent = state.screen === "card" && state.method === "tropipay"
+      ? "Payment is completed on TropiPay’s page. This sidebar takes no card action."
+      : "The amount is resolved server-side from the booking. This page displays it; it never sends it.";
+
+    var frame = $("#cardFrame");
+    var direct = state.method === "direct";
+    frame.className = direct ? "ourdom" : "hosted";
+    $("#cardFrameBar").className = direct ? "ourdom-bar" : "hosted-bar";
+    $("#cardFrameLabel").textContent = direct
+      ? "⚠ DIRECT CAPTURE — this form is inside the Ergos DOM (PCI SAQ-D, architecture gap P0-0)"
+      : "Simulated TropiPay hosted page — not an Ergos surface";
+    $("#cardFrameUrl").textContent = direct ? "agency.lukzen-dev.com/booking" : "sandbox.tropipay.example";
+    $("#cardFrameUrl").hidden = false;
+    $("#cardScopeNote").className = "note " + (direct ? "note-pci" : "note-saqa");
+    $("#cardScopeText").innerHTML = direct
+      ? "This is the <strong>direct-capture</strong> option. The PAN and CVV are typed into <em>our</em> inputs, held in <em>our</em> component state and posted to <em>our</em> backend. That places Ergos in <strong>PCI DSS SAQ-D</strong> — roughly 300 controls, an annual on-site assessment and penetration testing — and makes 3-D Secure our problem to build. The architecture document records this as gap <strong>P0-0</strong> and recommends removing it. It is shown here so reviewers can see exactly what is being given up."
+      : "In production this page is <strong>served by TropiPay on their domain</strong> after a full-page redirect. The PAN and CVV never enter Ergos’ DOM, never reach our backend, and never appear in our logs — that is what keeps us in <strong>PCI SAQ-A</strong>. The fields below are a <em>visual stand-in</em> so the interaction can be reviewed and tested; they are not what we would build.";
+
+    $("#mState").textContent = state.screen;
+    $("#mMethod").textContent = state.method;
+    $("#mOutcome").textContent = state.outcome || "—";
+    $("#mForced").textContent = state.forced || "none";
+    $("#mLink").textContent = String(state.linkRequests);
+    $("#linkCount").textContent = String(state.linkRequests);
+
+    $$("#protoPanel [data-goto]").forEach(function (b) {
+      b.setAttribute("aria-pressed", b.getAttribute("data-goto") === state.screen ? "true" : "false");
+    });
+    $$(".opt").forEach(function (o) {
+      var i = o.querySelector("input");
+      o.classList.toggle("is-sel", !!(i && i.checked));
+    });
+  }
+
+  function go(screen, opts) {
+    clearTimers();
+    state.screen = screen;
+    render();
+    var focusTarget = (opts && opts.focus) || $("#pageTitle");
+    if (focusTarget) focusTarget.focus();
+    announce(TITLES[screen] + ". " + ((opts && opts.say) || ""));
+  }
+
+  /* ---------------- payment ledger (prototype, deterministic) ---------------- */
+
+  var clockMin = 0;
+  function stamp() { clockMin += 3; var m = 2 + clockMin; return "2026-08-01 17:" + (m < 10 ? "0" : "") + m; }
+  function record(st, detail, minor) { state.attempts.push({ when: stamp(), state: st, detail: detail, amount: minor }); }
+
+  /* ---------------- outcome ---------------- */
+
+  var OUTCOMES = {
+    paid:       { cls: "o-paid",       icon: "✓", title: "Booking confirmed",
+                  msg: "Payment received and the reservation is CONFIRMED. The voucher has been emailed to the guest." },
+    hotel:      { cls: "o-hotel",      icon: "✓", title: "Booking confirmed — pay at hotel",
+                  msg: "No card was taken. The guest settles the full amount directly with the property at check-in." },
+    failed:     { cls: "o-failed",     icon: "✗", title: "Payment was not completed",
+                  msg: "No money has been taken. The booking stays PENDING until the payment deadline, so you can retry or use another method." },
+    processing: { cls: "o-processing", icon: "⏳", title: "Payment is being confirmed…",
+                  msg: "We have the payment but not yet the provider’s final notification. This page refreshes itself; nothing is required from you." },
+    pending:    { cls: "o-pending",    icon: "⏳", title: "Payment is being confirmed…",
+                  msg: "The customer returned from TropiPay but the webhook has not arrived yet. The booking will confirm itself when it does. Contact support if this persists beyond 15 minutes." },
+    expired:    { cls: "o-expired",    icon: "⚠", title: "This booking’s payment window closed",
+                  msg: "The payment deadline passed before payment completed. The room hold has been released — the booking must be made again." }
+  };
+
+  function showOutcome(kind, reason) {
+    state.outcome = kind;
+    state.reason = reason || "";
+    var o = OUTCOMES[kind];
+    $("#outcomeHead").className = "outcome-head " + o.cls;
+    $("#outcomeIcon").textContent = o.icon;
+    $("#outcomeTitle").textContent = o.title;
+    $("#outcomeMsg").textContent = o.msg;
+    $("#outRef").textContent = REFERENCE;
+    $("#outAmount").textContent = kind === "hotel" ? money(0) + " now · " + money(AMOUNT_MINOR) + " at hotel" : money(AMOUNT_MINOR);
+    $("#outState").textContent = kind === "hotel" ? "not_required" : kind;
+    $("#outReason").hidden = !state.reason;
+    $("#outReasonLabel").hidden = !state.reason;
+    $("#outReason").textContent = state.reason;
+
+    $("#retryBtn").hidden = !(kind === "failed" || kind === "expired");
+    $("#retryBtn").textContent = kind === "expired" ? "Start a new booking" : "Retry payment";
+    $("#changeMethodBtn").hidden = kind !== "failed";
+    $("#voucherBtn").hidden = !(kind === "paid" || kind === "hotel");
+
+    var note = $("#outcomeNote");
+    if (kind === "paid" || kind === "processing" || kind === "pending") {
+      note.className = "note note-saqa";
+      note.innerHTML = "<h3>Why this is safe</h3><p>The state above comes from <strong>our backend</strong>, not from the URL we landed on. A customer who closed the browser mid-payment still sees a confirmed booking on next login, because TropiPay’s signed webhook confirms it server-side — once, idempotently, no matter how many times it is retried.</p>";
+    } else if (kind === "failed") {
+      note.className = "note note-warn";
+      note.innerHTML = "<h3>What happens next</h3><p>Retrying creates a <strong>new</strong> payment attempt against the same booking. Both attempts appear in the payment ledger; only one can ever reach <code>paid</code>.</p>";
+    } else if (kind === "expired") {
+      note.className = "note note-info";
+      note.innerHTML = "<h3>What happened</h3><p>A timeout job moved the payment to <code>expired</code> and released the GDS hold at the deadline. The rate and availability must be re-quoted.</p>";
+    } else {
+      note.className = "note note-info";
+      note.innerHTML = "<p>Nothing was charged. The booking is confirmed with the property and payment is collected on arrival.</p>";
+    }
+    go("outcome", { say: o.title + ". " + o.msg });
+  }
+
+  /* ---------------- processing / polling ---------------- */
+
+  function beginProcessing(kind, reason) {
+    go("processing", { say: "Confirming your payment. Please wait." });
+    var n = 1;
+    $("#pollAttempts").textContent = "Checking our API… attempt 1";
+    every(function () {
+      n += 1;
+      $("#pollAttempts").textContent = "Checking our API… attempt " + n +
+        (n > 5 ? " — still no webhook" : "");
+      if (kind === "processing") return;
+      if ((kind === "paid" || kind === "failed") && n >= 4) {
+        if (kind === "paid") { record("paid", "webhook received · signature valid", AMOUNT_MINOR); }
+        else { record("failed", reason || "card declined", 0); }
+        showOutcome(kind, kind === "failed" ? (reason || "Issuer declined the card") : "");
+      } else if (kind === "pending" && n >= 6) {
+        record("pending", "customer returned, no webhook yet", 0);
+        showOutcome("pending");
+      } else if (kind === "expired" && n >= 6) {
+        record("expired", "payment deadline passed, hold released", 0);
+        showOutcome("expired");
+      }
+    }, 900);
+  }
+
+  /* ---------------- TropiPay link creation ---------------- */
+
+  function setLink(st) {
+    state.link = st;
+    $("#tpLoading").hidden = st !== "loading";
+    $("#tpReady").hidden = st !== "ready";
+    $("#tpError").hidden = st !== "error";
+    render();
+    if (st === "error") announce("Payment link could not be created. Try Again is available.");
+    if (st === "ready") announce("TropiPay payment link ready. Pay with TropiPay button is available.");
+  }
+
+  function requestLink() {
+    state.linkRequests += 1;
+    setLink("loading");
+    later(function () {
+      setLink(state.forced === "link-error" ? "error" : "ready");
+    }, 1100);
+  }
+
+  /* ---------------- flow entry points ---------------- */
+
+  function startPayment() {
+    if (state.method === "hotel") { record("not_required", "pay at hotel selected", 0); return showOutcome("hotel"); }
+    if (state.method === "wompi") {
+      announce("Wompi is out of scope for this iteration.");
+      $("#sbNote").textContent = "Wompi is out of scope for this iteration — choose Card via TropiPay.";
+      return;
+    }
+    if (state.method === "direct") { resetCardForm(); return go("card", { say: "Card details, captured in our own form." }); }
+    go("handoff");
+    requestLink();
+  }
+
+  function resetCardForm() {
+    panEl.value = ""; expEl.value = ""; cvvEl.value = ""; nameEl.value = "";
+    touched = {};
+    brandEl.setAttribute("data-brand", ""); brandEl.textContent = "Card"; brandLive.textContent = "";
+    validateCard(false);
+  }
+
+  function resolveFromCard() {
+    if (state.forced === "declined") return { kind: "failed", reason: "Forced from the control panel · issuer decline" };
+    if (state.forced === "timeout") return { kind: "expired", reason: "" };
+    if (state.forced === "webhook-lost") return { kind: "pending", reason: "" };
+    if (state.forced === "3ds-failed") return { kind: "3ds", reason: "" };
+    if (state.forced === "paid") return { kind: "paid", reason: "" };
+    if (state.forced === "processing") return { kind: "processing", reason: "" };
+    var t = TRIGGERS[digits(panEl.value)];
+    if (t === "decline") return { kind: "failed", reason: "Issuer declined the card (do not honour)" };
+    if (t === "3ds") return { kind: "3ds", reason: "" };
+    return { kind: "paid", reason: "" };
+  }
+
+  function submitCard() {
+    var v = validateCard(true);
+    if (!v.ok) {
+      var first = v.errors.pan ? panEl : v.errors.exp ? expEl : v.errors.cvv ? cvvEl : nameEl;
+      first.focus();
+      announce("The card details are not valid yet. " + (v.errors.pan || v.errors.exp || v.errors.cvv || v.errors.name));
+      return;
+    }
+    record("attempted", "card " + digits(panEl.value).slice(-4) + " · " + currentBrand().label, 0);
+    var r = resolveFromCard();
+    if (r.kind === "3ds") {
+      state.threeds = true;
+      $("#threedsCode").value = "";
+      $("#err-threeds").textContent = "";
+      var l4 = $("[data-testid='threeds-card-last4']");
+      if (l4) l4.textContent = digits(panEl.value).slice(-4);
+      return go("threeds", { say: "Your bank needs to verify this payment. Enter the six digit code." });
+    }
+    beginProcessing(r.kind, r.reason);
+  }
+
+  /* ---------------- backoffice block ---------------- */
+
+  var METHOD_LABEL = { tropipay: "TropiPay", wompi: "Wompi", direct: "Direct card (SAQ-D)", hotel: "Pay at hotel" };
+
+  function renderBackoffice() {
+    var paid = state.outcome === "paid";
+    var pill = $("#boPill");
+    pill.textContent = paid ? "● PAID" : state.outcome === "failed" ? "● FAILED" : state.outcome === "expired" ? "● EXPIRED" : state.outcome === "hotel" ? "● NOT REQUIRED" : "● PENDING";
+    pill.className = "pill " + (paid ? "pill-paid" : state.outcome === "failed" || state.outcome === "expired" ? "pill-failed" : "pill-pending");
+    $("#boMethod").textContent = METHOD_LABEL[state.method];
+    $("#boPaid").textContent = money(paid ? AMOUNT_MINOR : 0);
+    $("#boPending").textContent = money(paid || state.outcome === "hotel" ? 0 : AMOUNT_MINOR);
+    $("#boTxn").textContent = paid ? TXN : "—";
+    $("#boPaidAt").textContent = paid ? "2026-08-01 17:05 UTC" : "—";
+
+    var body = $("#boAttempts");
+    body.innerHTML = "";
+    if (!state.attempts.length) {
+      body.innerHTML = '<tr><td colspan="4" style="color:var(--warm-500)">No attempts yet — run the flow or force an outcome.</td></tr>';
+      return;
+    }
+    state.attempts.forEach(function (a) {
+      var tr = document.createElement("tr");
+      tr.innerHTML = '<td class="mono">' + a.when + "</td><td><strong>" + a.state + "</strong></td><td>" +
+        a.detail + '</td><td class="mono">' + money(a.amount) + "</td>";
+      body.appendChild(tr);
+    });
+  }
+
+  /* ---------------- event wiring ---------------- */
+
+  $("#guestForm").addEventListener("submit", function (e) { e.preventDefault(); if (validateGuest(true)) go("method"); });
+  $("#sbContinue").addEventListener("click", function () { if (validateGuest(true)) go("method"); });
+
+  $$("input[name='paymentMethod']").forEach(function (r) {
+    r.addEventListener("change", function () { state.method = r.value; render(); announce(r.value + " selected."); });
+  });
+
+  var proceedGuard = false;
+  $("#sbProceed").addEventListener("click", function () {
+    if (proceedGuard) return;                       /* double-submit guard, spec §8.2 */
+    proceedGuard = true;
+    $("#sbProceed").disabled = true;
+    startPayment();
+    later(function () { proceedGuard = false; $("#sbProceed").disabled = false; }, 1500);
+  });
+
+  $("#sbConfirm").addEventListener("click", submitCard);
+  $("#cardForm").addEventListener("submit", function (e) { e.preventDefault(); submitCard(); });
+
+  $("#tpPayBtn").addEventListener("click", function () {
+    resetCardForm();
+    go("card", { say: "You are now on TropiPay’s simulated hosted page." });
+  });
+  $("#tpManualLink").addEventListener("click", function () {
+    resetCardForm();
+    go("card", { say: "Opened via the manual fallback link." });
+  });
+  $("#tpRetryBtn").addEventListener("click", requestLink);
+
+  $("#threedsForm").addEventListener("submit", function (e) {
+    e.preventDefault();
+    var code = digits($("#threedsCode").value);
+    if (code.length !== 6) {
+      $("#threedsCode").setAttribute("aria-invalid", "true");
+      $("#err-threeds").textContent = "Enter the 6-digit code sent to your phone";
+      $("#threedsCode").focus();
+      return;
+    }
+    $("#threedsCode").setAttribute("aria-invalid", "false");
+    $("#err-threeds").textContent = "";
+    if (state.forced === "3ds-failed") {
+      record("failed", "3-D Secure authentication failed", 0);
+      return showOutcome("failed", "3-D Secure authentication failed — the issuer did not approve the challenge");
+    }
+    record("authenticated", "3-D Secure challenge passed", 0);
+    beginProcessing("paid");
+  });
+
+  $("#threedsCancel").addEventListener("click", function () {
+    record("failed", "3-D Secure cancelled by cardholder", 0);
+    showOutcome("failed", "Authentication cancelled — the payment was never attempted");
+  });
+
+  $("#retryBtn").addEventListener("click", function () {
+    state.forced = null;
+    if (state.outcome === "expired") { state.attempts = []; clockMin = 0; return go("guest"); }
+    if (state.method === "direct") { resetCardForm(); return go("card", { say: "New payment attempt. Forced state cleared." }); }
+    go("handoff"); requestLink();
+  });
+  $("#changeMethodBtn").addEventListener("click", function () { state.forced = null; go("method"); });
+  $("#voucherBtn").addEventListener("click", function () { announce("Prototype: no voucher file is generated."); });
+  $("#backofficeBtn").addEventListener("click", function () { renderBackoffice(); go("backoffice"); });
+
+  $("#backBtn").addEventListener("click", function () {
+    var b = BACK[state.screen];
+    if (!b) return;
+    if (b.to === "handoff" && state.method !== "tropipay") return go("method");
+    go(b.to);
+  });
+
+  /* ---------------- control panel ---------------- */
+
+  var FILL = { success: "4242424242424242", "3ds": "4000000000000002", declined: "4100000000000001" };
+
+  $("#protoPanel").addEventListener("click", function (e) {
+    var b = e.target.closest ? e.target.closest("button") : null;
+    if (!b) return;
+
+    var goto = b.getAttribute("data-goto");
+    if (goto) {
+      if (goto === "processing") return beginProcessing("processing");
+      if (goto === "outcome") return showOutcome(state.outcome || "paid");
+      if (goto === "backoffice") { renderBackoffice(); return go("backoffice"); }
+      if (goto === "handoff") { go("handoff"); return setLink("ready"); }
+      if (goto === "card") { validateCard(false); return go("card"); }
+      return go(goto);
+    }
+
+    var force = b.getAttribute("data-force");
+    if (force) {
+      state.forced = force;
+      if (force === "paid") { record("paid", "forced from control panel", AMOUNT_MINOR); return showOutcome("paid"); }
+      if (force === "declined") { record("failed", "forced from control panel", 0); return showOutcome("failed", "Issuer declined the card (do not honour)"); }
+      if (force === "timeout") { record("expired", "forced from control panel", 0); return showOutcome("expired"); }
+      if (force === "webhook-lost") { record("pending", "forced from control panel · webhook never arrived", 0); return showOutcome("pending"); }
+      if (force === "3ds-failed") { $("#threedsCode").value = ""; $("#err-threeds").textContent = ""; return go("threeds", { say: "3-D Secure forced to fail. Any code entered will be rejected." }); }
+      if (force === "processing") return beginProcessing("processing");
+    }
+
+    var link = b.getAttribute("data-link");
+    if (link) {
+      state.forced = link === "error" ? "link-error" : null;
+      state.method = "tropipay";
+      $("#pm-tropipay").checked = true;
+      go("handoff");
+      if (link === "loading") { state.linkRequests += 1; return setLink("loading"); }
+      if (link === "error") { state.linkRequests += 1; return setLink("error"); }
+      return setLink("ready");
+    }
+
+    var fill = b.getAttribute("data-fill");
+    if (fill) {
+      if (state.method === "hotel" || state.method === "wompi") { state.method = "tropipay"; $("#pm-tropipay").checked = true; }
+      panEl.value = FILL[fill]; onPanInput();
+      var d = new Date(); expEl.value = "12/" + String((d.getFullYear() + 3) % 100).padStart(2, "0");
+      cvvEl.value = currentBrand().cvv[0] === 4 ? "1234" : "123";
+      nameEl.value = "Testing Guest";
+      touched = { pan: true, exp: true, cvv: true, name: true };
+      validateCard(false);
+      return go("card", { say: "Card fields pre-filled with the " + fill + " trigger card." });
+    }
+
+    if (b.id === "protoReset") return resetAll();
+    if (b.id === "protoToggleMethod") {
+      state.method = state.method === "direct" ? "tropipay" : "direct";
+      var el = state.method === "direct" ? $("#pm-direct") : $("#pm-tropipay");
+      el.checked = true;
+      render();
+      return announce(METHOD_LABEL[state.method] + " selected.");
+    }
+  });
+
+  function resetAll() {
+    clearTimers();
+    state.method = "tropipay"; state.link = "idle"; state.outcome = null; state.reason = "";
+    state.forced = null; state.linkRequests = 0; state.threeds = false; state.attempts = []; clockMin = 0;
+    $("#pm-tropipay").checked = true;
+    resetCardForm();
+    $("#threedsCode").value = ""; $("#err-threeds").textContent = "";
+    $("#sbProceed").disabled = false; proceedGuard = false;
+    GUEST_RULES.forEach(function (r) { $("#" + r.err).textContent = ""; $("#" + r.id).setAttribute("aria-invalid", "false"); });
+    setLink("idle");
+    go("guest", { say: "Prototype reset." });
+  }
+
+  /* ---------------- init ---------------- */
+
+  validateCard(false);
+  renderBackoffice();
+  go("guest", { say: "Non-functional prototype. No real payment processing." });
+  $("#pageTitle").blur();
+})();
+</script>
+</body>
+</html>
