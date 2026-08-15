@@ -1004,8 +1004,8 @@
      ========================================================= -->
 <!-- =========================================================
      Payments & Settlement (NOT IMPLEMENTED — target design)
-     Per the Argo payment-module spec: money flows one way
-     (agency → Argo). Balance settlements (full amount, card or
+     Per the Ergos payment-module spec: money flows one way
+     (agency → Ergos). Balance settlements (full amount, card or
      Square ACH) + credit accounts (line + deposited funds).
      ========================================================= -->
 <section class="screen" id="screen-finance-settlement">
@@ -1032,13 +1032,13 @@
         <div class="page-head row">
           <div>
             <h1>Payments &amp; Settlement</h1>
-            <p class="muted">Per the Argo payment-module spec: money flows one way — agency → Argo. Balance settlements and credit accounts. This is the target design.</p>
+            <p class="muted">Per the Ergos payment-module spec: money flows one way — agency → Ergos. Balance settlements and credit accounts. This is the target design.</p>
           </div>
         </div>
-        <div class="st-ribbon">🚧 Not implemented yet — target design per the Argo payment-module spec.</div>
+        <div class="st-ribbon">🚧 Not implemented yet — target design per the Ergos payment-module spec.</div>
 
         <div class="st-card">
-          <span class="st-dir st-in">Agency → Argo</span>
+          <span class="st-dir st-in">Agency → Ergos</span>
           <h2 style="margin:0 0 2px">Balance settlements</h2>
           <p class="muted" style="margin:0 0 6px">An agency settles its <b>full outstanding balance in a single payment</b> (no partials, no per-booking allocation) — by corporate card (TropiPay, cleared immediately) or by <b>ACH via Square</b> (1% / $1 min / $5 max; settles in 2–3 business days — the balance stays <b>Pending</b> and credit is <b>not</b> freed until the ACH actually completes). A failed ACH leaves the balance unchanged and notifies the agency.</p>
           <table class="st-table">
@@ -1054,7 +1054,7 @@
         <div class="st-card">
           <span class="st-dir st-out">Per-agency accounts</span>
           <h2 style="margin:0 0 2px">Credit accounts</h2>
-          <p class="muted" style="margin:0 0 6px">One account per agency: an <b>Argo-extended credit line</b> (a number, no real money) and/or <b>agency-deposited funds</b> (real money) — functionally identical at payment time, always shown with their <b>composition</b>. Warn at 80% of limit (global threshold), block a booking outright when its sell rate exceeds the available balance. A cancelled balance-paid booking restores to the same source immediately.</p>
+          <p class="muted" style="margin:0 0 6px">One account per agency: an <b>Ergos-extended credit line</b> (a number, no real money) and/or <b>agency-deposited funds</b> (real money) — functionally identical at payment time, always shown with their <b>composition</b>. Warn at 80% of limit (global threshold), block a booking outright when its sell rate exceeds the available balance. A cancelled balance-paid booking restores to the same source immediately.</p>
           <table class="st-table">
             <thead><tr><th>Agency</th><th>Credit line</th><th>Deposited</th><th>Consumed</th><th>Available</th><th>Alert</th></tr></thead>
             <tbody>

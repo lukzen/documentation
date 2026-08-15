@@ -2831,7 +2831,7 @@ function updatePaymentForServices() {
 (function() {
   const _origConfirm = confirmBooking;
   confirmBooking = function() {
-    // Argo payment-module spec (target design): three payment paths.
+    // Ergos payment-module spec (target design): three payment paths.
     //  card    — agency corporate card on TropiPay's hosted form; bed bank confirmed
     //            only after the payment confirms → CONFIRMED_PAID.
     //  balance — draw down the agency's account (credit line + deposited funds,
