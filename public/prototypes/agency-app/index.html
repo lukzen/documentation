@@ -1353,45 +1353,56 @@
             .tp-amt{font-family:Georgia,serif;font-size:26px;margin:8px 0}.tp-note{font-size:12.5px;color:#78716c}
           </style>
 
-          <div class="ni-ribbon">🚧 Not implemented yet — this is the target design for how bookings are paid (replaces the direct card form).</div>
+          <div class="ni-ribbon">🚧 Not implemented yet — target design per the Argo payment-module spec (agency corporate card / credit balance / pay-later; replaces the direct card form).</div>
 
           <div class="form-card">
             <h3>How is this booking paid?</h3>
-            <label class="pay-opt selected" id="pmLink" onclick="pmSelect('link')">
+            <label class="pay-opt selected" id="pmCard" onclick="pmSelect('card')">
               <input type="radio" name="pm" checked>
-              <div><div class="pay-opt-t">Client pays by card <span class="pay-rec">Recommended</span></div>
-              <div class="pay-opt-d">Ergos sends your client a secure TropiPay payment link. You never front money; the booking confirms when the client pays. Your markup is paid back to you monthly.</div></div>
+              <div><div class="pay-opt-t">Pay now — agency corporate card <span class="pay-rec">Default</span></div>
+              <div class="pay-opt-d">Your agency's corporate card is charged the <b>sell rate</b> on TropiPay's hosted form — your traveller's card never touches Argo. The amount is the price stored when you booked, never re-priced at payment time. The booking confirms with the bed bank <b>only after</b> the payment confirms.</div></div>
             </label>
-            <label class="pay-opt" id="pmCredit" onclick="pmSelect('credit')">
+            <label class="pay-opt" id="pmBalance" onclick="pmSelect('balance')">
               <input type="radio" name="pm">
-              <div><div class="pay-opt-t">Book on agency credit <span class="pay-off">Available</span></div>
-              <div class="pay-opt-d">Book now, settle on your weekly statement. Enabled only when the agency has a credit line, nothing past due, and headroom for this booking.</div></div>
+              <div><div class="pay-opt-t">Pay from credit balance <span class="pay-off">Available · $5,200.00</span></div>
+              <div class="pay-opt-d">Draw down your account balance — <b>$3,000 Argo credit line + $2,200 deposited funds</b>, one balance at payment time. Blocked outright if the sell rate exceeds what's available (no card top-up of the difference); warning at 80% of your limit.</div></div>
+            </label>
+            <label class="pay-opt" id="pmLater" onclick="pmSelect('later')">
+              <input type="radio" name="pm">
+              <div><div class="pay-opt-t">Confirm now, pay later <span class="pay-off">Free-cancellation rate</span></div>
+              <div class="pay-opt-d">This rate has free cancellation, so the booking confirms <b>unpaid</b> with a payment deadline set a buffer before the free-cancellation date. Reminders at 30 d / 7 d / 24 h before the deadline. Unpaid at the deadline → <b>auto-cancelled penalty-free</b>, and you're notified immediately.</div></div>
             </label>
           </div>
 
           <div class="form-card" id="pmHandoff">
-            <h3>TropiPay checkout — on the client's device</h3>
+            <h3>TropiPay checkout — agency corporate card</h3>
             <div class="security-notice">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-              <span>The client enters their card on <b>TropiPay's own page</b> (tppay.me) — not here. Ergos never sees or stores the card number, which keeps us in the lowest PCI tier (SAQ-A).</span>
+              <span>The card is entered on <b>TropiPay's own page</b> (tppay.me) — not here. Argo never sees or stores the card number, which keeps us in the lowest PCI tier (SAQ-A).</span>
             </div>
             <div class="tp-handoff">
-              <div class="tp-bar">🔒 https://tppay.me/erg-BK-88213 — separate TropiPay window</div>
+              <div class="tp-bar">🔒 https://tppay.me/argo-BK-88213 — separate TropiPay window</div>
               <div class="tp-body"><div class="tp-brand">tropipay</div>
                 <div class="tp-amt" id="pay-tp-amt">USD 194.40</div>
-                <div class="tp-note">Card number, expiry and CVV are entered here, on TropiPay's domain. 3-D Secure runs on their page. On success TropiPay notifies Ergos and the booking confirms.</div></div>
+                <div class="tp-note">Card number, expiry and CVV are entered here, on TropiPay's domain. On success TropiPay notifies Argo, and only then is the booking confirmed with the bed bank. If payment fails or the hold's TTL expires, the booking is released — a payment landing after release is refunded, never confirmed.</div></div>
             </div>
           </div>
 
           <script>
             function pmSelect(m){
-              document.getElementById('pmLink').classList.toggle('selected',m==='link');
-              document.getElementById('pmCredit').classList.toggle('selected',m==='credit');
-              document.getElementById('pmLink').querySelector('input').checked=m==='link';
-              document.getElementById('pmCredit').querySelector('input').checked=m==='credit';
-              document.getElementById('pmHandoff').style.display=m==='link'?'':'none';
+              ['pmCard','pmBalance','pmLater'].forEach(function(id){
+                var on = ({pmCard:'card',pmBalance:'balance',pmLater:'later'})[id]===m;
+                var el = document.getElementById(id);
+                el.classList.toggle('selected',on);
+                el.querySelector('input').checked = on;
+              });
+              document.getElementById('pmHandoff').style.display=m==='card'?'':'none';
               var b=document.getElementById('pay-confirm-btn');
-              if(b){b.textContent=m==='link'?'Send payment link to client':'Confirm on credit';b.disabled=false;}
+              if(b){
+                b.textContent = m==='card' ? 'Charge corporate card' : m==='balance' ? 'Pay from balance' : 'Confirm — pay by deadline';
+                b.disabled=false;
+              }
+              window.__pmMode = m;
             }
           </script>
         </div>

@@ -1004,8 +1004,9 @@
      ========================================================= -->
 <!-- =========================================================
      Payments & Settlement (NOT IMPLEMENTED — target design)
-     Lane 2: agency credit statements (agency → Ergos)
-     Lane 1: commission payouts (Ergos → agency)
+     Per the Argo payment-module spec: money flows one way
+     (agency → Argo). Balance settlements (full amount, card or
+     Square ACH) + credit accounts (line + deposited funds).
      ========================================================= -->
 <section class="screen" id="screen-finance-settlement">
   <div class="app-layout">
@@ -1031,33 +1032,35 @@
         <div class="page-head row">
           <div>
             <h1>Payments &amp; Settlement</h1>
-            <p class="muted">The two settlement directions between Ergos and each agency, settled gross (no netting). This is the target design.</p>
+            <p class="muted">Per the Argo payment-module spec: money flows one way — agency → Argo. Balance settlements and credit accounts. This is the target design.</p>
           </div>
         </div>
-        <div class="st-ribbon">🚧 Not implemented yet — target design for how Ergos and agencies settle balances.</div>
+        <div class="st-ribbon">🚧 Not implemented yet — target design per the Argo payment-module spec.</div>
 
         <div class="st-card">
-          <span class="st-dir st-in">Agency → Ergos</span>
-          <h2 style="margin:0 0 2px">Lane 2 — agency credit statements</h2>
-          <p class="muted" style="margin:0 0 6px">Trusted agencies book on a capped line; each week Ergos issues a statement and sends the agency a TropiPay payment link. Reuses the existing remittances model.</p>
+          <span class="st-dir st-in">Agency → Argo</span>
+          <h2 style="margin:0 0 2px">Balance settlements</h2>
+          <p class="muted" style="margin:0 0 6px">An agency settles its <b>full outstanding balance in a single payment</b> (no partials, no per-booking allocation) — by corporate card (TropiPay, cleared immediately) or by <b>ACH via Square</b> (1% / $1 min / $5 max; settles in 2–3 business days — the balance stays <b>Pending</b> and credit is <b>not</b> freed until the ACH actually completes). A failed ACH leaves the balance unchanged and notifies the agency.</p>
           <table class="st-table">
-            <thead><tr><th>Statement</th><th>Agency</th><th>Total</th><th>Bookings</th><th>Due</th><th>Status</th></tr></thead>
+            <thead><tr><th>Settlement</th><th>Agency</th><th>Amount</th><th>Method</th><th>Provider ref</th><th>Status</th></tr></thead>
             <tbody>
-              <tr><td>ERG-2026-W32-01</td><td>Sunshine Travel LLC</td><td>$7,500.00</td><td>3</td><td>day 7</td><td><span class="st-pill st-pending">Pending</span></td></tr>
-              <tr><td>ERG-2026-W31-04</td><td>Coral Voyages</td><td>$2,150.00</td><td>1</td><td>day 7</td><td><span class="st-pill st-paid">Paid</span></td></tr>
+              <tr><td>SET-2026-0812-01</td><td>Sunshine Travel LLC</td><td>$7,500.00</td><td>ACH (Square)</td><td>sq_pay_8H2K…</td><td><span class="st-pill st-pending">Pending · ACH 2–3 days</span></td></tr>
+              <tr><td>SET-2026-0809-02</td><td>Coral Voyages</td><td>$2,150.00</td><td>Card (TropiPay)</td><td>tpp_ord_5512…</td><td><span class="st-pill st-paid">Completed</span></td></tr>
+              <tr><td>SET-2026-0808-03</td><td>Palma Tours Inc</td><td>$4,320.00</td><td>ACH (Square)</td><td>sq_pay_2NQF…</td><td><span class="st-pill st-pending" style="background:#fee2e2;color:#b91c1c">Failed · insufficient funds</span></td></tr>
             </tbody>
           </table>
         </div>
 
         <div class="st-card">
-          <span class="st-dir st-out">Ergos → Agency</span>
-          <h2 style="margin:0 0 2px">Lane 1 — commission payouts</h2>
-          <p class="muted" style="margin:0 0 6px">On client-paid bookings Ergos collects the full price, so Ergos owes the agency its markup. Monthly, Ergos runs a payout and transfers the accrued commission (bank / RTP-FedNow). Backoffice initiates and marks it Paid with an outbound reference.</p>
+          <span class="st-dir st-out">Per-agency accounts</span>
+          <h2 style="margin:0 0 2px">Credit accounts</h2>
+          <p class="muted" style="margin:0 0 6px">One account per agency: an <b>Argo-extended credit line</b> (a number, no real money) and/or <b>agency-deposited funds</b> (real money) — functionally identical at payment time, always shown with their <b>composition</b>. Warn at 80% of limit (global threshold), block a booking outright when its sell rate exceeds the available balance. A cancelled balance-paid booking restores to the same source immediately.</p>
           <table class="st-table">
-            <thead><tr><th>Payout</th><th>Agency</th><th>Amount</th><th>Bookings</th><th>Method</th><th>Status</th></tr></thead>
+            <thead><tr><th>Agency</th><th>Credit line</th><th>Deposited</th><th>Consumed</th><th>Available</th><th>Alert</th></tr></thead>
             <tbody>
-              <tr><td>PAYOUT-2026-08-01</td><td>Sunshine Travel LLC</td><td>$150.00</td><td>1</td><td>bank / RTP-FedNow</td><td><span class="st-pill st-pending">Pending</span></td></tr>
-              <tr><td>PAYOUT-2026-07-01</td><td>Coral Voyages</td><td>$430.00</td><td>3</td><td>bank / RTP-FedNow</td><td><span class="st-pill st-paid">Paid · TX-40987</span></td></tr>
+              <tr><td>Sunshine Travel LLC</td><td>$10,000.00</td><td>$0.00</td><td>$8,300.00</td><td>$1,700.00</td><td><span class="st-pill st-pending">83% — notified</span></td></tr>
+              <tr><td>Coral Voyages</td><td>$3,000.00</td><td>$2,200.00</td><td>$1,150.00</td><td>$4,050.00</td><td><span class="st-pill st-paid">OK</span></td></tr>
+              <tr><td>Palma Tours Inc</td><td>$0.00</td><td>$5,000.00</td><td>$680.00</td><td>$4,320.00</td><td><span class="st-pill st-paid">OK</span></td></tr>
             </tbody>
           </table>
         </div>

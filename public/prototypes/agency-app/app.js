@@ -2831,19 +2831,19 @@ function updatePaymentForServices() {
 (function() {
   const _origConfirm = confirmBooking;
   confirmBooking = function() {
-    // Two-lane payment (target design): the confirm action depends on how the
-    // booking is paid. Lane 1 (client pays by card) does NOT confirm now — Ergos
-    // sends the client a TropiPay link and the booking confirms when they pay.
-    // Lane 2 (agency credit) confirms immediately on credit.
-    const creditEl = document.getElementById('pmCredit');
-    const isCredit = !!(creditEl && creditEl.querySelector('input') && creditEl.querySelector('input').checked);
-    if (!isCredit) {
-      if (typeof protoToast === 'function') protoToast('TropiPay payment link sent to the client — the booking confirms once they pay.', 'default');
-      const btn = document.getElementById('pay-confirm-btn');
-      if (btn) { btn.textContent = 'Payment link sent ✓ — awaiting client'; btn.disabled = true; }
-      return; // pending client payment; no confirmation screen yet
+    // Argo payment-module spec (target design): three payment paths.
+    //  card    — agency corporate card on TropiPay's hosted form; bed bank confirmed
+    //            only after the payment confirms → CONFIRMED_PAID.
+    //  balance — draw down the agency's account (credit line + deposited funds,
+    //            one balance) → CONFIRMED_PAID.
+    //  later   — free-cancellation rates only: confirm unpaid with a payment
+    //            deadline (buffer before free-cxl date) → CONFIRMED_UNPAID.
+    const pmMode = window.__pmMode || 'card';
+    if (typeof protoToast === 'function') {
+      if (pmMode === 'card') protoToast('Corporate card charged via TropiPay — booking confirmed with the bed bank.', 'success');
+      else if (pmMode === 'balance') protoToast('Paid from credit balance ($194.40 drawn) — booking confirmed.', 'success');
+      else protoToast('Confirmed unpaid — pay by Sep 12, 2026 (48 h before free cancellation ends). Reminders at 30 d / 7 d / 24 h.', 'default');
     }
-    if (typeof protoToast === 'function') protoToast('Booked on agency credit — settles on the weekly statement.', 'success');
 
     // Capture guest info
     const guestScreen = document.getElementById('screen-guest');
@@ -2954,6 +2954,14 @@ function updatePaymentForServices() {
 
       updateBookingDetailFromState();
       updateBookingListFromState();
+    }
+
+    // Pay-later (CONFIRMED_UNPAID): same confirmation screen, unpaid heading + deadline
+    if (pmMode === 'later') {
+      const h = document.getElementById('conf-heading');
+      const s = document.getElementById('conf-subheading');
+      if (h) h.textContent = 'Confirmed — payment pending';
+      if (s) s.textContent = 'Free-cancellation rate: confirmed unpaid with the bed bank. Pay by Sep 12, 2026 (48 h before free cancellation ends) or the booking is auto-cancelled penalty-free. Reminders: 30 d / 7 d / 24 h before the deadline.';
     }
 
     snapshotBooking();
