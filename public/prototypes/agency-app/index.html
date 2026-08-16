@@ -59,6 +59,8 @@
         <button class="proto-tab" data-screen="booking-detail">10. Booking Detail</button>
         <button class="proto-tab" data-screen="voucher">11. Voucher</button>
         <button class="proto-tab" data-screen="invoice">12. Invoice</button>
+        <button class="proto-tab" data-screen="credit-account">13. Credit account 🚧</button>
+        <button class="proto-tab" data-screen="settle-balance">14. Settle balance 🚧</button>
       </div>
       <!-- Account flow tabs -->
       <div class="proto-flow-tabs" data-flow-group="account" hidden>
@@ -1663,8 +1665,136 @@
           <input type="date" class="bookings-filter-select">
         </div>
 
+        <!-- Story 3 (backend#161) — CONFIRMED_UNPAID demo row, pinned. 🚧 target design -->
+        <div style="border:2px solid #b45309;background:#fffbeb;border-radius:10px;padding:14px 16px;margin-bottom:12px;display:flex;gap:14px;align-items:center;flex-wrap:wrap">
+          <span style="background:#fef3c7;color:#b45309;font-weight:800;font-size:11px;text-transform:uppercase;padding:3px 10px;border-radius:99px">Confirmed — payment pending 🚧</span>
+          <div style="flex:1;min-width:260px">
+            <div style="font-weight:700">Meliá Punta Cana ★★★★★ · Ref <code>PTAUNPAID01</code></div>
+            <div style="font-size:12.5px;color:#78350f">Free-cancellation rate · <b>Pay by Sep 12, 2026</b> (48 h before free cancellation ends) · reminders 30 d / 7 d / 24 h · unpaid at the deadline → <b>auto-cancelled penalty-free</b></div>
+          </div>
+          <div style="font-family:ui-monospace,Menlo,monospace;font-weight:700">USD 783.77</div>
+          <button class="btn-primary" onclick="showScreen('payment')">Pay now</button>
+        </div>
         <div id="bookings-list-container"></div>
       </main>
+    </div>
+  </div>
+
+  <!-- ========== SCREEN: CREDIT ACCOUNT (Story 4, backend#162) 🚧 ========== -->
+  <div class="screen" id="screen-credit-account">
+    <nav class="navbar">
+      <div class="nav-left">
+        <div class="brand"><div class="brand-icon">EC</div><span class="brand-name">Ergos Continental</span></div>
+        <a href="#" class="nav-link" onclick="showScreen('home')">Home</a>
+        <a href="#" class="nav-link" onclick="showScreen('bookings')">My Bookings</a>
+        <a href="#" class="nav-link active">Credit account</a>
+      </div>
+      <div class="nav-right"><div class="avatar">DA</div></div>
+    </nav>
+    <div class="booking-flow-page">
+      <style>
+        .ca-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:14px 0}
+        .ca-kpi{background:#fff;border:1px solid #e7e5e4;border-radius:10px;padding:12px 14px}
+        .ca-kpi .l{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:#78716c}
+        .ca-kpi .v{font-family:ui-monospace,Menlo,monospace;font-size:20px;font-weight:700;margin-top:2px}
+        .ca-bar{height:16px;border-radius:99px;background:#e7e5e4;overflow:hidden;margin:6px 0 4px}
+        .ca-bar div{height:100%;width:83%;background:linear-gradient(90deg,#f59e0b,#dc2626)}
+        .ca-tbl{width:100%;border-collapse:collapse;font-size:13px;margin-top:8px}
+        .ca-tbl th{text-align:left;font-size:11px;text-transform:uppercase;color:#78716c;padding:7px 10px;border-bottom:1px solid #e7e5e4}
+        .ca-tbl td{padding:7px 10px;border-bottom:1px solid #f0eee9;font-family:ui-monospace,Menlo,monospace;font-size:12.5px}
+        .ca-tag{font-family:'DM Sans',sans-serif;font-size:10.5px;font-weight:800;text-transform:uppercase;padding:2px 8px;border-radius:99px}
+        .ca-dep{background:#d1fae5;color:#065f46}.ca-draw{background:#fee2e2;color:#991b1b}.ca-rest{background:#e0e7ff;color:#3730a3}
+      </style>
+      <div class="ni-ribbon">🚧 Not implemented — Story 4 target design (backend#162): ONE account per agency — Ergos credit line + deposited funds, identical at payment time.</div>
+      <h2>Credit account</h2>
+      <div class="ca-grid">
+        <div class="ca-kpi"><div class="l">Credit line (Ergos-extended)</div><div class="v">$10,000.00</div></div>
+        <div class="ca-kpi"><div class="l">Deposited funds (your money)</div><div class="v">$2,200.00</div></div>
+        <div class="ca-kpi"><div class="l">Consumed</div><div class="v" style="color:#b45309">$10,150.00</div></div>
+        <div class="ca-kpi"><div class="l">Available to book</div><div class="v" style="color:#0d9488">$2,050.00</div></div>
+      </div>
+      <div class="form-card">
+        <h3>Utilisation — 83% of limit <span style="background:#fee2e2;color:#991b1b;font-size:11px;font-weight:800;padding:2px 9px;border-radius:99px;margin-left:8px">80% threshold crossed — you and Ergos admins were notified</span></h3>
+        <div class="ca-bar"><div></div></div>
+        <div style="font-size:12px;color:#78716c">A booking whose sell rate exceeds the available balance is <b>blocked outright</b> with the shortfall shown — no card top-up of the difference. Cancelling a balance-paid booking (inside its free-cancellation window) restores the amount <b>immediately to the same source</b>.</div>
+        <div style="margin-top:10px"><button class="btn-primary" onclick="showScreen('settle-balance')">Settle outstanding balance →</button></div>
+      </div>
+      <div class="form-card">
+        <h3>Consumption history (composition always visible)</h3>
+        <table class="ca-tbl">
+          <thead><tr><th>Date</th><th>Type</th><th>Source</th><th>Booking / ref</th><th style="text-align:right">Amount</th></tr></thead>
+          <tbody>
+            <tr><td>Aug 14</td><td><span class="ca-tag ca-draw">Drawdown</span></td><td>Credit line</td><td>PTA9932K1</td><td style="text-align:right">−$922.08</td></tr>
+            <tr><td>Aug 12</td><td><span class="ca-tag ca-draw">Drawdown</span></td><td>Deposited funds</td><td>PTA9921F7</td><td style="text-align:right">−$783.77</td></tr>
+            <tr><td>Aug 11</td><td><span class="ca-tag ca-rest">Restore</span></td><td>Credit line</td><td>PTA9899Q2 (cancelled in free-cxl window)</td><td style="text-align:right">+$809.22</td></tr>
+            <tr><td>Aug 04</td><td><span class="ca-tag ca-dep">Deposit</span></td><td>Deposited funds</td><td>Bank transfer ref 88213</td><td style="text-align:right">+$2,200.00</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== SCREEN: SETTLE BALANCE (Story 5, backend#163) 🚧 ========== -->
+  <div class="screen" id="screen-settle-balance">
+    <nav class="navbar">
+      <div class="nav-left">
+        <div class="brand"><div class="brand-icon">EC</div><span class="brand-name">Ergos Continental</span></div>
+        <a href="#" class="nav-link" onclick="showScreen('home')">Home</a>
+        <a href="#" class="nav-link" onclick="showScreen('credit-account')">Credit account</a>
+        <a href="#" class="nav-link active">Settle balance</a>
+      </div>
+      <div class="nav-right"><div class="avatar">DA</div></div>
+    </nav>
+    <div class="booking-flow-page">
+      <div class="ni-ribbon">🚧 Not implemented — Story 5 target design (backend#163): the FULL outstanding balance in a single payment — no partials, no per-booking allocation.</div>
+      <h2>Settle your outstanding balance</h2>
+      <div class="form-card">
+        <h3>Amount due — full balance</h3>
+        <div style="font-family:ui-monospace,Menlo,monospace;font-size:30px;font-weight:700">$10,150.00</div>
+        <div style="font-size:12px;color:#78716c">Settling frees your credit for new bookings. Partial payments are not supported.</div>
+      </div>
+      <div class="form-card" id="stlChoice">
+        <h3>How do you want to pay?</h3>
+        <label class="pay-opt selected" id="stlCard" onclick="stlSelect('card')">
+          <input type="radio" name="stl" checked>
+          <div><div class="pay-opt-t">Corporate card (TropiPay hosted form)</div>
+          <div class="pay-opt-d">Cleared immediately — credit freed as soon as the payment confirms. No visible surcharge (the card cost is baked into sell rates).</div></div>
+        </label>
+        <label class="pay-opt" id="stlAch" onclick="stlSelect('ach')">
+          <input type="radio" name="stl">
+          <div><div class="pay-opt-t">ACH bank transfer (Square)</div>
+          <div class="pay-opt-d">Fee 1% / $1 min / <b>$5 max</b> — on this balance: <b>$5.00 vs ~$350 by card cost</b>. Settles in <b>2–3 business days</b>: the balance stays <b>Pending</b> and credit is <b>not freed until the ACH completes</b>. If it fails, nothing changes and you can retry.</div></div>
+        </label>
+        <button class="btn-primary" id="stlGo" onclick="stlPay()">Pay $10,150.00 by card</button>
+      </div>
+      <div class="form-card" id="stlResult" style="display:none"></div>
+      <script>
+        function stlSelect(m){
+          document.getElementById('stlCard').classList.toggle('selected',m==='card');
+          document.getElementById('stlAch').classList.toggle('selected',m==='ach');
+          document.getElementById('stlCard').querySelector('input').checked=m==='card';
+          document.getElementById('stlAch').querySelector('input').checked=m==='ach';
+          document.getElementById('stlGo').textContent = m==='card' ? 'Pay $10,150.00 by card' : 'Debit $10,150.00 by ACH';
+          window.__stlMode=m;
+        }
+        function stlPay(){
+          var r=document.getElementById('stlResult'); r.style.display='';
+          if((window.__stlMode||'card')==='card'){
+            r.innerHTML='<h3>Settled ✓</h3><div style="font-size:13px">Paid on TropiPay\'s hosted form — provider ref <code>tpp_ord_7741…</code> recorded. Balance cleared immediately, <b>credit freed</b>.</div>';
+          } else {
+            r.innerHTML='<h3>Settlement in progress — ACH Pending</h3><div style="font-size:13px">Square ref <code>sq_pay_3XK2…</code> · initiated now · <b>balance stays Pending, credit NOT yet freed</b> (2–3 business days).</div>'+
+              '<div style="margin-top:8px;font-size:12px;color:#78716c">Demo the async outcome:</div>'+
+              '<button class="btn-outline" onclick="stlDone(true)" style="margin-right:8px">Simulate: Square reports COMPLETED</button>'+
+              '<button class="btn-outline" onclick="stlDone(false)">Simulate: Square reports FAILED</button>';
+          }
+        }
+        function stlDone(ok){
+          var r=document.getElementById('stlResult');
+          r.innerHTML = ok
+            ? '<h3>Settled ✓ (ACH COMPLETED)</h3><div style="font-size:13px">Completion timestamp recorded next to the initiation timestamp. Balance cleared, <b>credit freed</b>.</div>'
+            : '<h3 style="color:#b91c1c">ACH FAILED — insufficient funds</h3><div style="font-size:13px"><b>Balance unchanged.</b> You were notified with the reason and can initiate a new settlement (card or ACH).</div>';
+        }
+      </script>
     </div>
   </div>
 

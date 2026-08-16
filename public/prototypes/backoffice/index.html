@@ -1064,6 +1064,51 @@
             </tbody>
           </table>
         </div>
+
+        <div class="st-card">
+          <span class="st-dir st-out">Stories 3 &amp; 6 · hourly sweep</span>
+          <h2 style="margin:0 0 2px">Payment deadlines — CONFIRMED_UNPAID bookings</h2>
+          <p class="muted" style="margin:0 0 6px">Free-cancellation bookings confirmed unpaid. Deadline = free-cancellation date − global buffer (48 h). Reminders (30 d / 7 d / 24 h) are <b>computed at send time from the current deadline</b>, so extending a deadline needs no rescheduling. Unpaid at the deadline → the <b>hourly sweep auto-cancels inside the free-cancellation window</b> and notifies the agency — no review queue.</p>
+          <table class="st-table">
+            <thead><tr><th>Booking</th><th>Agency</th><th>Amount</th><th>Free-cxl date</th><th>Pay by</th><th>Reminders sent</th><th></th></tr></thead>
+            <tbody>
+              <tr><td>PTAUNPAID01</td><td>Sunshine Travel LLC</td><td>$783.77</td><td>Sep 14 08:00</td><td id="pdRow1">Sep 12 08:00</td><td>30 d ✓</td><td><button class="btn btn-outline" style="padding:2px 10px;font-size:12px" onclick="pdOpenExtend()">Extend…</button></td></tr>
+              <tr><td>PTA9944H2</td><td>Coral Voyages</td><td>$1,912.40</td><td>Aug 21 12:00</td><td>Aug 19 12:00</td><td>30 d ✓ · 7 d ✓</td><td><button class="btn btn-outline" style="padding:2px 10px;font-size:12px" onclick="pdOpenExtend()">Extend…</button></td></tr>
+              <tr style="opacity:.65"><td>PTA9871B9</td><td>Palma Tours Inc</td><td>$644.10</td><td>Aug 15 10:00</td><td>Aug 13 10:00</td><td>all ✓</td><td><span class="st-pill" style="background:#fee2e2;color:#b91c1c">Auto-cancelled by sweep · logged</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Story 6 (backend#164) — deadline extension modal 🚧 -->
+        <div id="pdModal" style="display:none;position:fixed;inset:0;background:rgba(15,23,42,.45);z-index:50;align-items:center;justify-content:center">
+          <div style="background:#fff;border-radius:12px;max-width:520px;width:92%;padding:20px 22px;box-shadow:0 20px 60px rgba(0,0,0,.3)">
+            <h2 style="margin:0 0 4px">Extend payment deadline — PTAUNPAID01</h2>
+            <p class="muted" style="margin:0 0 10px">Never beyond the bed bank's free-cancellation date (<b>Sep 14 08:00</b>). Reminders self-correct — they are computed from the current deadline at send time.</p>
+            <label style="display:block;font-size:12px;font-weight:700;margin-bottom:2px">New deadline</label>
+            <input id="pdNew" type="text" value="Sep 13, 2026 08:00" style="width:100%;padding:7px 10px;border:1px solid #d6d3d1;border-radius:8px;font-family:ui-monospace,Menlo,monospace;font-size:13px">
+            <div id="pdCapWarn" style="display:none;color:#b91c1c;font-size:12px;margin-top:4px">Beyond the free-cancellation date — not allowed (Story 6 §1).</div>
+            <label style="display:block;font-size:12px;font-weight:700;margin:10px 0 2px">Reason (required, audited)</label>
+            <textarea id="pdReason" placeholder="e.g. Long-standing client, traveller funds arrive Friday" style="width:100%;min-height:60px;padding:7px 10px;border:1px solid #d6d3d1;border-radius:8px;font-size:13px"></textarea>
+            <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:12px">
+              <button class="btn btn-outline" onclick="document.getElementById('pdModal').style.display='none'">Cancel</button>
+              <button class="btn" style="background:#1a1a4e;color:#fff" onclick="pdExtend()">Extend deadline</button>
+            </div>
+            <div id="pdAudit" style="display:none;margin-top:10px;background:#f0fdf4;border-left:4px solid #16a34a;padding:8px 12px;font-size:12px"></div>
+          </div>
+        </div>
+        <script>
+          function pdOpenExtend(){ document.getElementById('pdModal').style.display='flex'; }
+          function pdExtend(){
+            var reason=document.getElementById('pdReason').value.trim();
+            if(reason.length<6){ document.getElementById('pdReason').style.borderColor='#b91c1c'; return; }
+            var nd=document.getElementById('pdNew').value;
+            if(/Sep 1[5-9]|Sep [2-3][0-9]|Oct/.test(nd)){ document.getElementById('pdCapWarn').style.display=''; return; }
+            document.getElementById('pdCapWarn').style.display='none';
+            document.getElementById('pdRow1').innerHTML='<b>'+nd.replace(', 2026','')+'</b> <span class="st-pill st-pending">extended</span>';
+            document.getElementById('pdAudit').style.display='';
+            document.getElementById('pdAudit').innerHTML='Audit recorded ✓ — actor <b>AD (operations admin)</b>, original <code>Sep 12 08:00</code> → new <code>'+nd+'</code>, reason: “'+reason+'”. No reminder rescheduling needed.';
+          }
+        </script>
       </div>
     </main>
   </div>
