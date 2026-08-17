@@ -1054,13 +1054,13 @@
         <div class="st-card">
           <span class="st-dir st-out">Per-agency accounts</span>
           <h2 style="margin:0 0 2px">Credit accounts</h2>
-          <p class="muted" style="margin:0 0 6px">One account per agency: an <b>Ergos-extended credit line</b> (a number, no real money) and/or <b>agency-deposited funds</b> (real money) — functionally identical at payment time, always shown with their <b>composition</b>. Warn at 80% of limit (global threshold), block a booking outright when its sell rate exceeds the available balance. A cancelled balance-paid booking restores to the same source immediately.</p>
+          <p class="muted" style="margin:0 0 6px">One account per agency, <b>deposit-matched credit</b>: limit = <b>2 × deposits</b> (every deposit doubles; withdrawals un-double, floored at utilization). Deposits spend first; drawdowns beyond them are <b>debt to Ergos</b>, settled in full (Story 5: owed = utilization − deposits). Free-cancellation rates may overdraw up to <b>min(25% of limit, $2,500)</b> with a ≤72 h cover deadline (one at a time; uncovered → sweep auto-cancels penalty-free + strike). <b>NR overdraft</b> is a per-agency privilege letting trusted agencies overdraw on non-refundable rates too (default: off — they must cover inline by card to proceed). Warn at 80% (global). Cancelled balance-paid bookings restore to the same source immediately.</p>
           <table class="st-table">
-            <thead><tr><th>Agency</th><th>Credit line</th><th>Deposited</th><th>Consumed</th><th>Available</th><th>Alert</th></tr></thead>
+            <thead><tr><th>Agency</th><th>Deposits</th><th>Limit (2×)</th><th>Utilization</th><th>Owed to Ergos</th><th>NR overdraft</th><th>Alert</th></tr></thead>
             <tbody>
-              <tr><td>Sunshine Travel LLC</td><td>$10,000.00</td><td>$0.00</td><td>$8,300.00</td><td>$1,700.00</td><td><span class="st-pill st-pending">83% — notified</span></td></tr>
-              <tr><td>Coral Voyages</td><td>$3,000.00</td><td>$2,200.00</td><td>$1,150.00</td><td>$4,050.00</td><td><span class="st-pill st-paid">OK</span></td></tr>
-              <tr><td>Palma Tours Inc</td><td>$0.00</td><td>$5,000.00</td><td>$680.00</td><td>$4,320.00</td><td><span class="st-pill st-paid">OK</span></td></tr>
+              <tr><td>Sunshine Travel LLC</td><td>$6,100.00</td><td>$12,200.00</td><td>$10,150.00</td><td>$4,050.00</td><td><span class="st-pill st-paid">Granted</span></td><td><span class="st-pill st-pending">83% — notified · overdraft $230 cover due Aug 19</span></td></tr>
+              <tr><td>Coral Voyages</td><td>$2,200.00</td><td>$4,400.00</td><td>$1,150.00</td><td>$0.00</td><td><span class="st-pill">—</span></td><td><span class="st-pill st-paid">OK</span></td></tr>
+              <tr><td>Palma Tours Inc</td><td>$5,000.00</td><td>$10,000.00</td><td>$680.00</td><td>$0.00</td><td><span class="st-pill">—</span></td><td><span class="st-pill st-paid">OK</span></td></tr>
             </tbody>
           </table>
         </div>

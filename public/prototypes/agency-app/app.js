@@ -2834,14 +2834,14 @@ function updatePaymentForServices() {
     // Ergos payment-module spec (target design): three payment paths.
     //  card    — agency corporate card on TropiPay's hosted form; bed bank confirmed
     //            only after the payment confirms → CONFIRMED_PAID.
-    //  balance — draw down the agency's account (credit line + deposited funds,
-    //            one balance) → CONFIRMED_PAID.
+    //  balance — draw down the agency's account (deposit-matched 2× credit:
+    //            deposits spend first, beyond = owed to Ergos) → CONFIRMED_PAID.
     //  later   — free-cancellation rates only: confirm unpaid with a payment
     //            deadline (buffer before free-cxl date) → CONFIRMED_UNPAID.
     const pmMode = window.__pmMode || 'card';
     if (typeof protoToast === 'function') {
-      if (pmMode === 'card') protoToast('Corporate card charged via TropiPay — booking confirmed with the bed bank.', 'success');
-      else if (pmMode === 'balance') protoToast('Paid from credit balance ($194.40 drawn) — booking confirmed.', 'success');
+      if (pmMode === 'card') protoToast('Corporate card charged $201.20 via TropiPay ($194.40 rate + $6.80 card fee) — booking confirmed with the bed bank.', 'success');
+      else if (pmMode === 'balance') protoToast('Paid from credit balance ($194.40 drawn — no card fee) — booking confirmed.', 'success');
       else protoToast('Confirmed unpaid — pay by Sep 12, 2026 (48 h before free cancellation ends). Reminders at 30 d / 7 d / 24 h.', 'default');
     }
 
