@@ -1355,7 +1355,7 @@
             .tp-amt{font-family:Georgia,serif;font-size:26px;margin:8px 0}.tp-note{font-size:12.5px;color:#78716c}
           </style>
 
-          <div class="ni-ribbon">🚧 Not implemented yet — target design per the Ergos payment-module spec (agency corporate card / credit balance / pay-later; replaces the direct card form).</div>
+          <div class="ni-ribbon">🚧 Not implemented yet — target design per the Ergos payment-module spec (agency corporate card / credit balance / soft credit — paying with credit <b>pays now</b>; only the settlement comes later; replaces the direct card form).</div>
 
           <div class="form-card">
             <h3>How is this booking paid?</h3>
@@ -1371,8 +1371,9 @@
             </label>
             <label class="pay-opt" id="pmLater" onclick="pmSelect('later')">
               <input type="radio" name="pm">
-              <div><div class="pay-opt-t">Confirm now, pay later <span class="pay-off">Free-cancellation rate</span></div>
-              <div class="pay-opt-d">This rate has free cancellation, so the booking confirms <b>unpaid</b> with a payment deadline set a buffer before the free-cancellation date. Reminders at 30 d / 7 d / 24 h before the deadline. Unpaid at the deadline → <b>auto-cancelled penalty-free</b>, and you're notified immediately.</div></div>
+              <div><div class="pay-opt-t">Pay with soft credit <span class="pay-off">Available · $2,000.00 — no card fee</span></div>
+              <div class="pay-opt-d">Pays <b>now</b> from your credit account — the balance settles later. The account draws down at confirm and the booking is <b>PAID</b> (no card fee); what comes later is only the settlement, on its own screen. Every agency's account is <b>granted</b> (Ergos trust — limit = the grant, <b>not doubled</b>) or <b>deposit-based</b> (limit = 2 × deposits), never both. If the rate exceeds what's available, a <b>free-cancellation rate</b> may still confirm via the bounded overdraft (deficit ≤ min(25% of limit, $2,500)) with a <b>cover deadline</b> — ≤72 h, inside the free-cxl window; uncovered → auto-cancelled fee-free + strike.</div>
+              <div style="font-size:12px;margin-top:6px"><input type="checkbox" id="pmOdDemo" onclick="event.stopPropagation()"> <b>Demo the overdraft case</b> — rate exceeds available: confirm with a cover deadline</div></div>
             </label>
           </div>
 
@@ -1402,7 +1403,7 @@
               document.getElementById('pmHandoff').style.display=m==='card'?'':'none';
               var b=document.getElementById('pay-confirm-btn');
               if(b){
-                b.textContent = m==='card' ? 'Charge corporate card' : m==='balance' ? 'Pay from balance' : 'Confirm — pay by deadline';
+                b.textContent = m==='card' ? 'Charge corporate card' : m==='balance' ? 'Pay from balance' : 'Pay with soft credit';
                 b.disabled=false;
               }
               window.__pmMode = m;
@@ -1666,15 +1667,15 @@
           <input type="date" class="bookings-filter-select">
         </div>
 
-        <!-- Story 3 (backend#161) — CONFIRMED_UNPAID demo row, pinned. 🚧 target design -->
+        <!-- Stories 3/4 (backend#161/#162) — overdraft cover demo row, pinned. 🚧 target design -->
         <div style="border:2px solid #b45309;background:#fffbeb;border-radius:10px;padding:14px 16px;margin-bottom:12px;display:flex;gap:14px;align-items:center;flex-wrap:wrap">
-          <span style="background:#fef3c7;color:#b45309;font-weight:800;font-size:11px;text-transform:uppercase;padding:3px 10px;border-radius:99px">Confirmed — payment pending 🚧</span>
+          <span style="background:#fef3c7;color:#b45309;font-weight:800;font-size:11px;text-transform:uppercase;padding:3px 10px;border-radius:99px">Confirmed — cover due 🚧</span>
           <div style="flex:1;min-width:260px">
             <div style="font-weight:700">Meliá Punta Cana ★★★★★ · Ref <code>PTAUNPAID01</code></div>
-            <div style="font-size:12.5px;color:#78350f">Free-cancellation rate · <b>Pay by Sep 12, 2026</b> (48 h before free cancellation ends) · reminders 30 d / 7 d / 24 h · unpaid at the deadline → <b>auto-cancelled penalty-free</b></div>
+            <div style="font-size:12.5px;color:#78350f">Paid with soft credit — the free-cancellation rate drew <b>$230.00 beyond your limit</b> · <b>Cover $230 by Sep 12, 2026</b> (≤72 h, inside the free-cxl window) · reminders 30 d / 7 d / 24 h · uncovered at the deadline → <b>auto-cancelled fee-free + strike</b></div>
           </div>
           <div style="font-family:ui-monospace,Menlo,monospace;font-weight:700">USD 783.77</div>
-          <button class="btn-primary" onclick="showScreen('payment')">Pay now</button>
+          <button class="btn-primary" onclick="showScreen('credit-account')">Cover now</button>
         </div>
         <div id="bookings-list-container"></div>
       </main>
@@ -1706,8 +1707,25 @@
         .ca-tag{font-family:'DM Sans',sans-serif;font-size:10.5px;font-weight:800;text-transform:uppercase;padding:2px 8px;border-radius:99px}
         .ca-dep{background:#d1fae5;color:#065f46}.ca-draw{background:#fee2e2;color:#991b1b}.ca-rest{background:#e0e7ff;color:#3730a3}
       </style>
-      <div class="ni-ribbon">🚧 Not implemented — Story 4 target design (backend#162): deposit-matched credit — <b>every deposit doubles</b> into booking power (limit = 2 × deposits); deposits spend first, beyond them you draw Ergos credit.</div>
+      <div class="ni-ribbon">🚧 Not implemented — Story 4 target design (backend#162): one credit account per agency, <b>granted</b> (Ergos trust: limit = the grant, <b>not doubled</b> — credit is just a number) <b>or deposit-based</b> (limit = 2 × deposits, deposits spend first) — never both. Paying with credit <b>pays at confirm</b>; only the settlement comes later.</div>
       <h2>Credit account</h2>
+      <div style="display:flex;gap:8px;margin:0 0 12px">
+        <button class="btn-primary" id="caTabDep" onclick="caType('dep')">Deposit-based — this account</button>
+        <button class="btn-outline" id="caTabGr" onclick="caType('gr')">Granted — example</button>
+      </div>
+      <div id="caGrView" style="display:none">
+        <div class="ca-grid" style="grid-template-columns:repeat(3,1fr)">
+          <div class="ca-kpi"><div class="l">Grant (Ergos trust — not doubled)</div><div class="v">$2,000.00</div></div>
+          <div class="ca-kpi"><div class="l">Ergos credit used — owed</div><div class="v" style="color:#b45309">$1,400.00</div></div>
+          <div class="ca-kpi"><div class="l">Available to book</div><div class="v" style="color:#0d9488">$600.00</div></div>
+        </div>
+        <div style="font-size:12px;color:#78716c;margin:-6px 0 10px">Granted account: no deposits — the limit <b>is</b> the grant ($2,000, <b>not doubled</b>; doubling is the reward for your own cash at risk) and <b>owed = full utilization</b>. Settlement bills the full $1,400; after payment available returns to $2,000 — the grant revolves via settlement and doesn't expire until Ergos revokes it.</div>
+        <div class="form-card" style="border:2px solid #b91c1c;background:#fef2f2">
+          <h3>Frozen demo — utilization above limit <span style="background:#fee2e2;color:#b91c1c;font-size:11px;font-weight:800;text-transform:uppercase;padding:2px 9px;border-radius:99px;margin-left:8px">Frozen — no new bookings</span></h3>
+          <div style="font-size:13px">When utilization exceeds the limit — an open overdraft, or a revoke dropping the limit below what's drawn (e.g. owed <b>$2,300</b> &gt; limit <b>$2,000</b>) — the account is <b>frozen: no new bookings</b> until the balance is settled. Settlement (Story 5) bills the <b>full $2,300</b>, covering the overdraft first; after payment the $2,000 grant <b>plus the 25% overdraft headroom re-arm</b>.</div>
+        </div>
+      </div>
+      <div id="caDepView">
       <div class="ca-grid">
         <div class="ca-kpi"><div class="l">Your deposits (your money)</div><div class="v">$6,100.00</div></div>
         <div class="ca-kpi"><div class="l">Booking power (2 × deposits)</div><div class="v">$12,200.00</div></div>
@@ -1752,6 +1770,15 @@
           </tbody>
         </table>
       </div>
+      </div><!-- /caDepView -->
+      <script>
+        function caType(t){
+          document.getElementById('caDepView').style.display = t==='dep' ? '' : 'none';
+          document.getElementById('caGrView').style.display = t==='gr' ? '' : 'none';
+          document.getElementById('caTabDep').className = t==='dep' ? 'btn-primary' : 'btn-outline';
+          document.getElementById('caTabGr').className = t==='gr' ? 'btn-primary' : 'btn-outline';
+        }
+      </script>
     </div>
   </div>
 
@@ -1772,7 +1799,7 @@
       <div class="form-card">
         <h3>Amount due — everything owed to Ergos</h3>
         <div style="font-family:ui-monospace,Menlo,monospace;font-size:30px;font-weight:700">$4,050.00</div>
-        <div style="font-size:12px;color:#78716c">Utilization $10,150.00 − your deposits $6,100.00 = <b>Ergos credit used $4,050.00</b>. Your own deposits are never billed. Settling frees your credit for new bookings; partial payments are not supported.</div>
+        <div style="font-size:12px;color:#78716c">Utilization $10,150.00 − your deposits $6,100.00 = <b>Ergos credit used $4,050.00</b> — <b>including any open overdraft</b> (the payment covers it first). Your own deposits are never billed. Settling frees your credit for new bookings; partial payments are not supported. <b>Granted accounts:</b> deposits are $0, so the settlement bills the <b>full utilization</b>; after payment the grant and its 25% overdraft headroom re-arm.</div>
         <table class="ca-tbl" style="margin-top:10px">
           <thead><tr><th>Booking</th><th>Date</th><th>Drawn from Ergos credit</th></tr></thead>
           <tbody>

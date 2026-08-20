@@ -2834,15 +2834,19 @@ function updatePaymentForServices() {
     // Ergos payment-module spec (target design): three payment paths.
     //  card    — agency corporate card on TropiPay's hosted form; bed bank confirmed
     //            only after the payment confirms → CONFIRMED_PAID.
-    //  balance — draw down the agency's account (deposit-matched 2× credit:
-    //            deposits spend first, beyond = owed to Ergos) → CONFIRMED_PAID.
-    //  later   — free-cancellation rates only: confirm unpaid with a payment
-    //            deadline (buffer before free-cxl date) → CONFIRMED_UNPAID.
+    //  balance — deposit-based accounts: draw down the topped-up balance (limit =
+    //            2 × deposits, deposits spend first) → CONFIRMED_PAID.
+    //  later   — "Pay with soft credit": the account draws down at confirm and the
+    //            booking is PAID (no card fee); only the settlement comes later.
+    //            Overdraft demo (free-cxl rates only): confirms with a COVER
+    //            deadline (≤72 h, inside the free-cxl window) → CONFIRMED_UNPAID.
     const pmMode = window.__pmMode || 'card';
+    const pmOverdraft = pmMode === 'later' && !!document.getElementById('pmOdDemo')?.checked;
     if (typeof protoToast === 'function') {
       if (pmMode === 'card') protoToast('Corporate card charged $201.20 via TropiPay ($194.40 rate + $6.80 card fee) — booking confirmed with the bed bank.', 'success');
       else if (pmMode === 'balance') protoToast('Paid from credit balance ($194.40 drawn — no card fee) — booking confirmed.', 'success');
-      else protoToast('Confirmed unpaid — pay by Sep 12, 2026 (48 h before free cancellation ends). Reminders at 30 d / 7 d / 24 h.', 'default');
+      else if (pmOverdraft) protoToast('Confirmed — the rate drew $230.00 beyond your limit (free-cancellation rate). Cover $230 by Aug 23, 16:00 or the booking is auto-cancelled fee-free.', 'default');
+      else protoToast('Paid with soft credit ($194.40 drawn — no card fee) — booking confirmed. The balance settles later.', 'success');
     }
 
     // Capture guest info
@@ -2956,12 +2960,18 @@ function updatePaymentForServices() {
       updateBookingListFromState();
     }
 
-    // Pay-later (CONFIRMED_UNPAID): same confirmation screen, unpaid heading + deadline
+    // Soft credit: PAID at confirm — normal confirmed screen with a note.
+    // Overdraft demo (free-cxl rates only): confirmed with a COVER deadline
+    // (a cover obligation, not a payment deadline — the booking already drew the account).
     if (pmMode === 'later') {
       const h = document.getElementById('conf-heading');
       const s = document.getElementById('conf-subheading');
-      if (h) h.textContent = 'Confirmed — payment pending';
-      if (s) s.textContent = 'Free-cancellation rate: confirmed unpaid with the bed bank. Pay by Sep 12, 2026 (48 h before free cancellation ends) or the booking is auto-cancelled penalty-free. Reminders: 30 d / 7 d / 24 h before the deadline.';
+      if (pmOverdraft) {
+        if (h) h.textContent = 'Confirmed — cover $230 by Aug 23, 16:00';
+        if (s) s.textContent = 'Paid with soft credit — the rate drew $230.00 beyond your limit (free-cancellation rate, deficit ≤ min(25% of limit, $2,500)). Cover $230 by Aug 23, 16:00 — 72 h, inside the free-cancellation window — or the booking is auto-cancelled fee-free and a strike is recorded. Reminders: 30 d / 7 d / 24 h, computed at send time.';
+      } else {
+        if (s) s.textContent = 'Paid with soft credit — no card fee. Your account drew down at confirm; the balance settles later on the Settle balance screen.';
+      }
     }
 
     snapshotBooking();
