@@ -38,6 +38,19 @@ const HOTELS = Array.from({length:140},(_,i)=>{const brand=pick(HOTEL_BRANDS),ci
 
 const RESERVATIONS = Array.from({length:80},(_,i)=>{const h=pick(HOTELS),ag=pick(AGENCIES),g=person(i+700);return{id:'R'+pad(i+1,6),locator:'ERG-'+pad(i+1001,6),guest:g.name,hotel:h.name,agency:ag.name,checkin:'2026-0'+(4+Math.floor(rnd()*3))+'-'+pad(1+Math.floor(rnd()*28),2),nights:1+Math.floor(rnd()*7),total:(200+rnd()*1800).toFixed(2),status:pick(STATUSES)};});
 
+/* Payment-demo partners (Story 10) — the same four agencies that appear in
+   Finance → Payments & Settlement (crAcc). Defined as literals AFTER the seeded
+   generators so the PRNG stream (and every other dataset) is untouched; unshift
+   puts them on page 1 of the Travel Agencies table so the wallet drill-in is a
+   one-click path. */
+const CREDIT_AGENCIES = [
+  {id:'agc1',name:'Sunshine Travel LLC',primaryContact:'Alicia Romero',secondary:'Tom Baker',email:'alicia@sunshinetravel.com',license:'LIC-70211',website:'www.sunshinetravel.com',vendors:['Hoteltec','Dingus'],status:'Active'},
+  {id:'agc2',name:'Havana Nights Tours',primaryContact:'Yosvany Pérez',secondary:'María León',email:'yosvany@havananights.cu',license:'LIC-70544',website:'www.havananights.com',vendors:['Dingus','Restel'],status:'Active'},
+  {id:'agc3',name:'Coral Voyages',primaryContact:'Nadia Fontaine',secondary:'Luc Marchand',email:'nadia@coralvoyages.com',license:'LIC-70819',website:'www.coralvoyages.com',vendors:['Roibos'],status:'Active'},
+  {id:'agc4',name:'Palma Tours Inc',primaryContact:'Jordi Vila',secondary:'Anna Puig',email:'jordi@palmatours.es',license:'LIC-70932',website:'www.palmatours.es',vendors:['Hoteltec','Restel','Juniper'],status:'Active'}
+];
+AGENCIES.unshift(...CREDIT_AGENCIES);
+
 const AGENTS = Array.from({length:54},(_,i)=>{const p=person(i+900),tier=pick(TIERS),ranges={Starter:[0.10,0.14],Growth:[0.15,0.20],Elite:[0.21,0.26],Strategic:[0.27,0.32]}[tier];return{...p,tier,city:pick(CITIES),salesAgentEarningPct:(ranges[0]+rnd()*(ranges[1]-ranges[0])).toFixed(3),ergosOpsExpensePct:({Starter:0.08,Growth:0.07,Elite:0.06,Strategic:0.05})[tier].toFixed(3),oneClickMember:rnd()>0.4,active:rnd()>0.15};});
 
 /* ---------- router ---------- */
@@ -110,7 +123,8 @@ function showScreen(id){
   const el = document.getElementById('screen-'+id);
   if(el) el.classList.add('active');
   document.querySelectorAll('.proto-tab').forEach(t=>t.classList.toggle('active',t.dataset.screen===id));
-  renderSidebars(id);
+  // Drill-in screens keep their parent nav item active (as the live app does)
+  renderSidebars({'agency-credit':'agencies','agency-pnl':'agencies'}[id]||id);
   // Auto-collapse parent rail to icons on Pricing Policy; restore everywhere else
   document.body.classList.toggle('cp-mode', id==='pricing-policy');
   // Honor per-route pinned preference
@@ -489,7 +503,9 @@ RENDERERS['agencies'] = () => {
     {label:'Website',fmt:r=>`<a class="lnk" href="#">${r.website}</a>`},
     {label:'Vendors',fmt:r=>vendorChips(r.vendors)},
     {label:'Status',fmt:r=>pill(r.status,statusPill(r.status))},
-    {label:'',fmt:r=>`<button class="btn btn-sm" onclick="viewAgency('${r.id}')">View</button> <button class="btn btn-sm" onclick="openAgencyModal('${r.id}')">Edit</button>`}
+    // Row icons mirror the shipped TravelAgencyTable: Pencil (edit),
+    // LineChart → /travel-agencies/:id/pnl, Wallet → /travel-agencies/:id/credit.
+    {label:'',fmt:r=>`<button class="btn btn-sm" onclick="viewAgency('${r.id}')">View</button> <button class="btn btn-sm" title="Edit" onclick="openAgencyModal('${r.id}')">✎</button> <button class="btn btn-sm" title="Bookings & P&L" onclick="showAgencyPnl('${r.id}')">∿</button> <button class="btn btn-sm" title="Credit account" onclick="showAgencyCredit('${r.id}')">¤</button>`}
   ], AGENCIES);
 };
 
@@ -550,6 +566,149 @@ RENDERERS['agents'] = () => {
   ], AGENTS);
 };
 
+
+/* ---------- Per-agency drill-ins (TravelAgencyTable row icons) ----------
+   Mirror the shipped app: Wallet → /travel-agencies/:id/credit (AgencyCreditPage),
+   LineChart → /travel-agencies/:id/pnl. Credit numbers + actions reuse the
+   Finance → Payments & Settlement demo state (crAcc / crGrant / crDeposit / …
+   defined inline in index.html) so the two views stay consistent by construction. */
+let CUR_AGENCY_ID = null;
+function showAgencyCredit(id){ CUR_AGENCY_ID = id; showScreen('agency-credit'); }
+function showAgencyPnl(id){ CUR_AGENCY_ID = id; showScreen('agency-pnl'); }
+
+/* Older per-agency history shown only on the drill-in. The Finance ledger card
+   (crLedgerBody) stays untouched — it shows recent cross-agency changes; these
+   rows reconcile each account's current balance (e.g. Sunshine 3,900 + 2,200
+   live row = 6,100 deposits). [when, type, pillClass, amount, reason] */
+const AC_SEED_LEDGER = {
+  'Sunshine Travel LLC': [['Jul 21 10:02','DEPOSIT','st-pending','+$3,900.00','Initial funding — bank ref 87410 — doubled: +$7,800.00 power']],
+  'Coral Voyages':       [['Jul 25 09:31','DEPOSIT','st-pending','+$2,200.00','Initial funding — bank ref 87892 — doubled: +$4,400.00 power']],
+  'Palma Tours Inc':     [['Jul 28 15:47','GRANT','st-paid','+$5,000.00','Annual credit line — signed partner agreement']],
+  'Havana Nights Tours': [
+    ['Aug 02 12:20','GRANT_REVOKE','st-pending','−$3,000.00','Late settlements — line pulled pending review'],
+    ['Jun 12 09:05','GRANT','st-paid','+$3,000.00','Initial credit line']
+  ]
+};
+
+/* Live rows for this agency from the shared Finance ledger (newest first),
+   then the older drill-in seed rows. Each entry: [when, typeHTML, amount, reason, actor]. */
+function acLedgerRows(name){
+  const tb = document.getElementById('crLedgerBody');
+  const live = tb ? [...tb.rows]
+    .filter(r=>r.cells.length>5 && r.cells[2].textContent.trim()===name)
+    .map(r=>[r.cells[0].innerHTML, r.cells[1].innerHTML, r.cells[3].innerHTML, r.cells[4].innerHTML, r.cells[5].innerHTML]) : [];
+  const seed = (AC_SEED_LEDGER[name]||[]).map(s=>[s[0], `<span class="st-pill ${s[2]}">${s[1]}</span>`, s[3], s[4], 'AD (finance admin)']);
+  return live.concat(seed);
+}
+
+/* Shared action dispatcher — delegates to the prompt-based Finance dialogs so
+   the aggregate table + ledger update too, then re-renders this screen. */
+function acDo(kind, name){
+  if(!crAcc[name]){
+    // First activity establishes the account family (one type per agency, Story 10 §5).
+    if(kind==='grant') crAcc[name]={type:'GRANTED',grant:0,util:0,held:false,nr:false};
+    else if(kind==='deposit') crAcc[name]={type:'DEPOSIT',dep:0,util:0,held:false,nr:false};
+    else return;
+  }
+  const acc = crAcc[name];
+  if(kind==='grant') crGrant(name, acc.type);
+  else if(kind==='revoke') crRevoke(name, acc.type);
+  else if(kind==='deposit') crDeposit(name);
+  else if(kind==='withdraw') crWithdraw(name);
+  else if(kind==='nr') crNrToggle(name);
+  else if(kind==='hold'){
+    // Pass the Finance row's own hold button so its label flips there too.
+    const row = crRow(name);
+    const btn = row ? [...row.querySelectorAll('button')].find(b=>/hold/i.test(b.textContent)) : null;
+    crHold(name, btn);
+  }
+  RENDERERS['agency-credit']();
+}
+
+RENDERERS['agency-credit'] = () => {
+  const a = AGENCIES.find(x=>x.id===CUR_AGENCY_ID); if(!a) return;
+  document.getElementById('ac-crumb').textContent = a.name+' — Credit';
+  const acc = crAcc[a.name];
+  const isG = !!acc && acc.type==='GRANTED';
+  const funding = acc ? (isG ? acc.grant : acc.dep) : 0;
+  const limit = acc ? crLimit(acc) : 0;
+  const util = acc ? acc.util : 0;
+  const owed = acc ? (isG ? acc.util : Math.max(0, acc.util-acc.dep)) : 0;
+  const avail = Math.max(0, limit-util);
+  const frozen = !!acc && util > limit;
+  const typePill = !acc ? '<span class="st-pill">Deposit — no activity yet</span>'
+    : isG ? '<span class="st-pill st-paid">Granted</span>'
+    : '<span class="st-pill st-pending">Deposit</span>';
+  const heldPill = acc && acc.held ? ' <span class="st-pill" style="background:#fee2e2;color:#b91c1c">ON HOLD</span>' : '';
+  const frozenPill = frozen ? ' <span class="st-pill" style="background:#fee2e2;color:#b91c1c">FROZEN — settle balance</span>' : '';
+  // One account type per agency (Story 10 §5): the other family's actions are disabled, not hidden.
+  const btn = (label, kind, dis, title) =>
+    `<button class="btn btn-sm btn-outline" ${dis?'disabled':''} ${title?`title="${title}"`:''} onclick="acDo('${kind}','${a.name}')">${label}</button>`;
+  const rows = acLedgerRows(a.name);
+  const ledger = rows.length
+    ? `<table class="st-table"><thead><tr><th>When</th><th>Type</th><th>Amount</th><th>Reason</th><th>Actor</th></tr></thead>
+       <tbody>${rows.map(r=>`<tr><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td><td>${r[3]}</td><td>${r[4]}</td></tr>`).join('')}</tbody></table>`
+    : `<p class="muted" style="margin:6px 0 0">No credit activity yet</p>`;
+  document.getElementById('ac-page').innerHTML = `
+    <div class="page-head row">
+      <div>
+        <h1>Credit account — ${a.name} ${typePill}${heldPill}${frozenPill}</h1>
+        <p class="muted">Story 10 drill-in — mirrors the shipped <code>/travel-agencies/:id/credit</code> page. Every number is derived from the append-only ledger; actions land as ledger rows in Finance → Payments &amp; Settlement too.</p>
+      </div>
+      <button class="btn btn-outline" onclick="showScreen('agencies')">← Back to agencies</button>
+    </div>
+    <div class="kpi-grid">
+      <div class="kpi kpi-navy"><div class="kpi-label">${isG?'Grant':'Deposits'}</div><div class="kpi-value">${crFmt(funding)}</div></div>
+      <div class="kpi kpi-gold"><div class="kpi-label">Booking power${acc?(isG?' (= grant)':' (2×)'):''}</div><div class="kpi-value">${crFmt(limit)}</div></div>
+      <div class="kpi"><div class="kpi-label">Owed to Ergos</div><div class="kpi-value">${crFmt(owed)}</div></div>
+      <div class="kpi kpi-green"><div class="kpi-label">Available</div><div class="kpi-value">${crFmt(avail)}</div></div>
+    </div>
+    <div class="st-card">
+      <h2 style="margin:0 0 6px">Actions</h2>
+      ${btn('Grant…','grant', !!acc && !isG, acc&&!isG?'Deposit-based account — settle and withdraw before granting':'')}
+      ${btn('Revoke…','revoke', !isG)}
+      ${btn('Deposit…','deposit', isG, isG?'Granted account — revoke the grant before switching to deposits':'')}
+      ${btn('Withdraw…','withdraw', !acc || isG)}
+      ${btn(acc && acc.held ? 'Release hold' : 'Place hold','hold', !acc)}
+      ${btn('NR overdraft: '+(acc && acc.nr ? 'ON' : 'OFF'),'nr', !acc, 'Toggle NR-overdraft privilege — reason required, audited')}
+    </div>
+    <div class="st-card">
+      <h2 style="margin:0 0 2px">Ledger (${rows.length})</h2>
+      <p class="muted" style="margin:0">Append-only — filtered to ${a.name}. Recent changes also appear in the cross-agency Finance ledger.</p>
+      ${ledger}
+    </div>`;
+};
+
+RENDERERS['agency-pnl'] = () => {
+  const a = AGENCIES.find(x=>x.id===CUR_AGENCY_ID); if(!a) return;
+  document.getElementById('ap-crumb').textContent = a.name+' — Bookings & P&L';
+  // Minimal faithful stub of the shipped /travel-agencies/:id/pnl page:
+  // a few demo bookings with sell / net / margin + a total row.
+  const bookings = [
+    ['ERG-014821','Iberostar Grand Packard', 484.00, 412.00],
+    ['ERG-014774','Iberostar Selection Bávaro', 1176.00, 980.00],
+    ['ERG-014733','Paradisus Río de Oro', 2184.00, 1820.00],
+    ['ERG-014671','Memories Caribe Beach', 500.00, 420.00]
+  ];
+  const tSell = bookings.reduce((s,b)=>s+b[2],0), tNet = bookings.reduce((s,b)=>s+b[3],0);
+  document.getElementById('ap-page').innerHTML = `
+    <div class="page-head row">
+      <div>
+        <h1>Bookings &amp; P&amp;L — ${a.name}</h1>
+        <p class="muted">Per-agency drill-in — mirrors the shipped <code>/travel-agencies/:id/pnl</code> page (demo data).</p>
+      </div>
+      <button class="btn btn-outline" onclick="showScreen('agencies')">← Back to agencies</button>
+    </div>
+    <div class="st-card">
+      <table class="st-table">
+        <thead><tr><th>Reference</th><th>Hotel</th><th style="text-align:right">Sell</th><th style="text-align:right">Net</th><th style="text-align:right">Margin</th></tr></thead>
+        <tbody>
+          ${bookings.map(b=>`<tr><td>${b[0]}</td><td>${b[1]}</td><td style="text-align:right">${crFmt(b[2])}</td><td style="text-align:right">${crFmt(b[3])}</td><td style="text-align:right">${crFmt(b[2]-b[3])}</td></tr>`).join('')}
+          <tr style="font-weight:700"><td>Total</td><td></td><td style="text-align:right">${crFmt(tSell)}</td><td style="text-align:right">${crFmt(tNet)}</td><td style="text-align:right">${crFmt(tSell-tNet)}</td></tr>
+        </tbody>
+      </table>
+    </div>`;
+};
 
 /* ---------- modals ---------- */
 function openModal(title, bodyHTML, opts={}){

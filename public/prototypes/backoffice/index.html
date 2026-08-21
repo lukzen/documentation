@@ -265,6 +265,30 @@
   </div>
 </section>
 
+<!-- Per-agency drill-ins — mirror the shipped TravelAgencyTable row icons:
+     ∿ → /travel-agencies/:id/pnl · ¤ → /travel-agencies/:id/credit (AgencyCreditPage).
+     Content is rendered by RENDERERS['agency-credit'] / ['agency-pnl'] in app.js;
+     credit numbers + actions reuse the Payments & Settlement demo state (crAcc). -->
+<section class="screen" id="screen-agency-credit">
+  <div class="app-layout">
+    <aside class="sidebar"></aside>
+    <main class="app-main">
+      <div class="topbar"><button class="hamburger" onclick="toggleSidebar()" aria-label="Menu">☰</button><div class="breadcrumb"><span>Partners</span> / <span class="lnk" style="cursor:pointer" onclick="showScreen('agencies')">Travel Agencies</span> / <span id="ac-crumb">Credit</span></div><div class="topbar-right"><div class="avatar">AD</div></div></div>
+      <div class="page" id="ac-page"></div>
+    </main>
+  </div>
+</section>
+
+<section class="screen" id="screen-agency-pnl">
+  <div class="app-layout">
+    <aside class="sidebar"></aside>
+    <main class="app-main">
+      <div class="topbar"><button class="hamburger" onclick="toggleSidebar()" aria-label="Menu">☰</button><div class="breadcrumb"><span>Partners</span> / <span class="lnk" style="cursor:pointer" onclick="showScreen('agencies')">Travel Agencies</span> / <span id="ap-crumb">Bookings &amp; P&amp;L</span></div><div class="topbar-right"><div class="avatar">AD</div></div></div>
+      <div class="page" id="ap-page"></div>
+    </main>
+  </div>
+</section>
+
 <!-- Agency Employees -->
 <section class="screen" id="screen-agency-employees">
   <div class="app-layout">
