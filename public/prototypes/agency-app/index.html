@@ -1366,6 +1366,7 @@
               <button class="btn-primary" id="pmTabDep" onclick="pmAcctType('dep')">Deposit-based — this account</button>
               <button class="btn-outline" id="pmTabGr" onclick="pmAcctType('gr')">Granted — demo</button>
               <label id="pmGrBeyondWrap" style="display:none;font-size:12px"><input type="checkbox" id="pmGrBeyond" onclick="pmAcctType('gr')"> <b>Demo: booking beyond available</b> — hard cap, card-only</label>
+              <label id="pmFrozenWrap" style="font-size:12px"><input type="checkbox" id="pmFrozen" onclick="pmFrozenApply()"> <b>Demo: frozen account</b> — utilization above limit</label>
             </div>
             <label class="pay-opt selected" id="pmCard" onclick="pmSelect('card')">
               <input type="radio" name="pm" checked>
@@ -1385,6 +1386,11 @@
               <div class="pay-opt-d">Pays <b>now</b> from your granted account (Ergos trust — limit = the grant, <b>not doubled</b>). The account draws down at confirm and the booking is <b>PAID</b> (no card fee); what comes later is only the settlement, on its own screen. <b>Granted accounts are hard-capped</b> — never overdraw, no top-ups; a booking beyond available pays <b>entirely by corporate card</b>.</div>
               <div id="pmGrCap" style="display:none;background:#f5f4f0;border:1px solid #d6d0c8;color:#78716c;border-radius:8px;padding:8px 10px;margin-top:6px;font-size:12.5px"><b>Granted accounts are hard-capped</b> — this booking exceeds available; pay by corporate card.</div></div>
             </label>
+            <!-- Story 3 crit. 9 / Story 4 AC3 — isBookingFrozen: utilization > limit pauses ALL new bookings -->
+            <div id="pmFrozenNote" style="display:none;background:#fef2f2;border:2px solid #b91c1c;color:#7f1d1d;border-radius:10px;padding:12px 14px;font-size:13px">
+              <b>Your credit account is frozen</b> — utilization is above your limit (open overdraft cover, or a grant revoked below what's already used). New bookings are paused until the outstanding balance is settled in full. <a href="#" onclick="showScreen('settle-balance');return false" style="color:#b91c1c;font-weight:700">Settle balance →</a>
+              <div style="font-size:12px;margin-top:4px">Settling restores booking immediately — nothing to request.</div>
+            </div>
           </div>
 
           <div class="form-card" id="pmHandoff">
@@ -1422,6 +1428,24 @@
               if (t==='dep' && m==='later') m = 'balance';
               if (t==='gr' && m==='balance') m = 'card';
               pmSelect(m);
+              if (document.getElementById('pmFrozen').checked) pmFrozenApply();
+            }
+            // Frozen-account demo (Story 3 crit. 9 / Story 4 AC3): utilization > limit ⇒ ALL
+            // payment options pause; settling in full lifts the freeze automatically.
+            function pmFrozenApply(){
+              var fz = document.getElementById('pmFrozen').checked;
+              document.getElementById('pmFrozenNote').style.display = fz ? '' : 'none';
+              ['pmCard','pmBalance','pmLater'].forEach(function(id){
+                var el = document.getElementById(id);
+                el.style.opacity = fz ? '.55' : '';
+                el.style.pointerEvents = fz ? 'none' : '';
+                el.querySelector('input').disabled = fz;
+              });
+              var b = document.getElementById('pay-confirm-btn');
+              if (b) b.disabled = fz;
+              // Un-freeze: re-render the current account state (restores inputs incl. the
+              // granted beyond-available sub-state) — no leakage between demo states.
+              if (!fz) pmAcctType(window.__pmAcct || 'dep');
             }
             function pmSelect(m){
               // Granted + beyond available: hard cap — soft credit is disabled, card is the only choice.
