@@ -1675,7 +1675,61 @@
             <div style="font-size:12.5px;color:#78350f">Paid with soft credit — the free-cancellation rate drew <b>$230.00 beyond your limit</b> · <b>Cover $230 by Sep 12, 2026</b> (≤72 h, inside the free-cxl window) · reminders 30 d / 7 d / 24 h · uncovered at the deadline → <b>auto-cancelled fee-free + strike</b></div>
           </div>
           <div style="font-family:ui-monospace,Menlo,monospace;font-weight:700">USD 783.77</div>
-          <button class="btn-primary" onclick="showScreen('credit-account')">Cover now</button>
+          <button class="btn-primary" onclick="cvOpen()">Cover now</button>
+        </div>
+        <!-- Story 3 (backend#161, #168 item 13) — cover payment method chooser. 🚧 target design:
+             ACH (no fee) offered ONLY when ≥5 business days remain before the free-cxl date;
+             closer than that the cover is card-only (a late ACH return after the fee-free
+             window closes would force a penalty cancellation). ACH counts as covered at initiation. -->
+        <div class="form-card" id="cvChooser" style="display:none;border:2px solid #b45309;margin-bottom:12px">
+          <h3>Cover $230.00 — booking <code>PTAUNPAID01</code>. How do you want to pay?</h3>
+          <label class="pay-opt selected" id="cvCard" onclick="cvSelect('card')">
+            <input type="radio" name="cv" checked>
+            <div><div class="pay-opt-t">Corporate card (TropiPay hosted form)</div>
+            <div class="pay-opt-d">Cleared immediately. Card payments carry the <b>separate processing fee</b>: $230.00 + fee (3.5%) $8.05 = <b>Total $238.05</b>, itemized at checkout and on your invoice.</div></div>
+          </label>
+          <label class="pay-opt" id="cvAch" onclick="cvSelect('ach')">
+            <input type="radio" name="cv">
+            <div><div class="pay-opt-t">ACH bank transfer (Square) <span class="pay-off">No fee</span></div>
+            <div class="pay-opt-d"><b>No fee to you</b> — pay exactly $230.00. ACH clears in 1–3 business days, but the cover <b>counts as covered once initiated</b> — the deadline is met the moment you start the debit. Offered because <b>≥ 5 business days</b> remain before this booking's free-cancellation date (Sep 15).</div></div>
+          </label>
+          <div id="cvGateNote" style="display:none;border:1px solid #d6d0c8;border-radius:10px;padding:14px 16px;background:#f5f4f0;margin-bottom:12px">
+            <div class="pay-opt-t" style="color:#78716c">ACH bank transfer — unavailable, card-only</div>
+            <div class="pay-opt-d">Fewer than <b>5 business days</b> remain before this booking's free-cancellation date (Sep 15). ACH clears in 1–3 business days and counts as covered at initiation — a late ACH return after the fee-free window closes would force a <b>penalty cancellation</b>, so close to the deadline the cover is <b>card-only</b>.</div>
+          </div>
+          <button class="btn-primary" id="cvGo" onclick="cvPay()">Pay $238.05 by card ($230.00 + $8.05 fee)</button>
+          <div id="cvResult" style="display:none;margin-top:10px;font-size:13px"></div>
+          <div style="font-size:12px;margin-top:10px"><input type="checkbox" id="cvGateDemo" onclick="cvGate()"> <b>Demo the card-only case</b> — fewer than 5 business days remain before the free-cancellation date</div>
+          <script>
+            function cvOpen(){
+              var c=document.getElementById('cvChooser'); c.style.display='';
+              document.getElementById('cvResult').style.display='none';
+              cvGate();
+              c.scrollIntoView({behavior:'smooth',block:'nearest'});
+            }
+            function cvGate(){
+              var only=document.getElementById('cvGateDemo').checked;
+              document.getElementById('cvAch').style.display=only?'none':'';
+              document.getElementById('cvGateNote').style.display=only?'':'none';
+              if(only) cvSelect('card');
+            }
+            function cvSelect(m){
+              document.getElementById('cvCard').classList.toggle('selected',m==='card');
+              document.getElementById('cvAch').classList.toggle('selected',m==='ach');
+              document.getElementById('cvCard').querySelector('input').checked=m==='card';
+              document.getElementById('cvAch').querySelector('input').checked=m==='ach';
+              document.getElementById('cvGo').textContent = m==='card' ? 'Pay $238.05 by card ($230.00 + $8.05 fee)' : 'Debit $230.00 by ACH — no fee';
+              window.__cvMode=m;
+            }
+            function cvPay(){
+              var r=document.getElementById('cvResult'); r.style.display='';
+              if((window.__cvMode||'card')==='card'){
+                r.innerHTML='<b>Covered ✓</b> Corporate card charged <b>$238.05</b> on TropiPay\'s hosted form ($230.00 cover + $8.05 card fee) — the overdraft obligation is closed immediately.';
+              } else {
+                r.innerHTML='<b>Covered ✓ — ACH initiated</b> Square ref <code>sq_pay_9RC4…</code> · debit of <b>$230.00</b> initiated, no fee. The deadline is met — the cover <b>counts as covered from initiation</b>; the debit completes in 1–3 business days.';
+              }
+            }
+          </script>
         </div>
         <div id="bookings-list-container"></div>
       </main>
