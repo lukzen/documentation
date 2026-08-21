@@ -1041,7 +1041,7 @@
         <div class="st-card">
           <span class="st-dir st-in">Agency → Ergos</span>
           <h2 style="margin:0 0 2px">Balance settlements</h2>
-          <p class="muted" style="margin:0 0 6px">An agency settles its <b>full outstanding balance in a single payment</b> (no partials, no per-booking allocation) — by corporate card (TropiPay, cleared immediately) or by <b>ACH via Square</b> (1% / $1 min / $5 max; settles in 2–3 business days — the balance stays <b>Pending</b> and credit is <b>not</b> freed until the ACH actually completes). A failed ACH leaves the balance unchanged and notifies the agency.</p>
+          <p class="muted" style="margin:0 0 6px">An agency settles its <b>full outstanding balance in a single payment</b> (no partials, no per-booking allocation) — by corporate card (TropiPay, cleared immediately) or by <b>ACH via Square</b> — <b>no fee to the agency</b>: it pays the exact amount and Ergos absorbs Square's processing cost (≤$5). ACH settles in 2–3 business days — the balance stays <b>Pending</b> and credit is <b>not</b> freed until the ACH actually completes. A failed ACH leaves the balance unchanged and notifies the agency.</p>
           <table class="st-table">
             <thead><tr><th>Settlement</th><th>Agency</th><th>Amount</th><th>Method</th><th>Provider ref</th><th>Status</th></tr></thead>
             <tbody>
@@ -1058,13 +1058,14 @@
           <p class="muted" style="margin:0 0 6px">One account per agency, <b>granted or deposit-based — never both</b> (grant actions are rejected on an account with deposits and vice versa). <b>GRANTED</b>: limit = Σgrants, <b>not doubled</b> — credit is just a number; owed = full utilization; the grant revolves via settlement and persists until revoked. <b>DEPOSIT</b>: limit = <b>2 × deposits</b> (every deposit doubles; withdrawals un-double, floored at utilization); deposits spend first, drawdowns beyond them are debt. Paying with credit <b>pays at confirm</b>; on <b>deposit-based accounts</b> free-cancellation rates may overdraw up to <b>min(25% of limit, $2,500)</b> with a ≤72 h cover deadline (uncovered → sweep auto-cancels fee-free + strike); <b>granted accounts are hard-capped</b> — never overdraw. Utilization above the limit (open overdraft, or a revoke below utilization) <b>freezes new bookings</b> until settled. <b>NR overdraft</b> stays a per-agency privilege. Warn at 80% (global). Every change below is a ledger/audit row — nothing is a bare editable number.</p>
           <table class="st-table">
             <thead><tr><th>Agency</th><th>Type</th><th>Grant / Deposits</th><th>Limit</th><th>Utilization</th><th>Owed to Ergos</th><th>NR overdraft</th><th>Status</th><th>Actions</th></tr></thead>
-            <tbody>
-              <tr><td>Sunshine Travel LLC</td><td><span class="st-pill st-pending">Deposit</span></td><td>$6,100.00</td><td>$12,200.00 (2×)</td><td>$10,150.00</td><td>$4,050.00</td><td><span class="st-pill st-paid">On</span></td><td><span class="st-pill st-pending">83% — notified · overdraft $230 cover due Aug 19</span></td><td><button class="btn btn-outline" style="padding:2px 8px;font-size:11px" onclick="crGrant('Sunshine Travel LLC','DEPOSIT')">Grant…</button> <button class="btn btn-outline" style="padding:2px 8px;font-size:11px" onclick="crHold('Sunshine Travel LLC')">Place hold</button></td></tr>
-              <tr><td>Havana Nights Tours</td><td><span class="st-pill st-paid">Granted</span></td><td>$2,000.00 grant (revoked from $3,000)</td><td>$2,000.00 (= grant)</td><td>$2,300.00</td><td>$2,300.00</td><td><span class="st-pill">—</span></td><td><span class="st-pill" style="background:#fee2e2;color:#b91c1c">FROZEN — grant revoked below utilization · no new bookings until settled</span></td><td><button class="btn btn-outline" style="padding:2px 8px;font-size:11px" onclick="crGrant('Havana Nights Tours','GRANTED')">Grant…</button> <button class="btn btn-outline" style="padding:2px 8px;font-size:11px" onclick="crRevoke('Havana Nights Tours','GRANTED')">Revoke…</button> <button class="btn btn-outline" style="padding:2px 8px;font-size:11px" onclick="crHold('Havana Nights Tours')">Place hold</button></td></tr>
-              <tr><td>Coral Voyages</td><td><span class="st-pill st-pending">Deposit</span></td><td>$2,200.00</td><td>$4,400.00 (2×)</td><td>$1,150.00</td><td>$0.00</td><td><span class="st-pill">—</span></td><td><span class="st-pill st-paid">OK</span></td><td><button class="btn btn-outline" style="padding:2px 8px;font-size:11px" onclick="crGrant('Coral Voyages','DEPOSIT')">Grant…</button> <button class="btn btn-outline" style="padding:2px 8px;font-size:11px" onclick="crHold('Coral Voyages')">Place hold</button></td></tr>
-              <tr><td>Palma Tours Inc</td><td><span class="st-pill st-paid">Granted</span></td><td>$5,000.00 grant</td><td>$5,000.00 (= grant)</td><td>$680.00</td><td>$680.00</td><td><span class="st-pill">—</span></td><td><span class="st-pill st-paid">OK</span></td><td><button class="btn btn-outline" style="padding:2px 8px;font-size:11px" onclick="crGrant('Palma Tours Inc','GRANTED')">Grant…</button> <button class="btn btn-outline" style="padding:2px 8px;font-size:11px" onclick="crRevoke('Palma Tours Inc','GRANTED')">Revoke…</button> <button class="btn btn-outline" style="padding:2px 8px;font-size:11px" onclick="crHold('Palma Tours Inc')">Place hold</button></td></tr>
+            <tbody id="crAccountsBody">
+              <tr data-agency="Sunshine Travel LLC"><td>Sunshine Travel LLC</td><td><span class="st-pill st-pending">Deposit</span></td><td>$6,100.00</td><td>$12,200.00 (2×)</td><td>$10,150.00</td><td>$4,050.00</td><td style="cursor:pointer" title="Toggle NR-overdraft privilege — reason required, audited" onclick="crNrToggle('Sunshine Travel LLC')"><span class="st-pill st-paid">On</span></td><td><span class="st-pill st-pending">83% — notified · overdraft $230 cover due <span class="pd-cover-short">Aug 19</span></span></td><td><button class="btn btn-outline" style="padding:2px 8px;font-size:11px" onclick="crGrant('Sunshine Travel LLC','DEPOSIT')">Grant…</button> <button class="btn btn-outline" style="padding:2px 8px;font-size:11px" onclick="crDeposit('Sunshine Travel LLC')">Deposit…</button> <button class="btn btn-outline" style="padding:2px 8px;font-size:11px" onclick="crWithdraw('Sunshine Travel LLC')">Withdraw…</button> <button class="btn btn-outline" style="padding:2px 8px;font-size:11px" onclick="crHold('Sunshine Travel LLC',this)">Place hold</button></td></tr>
+              <tr data-agency="Havana Nights Tours"><td>Havana Nights Tours</td><td><span class="st-pill st-paid">Granted</span></td><td>$2,000.00 grant (revoked from $3,000)</td><td>$2,000.00 (= grant)</td><td>$2,300.00</td><td>$2,300.00</td><td style="cursor:pointer" title="Toggle NR-overdraft privilege — reason required, audited" onclick="crNrToggle('Havana Nights Tours')"><span class="st-pill">—</span></td><td><span class="st-pill" style="background:#fee2e2;color:#b91c1c">FROZEN — grant revoked below utilization · no new bookings until settled</span></td><td><button class="btn btn-outline" style="padding:2px 8px;font-size:11px" onclick="crGrant('Havana Nights Tours','GRANTED')">Grant…</button> <button class="btn btn-outline" style="padding:2px 8px;font-size:11px" onclick="crRevoke('Havana Nights Tours','GRANTED')">Revoke…</button> <button class="btn btn-outline" style="padding:2px 8px;font-size:11px" onclick="crHold('Havana Nights Tours',this)">Place hold</button></td></tr>
+              <tr data-agency="Coral Voyages"><td>Coral Voyages</td><td><span class="st-pill st-pending">Deposit</span></td><td>$2,200.00</td><td>$4,400.00 (2×)</td><td>$1,150.00</td><td>$0.00</td><td style="cursor:pointer" title="Toggle NR-overdraft privilege — reason required, audited" onclick="crNrToggle('Coral Voyages')"><span class="st-pill">—</span></td><td><span class="st-pill st-paid">OK</span></td><td><button class="btn btn-outline" style="padding:2px 8px;font-size:11px" onclick="crGrant('Coral Voyages','DEPOSIT')">Grant…</button> <button class="btn btn-outline" style="padding:2px 8px;font-size:11px" onclick="crDeposit('Coral Voyages')">Deposit…</button> <button class="btn btn-outline" style="padding:2px 8px;font-size:11px" onclick="crWithdraw('Coral Voyages')">Withdraw…</button> <button class="btn btn-outline" style="padding:2px 8px;font-size:11px" onclick="crHold('Coral Voyages',this)">Place hold</button></td></tr>
+              <tr data-agency="Palma Tours Inc"><td>Palma Tours Inc</td><td><span class="st-pill st-paid">Granted</span></td><td>$5,000.00 grant</td><td>$5,000.00 (= grant)</td><td>$680.00</td><td>$680.00</td><td style="cursor:pointer" title="Toggle NR-overdraft privilege — reason required, audited" onclick="crNrToggle('Palma Tours Inc')"><span class="st-pill">—</span></td><td><span class="st-pill st-paid">OK</span></td><td><button class="btn btn-outline" style="padding:2px 8px;font-size:11px" onclick="crGrant('Palma Tours Inc','GRANTED')">Grant…</button> <button class="btn btn-outline" style="padding:2px 8px;font-size:11px" onclick="crRevoke('Palma Tours Inc','GRANTED')">Revoke…</button> <button class="btn btn-outline" style="padding:2px 8px;font-size:11px" onclick="crHold('Palma Tours Inc',this)">Place hold</button></td></tr>
             </tbody>
           </table>
+          <div id="crMsg" style="display:none;margin-top:8px;background:#fef2f2;border-left:4px solid #b91c1c;color:#b91c1c;padding:8px 12px;font-size:12.5px;border-radius:6px"></div>
         </div>
 
         <div class="st-card">
@@ -1081,9 +1082,44 @@
           </table>
         </div>
         <script>
+          // Demo account state — the table cells are derived from this (Story 10: nothing is a bare editable number).
+          var crAcc = {
+            'Sunshine Travel LLC': {type:'DEPOSIT', dep:6100, util:10150, held:false, nr:true},
+            'Havana Nights Tours': {type:'GRANTED', grant:2000, util:2300, held:false, nr:false},
+            'Coral Voyages':       {type:'DEPOSIT', dep:2200, util:1150, held:false, nr:false},
+            'Palma Tours Inc':     {type:'GRANTED', grant:5000, util:680, held:false, nr:false}
+          };
+          function crFmt(n){ return '$'+n.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2}); }
+          function crLimit(acc){ return acc.type==='DEPOSIT' ? 2*acc.dep : acc.grant; }
+          function crRow(agency){ return document.querySelector('#crAccountsBody tr[data-agency="'+agency+'"]'); }
+          Object.keys(crAcc).forEach(function(a){
+            crAcc[a].origOk = crAcc[a].util <= crLimit(crAcc[a]);
+          });
+          function crUpdateRow(agency){
+            var acc=crAcc[agency], tr=crRow(agency); if(!tr) return;
+            var td=tr.children, limit=crLimit(acc);
+            // Captured lazily (not at parse time) so the date-stamped status text is what we restore.
+            if(acc.origStatus===undefined) acc.origStatus=td[7].innerHTML;
+            var owed = acc.type==='DEPOSIT' ? Math.max(0, acc.util-acc.dep) : acc.util;
+            td[2].textContent = acc.type==='DEPOSIT' ? crFmt(acc.dep) : crFmt(acc.grant)+' grant';
+            td[3].textContent = crFmt(limit) + (acc.type==='DEPOSIT' ? ' (2×)' : ' (= grant)');
+            td[4].textContent = crFmt(acc.util);
+            td[5].textContent = crFmt(owed);
+            td[6].innerHTML = acc.nr ? '<span class="st-pill st-paid">On</span>' : '<span class="st-pill">—</span>';
+            var base = acc.util > limit
+              ? '<span class="st-pill" style="background:#fee2e2;color:#b91c1c">FROZEN — utilization above limit · no new bookings until settled</span>'
+              : (acc.origOk ? acc.origStatus : '<span class="st-pill st-paid">OK</span>');
+            td[7].innerHTML = (acc.held ? '<span class="st-pill" style="background:#fee2e2;color:#b91c1c">On hold</span> ' : '') + base;
+          }
+          function crMsg(html){
+            var d=document.getElementById('crMsg');
+            if(!html){ d.style.display='none'; return; }
+            d.style.display=''; d.innerHTML=html;
+          }
           function crLedgerAdd(type, pill, amount, reason, agency){
+            var when=new Date().toLocaleDateString('en-US',{month:'short',day:'numeric'});
             var tr=document.createElement('tr');
-            tr.innerHTML='<td>Aug 20 · just now</td><td><span class="st-pill '+pill+'">'+type+'</span></td><td>'+agency+'</td><td>'+amount+'</td><td>'+reason+'</td><td>AD (finance admin)</td>';
+            tr.innerHTML='<td>'+when+' · just now</td><td><span class="st-pill '+pill+'">'+type+'</span></td><td>'+agency+'</td><td>'+amount+'</td><td>'+reason+'</td><td>AD (finance admin)</td>';
             var tb=document.getElementById('crLedgerBody');
             tb.insertBefore(tr, tb.firstChild);
           }
@@ -1091,6 +1127,7 @@
             if(accType==='DEPOSIT'){ boToast('Rejected — '+agency+' holds deposits: one account type per agency (Story 10 §5). Zero the deposits first to migrate.', 'error'); return; }
             var amt=prompt('Grant amount (USD) — limit = Σgrants, NOT doubled:', '2000'); if(!amt) return;
             var reason=prompt('Reason (required, audited):'); if(!reason){ boToast('A reason is required — nothing recorded', 'error'); return; }
+            crAcc[agency].grant += +amt; crUpdateRow(agency);
             crLedgerAdd('GRANT','st-paid','+$'+(+amt).toLocaleString(undefined,{minimumFractionDigits:2}),reason,agency);
             boToast('GRANT ledger row recorded for '+agency+' — limit +$'+(+amt).toLocaleString()+' (not doubled)', 'success');
           }
@@ -1098,13 +1135,55 @@
             if(accType==='DEPOSIT'){ boToast('Rejected — deposit-based account: revoke applies to grants only (Story 10 §5)', 'error'); return; }
             var amt=prompt('Revoke amount (USD):', '2000'); if(!amt) return;
             var reason=prompt('Reason (required, audited):'); if(!reason){ boToast('A reason is required — nothing recorded', 'error'); return; }
+            crAcc[agency].grant = Math.max(0, crAcc[agency].grant - +amt); crUpdateRow(agency);
             crLedgerAdd('GRANT_REVOKE','st-pending','−$'+(+amt).toLocaleString(undefined,{minimumFractionDigits:2}),reason,agency);
             boToast('GRANT_REVOKE recorded for '+agency+' — a revoke below current utilization freezes new bookings until the balance is settled', 'warn');
           }
-          function crHold(agency){
-            var reason=prompt('creditHold reason (required, audited) — instantly freezes the credit-payment privilege:'); if(!reason){ boToast('A reason is required — nothing recorded', 'error'); return; }
-            crLedgerAdd('CREDIT_HOLD','','—',reason,agency);
-            boToast('creditHold placed on '+agency+' — credit payments frozen; audit row recorded', 'warn');
+          function crDeposit(agency){
+            var amt=+prompt('Deposit amount (USD) — every deposit doubles into booking power:', '500'); if(!amt) return;
+            var ref=prompt('Bank reference (required):'); if(!ref){ boToast('A bank reference is required — nothing recorded', 'error'); return; }
+            var reason=prompt('Reason (required, audited):'); if(!reason){ boToast('A reason is required — nothing recorded', 'error'); return; }
+            crAcc[agency].dep += amt; crUpdateRow(agency); crMsg('');
+            crLedgerAdd('DEPOSIT','st-pending','+'+crFmt(amt),reason+' · bank ref '+ref+' — doubled: +'+crFmt(2*amt)+' power',agency);
+            boToast('DEPOSIT recorded for '+agency+' — it doubles: +'+crFmt(2*amt)+' booking power (limit now '+crFmt(crLimit(crAcc[agency]))+')', 'success');
+          }
+          function crWithdraw(agency){
+            var acc=crAcc[agency];
+            var maxW=Math.max(0, acc.dep - acc.util/2); // E8 floor: power (2×dep) can never drop below utilization
+            var amt=+prompt('Withdrawal amount (USD) — withdrawals un-double (−$2 power per $1). Max here: '+crFmt(maxW)+':', '500'); if(!amt) return;
+            if(amt > maxW){
+              crMsg('Rejected — max withdrawal for '+agency+' is <b>'+crFmt(maxW)+'</b> (deposits '+crFmt(acc.dep)+' − utilization '+crFmt(acc.util)+' / 2, floored at $0): withdrawals un-double and booking power can never drop below current utilization (E8). Nothing recorded.');
+              return;
+            }
+            var ref=prompt('Bank reference (required):'); if(!ref){ boToast('A bank reference is required — nothing recorded', 'error'); return; }
+            var reason=prompt('Reason (required, audited):'); if(!reason){ boToast('A reason is required — nothing recorded', 'error'); return; }
+            acc.dep -= amt; crUpdateRow(agency); crMsg('');
+            crLedgerAdd('WITHDRAWAL','st-pending','−'+crFmt(amt),reason+' · bank ref '+ref+' — un-doubled: −'+crFmt(2*amt)+' power',agency);
+            boToast('WITHDRAWAL recorded for '+agency+' — un-doubles: −'+crFmt(2*amt)+' booking power (limit now '+crFmt(crLimit(acc))+')', 'warn');
+          }
+          function crHold(agency, btn){
+            var acc=crAcc[agency];
+            if(!acc.held){
+              var reason=prompt('creditHold reason (required, audited) — instantly freezes the credit-payment privilege:'); if(!reason){ boToast('A reason is required — nothing recorded', 'error'); return; }
+              acc.held=true;
+              crLedgerAdd('CREDIT_HOLD','','—',reason,agency);
+              boToast('creditHold placed on '+agency+' — credit payments frozen; audit row recorded', 'warn');
+            } else {
+              var reason=prompt('creditHold RELEASE reason (required, audited):'); if(!reason){ boToast('A reason is required — nothing recorded', 'error'); return; }
+              acc.held=false;
+              crLedgerAdd('CREDIT_HOLD_RELEASE','st-paid','—',reason,agency);
+              boToast('creditHold released for '+agency+' — credit payments re-enabled; audit row recorded', 'success');
+            }
+            if(btn) btn.textContent = acc.held ? 'Release hold' : 'Place hold';
+            crUpdateRow(agency);
+          }
+          function crNrToggle(agency){
+            var acc=crAcc[agency];
+            var to = acc.nr ? 'Off' : 'On';
+            var reason=prompt('NR-overdraft privilege → '+to+' for '+agency+' — reason (required, audited):'); if(!reason){ boToast('A reason is required — nothing recorded', 'error'); return; }
+            acc.nr=!acc.nr; crUpdateRow(agency);
+            crLedgerAdd('NR_OVERDRAFT_'+to.toUpperCase(),'st-pending','—','Ops flag — NR overdraft → '+to+': '+reason,agency);
+            boToast('NR overdraft '+to+' for '+agency+' — ops-flag ledger row recorded', 'success');
           }
         </script>
 
@@ -1115,8 +1194,8 @@
           <table class="st-table">
             <thead><tr><th>Booking</th><th>Agency</th><th>Context</th><th>Amount</th><th>Free-cxl date</th><th>Cover by</th><th>Reminders sent</th><th></th></tr></thead>
             <tbody>
-              <tr><td>PTAUNPAID01</td><td>Sunshine Travel LLC</td><td>Overdraft cover — deficit $230.00</td><td>$783.77</td><td>Sep 14 08:00</td><td id="pdRow1">Sep 12 08:00</td><td>30 d ✓</td><td><button class="btn btn-outline" style="padding:2px 10px;font-size:12px" onclick="pdOpenExtend()">Extend…</button></td></tr>
-              <tr><td>PTA9944H2</td><td>Coral Voyages</td><td>Overdraft cover — deficit $412.40</td><td>$1,912.40</td><td>Aug 21 12:00</td><td>Aug 19 12:00</td><td>30 d ✓ · 7 d ✓</td><td><button class="btn btn-outline" style="padding:2px 10px;font-size:12px" onclick="pdOpenExtend()">Extend…</button></td></tr>
+              <tr><td>PTAUNPAID01</td><td>Sunshine Travel LLC</td><td>Overdraft cover — deficit $230.00</td><td>$783.77</td><td id="pdCxl1">Sep 14 08:00</td><td id="pdRow1">Sep 12 08:00</td><td>30 d ✓</td><td><button class="btn btn-outline" style="padding:2px 10px;font-size:12px" onclick="pdOpenExtend()">Extend…</button></td></tr>
+              <tr><td>PTA9944H2</td><td>Coral Voyages</td><td>Overdraft cover — deficit $412.40</td><td>$1,912.40</td><td id="pdCxl2">Aug 21 12:00</td><td id="pdRow2">Aug 19 12:00</td><td>30 d ✓ · 7 d ✓</td><td><button class="btn btn-outline" style="padding:2px 10px;font-size:12px" onclick="pdOpenExtend()">Extend…</button></td></tr>
               <tr style="opacity:.65"><td>PTA9871B9</td><td>Marina Bay Escapes</td><td>Overdraft cover — deficit $144.10</td><td>$644.10</td><td>Aug 15 10:00</td><td>Aug 13 10:00</td><td>all ✓</td><td><span class="st-pill" style="background:#fee2e2;color:#b91c1c">Auto-cancelled by sweep · fee-free · strike recorded</span></td></tr>
             </tbody>
           </table>
@@ -1126,7 +1205,7 @@
         <div id="pdModal" style="display:none;position:fixed;inset:0;background:rgba(15,23,42,.45);z-index:50;align-items:center;justify-content:center">
           <div style="background:#fff;border-radius:12px;max-width:520px;width:92%;padding:20px 22px;box-shadow:0 20px 60px rgba(0,0,0,.3)">
             <h2 style="margin:0 0 4px">Extend cover deadline — PTAUNPAID01</h2>
-            <p class="muted" style="margin:0 0 10px">Never beyond the bed bank's free-cancellation date (<b>Sep 14 08:00</b>). Reminders self-correct — they are computed from the current deadline at send time.</p>
+            <p class="muted" style="margin:0 0 10px">Never beyond the bed bank's free-cancellation date (<b id="pdCapDate">Sep 14 08:00</b>). Reminders self-correct — they are computed from the current deadline at send time.</p>
             <label style="display:block;font-size:12px;font-weight:700;margin-bottom:2px">New deadline</label>
             <input id="pdNew" type="text" value="Sep 13, 2026 08:00" style="width:100%;padding:7px 10px;border:1px solid #d6d3d1;border-radius:8px;font-family:ui-monospace,Menlo,monospace;font-size:13px">
             <div id="pdCapWarn" style="display:none;color:#b91c1c;font-size:12px;margin-top:4px">Beyond the free-cancellation date — not allowed (Story 6 §1).</div>
@@ -1145,12 +1224,29 @@
             var reason=document.getElementById('pdReason').value.trim();
             if(reason.length<6){ document.getElementById('pdReason').style.borderColor='#b91c1c'; return; }
             var nd=document.getElementById('pdNew').value;
-            if(/Sep 1[5-9]|Sep [2-3][0-9]|Oct/.test(nd)){ document.getElementById('pdCapWarn').style.display=''; return; }
+            var d=new Date(nd);
+            if(!isNaN(d) && window.__pdCap && d.getTime()>window.__pdCap.getTime()){ document.getElementById('pdCapWarn').style.display=''; return; }
             document.getElementById('pdCapWarn').style.display='none';
-            document.getElementById('pdRow1').innerHTML='<b>'+nd.replace(', 2026','')+'</b> <span class="st-pill st-pending">extended</span>';
+            document.getElementById('pdRow1').innerHTML='<b>'+nd.replace(', '+new Date().getFullYear(),'')+'</b> <span class="st-pill st-pending">extended</span>';
             document.getElementById('pdAudit').style.display='';
-            document.getElementById('pdAudit').innerHTML='Audit recorded ✓ — actor <b>AD (operations admin)</b>, original <code>Sep 12 08:00</code> → new <code>'+nd+'</code>, reason: “'+reason+'”. No reminder rescheduling needed.';
+            document.getElementById('pdAudit').innerHTML='Audit recorded ✓ — actor <b>AD (operations admin)</b>, original <code>'+(window.__pdOrig||'Sep 12 08:00')+'</code> → new <code>'+nd+'</code>, reason: “'+reason+'”. No reminder rescheduling needed.';
           }
+          // Stale-proof demo dates, computed at load: cover deadlines = now + 2 d (row 2: +1 d),
+          // free-cxl = now + 5 d (row 2: +4 d). PTA9871B9 stays in the past — swept deliberately.
+          (function(){
+            function pdD(days,h){ var x=new Date(Date.now()+days*864e5); x.setHours(h,0,0,0); return x; }
+            function pdF(x){ return x.toLocaleDateString('en-US',{month:'short',day:'numeric'})+' '+String(x.getHours()).padStart(2,'0')+':00'; }
+            var cover=pdD(2,8), cxl=pdD(5,8);
+            document.getElementById('pdRow1').textContent=pdF(cover);
+            document.getElementById('pdCxl1').textContent=pdF(cxl);
+            document.getElementById('pdRow2').textContent=pdF(pdD(1,12));
+            document.getElementById('pdCxl2').textContent=pdF(pdD(4,12));
+            window.__pdCap=cxl; window.__pdOrig=pdF(cover);
+            document.getElementById('pdCapDate').textContent=pdF(cxl);
+            var def=pdD(3,8);
+            document.getElementById('pdNew').value=def.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})+' 08:00';
+            document.querySelectorAll('.pd-cover-short').forEach(function(el){ el.textContent=cover.toLocaleDateString('en-US',{month:'short',day:'numeric'}); });
+          })();
         </script>
       </div>
     </main>

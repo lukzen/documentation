@@ -1359,6 +1359,14 @@
 
           <div class="form-card">
             <h3>How is this booking paid?</h3>
+            <!-- One credit account per agency — granted XOR deposit-based, never both. Demo toggle
+                 (mirrors the Credit account screen's toggle) picks which account this agency holds;
+                 only that account's credit option renders alongside the card. -->
+            <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:0 0 12px">
+              <button class="btn-primary" id="pmTabDep" onclick="pmAcctType('dep')">Deposit-based — this account</button>
+              <button class="btn-outline" id="pmTabGr" onclick="pmAcctType('gr')">Granted — demo</button>
+              <label id="pmGrBeyondWrap" style="display:none;font-size:12px"><input type="checkbox" id="pmGrBeyond" onclick="pmAcctType('gr')"> <b>Demo: booking beyond available</b> — hard cap, card-only</label>
+            </div>
             <label class="pay-opt selected" id="pmCard" onclick="pmSelect('card')">
               <input type="radio" name="pm" checked>
               <div><div class="pay-opt-t">Pay now — agency corporate card <span class="pay-rec">Default</span></div>
@@ -1367,13 +1375,15 @@
             <label class="pay-opt" id="pmBalance" onclick="pmSelect('balance')">
               <input type="radio" name="pm">
               <div><div class="pay-opt-t">Pay from credit balance <span class="pay-off">Available · $2,050.00 — no card fee</span></div>
-              <div class="pay-opt-d">Draw down your account — <b>every deposit doubles</b>: your $6,100 deposited = $12,200 booking power. Deposits spend first; beyond them you draw Ergos credit (owed at settlement). Pays the clean rate — <b>no card fee, saves $6.80 on this booking</b>. If the rate exceeds what's available: free-cancellation rates may overdraw up to <b>min(25% of limit, $2,500)</b> with a cover deadline; anything else is blocked with the shortfall shown.</div></div>
+              <div class="pay-opt-d">Draw down your deposit-based account — <b>every deposit doubles</b>: your $6,100 deposited = $12,200 booking power. Deposits spend first; beyond them you draw Ergos credit (owed at settlement). Pays the clean rate — <b>no card fee, saves $6.80 on this booking</b>. If the rate exceeds what's available: free-cancellation rates may overdraw up to <b>min(25% of limit, $2,500)</b> with a cover deadline; anything else is blocked with the shortfall shown.</div>
+              <div style="font-size:12px;margin-top:6px"><input type="checkbox" id="pmOdDemo" onclick="event.stopPropagation();pmSelect('balance')"> <b>Demo the overdraft case</b> — rate exceeds available: confirm with a cover deadline</div>
+              <div id="pmOdNote" style="display:none;background:#fffbeb;border:1px solid #b45309;color:#78350f;border-radius:8px;padding:8px 10px;margin-top:6px;font-size:12.5px">⚠ This booking exceeds available by <b>$230</b> — free-cancellation rate, it will confirm with a <b>cover obligation</b> (cover $230 within the deadline or it is auto-cancelled fee-free + strike).</div></div>
             </label>
-            <label class="pay-opt" id="pmLater" onclick="pmSelect('later')">
+            <label class="pay-opt" id="pmLater" onclick="pmSelect('later')" style="display:none">
               <input type="radio" name="pm">
               <div><div class="pay-opt-t">Pay with soft credit <span class="pay-off">Available · $2,000.00 — no card fee</span></div>
-              <div class="pay-opt-d">Pays <b>now</b> from your credit account — the balance settles later. The account draws down at confirm and the booking is <b>PAID</b> (no card fee); what comes later is only the settlement, on its own screen. Every agency's account is <b>granted</b> (Ergos trust — limit = the grant, <b>not doubled</b>; <b>hard-capped</b> — never overdraws, beyond available pays by card) or <b>deposit-based</b> (limit = 2 × deposits), never both. On a <b>deposit-based account</b>, if the rate exceeds what's available a <b>free-cancellation rate</b> may still confirm via the bounded overdraft (deficit ≤ min(25% of limit, $2,500)) with a <b>cover deadline</b> — ≤72 h, inside the free-cxl window; uncovered → auto-cancelled fee-free + strike.</div>
-              <div style="font-size:12px;margin-top:6px"><input type="checkbox" id="pmOdDemo" onclick="event.stopPropagation()"> <b>Demo the overdraft case (deposit-based account)</b> — rate exceeds available: confirm with a cover deadline</div></div>
+              <div class="pay-opt-d">Pays <b>now</b> from your granted account (Ergos trust — limit = the grant, <b>not doubled</b>). The account draws down at confirm and the booking is <b>PAID</b> (no card fee); what comes later is only the settlement, on its own screen. <b>Granted accounts are hard-capped</b> — never overdraw, no top-ups; a booking beyond available pays <b>entirely by corporate card</b>.</div>
+              <div id="pmGrCap" style="display:none;background:#f5f4f0;border:1px solid #d6d0c8;color:#78716c;border-radius:8px;padding:8px 10px;margin-top:6px;font-size:12.5px"><b>Granted accounts are hard-capped</b> — this booking exceeds available; pay by corporate card.</div></div>
             </label>
           </div>
 
@@ -1393,7 +1403,30 @@
           </div>
 
           <script>
+            // Demo account-type toggle — granted XOR deposit: only one credit option ever renders.
+            window.__pmAcct = 'dep';
+            function pmAcctType(t){
+              window.__pmAcct = t;
+              document.getElementById('pmTabDep').className = t==='dep' ? 'btn-primary' : 'btn-outline';
+              document.getElementById('pmTabGr').className = t==='gr' ? 'btn-primary' : 'btn-outline';
+              document.getElementById('pmBalance').style.display = t==='dep' ? '' : 'none';
+              document.getElementById('pmLater').style.display = t==='gr' ? '' : 'none';
+              document.getElementById('pmGrBeyondWrap').style.display = t==='gr' ? '' : 'none';
+              var beyond = t==='gr' && document.getElementById('pmGrBeyond').checked;
+              var later = document.getElementById('pmLater');
+              later.style.opacity = beyond ? '.55' : '';
+              later.style.cursor = beyond ? 'not-allowed' : '';
+              later.querySelector('input').disabled = beyond;
+              document.getElementById('pmGrCap').style.display = beyond ? '' : 'none';
+              var m = window.__pmMode || 'card';
+              if (t==='dep' && m==='later') m = 'balance';
+              if (t==='gr' && m==='balance') m = 'card';
+              pmSelect(m);
+            }
             function pmSelect(m){
+              // Granted + beyond available: hard cap — soft credit is disabled, card is the only choice.
+              if (m==='later' && window.__pmAcct==='gr' && document.getElementById('pmGrBeyond').checked) m = 'card';
+              if (m==='balance' && window.__pmAcct==='gr') m = 'card';
               ['pmCard','pmBalance','pmLater'].forEach(function(id){
                 var on = ({pmCard:'card',pmBalance:'balance',pmLater:'later'})[id]===m;
                 var el = document.getElementById(id);
@@ -1401,9 +1434,22 @@
                 el.querySelector('input').checked = on;
               });
               document.getElementById('pmHandoff').style.display=m==='card'?'':'none';
+              var od = m==='balance' && !!document.getElementById('pmOdDemo').checked;
+              document.getElementById('pmOdNote').style.display = od ? '' : 'none';
+              // Booking Summary: card adds the explicit fee line; credit pays the clean rate.
+              var base = 194.40;
+              try { base = parseFloat(bookingState.price) || 194.40; if (typeof serviceTransferAdded!=='undefined' && serviceTransferAdded) base += serviceTransferPrice; } catch(e){}
+              var fee = Math.round(base*3.5)/100;
+              var fr = document.getElementById('pay-os-feerow');
+              if (fr){
+                fr.style.display = m==='card' ? '' : 'none';
+                document.getElementById('pay-os-fee').textContent = 'USD ' + fee.toFixed(2);
+                document.getElementById('pay-os-total').textContent = 'USD ' + (m==='card' ? base+fee : base).toFixed(2);
+              }
               var b=document.getElementById('pay-confirm-btn');
               if(b){
-                b.textContent = m==='card' ? 'Charge corporate card' : m==='balance' ? 'Pay from balance' : 'Pay with soft credit';
+                b.textContent = od ? 'Confirm — cover $230 within deadline'
+                  : m==='card' ? 'Charge corporate card' : m==='balance' ? 'Pay from balance' : 'Pay with soft credit';
                 b.disabled=false;
               }
               window.__pmMode = m;
@@ -1426,7 +1472,8 @@
               <div class="os-row"><span id="pay-os-route">HAV → Hotel</span><span id="pay-os-tf-price">USD 45.00</span></div>
               <div class="os-divider"></div>
             </div>
-            <div class="os-row os-total"><span>Total Client Price</span><span id="pay-os-total">USD 194.40</span></div>
+            <div class="os-row" id="pay-os-feerow"><span>Card processing fee (3.5%)</span><span id="pay-os-fee">USD 6.80</span></div>
+            <div class="os-row os-total"><span>Total Client Price</span><span id="pay-os-total">USD 201.20</span></div>
             <button class="confirm-btn" id="pay-confirm-btn" onclick="confirmBooking()">Send payment link to client</button>
             <!-- F1 — alternative path: confirm hotel now, decide transfer later (max 48h) -->
             <button class="confirm-btn confirm-btn-alt" id="pay-confirm-hotel-only" onclick="confirmHotelOnly()" style="display:none">
@@ -1668,14 +1715,14 @@
         </div>
 
         <!-- Stories 3/4 (backend#161/#162) — overdraft cover demo row (deposit-based accounts only; granted are hard-capped), pinned. 🚧 target design -->
-        <div style="border:2px solid #b45309;background:#fffbeb;border-radius:10px;padding:14px 16px;margin-bottom:12px;display:flex;gap:14px;align-items:center;flex-wrap:wrap">
-          <span style="background:#fef3c7;color:#b45309;font-weight:800;font-size:11px;text-transform:uppercase;padding:3px 10px;border-radius:99px">Confirmed — cover due 🚧</span>
+        <div id="cvBanner" style="border:2px solid #b45309;background:#fffbeb;border-radius:10px;padding:14px 16px;margin-bottom:12px;display:flex;gap:14px;align-items:center;flex-wrap:wrap">
+          <span id="cvBannerPill" style="background:#fef3c7;color:#b45309;font-weight:800;font-size:11px;text-transform:uppercase;padding:3px 10px;border-radius:99px">Confirmed — cover due 🚧</span>
           <div style="flex:1;min-width:260px">
             <div style="font-weight:700">Meliá Punta Cana ★★★★★ · Ref <code>PTAUNPAID01</code></div>
-            <div style="font-size:12.5px;color:#78350f">Paid from your deposit-based credit account — the free-cancellation rate drew <b>$230.00 beyond your limit</b> · <b>Cover $230 by Sep 12, 2026</b> (≤72 h, inside the free-cxl window) · reminders 30 d / 7 d / 24 h · uncovered at the deadline → <b>auto-cancelled fee-free + strike</b></div>
+            <div id="cvBannerMsg" style="font-size:12.5px;color:#78350f">Paid from your deposit-based credit account — the free-cancellation rate drew <b>$230.00 beyond your limit</b> · <b>Cover $230 by <span class="cv-cover-by">Sep 12, 2026</span></b> (≤72 h, inside the free-cxl window) · reminders 30 d / 7 d / 24 h · uncovered at the deadline → <b>auto-cancelled fee-free + strike</b></div>
           </div>
           <div style="font-family:ui-monospace,Menlo,monospace;font-weight:700">USD 783.77</div>
-          <button class="btn-primary" onclick="cvOpen()">Cover now</button>
+          <button class="btn-primary" id="cvBannerBtn" onclick="cvOpen()">Cover now</button>
         </div>
         <!-- Story 3 (backend#161, #168 item 13) — cover payment method chooser. 🚧 target design:
              deposit-based accounts only (granted are hard-capped, #188) — the cover is a deposit
@@ -1694,11 +1741,11 @@
           <label class="pay-opt" id="cvAch" onclick="cvSelect('ach')">
             <input type="radio" name="cv">
             <div><div class="pay-opt-t">ACH bank transfer (Square) <span class="pay-off">No fee</span></div>
-            <div class="pay-opt-d"><b>No fee to you</b> — pay exactly $230.00. ACH clears in 1–3 business days, but the cover <b>counts as covered once initiated</b> — the deadline is met the moment you start the debit. Offered because <b>≥ 5 business days</b> remain before this booking's free-cancellation date (Sep 15).</div></div>
+            <div class="pay-opt-d"><b>No fee to you</b> — pay exactly $230.00. ACH clears in 1–3 business days, but the cover <b>counts as covered once initiated</b> — the deadline is met the moment you start the debit. Offered because <b>≥ 5 business days</b> remain before this booking's free-cancellation date (<span class="cv-freecxl">Sep 15</span>).</div></div>
           </label>
           <div id="cvGateNote" style="display:none;border:1px solid #d6d0c8;border-radius:10px;padding:14px 16px;background:#f5f4f0;margin-bottom:12px">
             <div class="pay-opt-t" style="color:#78716c">ACH bank transfer — unavailable, card-only</div>
-            <div class="pay-opt-d">Fewer than <b>5 business days</b> remain before this booking's free-cancellation date (Sep 15). ACH clears in 1–3 business days and counts as covered at initiation — a late ACH return after the fee-free window closes would force a <b>penalty cancellation</b>, so close to the deadline the cover is <b>card-only</b>.</div>
+            <div class="pay-opt-d">Fewer than <b>5 business days</b> remain before this booking's free-cancellation date (<span class="cv-freecxl">Sep 15</span>). ACH clears in 1–3 business days and counts as covered at initiation — a late ACH return after the fee-free window closes would force a <b>penalty cancellation</b>, so close to the deadline the cover is <b>card-only</b>.</div>
           </div>
           <button class="btn-primary" id="cvGo" onclick="cvPay()">Pay $238.05 by card ($230.00 + $8.05 fee)</button>
           <div id="cvResult" style="display:none;margin-top:10px;font-size:13px"></div>
@@ -1726,12 +1773,32 @@
             }
             function cvPay(){
               var r=document.getElementById('cvResult'); r.style.display='';
-              if((window.__cvMode||'card')==='card'){
+              var ach=(window.__cvMode||'card')!=='card';
+              if(!ach){
                 r.innerHTML='<b>Covered ✓</b> Corporate card charged <b>$238.05</b> on TropiPay\'s hosted form ($230.00 cover deposit + $8.05 card fee) — the deposit doubles (+$460.00 booking power) and the overdraft obligation is closed immediately.';
               } else {
                 r.innerHTML='<b>Covered ✓ — ACH initiated</b> Square ref <code>sq_pay_9RC4…</code> · debit of <b>$230.00</b> initiated, no fee. The deadline is met — the cover <b>counts as covered from initiation</b>; the debit completes in 1–3 business days and the deposit doubles: +$460.00 booking power.';
               }
+              // Banner lifecycle: the "cover due" state is resolved once the cover is paid/initiated.
+              var b=document.getElementById('cvBanner');
+              b.style.borderColor='#16a34a'; b.style.background='#f0fdf4';
+              var p=document.getElementById('cvBannerPill');
+              p.style.background='#dcfce7'; p.style.color='#15803d'; p.textContent='Covered ✓ 🚧';
+              var m=document.getElementById('cvBannerMsg');
+              m.style.color='#166534';
+              m.innerHTML = ach
+                ? 'Booking fully paid — cover of <b>$230.00</b> initiated by ACH (counts as covered from initiation; debit completes in 1–3 business days). The deposit doubles: +$460.00 booking power.'
+                : 'Booking fully paid — cover deposit of <b>$230.00</b> charged by card. The deposit doubles (+$460.00 booking power) and the overdraft obligation is closed.';
+              document.getElementById('cvBannerBtn').style.display='none';
             }
+            // Stale-proof demo dates: cover deadlines = now + 2 d, free-cxl = now + 5 d (computed at load,
+            // on DOMContentLoaded so it also reaches screens parsed after this script).
+            document.addEventListener('DOMContentLoaded', function(){
+              function fmt(days,opts){ var d=new Date(Date.now()+days*864e5); return d.toLocaleDateString('en-US',opts); }
+              document.querySelectorAll('.cv-cover-by').forEach(function(el){ el.textContent=fmt(2,{month:'short',day:'numeric',year:'numeric'}); });
+              document.querySelectorAll('.cv-cover-by-t').forEach(function(el){ el.textContent=fmt(2,{month:'short',day:'numeric'})+', 16:00'; });
+              document.querySelectorAll('.cv-freecxl').forEach(function(el){ el.textContent=fmt(5,{month:'short',day:'numeric'}); });
+            });
           </script>
         </div>
         <div id="bookings-list-container"></div>
@@ -1792,7 +1859,7 @@
       <div style="font-size:12px;color:#78716c;margin:-6px 0 10px">Utilization $10,150.00 = your $6,100.00 in deposits (spent first) + $4,050.00 drawn on Ergos credit — the owed figure is what a settlement bills, never your own deposits.</div>
       <div class="form-card" style="border:2px solid #b45309;background:#fffbeb">
         <h3>⚠ Overdraft to cover — booking PTA9940X3</h3>
-        <div style="font-size:13px">This free-cancellation booking drew <b>$230.00 beyond your limit</b> (allowed: deficit ≤ min(25% of limit, $2,500) = $2,500, no other overdraft open). Cover it by <b>Aug 19, 16:00</b> — 72 h, safely inside the rate's free-cancellation window — or the booking is <b>auto-cancelled penalty-free</b> and future overdrafts are blocked for a cooldown.</div>
+        <div style="font-size:13px">This free-cancellation booking drew <b>$230.00 beyond your limit</b> (allowed: deficit ≤ min(25% of limit, $2,500) = $2,500, no other overdraft open). Cover it by <b><span class="cv-cover-by-t">Aug 19, 16:00</span></b> — 72 h, safely inside the rate's free-cancellation window — or the booking is <b>auto-cancelled penalty-free</b> and future overdrafts are blocked for a cooldown.</div>
         <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap" id="odAnchors">
           <button class="btn-outline" onclick="odCover(230)">Cover $230</button>
           <button class="btn-primary" onclick="odCover(460)">Top up $460 → +$920 power ★</button>

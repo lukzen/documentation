@@ -2836,16 +2836,19 @@ function updatePaymentForServices() {
     //            only after the payment confirms → CONFIRMED_PAID.
     //  balance — deposit-based accounts: draw down the topped-up balance (limit =
     //            2 × deposits, deposits spend first) → CONFIRMED_PAID.
-    //  later   — "Pay with soft credit": the account draws down at confirm and the
-    //            booking is PAID (no card fee); only the settlement comes later.
-    //            Overdraft demo (free-cxl rates only): confirms with a COVER
-    //            deadline (≤72 h, inside the free-cxl window) → CONFIRMED_UNPAID.
+    //  later   — "Pay with soft credit" (granted account): the account draws down at
+    //            confirm and the booking is PAID (no card fee); only the settlement
+    //            comes later. Granted = hard-capped, never overdrafts.
+    //            Overdraft demo (deposit-based balance, free-cxl rates only): confirms
+    //            with a COVER deadline (≤72 h, inside the free-cxl window) → CONFIRMED_UNPAID.
     const pmMode = window.__pmMode || 'card';
-    const pmOverdraft = pmMode === 'later' && !!document.getElementById('pmOdDemo')?.checked;
+    const pmOverdraft = pmMode === 'balance' && !!document.getElementById('pmOdDemo')?.checked;
+    // Cover deadline computed at confirm time (now + 48 h) so the demo never reads as swept.
+    const pmCoverBy = new Date(Date.now() + 2 * 864e5).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + ', 16:00';
     if (typeof protoToast === 'function') {
       if (pmMode === 'card') protoToast('Corporate card charged $201.20 via TropiPay ($194.40 rate + $6.80 card fee) — booking confirmed with the bed bank.', 'success');
+      else if (pmOverdraft) protoToast('Confirmed — the rate drew $230.00 beyond your limit (free-cancellation rate). Cover $230 by ' + pmCoverBy + ' or the booking is auto-cancelled fee-free.', 'default');
       else if (pmMode === 'balance') protoToast('Paid from credit balance ($194.40 drawn — no card fee) — booking confirmed.', 'success');
-      else if (pmOverdraft) protoToast('Confirmed — the rate drew $230.00 beyond your limit (free-cancellation rate). Cover $230 by Aug 23, 16:00 or the booking is auto-cancelled fee-free.', 'default');
       else protoToast('Paid with soft credit ($194.40 drawn — no card fee) — booking confirmed. The balance settles later.', 'success');
     }
 
@@ -2961,17 +2964,30 @@ function updatePaymentForServices() {
     }
 
     // Soft credit: PAID at confirm — normal confirmed screen with a note.
-    // Overdraft demo (free-cxl rates only): confirmed with a COVER deadline
-    // (a cover obligation, not a payment deadline — the booking already drew the account).
-    if (pmMode === 'later') {
+    // Overdraft demo (deposit-based balance, free-cxl rates only): confirmed with a COVER
+    // deadline (a cover obligation, not a payment deadline — the booking already drew the
+    // account) → status CONFIRMED_UNPAID. Reset first so state never leaks between demo runs.
+    const confStatus = document.getElementById('conf-status');
+    if (confStatus) {
+      confStatus.textContent = 'CONFIRMED';
+      confStatus.className = 'status-badge confirmed';
+      confStatus.style.background = '';
+      confStatus.style.color = '';
+    }
+    if (pmOverdraft) {
       const h = document.getElementById('conf-heading');
       const s = document.getElementById('conf-subheading');
-      if (pmOverdraft) {
-        if (h) h.textContent = 'Confirmed — cover $230 by Aug 23, 16:00';
-        if (s) s.textContent = 'Paid with soft credit — the rate drew $230.00 beyond your limit (free-cancellation rate, deficit ≤ min(25% of limit, $2,500)). Cover $230 by Aug 23, 16:00 — 72 h, inside the free-cancellation window — or the booking is auto-cancelled fee-free and a strike is recorded. Reminders: 30 d / 7 d / 24 h, computed at send time.';
-      } else {
-        if (s) s.textContent = 'Paid with soft credit — no card fee. Your account drew down at confirm; the balance settles later on the Settle balance screen.';
+      if (h) h.textContent = 'Confirmed — cover $230 by ' + pmCoverBy;
+      if (s) s.textContent = 'Paid from your deposit-based credit account — the rate drew $230.00 beyond your limit (free-cancellation rate, deficit ≤ min(25% of limit, $2,500)). Cover $230 by ' + pmCoverBy + ' — 48 h, inside the free-cancellation window — or the booking is auto-cancelled fee-free and a strike is recorded. Reminders: 30 d / 7 d / 24 h, computed at send time.';
+      if (confStatus) {
+        confStatus.textContent = 'CONFIRMED_UNPAID';
+        confStatus.className = 'status-badge';
+        confStatus.style.background = '#fef3c7';
+        confStatus.style.color = '#b45309';
       }
+    } else if (pmMode === 'later') {
+      const s = document.getElementById('conf-subheading');
+      if (s) s.textContent = 'Paid with soft credit — no card fee. Your account drew down at confirm; the balance settles later on the Settle balance screen.';
     }
 
     snapshotBooking();
