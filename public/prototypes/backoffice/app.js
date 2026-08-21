@@ -66,6 +66,7 @@ const NAV_GROUPS = [
     {id:'hotel-brands',icon:'⌘',label:'Hotel Brands'},
     {id:'booking-breakdown',icon:'⊞',label:'Booking Breakdown'},
     {id:'finance-remittances',icon:'$',label:'Agency Remittances'},
+    {id:'finance-settlement',icon:'¤',label:'Payments & Settlement'},
     {id:'audit-log',icon:'⊜',label:'Booking Audit Log'}
   ]},
   {title:'Partners', items:[
