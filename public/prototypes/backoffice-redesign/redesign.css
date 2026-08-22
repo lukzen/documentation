@@ -1,0 +1,132 @@
+/* ============================================================
+   Backoffice REORGANIZATION prototype — additions on top of the
+   shared ../backoffice/styles.css (read-only). Only redesign
+   annotations + small utilities the shared sheet doesn't define.
+   ============================================================ */
+
+/* ---------- proto toolbar note ---------- */
+.proto-note { font-size:11px; color:rgba(255,255,255,.7); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.proto-note .chip { vertical-align:1px; }
+
+/* ---------- annotation chips ---------- */
+.chip {
+  display:inline-block; font-size:9.5px; font-weight:700; line-height:1.5;
+  padding:1px 7px; border-radius:99px; letter-spacing:.3px; white-space:nowrap;
+  vertical-align:middle;
+}
+.chip-was    { background:rgba(120,120,150,.18); color:#8a8aa5; }
+.chip-new    { background:#fef3c7; color:#b45309; }
+.chip-merged { background:rgba(15,168,155,.16); color:#0d8a7f; }
+.nav-link .chip { margin-left:auto; }
+.nav-link .chip-was { background:rgba(255,255,255,.1); color:rgba(255,255,255,.55); }
+.nav-link .chip-merged { background:rgba(15,168,155,.3); color:#9ff0e8; }
+.nav-link.active .chip-was { background:rgba(255,255,255,.2); color:rgba(255,255,255,.85); }
+
+/* ---------- new cross-links (the link mesh) ---------- */
+.xlink {
+  display:inline-flex; align-items:center; gap:3px;
+  padding:2px 8px; border-radius:6px;
+  background:rgba(15,168,155,.08); border:1px dashed rgba(15,168,155,.4);
+  color:var(--teal-dark); font-size:12px; font-weight:600;
+  white-space:nowrap; cursor:pointer; transition:.15s;
+}
+.xlink:hover { background:rgba(15,168,155,.16); border-style:solid; }
+.x-arrow { font-size:10px; opacity:.8; }
+.linkrow { display:flex; flex-wrap:wrap; gap:10px; align-items:center; }
+.linkrow-label { font-size:11px; text-transform:uppercase; letter-spacing:.6px; font-weight:700; color:var(--text-muted); margin-right:4px; }
+
+/* ---------- about panel ---------- */
+.about-panel {
+  position:fixed; top:62px; right:14px; z-index:1200;
+  width:420px; max-width:calc(100vw - 28px);
+  background:#fff; border:1px solid var(--border); border-radius:12px;
+  box-shadow:var(--shadow-lg); padding:16px 18px;
+}
+.about-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; font-size:14px; color:var(--navy); }
+.about-close { font-size:18px; color:var(--text-muted); padding:0 6px; border-radius:6px; }
+.about-close:hover { background:var(--border-light); }
+.about-list { margin:0; padding-left:18px; font-size:12.5px; color:var(--text-secondary); }
+.about-list li { margin:6px 0; }
+
+/* ---------- small utilities the shared sheet doesn't define ---------- */
+.muted { color:var(--text-muted); font-size:13px; }
+.lnk { color:var(--teal-dark); cursor:pointer; }
+.lnk:hover { text-decoration:underline; }
+.breadcrumb { font-size:12.5px; color:var(--text-muted); }
+.breadcrumb b { color:var(--navy); }
+.topbar-right { margin-left:auto; display:flex; align-items:center; gap:12px; }
+.topbar-right .avatar {
+  width:34px; height:34px; border-radius:50%;
+  background:linear-gradient(135deg, var(--gold) 0%, var(--teal) 100%);
+  color:#fff; display:flex; align-items:center; justify-content:center;
+  font-weight:700; font-size:12px;
+}
+.page-head.row { display:flex; justify-content:space-between; align-items:flex-start; gap:16px; flex-wrap:wrap; }
+.page-head-actions { display:flex; gap:8px; align-items:center; }
+.kpi.teal::after { background:var(--teal); }
+.kpi-delta { font-size:11px; margin-top:2px; }
+.kpi-delta.up { color:var(--green); }
+.kpi-delta.down { color:var(--red); }
+.kpi-clickable { cursor:pointer; }
+.card-section { padding:14px 0 4px; }
+.card-section h4 { font-size:13px; color:var(--navy); margin-bottom:8px; }
+.text-center { text-align:center; }
+
+/* ---------- st-pill family (from the settlement screen, kept identical) ---------- */
+.st-pill { font-family:'DM Sans',sans-serif; font-size:11px; font-weight:800; text-transform:uppercase; padding:2px 9px; border-radius:99px; }
+.st-pending { background:#fef3c7; color:#b45309; }
+.st-paid { background:#dcfce7; color:#15803d; }
+.st-frozen { background:#fee2e2; color:#b91c1c; }
+.st-table { width:100%; border-collapse:collapse; font-size:13px; margin-top:6px; }
+.st-table th { text-align:left; font-size:11px; text-transform:uppercase; letter-spacing:.05em; color:#78716c; padding:7px 10px; border-bottom:1px solid #e8e5e0; }
+.st-table td { padding:8px 10px; border-bottom:1px solid #f0eee9; font-family:ui-monospace,Menlo,monospace; font-size:12.5px; }
+.st-card { background:#fff; border:1px solid #e8e5e0; border-radius:12px; padding:18px; margin-bottom:18px; }
+.st-dir { display:inline-block; font-family:ui-monospace,Menlo,monospace; font-weight:800; font-size:12px; padding:2px 9px; border-radius:99px; margin-bottom:8px; }
+.st-in { background:#ccfbf1; color:#115e59; }
+.st-out { background:#f7ecd0; color:#8a6a1e; }
+
+/* ---------- kebab menu (secondary row actions) ---------- */
+.kebab-btn { font-size:16px; line-height:1; padding:2px 8px; border-radius:6px; color:var(--text-muted); }
+.kebab-btn:hover { background:var(--border-light); color:var(--navy); }
+.kebab-menu {
+  position:fixed; z-index:2000; min-width:190px;
+  background:#fff; border:1px solid var(--border); border-radius:10px;
+  box-shadow:var(--shadow-lg); padding:5px;
+}
+.kebab-menu button {
+  display:flex; width:100%; align-items:center; gap:8px;
+  padding:8px 12px; border-radius:7px; font-size:13px; color:var(--text-secondary); text-align:left;
+}
+.kebab-menu button:hover { background:var(--bg-gray); color:var(--navy); }
+
+/* ---------- filter chip (active cross-link filter) ---------- */
+.filter-chip {
+  display:inline-flex; align-items:center; gap:6px;
+  background:var(--teal-soft); color:var(--teal-dark);
+  border:1px solid rgba(15,168,155,.4); border-radius:99px;
+  font-size:12px; font-weight:600; padding:3px 6px 3px 12px; margin-bottom:12px;
+}
+.filter-chip button { font-size:13px; color:var(--teal-dark); padding:0 6px; border-radius:99px; }
+.filter-chip button:hover { background:rgba(15,168,155,.2); }
+
+/* ---------- clickable rows ---------- */
+.tbl tbody tr.rowlink { cursor:pointer; }
+.tbl td .xlink { font-size:11px; }
+
+/* ---------- agency page tabs ---------- */
+.page-tabs { display:flex; gap:4px; border-bottom:1px solid var(--border-light); margin-bottom:18px; }
+.page-tab {
+  padding:10px 16px; font-size:13px; font-weight:600; color:var(--text-muted);
+  border-bottom:2px solid transparent; display:inline-flex; align-items:center; gap:7px;
+}
+.page-tab:hover { color:var(--navy); }
+.page-tab.active { color:var(--teal-dark); border-bottom-color:var(--teal); }
+
+/* ---------- waterfall / cascade shared bits ---------- */
+.wf-caption { font-size:11.5px; color:var(--text-muted); margin:6px 0 0; }
+.wf-fee td { color:#b45309; }
+.audit-split-lite { display:grid; grid-template-columns:1.6fr 1fr; gap:18px; align-items:start; }
+@media (max-width:1100px){ .audit-split-lite { grid-template-columns:1fr; } }
+.audit-d-label { font-size:10.5px; text-transform:uppercase; letter-spacing:.6px; color:var(--text-muted); font-weight:700; margin-bottom:3px; }
+.audit-pre { background:var(--bg-gray); border-radius:8px; padding:10px 12px; font-size:11.5px; overflow:auto; font-family:ui-monospace,Menlo,monospace; }
+.audit-section { margin-top:12px; }
