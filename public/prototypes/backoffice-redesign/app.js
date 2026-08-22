@@ -3,6 +3,10 @@
    Separate from ../backoffice (untouched). Same visual language,
    new information architecture. Hash-routed (#/screen/param) so
    every drill-in is deep-linkable and browser Back works.
+   Standing table rules: every table sortable (type-aware), a
+   contextual filter bar (date presets FIRST, status chips,
+   entity typeahead, free-text search, active-filter chips),
+   and columns trimmed to the table's purpose (rest in detail).
    ============================================================ */
 
 /* ---------- formatting (one currency format everywhere) ---------- */
@@ -58,6 +62,8 @@ const AGENCIES = [
     credit:null, employees:[['Dana Whitfield','dana@marinabay.com','Manager','Pending']], ledger:[]}
 ];
 const agency = id => AGENCIES.find(a => a.id === id);
+const AG_NAMES = AGENCIES.map(a => a.name);
+const VENDOR_NAMES = ['Dingus','Hotetec','Roibos','Restel'];
 
 const HOTELS = [
   {id:'h1', code:'HT00108', name:'Iberostar Grand Packard', city:'Havana',     vendor:'Dingus',  brand:'Iberostar', stars:5, markup:17.5, adj:0,    sync:'2026-08-18'},
@@ -68,6 +74,7 @@ const HOTELS = [
   {id:'h6', code:'HT00633', name:'Paradisus Río de Oro',    city:'Holguín',    vendor:'Dingus',  brand:'Meliá',     stars:5, markup:20.0, adj:0,    sync:'2026-08-15'}
 ];
 const hotel = id => HOTELS.find(h => h.id === id);
+const BRAND_NAMES = [...new Set(HOTELS.map(h => h.brand))];
 
 const BRANDS = [
   {name:'Iberostar Group',            code:'IBEROSTAR', disc:.125, status:'Signed',      note:'Effective Mar 2026 – Mar 2027.'},
@@ -76,6 +83,8 @@ const BRANDS = [
   {name:'Marriott International',     code:'MARRIOTT',  disc:0,    status:'No discount', note:'Brand grouping only.'},
   {name:'Hyatt Hotels Corporation',   code:'HYATT',     disc:.07,  status:'Signed',      note:'Ziva / Zilara all-inclusive.'}
 ];
+/* Active (signed) brand discount for a hotel */
+const brandDisc = h => (BRANDS.find(b => b.status === 'Signed' && b.name.startsWith(h.brand)) || {disc:0}).disc;
 
 /* Bookings — the money model is identical to ../backoffice's waterfall */
 const BOOKINGS = [
@@ -89,6 +98,7 @@ const BOOKINGS = [
   {ref:'PTA10228', agencyId:'agc1', hotelId:'h2', guest:'James Low',     guests:2, booked:'Jul 03', pkey:'2026-07', checkin:'Jul 19', nights:3, room:'Ocean Suite',  status:'Completed', pay:'card',   net:1360.00, brandDisc:.07,  markup:.184, rebate:.03, agentPct:.22, opsPct:.07, agentId:'sa1'}
 ];
 const booking = ref => BOOKINGS.find(b => b.ref === ref);
+const STATUSES = ['Confirmed','Pending','Cancelled','Completed'];
 
 /* One money model — used by every waterfall (historical and forward) */
 const CARD_FEE_PCT = .03;
@@ -126,6 +136,12 @@ const REMITS = [
   {id:'rm6', agencyId:'agc3', period:'Jun 2026', pkey:'2026-06', amount:1890.00, due:'Jul 15, 2026', status:'Paid',    late:'+2 d',    bookings:15, wire:'WIRE-2026-06-CV'}
 ];
 
+const SETTLEMENTS = [
+  {id:'SET-2026-0812-01', agencyId:'agc1', initiated:'Aug 12', amount:7500, method:'ACH (Square)',   status:'Pending',   pill:'st-pending', label:'Pending · ACH 2–3 days'},
+  {id:'SET-2026-0809-02', agencyId:'agc3', initiated:'Aug 09', amount:2150, method:'Card (TropiPay)',status:'Completed', pill:'st-paid',    label:'Completed'},
+  {id:'SET-2026-0808-03', agencyId:'agc4', initiated:'Aug 08', amount:4320, method:'ACH (Square)',   status:'Failed',    pill:'st-frozen',  label:'Failed · insufficient funds'}
+];
+
 const AUDIT = [
   {t:'Aug 19 14:32', ref:'PTA10312', action:'Modified',       trans:'CONFIRMED → CONFIRMED', vendor:'dingus',  result:'OK'},
   {t:'Aug 09 11:20', ref:'PTA10275', action:'Created',        trans:'— → CONFIRMED',         vendor:'restel',  result:'OK'},
@@ -154,12 +170,12 @@ const ROLES = [
 
 /* Rules shown on Pricing Policy (cascade) — most specific wins */
 const RULES = [
-  {scope:'Global default',                     param:'Ergos markup',   value:'15.0%',  status:'active'},
-  {scope:'Country · Cuba',                     param:'Ergos markup',   value:'17.5%',  status:'wins', winsFor:'markup'},
-  {scope:'Brand · Iberostar',                  param:'Brand discount', value:'−12.5%', status:'wins', winsFor:'discount'},
-  {scope:'Hotel · Iberostar Grand Packard',    param:'Ergos markup',   value:'— (inherits)', status:'inherit'},
-  {scope:'Agency · Sunshine Travel LLC',       param:'Rebate',         value:'3.0%',   status:'wins', winsFor:'rebate'},
-  {scope:'Tier · Elite (Carlos Ortega)',       param:'Agent share',    value:'22.0%',  status:'wins', winsFor:'agent'}
+  {scope:'Global default',                     param:'Ergos markup',   value:'15.0%',  status:'base'},
+  {scope:'Country · Cuba',                     param:'Ergos markup',   value:'17.5%',  status:'wins'},
+  {scope:'Brand · Iberostar',                  param:'Brand discount', value:'−12.5%', status:'wins'},
+  {scope:'Hotel · Iberostar Grand Packard',    param:'Ergos markup',   value:'— (inherits)', status:'inherits'},
+  {scope:'Agency · Sunshine Travel LLC',       param:'Rebate',         value:'3.0%',   status:'wins'},
+  {scope:'Tier · Elite (Carlos Ortega)',       param:'Agent share',    value:'22.0%',  status:'wins'}
 ];
 
 /* ============================================================
@@ -189,6 +205,147 @@ function waterfall(b, opts = {}) {
       <tr class="bb-final"><td>= Ergos net</td><td class="text-right">${fmt(c.net)} ${c.net < 0 ? '⚠' : ''}</td></tr>
     </table>
     <p class="wf-caption">${opts.caption || ''}</p>`;
+}
+
+/* ============================================================
+   Shared table engine — standing rules for EVERY table:
+   · all data columns sortable, ▲/▼ indicator, type-aware compare
+   · filter bar: date presets FIRST (Today/7d/30d/Custom against
+     the demo clock Aug 19 2026), status chips (multi-select),
+     entity typeahead (datalist), free-text search — AND-combined
+   · active-filter chips with × to clear
+   ============================================================ */
+const NOW = new Date('2026-08-19T23:59:59');
+function pdate(s) {
+  if (s instanceof Date) return s;
+  if (/^[A-Za-z]{3} \d{4}$/.test(s)) return new Date(s.replace(' ', ' 1, '));   // 'Jul 2026'
+  if (/\d{4}/.test(s)) return new Date(s);                                      // has a year
+  const m = s.match(/^([A-Za-z]{3} \d{1,2})(.*)$/);                             // 'Aug 19 14:32' / 'Sep 12'
+  return m ? new Date(m[1] + ', 2026' + m[2]) : new Date(s);
+}
+const money = s => parseFloat(String(s).replace('−', '-').replace(/[^0-9.-]/g, '')) || 0;
+
+const TCFG = {}, TSTATE = {};
+function table(id, cfg, seed) {
+  TCFG[id] = cfg;
+  TSTATE[id] = Object.assign({sortKey:null, sortDir:1, q:'', entity:'', statuses:[], preset:'all', from:'', to:''}, seed || {});
+  const st = TSTATE[id];
+  const pill = (label, val) => `<button class="fpill ${st.preset === val ? 'active' : ''}" data-preset="${val}" onclick="tPreset('${id}','${val}',this)" title="demo clock: Aug 19, 2026">${label}</button>`;
+  const dateBar = cfg.date ? `
+    <span class="tbar-label">${cfg.date.label}</span>
+    ${pill('All','all')}${pill('Today','today')}${pill('7d','7d')}${pill('30d','30d')}${pill('Custom','custom')}
+    <span class="tbar-custom" id="tcustom-${id}" ${st.preset === 'custom' ? '' : 'hidden'}>
+      <input type="date" id="tfrom-${id}" value="${st.from}" onchange="tCustom('${id}')">
+      <span>→</span>
+      <input type="date" id="tto-${id}" value="${st.to}" onchange="tCustom('${id}')">
+    </span>
+    <span class="tbar-sep"></span>` : '';
+  const statusBar = cfg.status ? cfg.status.options.map(s =>
+    `<button class="fpill ${st.statuses.includes(s) ? 'active' : ''}" data-status="${s}" onclick="tStatus('${id}','${s}',this)">${s}</button>`).join('') : '';
+  const entityBar = cfg.entity ? `
+    <input class="tbar-input" id="te-${id}" list="dl-${id}" placeholder="${cfg.entity.placeholder}" value="${st.entity}" oninput="tEntity('${id}',this.value)">
+    <datalist id="dl-${id}">${cfg.entity.options.map(o => `<option value="${o}">`).join('')}</datalist>` : '';
+  const searchBar = cfg.search ? `<input class="tbar-input tbar-search" id="tq-${id}" placeholder="${cfg.search.placeholder}" value="${st.q}" oninput="tQ('${id}',this.value)">` : '';
+  return `
+  <div class="twrap" id="tw-${id}">
+    <div class="tbar">
+      ${dateBar}${statusBar}${entityBar}${searchBar}
+      ${(cfg.chips || []).map(c => chip(c[0], c[1], c[2])).join('')}
+    </div>
+    <div class="tchips" id="tchips-${id}"></div>
+    <div id="tb-${id}">${tTable(id)}</div>
+  </div>`;
+}
+
+function tRange(st) {
+  const day = 864e5;
+  if (st.preset === 'today') { const s = new Date(NOW); s.setHours(0,0,0,0); return [s, NOW]; }
+  if (st.preset === '7d')  return [new Date(NOW - 7 * day), NOW];
+  if (st.preset === '30d') return [new Date(NOW - 30 * day), NOW];
+  if (st.preset === 'custom') return [
+    st.from ? new Date(st.from + 'T00:00:00') : new Date(0),
+    st.to ? new Date(st.to + 'T23:59:59') : new Date('2100-01-01')];
+  return null;
+}
+function tCmp(a, b) {
+  if (a instanceof Date && b instanceof Date) return a - b;
+  if (typeof a === 'number' && typeof b === 'number') return a - b;
+  return String(a).localeCompare(String(b));
+}
+function tRows(id) {
+  const cfg = TCFG[id], st = TSTATE[id];
+  let rows = cfg.rows();
+  if (st.q && cfg.search) { const q = st.q.toLowerCase(); rows = rows.filter(r => cfg.search.val(r).toLowerCase().includes(q)); }
+  if (st.entity && cfg.entity) { const e = st.entity.toLowerCase(); rows = rows.filter(r => cfg.entity.val(r).toLowerCase().includes(e)); }
+  if (st.statuses.length && cfg.status) rows = rows.filter(r => st.statuses.includes(cfg.status.val(r)));
+  const range = cfg.date ? tRange(st) : null;
+  if (range) rows = rows.filter(r => { const d = pdate(cfg.date.val(r)); return d >= range[0] && d <= range[1]; });
+  if (st.sortKey) {
+    const col = cfg.columns.find(c => c.key === st.sortKey);
+    if (col) rows = [...rows].sort((a, b) => tCmp(col.val(a), col.val(b)) * st.sortDir);
+  }
+  return rows;
+}
+function tTable(id) {
+  const cfg = TCFG[id], st = TSTATE[id], rows = tRows(id);
+  const head = cfg.columns.map(c => c.sortable === false
+    ? `<th class="${c.right ? 'text-right' : ''}">${c.label}</th>`
+    : `<th class="th-sort ${c.right ? 'text-right' : ''}" onclick="tSort('${id}','${c.key}')" title="Sort by ${c.label}">${c.label}${st.sortKey === c.key ? (st.sortDir === 1 ? ' ▲' : ' ▼') : ''}</th>`).join('');
+  const body = rows.length
+    ? rows.map(r => `<tr ${cfg.rowAttrs ? cfg.rowAttrs(r) : ''}>${cfg.columns.map(c => `<td class="${c.right ? 'text-right' : ''}">${c.cell(r)}</td>`).join('')}</tr>`).join('')
+    : `<tr><td colspan="${cfg.columns.length}" class="tbl-empty-cell">No rows match these filters.</td></tr>`;
+  const foot = cfg.foot && rows.length ? `<tfoot>${cfg.foot(rows)}</tfoot>` : '';
+  return `<table class="tbl"><thead><tr>${head}</tr></thead><tbody>${body}</tbody>${foot}</table>`;
+}
+function tDraw(id) {
+  const tb = document.getElementById('tb-' + id); if (!tb) return;
+  tb.innerHTML = tTable(id);
+  const st = TSTATE[id], cfg = TCFG[id], chips = [];
+  const x = (kind, label, val) => `<span class="filter-chip">${label} <button onclick="tClear('${id}','${kind}'${val ? `,'${val}'` : ''})" title="Clear">×</button></span>`;
+  if (cfg.date && st.preset !== 'all')
+    chips.push(x('date', cfg.date.label + ': ' + (st.preset === 'custom' ? (st.from || '…') + ' → ' + (st.to || '…') : st.preset)));
+  st.statuses.forEach(s => chips.push(x('status', s, s)));
+  if (st.entity) chips.push(x('entity', st.entity));
+  if (st.q) chips.push(x('q', '“' + st.q + '”'));
+  const host = document.getElementById('tchips-' + id); if (host) host.innerHTML = chips.join('');
+  const cnt = document.getElementById('tcount-' + id); if (cnt) cnt.textContent = tRows(id).length;
+}
+function tSort(id, key) { const st = TSTATE[id]; st.sortDir = st.sortKey === key ? -st.sortDir : 1; st.sortKey = key; tDraw(id); }
+function tQ(id, v) { TSTATE[id].q = v; tDraw(id); }
+function tEntity(id, v) { TSTATE[id].entity = v; tDraw(id); }
+function tStatus(id, s, btn) {
+  const st = TSTATE[id], i = st.statuses.indexOf(s);
+  i >= 0 ? st.statuses.splice(i, 1) : st.statuses.push(s);
+  if (btn) btn.classList.toggle('active');
+  tDraw(id);
+}
+function tPreset(id, p, btn) {
+  TSTATE[id].preset = p;
+  if (btn) btn.parentElement.querySelectorAll('[data-preset]').forEach(b => b.classList.toggle('active', b === btn));
+  const c = document.getElementById('tcustom-' + id); if (c) c.hidden = p !== 'custom';
+  tDraw(id);
+}
+function tCustom(id) {
+  const st = TSTATE[id];
+  st.from = document.getElementById('tfrom-' + id).value;
+  st.to = document.getElementById('tto-' + id).value;
+  st.preset = 'custom';
+  tDraw(id);
+}
+function tClear(id, kind, val) {
+  const st = TSTATE[id], tw = document.getElementById('tw-' + id);
+  if (kind === 'q') { st.q = ''; const el = document.getElementById('tq-' + id); if (el) el.value = ''; }
+  if (kind === 'entity') { st.entity = ''; const el = document.getElementById('te-' + id); if (el) el.value = ''; }
+  if (kind === 'status') {
+    const i = st.statuses.indexOf(val); if (i >= 0) st.statuses.splice(i, 1);
+    const b = tw && tw.querySelector(`[data-status="${val}"]`); if (b) b.classList.remove('active');
+  }
+  if (kind === 'date') {
+    st.preset = 'all'; st.from = ''; st.to = '';
+    if (tw) tw.querySelectorAll('[data-preset]').forEach(b => b.classList.toggle('active', b.dataset.preset === 'all'));
+    const c = document.getElementById('tcustom-' + id); if (c) c.hidden = true;
+  }
+  tDraw(id);
 }
 
 /* ============================================================
@@ -370,13 +527,6 @@ const pg = id => document.getElementById('pg-' + id);
 
 /* ---------- Dashboard ---------- */
 RENDERERS['dashboard'] = () => {
-  const rows = BOOKINGS.slice(0, 5).map(b => {
-    const c = calc(b);
-    return `<tr class="rowlink" onclick="go('reservation-detail','${b.ref}')">
-      <td class="bb-ref">${b.ref}</td><td>${agency(b.agencyId).name}</td><td>${hotel(b.hotelId).name}</td>
-      <td class="text-right"><strong>${fmt(c.eff)}</strong></td><td>${badge(b.status)}</td><td class="muted">${b.booked}</td>
-    </tr>`;
-  }).join('');
   pg('dashboard').innerHTML = `
     <div class="page-head row">
       <div><h1>Good day, Admin</h1><p class="muted">Overview — every card and row below is a real link.</p></div>
@@ -392,25 +542,28 @@ RENDERERS['dashboard'] = () => {
         <div><h3>Recent bookings</h3><p class="muted">Row click opens the reservation detail hub.</p></div>
         ${xlink('All reservations', 'reservations')}
       </div>
-      <table class="tbl">
-        <thead><tr><th>Reference</th><th>Agency</th><th>Hotel</th><th class="text-right">Agency pays</th><th>Status</th><th>Booked</th></tr></thead>
-        <tbody>${rows}</tbody>
-      </table>
+      ${table('dash', {
+        rows: () => BOOKINGS.slice(0, 5),
+        date: {label:'Booked', val: b => b.booked},
+        status: {options: STATUSES, val: b => b.status},
+        search: {placeholder:'Search ref, guest, hotel…', val: b => b.ref + ' ' + b.guest + ' ' + hotel(b.hotelId).name + ' ' + agency(b.agencyId).name},
+        columns: [
+          {key:'ref', label:'Reference', val: b => b.ref, cell: b => `<span class="bb-ref">${b.ref}</span>`},
+          {key:'agency', label:'Agency', val: b => agency(b.agencyId).name, cell: b => agency(b.agencyId).name},
+          {key:'hotel', label:'Hotel', val: b => hotel(b.hotelId).name, cell: b => hotel(b.hotelId).name},
+          {key:'pays', label:'Agency pays', right:true, val: b => calc(b).eff, cell: b => `<strong>${fmt(calc(b).eff)}</strong>`},
+          {key:'status', label:'Status', val: b => b.status, cell: b => badge(b.status)},
+          {key:'booked', label:'Booked', val: b => pdate(b.booked), cell: b => `<span class="muted">${b.booked}</span>`}
+        ],
+        rowAttrs: b => `class="rowlink" onclick="go('reservation-detail','${b.ref}')"`
+      })}
     </div>`;
+  tDraw('dash');
 };
 
 /* ---------- BackOffice (tabs: Users | Roles — Roles merged) ---------- */
 RENDERERS['backoffice'] = (tab) => {
   tab = tab === 'roles' ? 'roles' : 'users';
-  const users = BO_USERS.map((u, i) => `
-    <tr class="rowlink" onclick="viewBoUser(${i})">
-      <td>${u[0]} ${u[1]}</td><td>${u[2]}</td><td><code class="code-chip">${u[3]}</code></td><td>${badge(u[4])}</td>
-      <td class="text-right">${kebab('bo' + i, [['Edit user', () => editBoUser(i)], ['Reset password', () => toast('Password reset email sent (demo)')]])}</td>
-    </tr>`).join('');
-  const roles = ROLES.map((r, i) => `
-    <tr class="rowlink" onclick="viewRole(${i})">
-      <td>${r[0]}</td><td><code class="code-chip">${r[1]}</code></td><td>${r[2]}</td><td class="text-right">${r[3].toLocaleString('en-US')}</td>
-    </tr>`).join('');
   pg('backoffice').innerHTML = `
     <div class="page-head row">
       <div><h1>BackOffice</h1><p class="muted">Internal staff and their roles — one screen, two tabs.</p></div>
@@ -420,15 +573,35 @@ RENDERERS['backoffice'] = (tab) => {
       <button class="page-tab ${tab === 'users' ? 'active' : ''}" onclick="go('backoffice','users')">Users</button>
       <button class="page-tab ${tab === 'roles' ? 'active' : ''}" onclick="go('backoffice','roles')">Roles ${chip('merged', 'was: nav item', 'Roles Management was a separate nav item')}</button>
     </div>
-    ${tab === 'users' ? `
-      <div class="card"><table class="tbl">
-        <thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Status</th><th></th></tr></thead>
-        <tbody>${users}</tbody>
-      </table></div>` : `
-      <div class="card"><table class="tbl">
-        <thead><tr><th>Role</th><th>Code</th><th>Description</th><th class="text-right">Users</th></tr></thead>
-        <tbody>${roles}</tbody>
-      </table></div>`}`;
+    <div class="card">
+    ${tab === 'users'
+      ? table('bou', {
+          rows: () => BO_USERS,
+          status: {options:['Active','Suspended'], val: u => u[4]},
+          entity: {placeholder:'Role…', options:['ADMIN','IMPORTERS','USER'], val: u => u[3]},
+          search: {placeholder:'Search name, email…', val: u => u[0] + ' ' + u[1] + ' ' + u[2]},
+          columns: [
+            {key:'name', label:'Name', val: u => u[0] + ' ' + u[1], cell: u => u[0] + ' ' + u[1]},
+            {key:'email', label:'Email', val: u => u[2], cell: u => u[2]},
+            {key:'role', label:'Role', val: u => u[3], cell: u => `<code class="code-chip">${u[3]}</code>`},
+            {key:'status', label:'Status', val: u => u[4], cell: u => badge(u[4])},
+            {key:'act', label:'', sortable:false, right:true, val: () => '', cell: u => kebab('bo' + BO_USERS.indexOf(u), [['Edit user', () => editBoUser(BO_USERS.indexOf(u))], ['Reset password', () => toast('Password reset email sent (demo)')]])}
+          ],
+          rowAttrs: u => `class="rowlink" onclick="viewBoUser(${BO_USERS.indexOf(u)})"`
+        })
+      : table('roles', {
+          rows: () => ROLES,
+          search: {placeholder:'Search role, code…', val: r => r[0] + ' ' + r[1]},
+          columns: [
+            {key:'name', label:'Role', val: r => r[0], cell: r => r[0]},
+            {key:'code', label:'Code', val: r => r[1], cell: r => `<code class="code-chip">${r[1]}</code>`},
+            {key:'desc', label:'Description', val: r => r[2], cell: r => r[2]},
+            {key:'users', label:'Users', right:true, val: r => r[3], cell: r => r[3].toLocaleString('en-US')}
+          ],
+          rowAttrs: r => `class="rowlink" onclick="viewRole(${ROLES.indexOf(r)})"`
+        })}
+    </div>`;
+  tDraw(tab === 'users' ? 'bou' : 'roles');
 };
 function viewBoUser(i) {
   const u = BO_USERS[i];
@@ -445,52 +618,46 @@ function viewRole(i) {
   openModal('Role — ' + r[0], dl([['Name', r[0]], ['Code', `<code class="code-chip">${r[1]}</code>`], ['Description', r[2]], ['Users', r[3].toLocaleString('en-US')]]), {readOnly:true});
 }
 
-/* ---------- Hotels (Catalog) ---------- */
-RENDERERS['hotels'] = (search) => {
+/* ---------- Hotels (Catalog) — 10 → 6 cols, rest in detail ---------- */
+RENDERERS['hotels'] = (brandFilter) => {
   pg('hotels').innerHTML = `
     <div class="page-head row">
       <div><h1>Hotels</h1><p class="muted">${chip('new', 'changed')} Empty Commission column removed · the field is <b>Ergos Markup</b> everywhere (list, dialog, waterfall).</p></div>
       <button class="btn btn-primary" onclick="editHotel('h1')">+ Add Hotel</button>
     </div>
     <div class="card">
-      <div class="table-toolbar"><input class="t-search" id="hotel-search" placeholder="Search name, city, brand…" oninput="filterHotels(this.value)"></div>
-      <table class="tbl"><thead><tr>
-        <th>Code</th><th>Hotel</th><th>City</th><th>★</th><th>Vendor</th><th>Brand</th>
-        <th class="text-right">Ergos Markup</th><th class="text-right">Price adj.</th><th>Links</th><th></th>
-      </tr></thead><tbody id="hotel-rows"></tbody></table>
+      ${table('hot', {
+        rows: () => HOTELS,
+        chips: [['was', '10 → 6 cols · rest in detail', 'vendor, stars, price adjustment, last sync and the links column moved to the row detail / kebab']],
+        entity: {placeholder:'Brand…', options: BRAND_NAMES, val: h => h.brand},
+        search: {placeholder:'Search name, city, code…', val: h => h.name + ' ' + h.city + ' ' + h.code},
+        columns: [
+          {key:'name', label:'Hotel', val: h => h.name, cell: h => `<strong>${h.name}</strong>`},
+          {key:'code', label:'Code', val: h => h.code, cell: h => `<span class="bb-mono">${h.code}</span>`},
+          {key:'markup', label:'Ergos Markup', right:true, val: h => h.markup, cell: h => h.markup.toFixed(1) + '%'},
+          {key:'disc', label:'Brand discount', right:true, val: h => brandDisc(h), cell: h => brandDisc(h) ? '−' + pctf(brandDisc(h)) : '—'},
+          {key:'city', label:'City', val: h => h.city, cell: h => h.city},
+          {key:'act', label:'', sortable:false, right:true, val: () => '', cell: h => kebab('h' + h.id, [
+            ['Edit hotel', () => editHotel(h.id)],
+            ['Price composition ↗', () => go('price-composition', h.id)],
+            ['Pricing rules ↗', () => go('pricing-policy')],
+            ['Sync from ' + h.vendor, () => toast('Sync queued for ' + h.name + ' (demo)')]
+          ])}
+        ],
+        rowAttrs: h => `class="rowlink" onclick="editHotel('${h.id}')"`
+      }, brandFilter ? {entity: brandFilter} : null)}
     </div>`;
-  renderHotelRows(search || '');
-  if (search) {
-    const inp = document.getElementById('hotel-search');
-    inp.value = search;
-  }
+  tDraw('hot');
 };
-function renderHotelRows(q) {
-  q = (q || '').toLowerCase();
-  document.getElementById('hotel-rows').innerHTML = HOTELS
-    .filter(h => !q || (h.name + h.city + h.brand + h.vendor + h.code).toLowerCase().includes(q))
-    .map(h => `
-      <tr class="rowlink" onclick="editHotel('${h.id}')">
-        <td class="bb-mono">${h.code}</td><td><strong>${h.name}</strong></td><td>${h.city}</td>
-        <td>${'★'.repeat(h.stars)}</td><td><span class="vendor-chip ${h.vendor.toLowerCase()}">${h.vendor}</span></td><td>${h.brand}</td>
-        <td class="text-right">${h.markup.toFixed(1)}%</td><td class="text-right">${h.adj >= 0 ? '+' : '−'}${Math.abs(h.adj).toFixed(1)}%</td>
-        <td>${xlink('price composition', 'price-composition/' + h.id)}</td>
-        <td class="text-right">${kebab('h' + h.id, [
-          ['Edit hotel', () => editHotel(h.id)],
-          ['Pricing rules ↗', () => go('pricing-policy')],
-          ['Sync from ' + h.vendor, () => toast('Sync queued for ' + h.name + ' (demo)')]
-        ])}</td>
-      </tr>`).join('') || `<tr><td colspan="10" class="tbl-empty-cell">No hotels match.</td></tr>`;
-}
-function filterHotels(q){ renderHotelRows(q); }
 function editHotel(id) {
   const h = hotel(id);
-  openModal('Edit Hotel — ' + h.name,
+  openModal('Hotel — ' + h.name,
     `<div class="form-grid">
        ${fld('Code', h.code)}${fld('Name', h.name)}${fld('City', h.city)}${fld('Brand', h.brand)}
        ${fld('Ergos Markup (%)', h.markup, 'number')}${fld('Price adjustment (%)', h.adj, 'number')}
+       ${fld('Vendor', h.vendor)}${fld('Stars', h.stars, 'number')}
      </div>
-     <div class="modal-note">One vocabulary: this field is <b>Ergos Markup</b> — it was “Base commission” here and an always-empty “Commission” column in the list.</div>`);
+     <div class="modal-note">Moved out of the list into this detail: vendor (${h.vendor}), stars (${'★'.repeat(h.stars)}), price adjustment, last sync (${h.sync}). One vocabulary: this field is <b>Ergos Markup</b> — it was “Base commission” here and an always-empty “Commission” column in the list.</div>`);
 }
 
 /* ---------- Hotel Suppliers (Catalog) ---------- */
@@ -529,28 +696,36 @@ RENDERERS['hotel-suppliers'] = () => {
     ${sup('Restel', 'custom XML', '1 vendor', child('RS', 'restel', 'https://xml.restel.es/hotel'), false)}`;
 };
 
-/* ---------- Reservations (Bookings) ---------- */
+/* ---------- Reservations (Bookings) — 9 → 7 cols ---------- */
 RENDERERS['reservations'] = () => {
-  const rows = BOOKINGS.map(b => {
-    const c = calc(b);
-    return `<tr class="rowlink" onclick="go('reservation-detail','${b.ref}')">
-      <td class="bb-ref">${b.ref}</td><td>${b.guest}</td><td>${hotel(b.hotelId).name}</td><td>${agency(b.agencyId).name}</td>
-      <td>${b.checkin}</td><td class="text-center">${b.nights}</td>
-      <td class="text-right"><strong>${fmt(c.eff)}</strong></td><td>${badge(b.status)}</td>
-      <td class="text-right">${kebab('r' + b.ref, [
-        ['Financial breakdown ↗', () => go('booking-breakdown', b.ref)],
-        ['Audit history ↗', () => go('audit-log', b.ref)]
-      ])}</td>
-    </tr>`;
-  }).join('');
   pg('reservations').innerHTML = `
     <div class="page-head row">
       <div><h1>Reservations</h1><p class="muted">${chip('new', 'changed')} Status is a badge (was plain text) · row click → detail, kebab for secondary — the one idiom everywhere.</p></div>
     </div>
-    <div class="card"><table class="tbl">
-      <thead><tr><th>Reference</th><th>Guest</th><th>Hotel</th><th>Agency</th><th>Check-in</th><th>Nights</th><th class="text-right">Agency pays</th><th>Status</th><th></th></tr></thead>
-      <tbody>${rows}</tbody>
-    </table></div>`;
+    <div class="card">
+      ${table('res', {
+        rows: () => BOOKINGS,
+        chips: [['was', '9 → 7 cols · rest in detail', 'reference, nights and room moved to the reservation detail hub']],
+        date: {label:'Check-in', val: b => b.checkin},
+        status: {options: STATUSES, val: b => b.status},
+        entity: {placeholder:'Agency…', options: AG_NAMES, val: b => agency(b.agencyId).name},
+        search: {placeholder:'Search guest, hotel, ref…', val: b => b.guest + ' ' + hotel(b.hotelId).name + ' ' + b.ref},
+        columns: [
+          {key:'hotel', label:'Hotel', val: b => hotel(b.hotelId).name, cell: b => `<strong>${hotel(b.hotelId).name}</strong>`},
+          {key:'checkin', label:'Check-in', val: b => pdate(b.checkin), cell: b => b.checkin},
+          {key:'guest', label:'Guest', val: b => b.guest, cell: b => b.guest},
+          {key:'agency', label:'Agency', val: b => agency(b.agencyId).name, cell: b => agency(b.agencyId).name},
+          {key:'total', label:'Total', right:true, val: b => calc(b).eff, cell: b => `<strong>${fmt(calc(b).eff)}</strong>`},
+          {key:'status', label:'Status', val: b => b.status, cell: b => badge(b.status)},
+          {key:'act', label:'', sortable:false, right:true, val: () => '', cell: b => kebab('r' + b.ref, [
+            ['Financial breakdown ↗', () => go('booking-breakdown', b.ref)],
+            ['Audit history ↗', () => go('audit-log', b.ref)]
+          ])}
+        ],
+        rowAttrs: b => `class="rowlink" onclick="go('reservation-detail','${b.ref}')"`
+      })}
+    </div>`;
+  tDraw('res');
 };
 
 /* ---------- Reservation detail — the booking hub ---------- */
@@ -585,6 +760,7 @@ RENDERERS['reservation-detail'] = (ref) => {
         <div class="snap-cell"><div class="snap-label">Agency</div><div class="snap-value" style="font-size:16px">${a.name}</div><div class="muted">${a.license}</div></div>
         <div class="snap-cell"><div class="snap-label">Agent</div><div class="snap-value" style="font-size:16px">${agent(b.agentId).name}</div><div class="muted">${agent(b.agentId).tier}</div></div>
       </div>
+      <p class="muted" style="margin-top:8px">Booked ${b.booked}, 2026 · reference <span class="bb-ref">${b.ref}</span> — slimmed out of the list, lives here.</p>
     </div>
     <div class="card">
       <div class="card-head"><h3>Payment</h3></div>
@@ -605,27 +781,18 @@ RENDERERS['reservation-detail'] = (ref) => {
     </div>`;
 };
 
-/* ---------- Booking Breakdown (Bookings) ---------- */
-/* param: 'PTA…' opens that booking's detail · 'agc1:2026-07' filters */
+/* ---------- Booking Breakdown (Bookings) — 9 → 7 cols ---------- */
+/* param: 'PTA…' opens that booking's detail · 'agc1:2026-07' seeds
+   the agency typeahead + a custom date range on the filter bar */
 RENDERERS['booking-breakdown'] = (param) => {
-  let detailRef = null, fAgency = '', fPeriod = '';
+  let detailRef = null, seed = null;
   if (param && param.startsWith('PTA')) detailRef = param;
-  else if (param) [fAgency, fPeriod] = param.split(':');
-  const list = BOOKINGS.filter(b =>
-    (!fAgency || b.agencyId === fAgency) && (!fPeriod || b.pkey === fPeriod));
-  const periodLabel = fPeriod === '2026-07' ? 'Jul 2026' : fPeriod === '2026-06' ? 'Jun 2026' : fPeriod;
-  const filterChip = fAgency ? `
-    <div class="filter-chip">Filtered: ${agency(fAgency).name} · ${periodLabel} — from Remittances
-      <button onclick="go('booking-breakdown')" title="Clear filter">×</button></div>` : '';
-  const rows = list.map(b => {
-    const c = calc(b);
-    return `<tr class="rowlink bb-row" onclick="go('booking-breakdown','${b.ref}')">
-      <td>${b.booked}</td><td class="bb-ref">${b.ref}</td><td>${agency(b.agencyId).name}</td><td>${hotel(b.hotelId).name}</td>
-      <td class="text-right">${fmt(c.adj)}</td><td class="text-right">${pctf(b.markup)}</td>
-      <td class="text-right">${fmt(c.sell)}</td><td class="text-right">${fmt(c.net)}</td>
-      <td>${marginBadge(c.margin)}</td>
-    </tr>`;
-  }).join('');
+  else if (param) {
+    const [agcId, pkey] = param.split(':');
+    const [y, m] = pkey.split('-').map(Number);
+    const last = new Date(y, m, 0).getDate();
+    seed = {entity: agency(agcId).name, preset:'custom', from:`${pkey}-01`, to:`${pkey}-${String(last).padStart(2, '0')}`};
+  }
   const b = detailRef && booking(detailRef);
   const detail = b ? (() => {
     const a = agency(b.agencyId);
@@ -661,51 +828,59 @@ RENDERERS['booking-breakdown'] = (param) => {
       <div><h1>Booking Breakdown</h1><p class="muted">Per-booking money flow across all 4 parties. Row click → waterfall detail.</p></div>
     </div>
     ${detail || `
-    ${filterChip}
-    <div class="card bb-filter-card">
-      <div class="bb-filter-row">
-        <div class="bb-field"><label>From date</label><input type="date" value="2026-07-01"></div>
-        <div class="bb-field"><label>To date</label><input type="date" value="2026-08-19"></div>
-        <div class="bb-field"><label>Agency</label>
-          <select onchange="go('booking-breakdown', this.value ? this.value + ':${fPeriod || '2026-07'}' : '')">
-            <option value="">All agencies</option>
-            ${AGENCIES.map(a => `<option value="${a.id}" ${a.id === fAgency ? 'selected' : ''}>${a.name}</option>`).join('')}
-          </select></div>
-        <button class="btn btn-primary bb-search-btn" onclick="toast('Filters applied')"><i class="ti ti-search"></i> Search</button>
-      </div>
-    </div>
     <div class="card">
-      <div class="card-head"><h3>Bookings (${fAgency ? list.length + ' of 37 shown — demo subset' : list.length})</h3></div>
-      <table class="tbl bb-tbl">
-        <thead><tr><th>Booked</th><th>Reference</th><th>Agency</th><th>Hotel</th><th class="text-right">Ergos cost</th><th class="text-right">Markup</th><th class="text-right">Ergos sell</th><th class="text-right">Ergos net</th><th>Margin</th></tr></thead>
-        <tbody>${rows}</tbody>
-      </table>
+      <div class="card-head"><h3>Bookings (<span id="tcount-bb">${BOOKINGS.length}</span>)</h3></div>
+      ${table('bb', {
+        rows: () => BOOKINGS,
+        chips: [['was', '9 → 7 cols · rest in detail', 'hotel + per-component amounts (cost, markup %, sell) moved to the row detail — they were always there']],
+        date: {label:'Booked', val: r => r.booked},
+        entity: {placeholder:'Agency…', options: AG_NAMES, val: r => agency(r.agencyId).name},
+        search: {placeholder:'Search ref, hotel…', val: r => r.ref + ' ' + hotel(r.hotelId).name},
+        columns: [
+          {key:'booked', label:'Booked', val: r => pdate(r.booked), cell: r => r.booked},
+          {key:'ref', label:'Reference', val: r => r.ref, cell: r => `<span class="bb-ref">${r.ref}</span>`},
+          {key:'agency', label:'Agency', val: r => agency(r.agencyId).name, cell: r => agency(r.agencyId).name},
+          {key:'price', label:'Customer price', right:true, val: r => calc(r).eff, cell: r => fmt(calc(r).eff)},
+          {key:'net', label:'Ergos net', right:true, val: r => calc(r).net, cell: r => fmt(calc(r).net)},
+          {key:'margin', label:'Margin', val: r => calc(r).margin, cell: r => marginBadge(calc(r).margin)},
+          {key:'act', label:'', sortable:false, right:true, val: () => '', cell: r => kebab('bb' + r.ref, [
+            ['Reservation ↗', () => go('reservation-detail', r.ref)],
+            ['Audit history ↗', () => go('audit-log', r.ref)]
+          ])}
+        ],
+        rowAttrs: r => `class="rowlink bb-row" onclick="go('booking-breakdown','${r.ref}')"`
+      }, seed)}
     </div>`}`;
+  if (!detail) tDraw('bb');
 };
 
 /* ---------- Booking Audit Log (Bookings) ---------- */
 RENDERERS['audit-log'] = (ref) => {
-  const list = ref ? AUDIT.filter(r => r.ref === ref) : AUDIT;
-  const rows = list.map((r, i) => `
-    <tr class="rowlink audit-row" onclick="auditSelect(${AUDIT.indexOf(r)})">
-      <td class="bb-mono">${r.t}</td>
-      <td><a class="lnk bb-ref" href="#/reservation-detail/${r.ref}" onclick="event.stopPropagation()" title="Open reservation">${r.ref} ↗</a></td>
-      <td>${badge(r.action)}</td><td class="bb-mono">${r.trans}</td><td>${r.vendor}</td><td>${badge(r.result)}</td>
-    </tr>`).join('');
   pg('audit-log').innerHTML = `
     <div class="page-head row">
       <div><h1>Booking Audit Log</h1><p class="muted">${chip('new', 'changed')} Booking refs are links to the reservation detail · reachable pre-filtered from any booking's “Audit history ↗”.</p></div>
     </div>
-    ${ref ? `<div class="filter-chip">Filtered: ${ref} <button onclick="go('audit-log')" title="Clear filter">×</button></div>` : ''}
     <div class="audit-split-lite">
       <div class="card">
-        <table class="tbl">
-          <thead><tr><th>When</th><th>Booking Ref</th><th>Action</th><th>Transition</th><th>Vendor</th><th>Result</th></tr></thead>
-          <tbody>${rows || '<tr><td colspan="6" class="tbl-empty-cell">No entries for this filter.</td></tr>'}</tbody>
-        </table>
+        ${table('aud', {
+          rows: () => AUDIT,
+          date: {label:'Date', val: r => r.t},
+          status: {options:['Created','Modified','Cancelled','Cancel Attempt','Payment'], val: r => r.action},
+          search: {placeholder:'Booking ref…', val: r => r.ref},
+          columns: [
+            {key:'t', label:'When', val: r => pdate(r.t), cell: r => `<span class="bb-mono">${r.t}</span>`},
+            {key:'ref', label:'Booking Ref', val: r => r.ref, cell: r => `<a class="lnk bb-ref" href="#/reservation-detail/${r.ref}" onclick="event.stopPropagation()" title="Open reservation">${r.ref} ↗</a>`},
+            {key:'action', label:'Action', val: r => r.action, cell: r => badge(r.action)},
+            {key:'trans', label:'Transition', val: r => r.trans, cell: r => `<span class="bb-mono">${r.trans}</span>`},
+            {key:'vendor', label:'Vendor', val: r => r.vendor, cell: r => r.vendor},
+            {key:'result', label:'Result', val: r => r.result, cell: r => badge(r.result)}
+          ],
+          rowAttrs: r => `class="rowlink audit-row" onclick="auditSelect(${AUDIT.indexOf(r)})"`
+        }, ref ? {q: ref} : null)}
       </div>
-      <div class="card" id="audit-detail">${auditDetailHTML(list[0] ? AUDIT.indexOf(list[0]) : 0)}</div>
+      <div class="card" id="audit-detail">${auditDetailHTML(AUDIT.indexOf((ref ? AUDIT.filter(r => r.ref === ref) : AUDIT)[0] || AUDIT[0]))}</div>
     </div>`;
+  tDraw('aud');
 };
 function auditDetailHTML(i) {
   const r = AUDIT[i];
@@ -725,11 +900,6 @@ function auditSelect(i){ document.getElementById('audit-detail').innerHTML = aud
 
 /* ---------- Pricing Policy (Pricing) ---------- */
 RENDERERS['pricing-policy'] = () => {
-  const rows = RULES.map((r, i) => `
-    <tr class="rowlink ${r.status === 'wins' ? '' : ''}" onclick="viewRule(${i})">
-      <td>${r.scope}</td><td>${r.param}</td><td class="text-right bb-mono">${r.value}</td>
-      <td>${r.status === 'wins' ? '<span class="badge badge-teal">wins</span>' : r.status === 'inherit' ? '<span class="badge badge-grey">inherits</span>' : '<span class="badge badge-grey">base</span>'}</td>
-    </tr>`).join('');
   const eff = {net:200.00, brandDisc:.125, markup:.175, rebate:.03, agentPct:.22, opsPct:.07, pay:'credit'};
   pg('pricing-policy').innerHTML = `
     <div class="page-head row">
@@ -738,15 +908,24 @@ RENDERERS['pricing-policy'] = () => {
     </div>
     <div class="card">
       <div class="card-head row"><h3>Cascade — rule resolution · Iberostar Grand Packard × Sunshine Travel LLC</h3><span class="muted">most specific rule wins · row click → rule detail</span></div>
-      <table class="tbl">
-        <thead><tr><th>Scope</th><th>Parameter</th><th class="text-right">Value</th><th>Resolution</th></tr></thead>
-        <tbody>${rows}</tbody>
-      </table>
+      ${table('rules', {
+        rows: () => RULES,
+        status: {options:['wins','inherits','base'], val: r => r.status},
+        search: {placeholder:'Search scope, parameter…', val: r => r.scope + ' ' + r.param},
+        columns: [
+          {key:'scope', label:'Scope', val: r => r.scope, cell: r => r.scope},
+          {key:'param', label:'Parameter', val: r => r.param, cell: r => r.param},
+          {key:'value', label:'Value', right:true, val: r => money(r.value), cell: r => `<span class="bb-mono">${r.value}</span>`},
+          {key:'res', label:'Resolution', val: r => r.status, cell: r => r.status === 'wins' ? '<span class="badge badge-teal">wins</span>' : `<span class="badge badge-grey">${r.status}</span>`}
+        ],
+        rowAttrs: r => `class="rowlink" onclick="viewRule(${RULES.indexOf(r)})"`
+      })}
     </div>
     <div class="card">
       <div class="card-head row"><h3>Waterfall — effective config</h3><span class="muted">what tonight's $200.00 net rate produces under the rules above</span></div>
       ${waterfall(eff, {caption:'Identical component and vocabulary as Price Composition, Booking Breakdown and the reservation detail.'})}
     </div>`;
+  tDraw('rules');
 };
 function viewRule(i) {
   const r = RULES[i];
@@ -761,7 +940,7 @@ function viewRule(i) {
 /* ---------- Hotel Brands (Pricing) ---------- */
 RENDERERS['hotel-brands'] = () => {
   const cards = BRANDS.map(b => {
-    const n = HOTELS.filter(h => h.brand === b.name.split(' ')[0] || b.name.startsWith(h.brand)).length;
+    const n = HOTELS.filter(h => b.name.startsWith(h.brand)).length;
     return `
     <div class="brand-card">
       <div class="brand-card-head">
@@ -796,17 +975,8 @@ function addBrand() {
 const COMPO_NET = {h1:200.00, h2:310.00};
 RENDERERS['price-composition'] = (hotelId) => {
   const h = hotel(COMPO_NET[hotelId] ? hotelId : 'h1');
-  const disc = (BRANDS.find(x => x.status === 'Signed' && x.name.startsWith(h.brand)) || {disc:0}).disc;
-  const base = {net:COMPO_NET[h.id], brandDisc:disc, markup:h.markup / 100, rebate:0, agentPct:.22, opsPct:.07, pay:'credit'};
+  const base = {net:COMPO_NET[h.id], brandDisc:brandDisc(h), markup:h.markup / 100, rebate:0, agentPct:.22, opsPct:.07, pay:'credit'};
   const sell = calc(base).sell;
-  const agencyRows = AGENCIES.map(a => `
-    <tr class="rowlink" onclick="compoTrace('${a.id}','${h.id}')">
-      <td><strong>${a.name}</strong></td>
-      <td>${a.rebate ? '<span class="badge badge-teal">Custom</span>' : '<span class="badge badge-grey">Default</span>'}</td>
-      <td class="text-right">${pctf(a.rebate)}</td>
-      <td class="text-right"><strong>${fmt(sell * (1 - a.rebate))}</strong></td>
-      <td>${xlink('agency page', 'agency/' + a.id)}</td>
-    </tr>`).join('');
   pg('price-composition').innerHTML = `
     <div class="page-head row">
       <div><h1>Price Composition</h1><p class="muted">Forward-looking: what each agency pays for this hotel tonight, and why.</p></div>
@@ -828,15 +998,25 @@ RENDERERS['price-composition'] = (hotelId) => {
     </div>
     <div class="card">
       <div class="card-head row"><h3>Agency prices (${AGENCIES.length})</h3><span class="muted">row click → cascade trace</span></div>
-      <table class="tbl">
-        <thead><tr><th>Agency</th><th>Rule</th><th class="text-right">Rebate</th><th class="text-right">Agency pays</th><th></th></tr></thead>
-        <tbody>${agencyRows}</tbody>
-      </table>
+      ${table('compo', {
+        rows: () => AGENCIES,
+        status: {options:['Custom','Default'], val: a => a.rebate ? 'Custom' : 'Default'},
+        search: {placeholder:'Search agency…', val: a => a.name},
+        columns: [
+          {key:'name', label:'Agency', val: a => a.name, cell: a => `<strong>${a.name}</strong>`},
+          {key:'rule', label:'Rule', val: a => a.rebate ? 'Custom' : 'Default', cell: a => a.rebate ? '<span class="badge badge-teal">Custom</span>' : '<span class="badge badge-grey">Default</span>'},
+          {key:'rebate', label:'Rebate', right:true, val: a => a.rebate, cell: a => pctf(a.rebate)},
+          {key:'pays', label:'Agency pays', right:true, val: a => sell * (1 - a.rebate), cell: a => `<strong>${fmt(sell * (1 - a.rebate))}</strong>`},
+          {key:'lnk', label:'', sortable:false, val: () => '', cell: a => xlink('agency page', 'agency/' + a.id)}
+        ],
+        rowAttrs: a => `class="rowlink" onclick="compoTrace('${a.id}','${h.id}')"`
+      })}
     </div>
     <div class="card" id="compo-trace">
       <div class="card-head"><h3>Cascade trace</h3></div>
       <p class="muted">Click an agency row above to see which rebate tiers the resolver considered and which one won.</p>
     </div>`;
+  tDraw('compo');
 };
 function compoTrace(agencyId, hotelId) {
   const a = agency(agencyId), h = hotel(hotelId);
@@ -857,23 +1037,29 @@ function compoTrace(agencyId, hotelId) {
 
 /* ---------- Commissions (Pricing — new in nav) ---------- */
 RENDERERS['commissions'] = () => {
-  const rows = COMMISSIONS.map((c, i) => {
-    const a = agent(c.agentId);
-    return `<tr class="rowlink" onclick="viewCommission(${i})">
-      <td><strong>${a.name}</strong></td><td>${a.tier}</td><td>${c.period}</td>
-      <td class="text-center">${c.bookings}</td><td class="text-right">${fmt(c.gross)}</td>
-      <td class="text-right"><strong>${fmt(c.earned)}</strong></td><td>${badge(c.status)}</td>
-    </tr>`;
-  }).join('');
   pg('commissions').innerHTML = `
     <div class="page-head row">
       <div><h1>Commissions</h1><p class="muted">${chip('new', 'new in nav — was orphan route', 'previously reachable only by typing /commissions')} Agent earnings per period, computed by the Pricing Policy engine.</p></div>
       ${xlink('Rates: Pricing Policy', 'pricing-policy')}
     </div>
-    <div class="card"><table class="tbl">
-      <thead><tr><th>Agent</th><th>Tier</th><th>Period</th><th>Bookings</th><th class="text-right">Gross margin base</th><th class="text-right">Earned</th><th>Status</th></tr></thead>
-      <tbody>${rows}</tbody>
-    </table></div>`;
+    <div class="card">
+      ${table('com', {
+        rows: () => COMMISSIONS,
+        status: {options:['Paid','Accrued'], val: c => c.status},
+        search: {placeholder:'Search agent…', val: c => agent(c.agentId).name},
+        columns: [
+          {key:'agent', label:'Agent', val: c => agent(c.agentId).name, cell: c => `<strong>${agent(c.agentId).name}</strong>`},
+          {key:'tier', label:'Tier', val: c => agent(c.agentId).tier, cell: c => agent(c.agentId).tier},
+          {key:'period', label:'Period', val: c => pdate(c.period), cell: c => c.period},
+          {key:'bk', label:'Bookings', right:true, val: c => c.bookings, cell: c => c.bookings},
+          {key:'gross', label:'Gross margin base', right:true, val: c => c.gross, cell: c => fmt(c.gross)},
+          {key:'earned', label:'Earned', right:true, val: c => c.earned, cell: c => `<strong>${fmt(c.earned)}</strong>`},
+          {key:'status', label:'Status', val: c => c.status, cell: c => badge(c.status)}
+        ],
+        rowAttrs: c => `class="rowlink" onclick="viewCommission(${COMMISSIONS.indexOf(c)})"`
+      })}
+    </div>`;
+  tDraw('com');
 };
 function viewCommission(i) {
   const c = COMMISSIONS[i], a = agent(c.agentId);
@@ -885,7 +1071,6 @@ function viewCommission(i) {
 }
 
 /* ---------- Agency Remittances (Finance) ---------- */
-let REMIT_F = {q:'', status:'all', period:'all'};
 RENDERERS['remittances'] = () => {
   pg('remittances').innerHTML = `
     <div class="page-head row">
@@ -897,60 +1082,31 @@ RENDERERS['remittances'] = () => {
       <div class="kpi green"><div class="kpi-label">Collected (Jun)</div><div class="kpi-value">${fmt(5502)}</div><div class="kpi-delta up">▲ on time</div></div>
     </div>
     <div class="card">
-      <div class="table-toolbar">
-        <input class="t-search" id="rm-q" placeholder="Search agency or license…" value="${REMIT_F.q}" oninput="remitFilter()">
-        <div class="t-filters">
-          <select id="rm-status" onchange="remitFilter()">
-            <option value="all" ${REMIT_F.status === 'all' ? 'selected' : ''}>All status</option>
-            <option value="Pending" ${REMIT_F.status === 'Pending' ? 'selected' : ''}>Pending</option>
-            <option value="Overdue" ${REMIT_F.status === 'Overdue' ? 'selected' : ''}>Overdue</option>
-            <option value="Paid" ${REMIT_F.status === 'Paid' ? 'selected' : ''}>Paid</option>
-          </select>
-          <select id="rm-period" onchange="remitFilter()">
-            <option value="all" ${REMIT_F.period === 'all' ? 'selected' : ''}>All periods</option>
-            <option value="2026-07" ${REMIT_F.period === '2026-07' ? 'selected' : ''}>Jul 2026</option>
-            <option value="2026-06" ${REMIT_F.period === '2026-06' ? 'selected' : ''}>Jun 2026</option>
-          </select>
-          ${chip('new', 'new', 'search + status/period filters do not exist on the current remittances screen')}
-        </div>
-      </div>
-      <table class="tbl"><thead><tr>
-        <th>Agency</th><th>Period</th><th class="text-right">Amount</th><th>Due</th><th>Status</th><th>Days late</th><th>Bookings</th><th class="text-right">Actions</th>
-      </tr></thead><tbody id="rm-rows"></tbody></table>
+      ${table('rm', {
+        rows: () => REMITS,
+        chips: [['new', 'filters: new', 'search + status/period filters do not exist on the current remittances screen']],
+        date: {label:'Due', val: r => r.due},
+        status: {options:['Pending','Overdue','Paid'], val: r => r.status},
+        entity: {placeholder:'Agency…', options: AG_NAMES, val: r => agency(r.agencyId).name},
+        search: {placeholder:'Search agency, license…', val: r => agency(r.agencyId).name + ' ' + agency(r.agencyId).license},
+        columns: [
+          {key:'agency', label:'Agency', val: r => agency(r.agencyId).name, cell: r => `<strong>${agency(r.agencyId).name}</strong><span class="fr-license">${agency(r.agencyId).license}</span>`},
+          {key:'period', label:'Period', val: r => pdate(r.period), cell: r => r.period},
+          {key:'amount', label:'Amount', right:true, val: r => r.amount, cell: r => `<strong>${fmt(r.amount)}</strong>`},
+          {key:'due', label:'Due', val: r => pdate(r.due), cell: r => r.due},
+          {key:'status', label:'Status', val: r => r.status, cell: r => badge(r.status)},
+          {key:'late', label:'Days late', val: r => r.status === 'Overdue' ? money(r.late) : 0, cell: r => `<span class="${r.status === 'Overdue' ? 'fr-late' : 'muted'}">${r.late}</span>`},
+          {key:'bk', label:'Bookings', val: r => r.bookings, cell: r => xlink(r.bookings + ' bookings', 'booking-breakdown/' + r.agencyId + ':' + r.pkey)},
+          {key:'act', label:'Actions', sortable:false, right:true, val: () => '', cell: r => r.status === 'Paid'
+            ? kebab('rm' + r.id, [['View wire detail', () => viewRemit(r.id)], ['Revert to pending', () => toast('Reason required — audited (demo)')]])
+            : `<button class="btn btn-sm btn-primary" onclick="event.stopPropagation();openMarkPaid('${r.id}')">Mark Paid</button> ` +
+              kebab('rm' + r.id, [['Adjust amount', () => toast('Adjustment needs a reason — audited (demo)')], ['Agency credit ↗', () => go('agency', r.agencyId + ':credit')]])}
+        ],
+        rowAttrs: r => `class="rowlink" onclick="viewRemit('${r.id}')"`
+      })}
     </div>`;
-  renderRemitRows();
+  tDraw('rm');
 };
-function remitFilter() {
-  REMIT_F = {
-    q: document.getElementById('rm-q').value.toLowerCase(),
-    status: document.getElementById('rm-status').value,
-    period: document.getElementById('rm-period').value
-  };
-  renderRemitRows();
-}
-function renderRemitRows() {
-  const rows = REMITS.filter(r => {
-    const a = agency(r.agencyId);
-    return (!REMIT_F.q || (a.name + a.license).toLowerCase().includes(REMIT_F.q))
-      && (REMIT_F.status === 'all' || r.status === REMIT_F.status)
-      && (REMIT_F.period === 'all' || r.pkey === REMIT_F.period);
-  }).map(r => {
-    const a = agency(r.agencyId);
-    return `<tr class="rowlink" onclick="viewRemit('${r.id}')">
-      <td><strong>${a.name}</strong><span class="fr-license">${a.license}</span></td>
-      <td>${r.period}</td><td class="text-right"><strong>${fmt(r.amount)}</strong></td><td>${r.due}</td>
-      <td>${badge(r.status)}</td><td class="${r.status === 'Overdue' ? 'fr-late' : 'muted'}">${r.late}</td>
-      <td>${xlink(r.bookings + ' bookings', 'booking-breakdown/' + r.agencyId + ':' + r.pkey)}</td>
-      <td class="text-right">
-        ${r.status === 'Paid'
-          ? kebab('rm' + r.id, [['View wire detail', () => viewRemit(r.id)], ['Revert to pending', () => toast('Reason required — audited (demo)')]])
-          : `<button class="btn btn-sm btn-primary" onclick="event.stopPropagation();openMarkPaid('${r.id}')">Mark Paid</button>` +
-            kebab('rm' + r.id, [['Adjust amount', () => toast('Adjustment needs a reason — audited (demo)')], ['Agency credit ↗', () => go('agency', r.agencyId + ':credit')]])}
-      </td>
-    </tr>`;
-  }).join('');
-  document.getElementById('rm-rows').innerHTML = rows || '<tr><td colspan="8" class="tbl-empty-cell">No remittances match these filters.</td></tr>';
-}
 function viewRemit(id) {
   const r = REMITS.find(x => x.id === id), a = agency(r.agencyId);
   openModal('Remittance — ' + a.name + ' · ' + r.period,
@@ -965,25 +1121,11 @@ function openMarkPaid(id) {
     `<div class="fr-modal-summary"><strong>${a.name}</strong><div class="muted">${r.period} · ${fmt(r.amount)}${r.status === 'Overdue' ? ' · ' + r.late + ' overdue' : ''}</div></div>
      ${fld('Wire transaction reference (required)', '')}
      <div class="form-field"><label>Notes (optional)</label><textarea rows="2" placeholder="e.g. received via SWIFT"></textarea></div>`,
-    {onSave:() => { r.status = 'Paid'; r.late = 'on time'; r.wire = 'WIRE-2026-DEMO'; renderRemitRows(); }});
+    {onSave:() => { r.status = 'Paid'; r.late = 'on time'; r.wire = 'WIRE-2026-DEMO'; tDraw('rm'); }});
 }
 
 /* ---------- Payments & Settlement (Finance) ---------- */
 RENDERERS['settlement'] = () => {
-  const credits = AGENCIES.filter(a => a.credit).map(a => {
-    const cr = a.credit, dep = cr.type === 'DEPOSIT';
-    const limit = dep ? cr.funding * 2 : cr.funding;
-    const owed = dep ? Math.max(0, cr.util - cr.funding) : cr.util;
-    return `<tr class="rowlink" onclick="go('agency','${a.id}:credit')">
-      <td>${xlink(a.name, 'agency/' + a.id + ':credit')}</td>
-      <td><span class="st-pill ${dep ? 'st-pending' : 'st-paid'}">${dep ? 'Deposit' : 'Granted'}</span></td>
-      <td class="text-right">${fmt(cr.funding)}</td>
-      <td class="text-right">${fmt(limit)} ${dep ? '(2×)' : '(= grant)'}</td>
-      <td class="text-right">${fmt(cr.util)}</td>
-      <td class="text-right">${fmt(owed)}</td>
-      <td>${cr.note}</td>
-    </tr>`;
-  }).join('');
   pg('settlement').innerHTML = `
     <div class="page-head row">
       <div><h1>Payments &amp; Settlement</h1><p class="muted">Balance settlements + credit accounts. Agency names link to the agency's Credit tab — one source of truth.</p></div>
@@ -991,49 +1133,72 @@ RENDERERS['settlement'] = () => {
     <div class="st-card">
       <span class="st-dir st-in">Agency → Ergos</span>
       <h2 style="margin:0 0 6px">Balance settlements</h2>
-      <table class="st-table">
-        <thead><tr><th>Settlement</th><th>Agency</th><th>Amount</th><th>Method</th><th>Status</th></tr></thead>
-        <tbody>
-          <tr><td>SET-2026-0812-01</td><td>${xlink('Sunshine Travel LLC', 'agency/agc1:credit')}</td><td>${fmt(7500)}</td><td>ACH (Square)</td><td><span class="st-pill st-pending">Pending · ACH 2–3 days</span></td></tr>
-          <tr><td>SET-2026-0809-02</td><td>${xlink('Coral Voyages', 'agency/agc3:credit')}</td><td>${fmt(2150)}</td><td>Card (TropiPay)</td><td><span class="st-pill st-paid">Completed</span></td></tr>
-          <tr><td>SET-2026-0808-03</td><td>${xlink('Palma Tours Inc', 'agency/agc4:credit')}</td><td>${fmt(4320)}</td><td>ACH (Square)</td><td><span class="st-pill st-frozen">Failed · insufficient funds</span></td></tr>
-        </tbody>
-      </table>
+      ${table('setl', {
+        rows: () => SETTLEMENTS,
+        date: {label:'Initiated', val: s => s.initiated},
+        status: {options:['Pending','Completed','Failed'], val: s => s.status},
+        search: {placeholder:'Search agency…', val: s => agency(s.agencyId).name + ' ' + s.id},
+        columns: [
+          {key:'id', label:'Settlement', val: s => s.id, cell: s => `<span class="bb-mono">${s.id}</span>`},
+          {key:'agency', label:'Agency', val: s => agency(s.agencyId).name, cell: s => xlink(agency(s.agencyId).name, 'agency/' + s.agencyId + ':credit')},
+          {key:'init', label:'Initiated', val: s => pdate(s.initiated), cell: s => s.initiated},
+          {key:'amount', label:'Amount', right:true, val: s => s.amount, cell: s => fmt(s.amount)},
+          {key:'method', label:'Method', val: s => s.method, cell: s => s.method},
+          {key:'status', label:'Status', val: s => s.status, cell: s => `<span class="st-pill ${s.pill}">${s.label}</span>`}
+        ]
+      })}
     </div>
     <div class="st-card">
       <span class="st-dir st-out">Per-agency accounts</span>
       <h2 style="margin:0 0 6px">Credit accounts</h2>
-      <table class="st-table">
-        <thead><tr><th>Agency</th><th>Type</th><th>Grant / Deposits</th><th>Limit</th><th>Utilization</th><th>Owed</th><th>Status</th></tr></thead>
-        <tbody>${credits}</tbody>
-      </table>
+      ${table('cracc', {
+        rows: () => AGENCIES.filter(a => a.credit),
+        status: {options:['Deposit','Granted'], val: a => a.credit.type === 'DEPOSIT' ? 'Deposit' : 'Granted'},
+        search: {placeholder:'Search agency…', val: a => a.name},
+        columns: [
+          {key:'agency', label:'Agency', val: a => a.name, cell: a => xlink(a.name, 'agency/' + a.id + ':credit')},
+          {key:'type', label:'Type', val: a => a.credit.type, cell: a => `<span class="st-pill ${a.credit.type === 'DEPOSIT' ? 'st-pending' : 'st-paid'}">${a.credit.type === 'DEPOSIT' ? 'Deposit' : 'Granted'}</span>`},
+          {key:'fund', label:'Grant / Deposits', right:true, val: a => a.credit.funding, cell: a => fmt(a.credit.funding)},
+          {key:'limit', label:'Limit', right:true, val: a => a.credit.type === 'DEPOSIT' ? a.credit.funding * 2 : a.credit.funding, cell: a => fmt(a.credit.type === 'DEPOSIT' ? a.credit.funding * 2 : a.credit.funding) + (a.credit.type === 'DEPOSIT' ? ' (2×)' : ' (= grant)')},
+          {key:'util', label:'Utilization', right:true, val: a => a.credit.util, cell: a => fmt(a.credit.util)},
+          {key:'owed', label:'Owed', right:true, val: a => a.credit.type === 'DEPOSIT' ? Math.max(0, a.credit.util - a.credit.funding) : a.credit.util, cell: a => fmt(a.credit.type === 'DEPOSIT' ? Math.max(0, a.credit.util - a.credit.funding) : a.credit.util)},
+          {key:'note', label:'Status', sortable:false, val: () => '', cell: a => a.credit.note}
+        ],
+        rowAttrs: a => `class="rowlink" onclick="go('agency','${a.id}:credit')"`
+      })}
       <p class="muted" style="margin-top:8px">Row click opens the agency's Credit tab — the ledger and actions live there.</p>
     </div>`;
+  tDraw('setl'); tDraw('cracc');
 };
 
-/* ---------- Travel Agencies (Partners) ---------- */
+/* ---------- Travel Agencies (Partners) — 7 → 5 cols ---------- */
 RENDERERS['agencies'] = () => {
-  const rows = AGENCIES.map(a => `
-    <tr class="rowlink" onclick="go('agency','${a.id}')">
-      <td><strong>${a.name}</strong><span class="fr-license">${a.license}</span></td>
-      <td>${a.contact}</td>
-      <td><div class="vendor-chips">${a.vendors.map(v => `<span class="vendor-chip ${v.toLowerCase()}">${v}</span>`).join('')}</div></td>
-      <td>${badge(a.status)}</td>
-      <td>${a.credit ? (a.credit.frozen ? '<span class="st-pill st-frozen">Frozen</span>' : `<span class="st-pill ${a.credit.type === 'DEPOSIT' ? 'st-pending' : 'st-paid'}">${a.credit.type === 'DEPOSIT' ? 'Deposit' : 'Granted'}</span>`) : '<span class="muted">—</span>'}</td>
-      <td class="text-right">${kebab('a' + a.id, [
-        ['P&L ↗', () => go('agency', a.id + ':pnl')],
-        ['Credit ↗', () => go('agency', a.id + ':credit')],
-        ['Employees ↗', () => go('agency', a.id + ':employees')]
-      ])}</td>
-    </tr>`).join('');
   pg('agencies').innerHTML = `
     <div class="page-head row">
       <div><h1>Travel Agencies</h1><p class="muted">Row click opens the one agency page — Details, Employees, P&amp;L and Credit in one place.</p></div>
     </div>
-    <div class="card"><table class="tbl">
-      <thead><tr><th>Agency</th><th>Primary contact</th><th>Vendors</th><th>Status</th><th>Credit</th><th></th></tr></thead>
-      <tbody>${rows}</tbody>
-    </table></div>`;
+    <div class="card">
+      ${table('ag', {
+        rows: () => AGENCIES,
+        chips: [['was', '7 → 5 cols · rest in detail', 'license and credit state moved to the agency page (Details / Credit tabs)']],
+        status: {options:['Active','Pending','Suspended'], val: a => a.status},
+        entity: {placeholder:'Vendor…', options: VENDOR_NAMES, val: a => a.vendors.join(' ')},
+        search: {placeholder:'Search agency, contact…', val: a => a.name + ' ' + a.contact},
+        columns: [
+          {key:'name', label:'Agency', val: a => a.name, cell: a => `<strong>${a.name}</strong>`},
+          {key:'contact', label:'Primary contact', val: a => a.contact, cell: a => a.contact},
+          {key:'vendors', label:'Vendors', val: a => a.vendors.join(' '), cell: a => `<div class="vendor-chips">${a.vendors.map(v => `<span class="vendor-chip ${v.toLowerCase()}">${v}</span>`).join('')}</div>`},
+          {key:'status', label:'Status', val: a => a.status, cell: a => badge(a.status)},
+          {key:'act', label:'', sortable:false, right:true, val: () => '', cell: a => kebab('a' + a.id, [
+            ['P&L ↗', () => go('agency', a.id + ':pnl')],
+            ['Credit ↗', () => go('agency', a.id + ':credit')],
+            ['Employees ↗', () => go('agency', a.id + ':employees')]
+          ])}
+        ],
+        rowAttrs: a => `class="rowlink" onclick="go('agency','${a.id}')"`
+      })}
+    </div>`;
+  tDraw('ag');
 };
 
 /* ---------- The one agency page (tabs) ---------- */
@@ -1057,6 +1222,9 @@ RENDERERS['agency'] = (param) => {
       ${tabBtn('credit', 'Credit')}
     </div>
     <div id="agency-tab-body">${AGENCY_TABS[tab](a)}</div>`;
+  if (tab === 'pnl') tDraw('pnl');
+  if (tab === 'credit' && a.credit) tDraw('ledg');
+  if (tab === 'employees') tDraw('emp');
 };
 const AGENCY_TABS = {
   details: a => `
@@ -1073,34 +1241,40 @@ const AGENCY_TABS = {
     <div class="card">
       <div class="card-head row"><h3>Employees (${a.employees.length})</h3>
         <button class="btn btn-primary btn-sm" onclick="inviteEmployee('${a.id}')">+ Invite Employee</button></div>
-      <table class="tbl">
-        <thead><tr><th>Employee</th><th>Email</th><th>Role</th><th>Status</th></tr></thead>
-        <tbody>${a.employees.map(e => `
-          <tr class="rowlink" onclick="openModal('Employee — ${e[0]}', dl([['Name','${e[0]}'],['Email','${e[1]}'],['Agency','${a.name}'],['Role','${e[2]}'],['Status',badge('${e[3]}')]]), {readOnly:true})">
-            <td>${e[0]}</td><td>${e[1]}</td><td>${e[2]}</td><td>${badge(e[3])}</td>
-          </tr>`).join('')}</tbody>
-      </table>
+      ${table('emp', {
+        rows: () => a.employees,
+        status: {options:['Accepted','Pending','Expired'], val: e => e[3]},
+        search: {placeholder:'Search name, email…', val: e => e[0] + ' ' + e[1]},
+        columns: [
+          {key:'name', label:'Employee', val: e => e[0], cell: e => e[0]},
+          {key:'email', label:'Email', val: e => e[1], cell: e => e[1]},
+          {key:'role', label:'Role', val: e => e[2], cell: e => e[2]},
+          {key:'status', label:'Status', val: e => e[3], cell: e => badge(e[3])}
+        ],
+        rowAttrs: e => `class="rowlink" onclick="viewEmployee('${a.id}',${a.employees.indexOf(e)})"`
+      })}
       <p class="muted" style="margin-top:10px">Was the global “Employment” list of every agency's staff — scoped here to the agency you're looking at.</p>
     </div>`,
   pnl: a => {
     const list = BOOKINGS.filter(b => b.agencyId === a.id && b.status !== 'Cancelled');
-    const tSell = list.reduce((s, b) => s + calc(b).sell, 0);
-    const tNet = list.reduce((s, b) => s + calc(b).net, 0);
     return `
     <div class="card">
       <div class="card-head"><h3>Bookings &amp; P&amp;L</h3></div>
-      <table class="tbl">
-        <thead><tr><th>Reference</th><th>Hotel</th><th class="text-right">Ergos sell</th><th class="text-right">Ergos net</th><th>Margin</th></tr></thead>
-        <tbody>
-          ${list.map(b => { const c = calc(b); return `
-            <tr class="rowlink" onclick="go('reservation-detail','${b.ref}')">
-              <td class="bb-ref">${b.ref}</td><td>${hotel(b.hotelId).name}</td>
-              <td class="text-right">${fmt(c.sell)}</td><td class="text-right">${fmt(c.net)}</td><td>${marginBadge(c.margin)}</td>
-            </tr>`; }).join('') || '<tr><td colspan="5" class="tbl-empty-cell">No bookings yet.</td></tr>'}
-          ${list.length ? `<tr style="font-weight:700"><td>Total</td><td></td><td class="text-right">${fmt(tSell)}</td><td class="text-right">${fmt(tNet)}</td><td></td></tr>` : ''}
-        </tbody>
-      </table>
-      <p class="muted" style="margin-top:10px">Row click opens the reservation detail — same idiom as everywhere else.</p>
+      ${table('pnl', {
+        rows: () => list,
+        date: {label:'Booked', val: b => b.booked},
+        search: {placeholder:'Search ref, hotel…', val: b => b.ref + ' ' + hotel(b.hotelId).name},
+        columns: [
+          {key:'ref', label:'Reference', val: b => b.ref, cell: b => `<span class="bb-ref">${b.ref}</span>`},
+          {key:'hotel', label:'Hotel', val: b => hotel(b.hotelId).name, cell: b => hotel(b.hotelId).name},
+          {key:'sell', label:'Ergos sell', right:true, val: b => calc(b).sell, cell: b => fmt(calc(b).sell)},
+          {key:'net', label:'Ergos net', right:true, val: b => calc(b).net, cell: b => fmt(calc(b).net)},
+          {key:'margin', label:'Margin', val: b => calc(b).margin, cell: b => marginBadge(calc(b).margin)}
+        ],
+        foot: rows => `<tr><td>Total (${rows.length})</td><td></td><td class="text-right">${fmt(rows.reduce((s, b) => s + calc(b).sell, 0))}</td><td class="text-right">${fmt(rows.reduce((s, b) => s + calc(b).net, 0))}</td><td></td></tr>`,
+        rowAttrs: b => `class="rowlink" onclick="go('reservation-detail','${b.ref}')"`
+      })}
+      <p class="muted" style="margin-top:10px">Row click opens the reservation detail — same idiom as everywhere else. Totals follow the active filters.</p>
     </div>`;
   },
   credit: a => {
@@ -1128,14 +1302,28 @@ const AGENCY_TABS = {
     </div>
     <div class="card">
       <div class="card-head"><h3>Ledger (${a.ledger.length}) — append-only</h3></div>
-      <table class="st-table">
-        <thead><tr><th>When</th><th>Type</th><th>Amount</th><th>Reason</th></tr></thead>
-        <tbody>${a.ledger.map(l => `<tr><td>${l[0]}</td><td><span class="st-pill ${l[2]}">${l[1]}</span></td><td>${l[3]}</td><td>${l[4]}</td></tr>`).join('')}</tbody>
-      </table>
+      ${table('ledg', {
+        rows: () => a.ledger,
+        date: {label:'When', val: l => l[0]},
+        status: {options: [...new Set(a.ledger.map(l => l[1]))], val: l => l[1]},
+        search: {placeholder:'Search reason…', val: l => l[4]},
+        columns: [
+          {key:'when', label:'When', val: l => pdate(l[0]), cell: l => l[0]},
+          {key:'type', label:'Type', val: l => l[1], cell: l => `<span class="st-pill ${l[2]}">${l[1]}</span>`},
+          {key:'amount', label:'Amount', right:true, val: l => money(l[3]), cell: l => l[3]},
+          {key:'reason', label:'Reason', val: l => l[4], cell: l => l[4]}
+        ]
+      })}
       <p class="muted" style="margin-top:8px">Every number above is derived from these rows — nothing is a bare editable field.</p>
     </div>`;
   }
 };
+function viewEmployee(agencyId, i) {
+  const a = agency(agencyId), e = a.employees[i];
+  openModal('Employee — ' + e[0],
+    dl([['Name', e[0]], ['Email', e[1]], ['Agency', a.name], ['Role', e[2]], ['Status', badge(e[3])]]),
+    {readOnly:true});
+}
 function inviteEmployee(agencyId) {
   const a = agency(agencyId);
   openModal('Invite Employee — ' + a.name,
@@ -1145,21 +1333,29 @@ function inviteEmployee(agencyId) {
 
 /* ---------- Sales Agents (Partners) ---------- */
 RENDERERS['agents'] = () => {
-  const rows = AGENTS.map((a, i) => `
-    <tr class="rowlink" onclick="viewAgent(${i})">
-      <td><strong>${a.name}</strong></td><td>${a.email}</td><td>${a.city}</td>
-      <td><span class="pill pill-${({Elite:'gold', Growth:'blue', Starter:'grey'})[a.tier]}">${a.tier}</span></td>
-      <td class="text-right">${a.earn}%</td><td class="text-right">${a.ops}%</td><td>${badge(a.status)}</td>
-    </tr>`).join('');
   pg('agents').innerHTML = `
     <div class="page-head row">
       <div><h1>Sales Agents</h1><p class="muted">Rates are tier-driven and live in the Pricing Policy cascade.</p></div>
       ${xlink('Commissions', 'commissions')}
     </div>
-    <div class="card"><table class="tbl">
-      <thead><tr><th>Agent</th><th>Email</th><th>City</th><th>Tier</th><th class="text-right">Earning</th><th class="text-right">Ops</th><th>Status</th></tr></thead>
-      <tbody>${rows}</tbody>
-    </table></div>`;
+    <div class="card">
+      ${table('sag', {
+        rows: () => AGENTS,
+        status: {options:['Elite','Growth','Starter'], val: a => a.tier},
+        search: {placeholder:'Search name, email, city…', val: a => a.name + ' ' + a.email + ' ' + a.city},
+        columns: [
+          {key:'name', label:'Agent', val: a => a.name, cell: a => `<strong>${a.name}</strong>`},
+          {key:'email', label:'Email', val: a => a.email, cell: a => a.email},
+          {key:'city', label:'City', val: a => a.city, cell: a => a.city},
+          {key:'tier', label:'Tier', val: a => a.tier, cell: a => `<span class="pill pill-${({Elite:'gold', Growth:'blue', Starter:'grey'})[a.tier]}">${a.tier}</span>`},
+          {key:'earn', label:'Earning', right:true, val: a => a.earn, cell: a => a.earn + '%'},
+          {key:'ops', label:'Ops', right:true, val: a => a.ops, cell: a => a.ops + '%'},
+          {key:'status', label:'Status', val: a => a.status, cell: a => badge(a.status)}
+        ],
+        rowAttrs: a => `class="rowlink" onclick="viewAgent(${AGENTS.indexOf(a)})"`
+      })}
+    </div>`;
+  tDraw('sag');
 };
 function viewAgent(i) {
   const a = AGENTS[i];

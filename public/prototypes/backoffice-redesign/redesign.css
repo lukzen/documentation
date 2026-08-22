@@ -109,6 +109,28 @@
 .filter-chip button { font-size:13px; color:var(--teal-dark); padding:0 6px; border-radius:99px; }
 .filter-chip button:hover { background:rgba(15,168,155,.2); }
 
+/* ---------- shared table engine (sort + filter bar) ---------- */
+.tbar { display:flex; flex-wrap:wrap; align-items:center; gap:6px; padding:2px 0 10px; }
+.tbar-label { font-size:10px; text-transform:uppercase; letter-spacing:.6px; font-weight:700; color:var(--text-muted); margin-right:2px; }
+.tbar-sep { width:1px; height:20px; background:var(--border); margin:0 6px; }
+.fpill {
+  font-size:11.5px; font-weight:600; padding:4px 10px; border-radius:99px;
+  border:1px solid var(--border); background:#fff; color:var(--text-secondary); transition:.15s;
+}
+.fpill:hover { border-color:var(--teal); color:var(--teal-dark); }
+.fpill.active { background:var(--teal); border-color:var(--teal); color:#fff; }
+.tbar-custom { display:inline-flex; align-items:center; gap:4px; }
+.tbar-custom input { border:1px solid var(--border); border-radius:8px; padding:4px 8px; font-size:12px; }
+.tbar-input { border:1px solid var(--border); border-radius:8px; padding:5px 10px; font-size:12.5px; min-width:140px; }
+.tbar-input:focus { outline:none; border-color:var(--teal); }
+.tbar .chip { margin-left:auto; }
+.tchips { display:flex; flex-wrap:wrap; gap:6px; }
+.tchips:not(:empty) { margin-bottom:8px; }
+.tchips .filter-chip { margin-bottom:0; }
+.th-sort { cursor:pointer; user-select:none; white-space:nowrap; }
+.th-sort:hover { color:var(--teal-dark); }
+.tbl tfoot td { font-weight:700; border-top:2px solid var(--border); padding:9px 12px; color:var(--navy); }
+
 /* ---------- clickable rows ---------- */
 .tbl tbody tr.rowlink { cursor:pointer; }
 .tbl td .xlink { font-size:11px; }
