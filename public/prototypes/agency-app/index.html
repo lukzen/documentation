@@ -31,6 +31,16 @@
       opacity: 1;
     }
     .pnl-sort-hint { font-size: 12.5px; color: #78716c; margin-top: 4px; }
+    /* Notification bell badge (#190) */
+    .notif-bell { position: relative; }
+    .notif-badge {
+      position: absolute; top: 1px; right: 1px;
+      min-width: 15px; height: 15px; padding: 0 3px; box-sizing: border-box;
+      background: #dc2626; color: #fff; border-radius: 99px;
+      font-family: 'DM Sans', sans-serif; font-size: 10px; font-weight: 800; line-height: 15px;
+      text-align: center; pointer-events: none;
+    }
+    .notif-badge[data-count="0"] { display: none; }
   </style>
 </head>
 <body>
@@ -61,6 +71,7 @@
         <button class="proto-tab" data-screen="invoice">12. Invoice</button>
         <button class="proto-tab" data-screen="credit-account">13. Credit account 🚧</button>
         <button class="proto-tab" data-screen="settle-balance">14. Settle balance 🚧</button>
+        <button class="proto-tab" data-screen="notifications">15. Notifications 🚧</button>
       </div>
       <!-- Account flow tabs -->
       <div class="proto-flow-tabs" data-flow-group="account" hidden>
@@ -104,7 +115,7 @@
       <div class="nav-right">
         <button class="icon-btn help-btn" title="Need help?" aria-label="Help"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg></button>
         <button class="icon-btn" aria-label="Language"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></button>
-        <button class="icon-btn" aria-label="Notifications"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0"/></svg></button>
+        <button class="icon-btn notif-bell" aria-label="Notifications" title="Notifications" onclick="openNotifications()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0"/></svg><span class="notif-badge">2</span></button>
         <span class="nav-greeting" id="nav-greeting">Good afternoon, Demo Agency</span>
         <div class="avatar">TA</div>
       </div>
@@ -1694,6 +1705,7 @@
         <a href="#" class="nav-link active">My Bookings</a>
       </div>
       <div class="nav-right">
+        <button class="icon-btn notif-bell" aria-label="Notifications" title="Notifications" onclick="openNotifications()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0"/></svg><span class="notif-badge">2</span></button>
         <span class="nav-greeting">Good afternoon, Demo Agency</span>
         <div class="avatar">DA</div>
       </div>
@@ -1711,6 +1723,8 @@
         <a class="acct-sidebar-link" onclick="showScreen('employees')"><i class="ti ti-users"></i> Team</a>
         <div class="acct-sidebar-group">Activity</div>
         <a class="acct-sidebar-link active" onclick="showScreen('bookings')"><i class="ti ti-book"></i> My Bookings</a>
+        <a class="acct-sidebar-link" onclick="showScreen('credit-account')"><i class="ti ti-wallet"></i> Credit account</a>
+        <a class="acct-sidebar-link" onclick="showScreen('notifications')"><i class="ti ti-bell"></i> Notifications</a>
         <a class="acct-sidebar-link" onclick="showScreen('pnl')"><i class="ti ti-chart-bar"></i> Earnings (P&amp;L)</a>
       </aside>
 
@@ -1885,22 +1899,74 @@
         <h3>⚠ Overdraft to cover — booking PTA9940X3</h3>
         <div style="font-size:13px">This free-cancellation booking drew <b>$230.00 beyond your limit</b> (allowed: deficit ≤ min(25% of limit, $2,500) = $2,500, no other overdraft open). Cover it by <b><span class="cv-cover-by-t">Aug 19, 16:00</span></b> — 72 h, safely inside the rate's free-cancellation window — or the booking is <b>auto-cancelled penalty-free</b> and future overdrafts are blocked for a cooldown.</div>
         <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap" id="odAnchors">
-          <button class="btn-outline" onclick="odCover(230)">Cover $230</button>
-          <button class="btn-primary" onclick="odCover(460)">Top up $460 → +$920 power ★</button>
-          <button class="btn-outline" onclick="odCover(920)">Top up $920 → +$1,840 power</button>
+          <button class="btn-primary" onclick="odCover(230)">Cover $230</button>
         </div>
-        <div style="font-size:11.5px;color:#78716c;margin-top:6px">Every dollar you top up <b>doubles</b> into booking power — and every $1,000 booked from balance saves ≈ $35 vs card fees.</div>
         <div id="odResult" style="display:none;margin-top:8px;font-size:13px"></div>
         <script>
           function odCover(amt){
             var r=document.getElementById('odResult'); r.style.display='';
-            r.innerHTML='<b>Covered ✓</b> Deposit +$'+amt+' recorded — it doubles: booking power +$'+(2*amt)+' (new limit $'+(12200+2*amt).toLocaleString()+'). The $230 overdraft obligation is closed'+(amt>230?' and you start ahead with fresh headroom.':'.');
+            r.innerHTML='<b>Covered ✓</b> Cover of $'+amt+' recorded — the $230 overdraft obligation is closed.';
             document.getElementById('odAnchors').style.display='none';
           }
         </script>
       </div>
+
+      <!-- E7 — "Top up your booking power" panel (deposit accounts only). SHIPPED tiers
+           $250 / $500 (pre-selected) / $1,000; every deposit doubles into booking power. -->
+      <div class="form-card" id="topupPanel" style="border:2px solid #0d9488;background:#f7fdfc">
+        <h3>Top up your booking power</h3>
+        <div style="font-size:12.5px;color:#57534e">Every deposit <b>doubles</b> into booking power. Add funds now so you don't run out mid-booking.</div>
+        <div style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap" id="tuAnchors">
+          <button class="tu-anchor" data-amt="250" onclick="tuSelect(250)">
+            <span class="tu-dep">$250</span><span class="tu-pow">+$500 power</span></button>
+          <button class="tu-anchor selected" data-amt="500" onclick="tuSelect(500)">
+            <span class="tu-dep">$500</span><span class="tu-pow">+$1,000 power</span><span class="tu-pre">Recommended</span></button>
+          <button class="tu-anchor" data-amt="1000" onclick="tuSelect(1000)">
+            <span class="tu-dep">$1,000</span><span class="tu-pow">+$2,000 power</span></button>
+        </div>
+        <div style="margin-top:12px;background:#fff;border:1px solid #ccfbf1;border-radius:10px;padding:10px 14px">
+          <div style="font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:#78716c;font-weight:800">Live preview</div>
+          <div style="font-size:13px;margin-top:4px">Deposit <b id="tuDep">$500.00</b> → booking power <b id="tuPow">+$1,000.00</b> · new booking power <b id="tuNewLimit">$13,200.00</b> · available to book <b style="color:#0d9488" id="tuNewAvail">$3,050.00</b></div>
+        </div>
+        <div style="font-size:11.5px;color:#78716c;margin-top:8px">Paying from balance saves ≈ <b>$35 per $1,000</b> vs card — no card processing fee.</div>
+        <div style="margin-top:12px"><button class="btn-primary" id="tuGo" onclick="tuConfirm()">Deposit $500.00 → +$1,000.00 booking power</button></div>
+        <div id="tuResult" style="display:none;margin-top:10px;font-size:13px"></div>
+        <style>
+          .tu-anchor{position:relative;display:flex;flex-direction:column;align-items:center;gap:2px;min-width:120px;padding:12px 16px;border:2px solid #d6d0c8;background:#fff;border-radius:10px;cursor:pointer;font-family:'DM Sans',sans-serif}
+          .tu-anchor:hover{border-color:#0d9488}
+          .tu-anchor.selected{border-color:#0d9488;background:#ecfdf5;box-shadow:0 0 0 3px rgba(13,148,136,.15)}
+          .tu-anchor .tu-dep{font-family:ui-monospace,Menlo,monospace;font-size:20px;font-weight:700}
+          .tu-anchor .tu-pow{font-size:12px;color:#0f766e;font-weight:700}
+          .tu-anchor .tu-pre{position:absolute;top:-9px;background:#0d9488;color:#fff;font-size:9.5px;font-weight:800;text-transform:uppercase;letter-spacing:.04em;padding:1px 8px;border-radius:99px}
+        </style>
+        <script>
+          // Base figures (mirror the KPI grid): deposits $6,100 → power $12,200; available $2,050.
+          var TU_POWER=12200, TU_AVAIL=2050, TU_SEL=500;
+          function tuFmt(n){return '$'+n.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});}
+          function tuSelect(amt){
+            TU_SEL=amt;
+            document.querySelectorAll('#tuAnchors .tu-anchor').forEach(function(b){
+              b.classList.toggle('selected', parseInt(b.dataset.amt,10)===amt);
+            });
+            var pow=2*amt;
+            document.getElementById('tuDep').textContent=tuFmt(amt);
+            document.getElementById('tuPow').textContent='+'+tuFmt(pow);
+            document.getElementById('tuNewLimit').textContent=tuFmt(TU_POWER+pow);
+            document.getElementById('tuNewAvail').textContent=tuFmt(TU_AVAIL+pow);
+            document.getElementById('tuGo').textContent='Deposit '+tuFmt(amt)+' → +'+tuFmt(pow)+' booking power';
+          }
+          function tuConfirm(){
+            var pow=2*TU_SEL;
+            var r=document.getElementById('tuResult'); r.style.display='';
+            r.innerHTML='<b>Deposited ✓</b> '+tuFmt(TU_SEL)+' added — it doubles: booking power +'+tuFmt(pow)+' (new booking power '+tuFmt(TU_POWER+pow)+', available '+tuFmt(TU_AVAIL+pow)+'). No card fee — saved ≈ '+tuFmt(35*TU_SEL/1000)+' vs card.';
+          }
+        </script>
+      </div>
+
       <div class="form-card">
-        <h3>Utilisation — 83% of booking power <span style="background:#fee2e2;color:#991b1b;font-size:11px;font-weight:800;padding:2px 9px;border-radius:99px;margin-left:8px">80% threshold crossed — you and Ergos admins were notified</span></h3>
+        <h3>Utilisation — 83% of booking power
+          <span style="background:#fee2e2;color:#991b1b;font-size:11px;font-weight:800;padding:2px 9px;border-radius:99px;margin-left:8px">⚠ Near limit — $2,050.00 left</span>
+          <span style="background:#fef3c7;color:#92400e;font-size:11px;font-weight:800;padding:2px 9px;border-radius:99px;margin-left:6px">80% threshold crossed — you and Ergos admins were notified</span></h3>
         <div class="ca-bar"><div></div></div>
         <div style="font-size:12px;color:#78716c">A booking whose sell rate exceeds the available balance is <b>blocked with the shortfall shown</b> — except free-cancellation rates, which may overdraw up to <b>min(25% of limit, $2,500)</b> with a cover deadline (one at a time). Non-refundable rates never overdraw: cover the shortfall by card inline to proceed. Cancelling a balance-paid booking (inside its free-cancellation window) restores the amount <b>immediately to the same source</b>. Withdrawals un-double (−$2 of power per $1 withdrawn) and can't cut power below current utilization.</div>
         <div style="margin-top:10px"><button class="btn-primary" onclick="showScreen('settle-balance')">Settle outstanding balance ($4,050.00) →</button></div>
@@ -2000,6 +2066,69 @@
             : '<h3 style="color:#b91c1c">ACH FAILED — insufficient funds</h3><div style="font-size:13px"><b>Balance unchanged.</b> You were notified with the reason and can initiate a new settlement (card or ACH).</div>';
         }
       </script>
+    </div>
+  </div>
+
+  <!-- ========== SCREEN: NOTIFICATIONS (Story #190 — cover payment notifications) 🚧 ========== -->
+  <div class="screen" id="screen-notifications">
+    <nav class="navbar">
+      <div class="nav-left">
+        <div class="brand"><div class="brand-icon">EC</div><span class="brand-name">Ergos Continental</span></div>
+        <a href="#" class="nav-link" onclick="showScreen('home')">Home</a>
+        <a href="#" class="nav-link" onclick="showScreen('bookings')">My Bookings</a>
+      </div>
+      <div class="nav-right">
+        <button class="icon-btn notif-bell" aria-label="Notifications" title="Notifications" onclick="openNotifications()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0"/></svg><span class="notif-badge">2</span></button>
+        <div class="avatar">DA</div>
+      </div>
+    </nav>
+    <div class="booking-flow-page">
+      <style>
+        .nt-banner{display:flex;gap:12px;align-items:center;background:#fef2f2;border:1px solid #dc2626;color:#7f1d1d;border-radius:10px;padding:10px 14px;margin-bottom:14px;font-size:13px}
+        .nt-banner b{color:#b91c1c}
+        .nt-group{margin-top:8px}
+        .nt-group-head{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:#78716c;font-weight:800;margin:16px 0 8px;display:flex;align-items:center;gap:8px}
+        .nt-group-count{background:#f0eee9;color:#57534e;border-radius:99px;font-size:11px;padding:1px 8px}
+        .nt-item{display:flex;gap:12px;align-items:flex-start;background:#fff;border:1px solid #e7e5e4;border-radius:10px;padding:12px 14px;margin-bottom:8px;position:relative}
+        .nt-item.unread{border-left:3px solid #0d9488;background:#f7fdfc}
+        .nt-item.unread .nt-dot{background:#0d9488}
+        .nt-dot{width:8px;height:8px;border-radius:99px;background:transparent;margin-top:6px;flex:0 0 auto}
+        .nt-body{flex:1;min-width:0}
+        .nt-title{font-weight:700;font-size:14px}
+        .nt-title .nt-unread-tag{background:#ccfbf1;color:#0f766e;font-size:10px;font-weight:800;text-transform:uppercase;padding:1px 7px;border-radius:99px;margin-left:6px}
+        .nt-meta{font-size:12.5px;color:#78716c;margin-top:2px}
+        .nt-when{font-size:12px;color:#a8a29e;white-space:nowrap}
+        .nt-item.resolved{opacity:.72}
+        .nt-item.resolved .nt-title{font-weight:600}
+        .nt-push-row{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap}
+        .nt-switch{position:relative;display:inline-block;width:44px;height:24px;flex:0 0 auto}
+        .nt-switch input{opacity:0;width:0;height:0}
+        .nt-slider{position:absolute;inset:0;background:#d6d0c8;border-radius:99px;transition:.2s;cursor:pointer}
+        .nt-slider:before{content:"";position:absolute;height:18px;width:18px;left:3px;top:3px;background:#fff;border-radius:99px;transition:.2s}
+        .nt-switch input:checked + .nt-slider{background:#0d9488}
+        .nt-switch input:checked + .nt-slider:before{transform:translateX(20px)}
+      </style>
+      <div class="ni-ribbon">🚧 Not implemented — Story target design (backend #190): cover-payment reminders — bell + unread count, a &lt; 24 h escalation banner (persists until paid), a grouped Notifications page (read on open), and an optional Web Push opt-in.</div>
+      <h2>Notifications</h2>
+
+      <!-- < 24 h escalation banner — persists until the cover is actually PAID (reading does NOT dismiss it) -->
+      <div class="nt-banner" id="nt-escalation-banner">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#b91c1c" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+        <div><b>1 cover payment due within 24 hours</b> — pay now to keep your booking. <a href="#" onclick="showScreen('bookings');return false" style="color:#b91c1c;font-weight:700">Pay now →</a></div>
+      </div>
+
+      <div class="form-card nt-push-card">
+        <div class="nt-push-row">
+          <div>
+            <h3 style="margin:0">Browser notifications</h3>
+            <div style="font-size:12.5px;color:#78716c;margin-top:2px">Get Web Push alerts even when this tab is closed (desktop &amp; Android Chrome). On iPhone/iPad Safari, push isn't available — email reminders continue. With push on, only the final 24 h reminder is still emailed as a safety net.</div>
+          </div>
+          <label class="nt-switch"><input type="checkbox" id="nt-push-toggle" onchange="ntTogglePush(this)"><span class="nt-slider"></span></label>
+        </div>
+        <div id="nt-push-status" style="font-size:12px;color:#0f766e;margin-top:8px;display:none"></div>
+      </div>
+
+      <div id="nt-list"><!-- rendered by ntRender() --></div>
     </div>
   </div>
 

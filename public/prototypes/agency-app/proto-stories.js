@@ -1282,3 +1282,106 @@ document.addEventListener('keydown', (e) => {
     document.getElementById('rem-status-modal')?.classList.remove('open');
   }
 });
+
+/* ============================================================
+   #190 — Cover payment notifications (stored model)
+   - bell + unread count badge (all navbars)
+   - grouped Notifications page: Due within 24 h / Upcoming / Resolved
+   - opening the page marks reminders READ + clears the bell
+   - the < 24 h escalation banner persists until the cover is PAID
+     (reading does NOT dismiss it)
+   - Browser notifications (Web Push) opt-in toggle
+   ============================================================ */
+const NT_STORE = {
+  pushOn: false,
+  // read: whether the reminder has been opened; resolved covers are excluded from the unread count
+  items: [
+    { id: 'n1', group: 'due',      read: false, title: 'Cover due within 24 hours',
+      hotel: 'Meliá Punta Cana ★★★★★', ref: 'PTAUNPAID01', amount: '$230.00', when: 'in 18 h', reminder: '24 h reminder' },
+    { id: 'n2', group: 'upcoming', read: false, title: 'Cover payment due soon',
+      hotel: 'Iberostar Selection Bávaro ★★★★★', ref: 'PTA9940X3', amount: '$1,250.00', when: 'in 6 days', reminder: '7 d reminder' },
+    { id: 'n3', group: 'upcoming', read: true,  title: 'Cover payment scheduled',
+      hotel: 'Gran Muthu Habana ★★★★★', ref: 'PTA9932K1', amount: '$922.08', when: 'in 21 days', reminder: '30 d reminder' },
+    { id: 'n4', group: 'resolved', read: true,  title: 'Cover paid',
+      hotel: 'Meliá Cohíba ★★★★★', ref: 'PTA9921F7', amount: '$783.77', when: 'Aug 12', reminder: 'Paid by card' },
+    { id: 'n5', group: 'resolved', read: true,  title: 'Cover auto-cancelled (fee-free)',
+      hotel: 'Playa Costa Verde ★★★★', ref: 'PTA9880Z0', amount: '$412.00', when: 'Aug 08', reminder: 'Uncovered at deadline · strike recorded' },
+  ],
+};
+
+function ntUnreadCount() {
+  return NT_STORE.items.filter(i => !i.read && i.group !== 'resolved').length;
+}
+
+/* Reflect the unread count on every bell badge in the DOM. */
+function ntSyncBadges() {
+  const n = ntUnreadCount();
+  document.querySelectorAll('.notif-badge').forEach(b => {
+    b.textContent = n;
+    b.style.display = n > 0 ? '' : 'none';
+  });
+}
+
+/* Bell click → open the Notifications page (marks read on render via showScreen). */
+function openNotifications() {
+  showScreen('notifications');
+}
+
+function ntRenderGroup(key, label) {
+  const items = NT_STORE.items.filter(i => i.group === key);
+  if (items.length === 0) return '';
+  const rows = items.map(i => {
+    const unread = !i.read && key !== 'resolved';
+    const cls = 'nt-item' + (unread ? ' unread' : '') + (key === 'resolved' ? ' resolved' : '');
+    const tag = unread ? '<span class="nt-unread-tag">Unread</span>' : '';
+    return `<div class="${cls}">
+      <span class="nt-dot"></span>
+      <div class="nt-body">
+        <div class="nt-title">${i.title}${tag}</div>
+        <div class="nt-meta">${i.hotel} · Ref <code>${i.ref}</code> · ${i.amount} · ${i.reminder}</div>
+      </div>
+      <div class="nt-when">${i.when}</div>
+    </div>`;
+  }).join('');
+  return `<div class="nt-group">
+    <div class="nt-group-head">${label} <span class="nt-group-count">${items.length}</span></div>
+    ${rows}
+  </div>`;
+}
+
+/* Render the page, then mark the actionable reminders READ + clear the bell.
+   The escalation banner stays up (it is about the unpaid cover, not the read state). */
+function ntRender() {
+  const list = document.getElementById('nt-list');
+  if (list) {
+    list.innerHTML =
+      ntRenderGroup('due', 'Due within 24 hours') +
+      ntRenderGroup('upcoming', 'Upcoming') +
+      ntRenderGroup('resolved', 'Resolved');
+  }
+  // Reflect current push-toggle state
+  const toggle = document.getElementById('nt-push-toggle');
+  if (toggle) toggle.checked = NT_STORE.pushOn;
+  // Opening the page marks reminders read → badge clears (banner persists)
+  NT_STORE.items.forEach(i => { if (i.group !== 'resolved') i.read = true; });
+  ntSyncBadges();
+}
+
+function ntTogglePush(el) {
+  NT_STORE.pushOn = el.checked;
+  const status = document.getElementById('nt-push-status');
+  if (NT_STORE.pushOn) {
+    // Real Web Push asks for permission once; the prototype simulates the grant.
+    if ('Notification' in window && Notification.permission === 'default' && Notification.requestPermission) {
+      try { Notification.requestPermission(); } catch (_) { /* ignore */ }
+    }
+    protoToast('Browser notifications on — your browser will ask permission once. The final 24 h reminder is still emailed as a safety net.', 'success');
+    if (status) { status.style.display = ''; status.textContent = 'On — Web Push alerts will arrive even when this tab is closed (desktop & Android Chrome).'; }
+  } else {
+    protoToast('Browser notifications off — all reminders will arrive by email.', 'info');
+    if (status) { status.style.display = ''; status.textContent = 'Off — you\'ll receive all reminders by email.'; }
+  }
+}
+
+/* Initialise bell badges on load. */
+document.addEventListener('DOMContentLoaded', ntSyncBadges);

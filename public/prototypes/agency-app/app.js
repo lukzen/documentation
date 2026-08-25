@@ -128,7 +128,7 @@ function updateVisiblePrices() {
 
 // Flow definitions — screens that belong to each flow
 const flowScreens = {
-  hotels: ['home', 'results', 'hotel', 'rooms', 'guest', 'services', 'payment', 'confirmation', 'bookings', 'booking-detail', 'voucher', 'invoice', 'markup'],
+  hotels: ['home', 'results', 'hotel', 'rooms', 'guest', 'services', 'payment', 'confirmation', 'bookings', 'booking-detail', 'voucher', 'invoice', 'credit-account', 'settle-balance', 'notifications', 'markup'],
   account: ['profile-info', 'update-password', 'employees', 'passkeys', 'pnl'],
   auth: ['login', 'forgot-password', 'set-password', 'register', 'employee-invitation']
 };
@@ -167,6 +167,8 @@ function showScreen(id) {
   if (id === 'confirmation' && typeof renderConfirmationTransfer === 'function') renderConfirmationTransfer();
   // Render dynamic bookings list
   if (id === 'bookings') renderBookingsList();
+  // #190 — render the cover-notifications page + mark reminders read
+  if (id === 'notifications' && typeof ntRender === 'function') ntRender();
   // E1 — apply POI/city/country filter when entering results screen.
   // Inlined here (instead of via window.showScreen wrapping) because the
   // function declaration `showScreen` is referenced lexically from
