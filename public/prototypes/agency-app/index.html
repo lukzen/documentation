@@ -64,6 +64,7 @@
         <button class="proto-tab" data-screen="hotel">3. Hotel Detail</button>
         <button class="proto-tab" data-screen="rooms">4. Room Selection</button>
         <button class="proto-tab" data-screen="guest">5. Guest Info</button>
+        <button class="proto-tab" data-screen="services">6. Add Services</button>
         <button class="proto-tab" data-screen="payment">7. Payment 🚧</button>
         <button class="proto-tab" data-screen="confirmation">8. Confirmation</button>
         <button class="proto-tab" data-screen="bookings">9. My Bookings</button>
@@ -1509,13 +1510,15 @@
               <div class="os-divider"></div>
             </div>
             <div class="os-row" id="pay-os-feerow"><span>Card processing fee (3.5%)</span><span id="pay-os-fee">USD 6.80</span></div>
+            <div class="os-row"><span>Paid</span><span>USD 0.00</span></div>
+            <div class="os-row"><span>Due now</span><span id="pay-os-duenow">USD 201.20</span></div>
             <div class="os-row os-total"><span>Total Client Price</span><span id="pay-os-total">USD 201.20</span></div>
             <button class="confirm-btn" id="pay-confirm-btn" onclick="confirmBooking()">Send payment link to client</button>
-            <!-- F1 — alternative path: confirm hotel now, decide transfer later (max 48h) -->
+            <!-- F1 v0.4 — one checkout closes BOTH bookings; hotel-only = drop the transfer -->
+            <p class="f1-alt-hint" id="pay-f1-hint" style="display:none">One payment books hotel + transfer together — both confirmed &amp; paid at checkout.</p>
             <button class="confirm-btn confirm-btn-alt" id="pay-confirm-hotel-only" onclick="confirmHotelOnly()" style="display:none">
-              Confirm Hotel Only — Decide Transfer Later
+              Book Hotel Only — drop the transfer
             </button>
-            <p class="f1-alt-hint" id="pay-f1-hint" style="display:none">Customer can come back within 48 h to add the transfer at the saved price.</p>
           </div>
         </div>
       </div>
@@ -1542,12 +1545,12 @@
           <div class="in-dev-icon"><i class="ti ti-tool"></i></div>
           <div class="in-dev-body">
             <div class="in-dev-title">Functionality In Development</div>
-            <div class="in-dev-msg"><strong>Decoupled bookings (F1)</strong> is not yet in production — hotel + Mozio transportation as independent confirm/pay lifecycles is being designed. See <a href="https://github.com/lukzen/documentation/issues/23" target="_blank">USER_STORIES F1 (#23)</a>.
+            <div class="in-dev-msg"><strong>Hotel + transfer booking (F1)</strong> is not yet in production. See <a href="https://github.com/lukzen/documentation/issues/23" target="_blank">USER_STORIES F1 (#23)</a>.
               <ul>
-                <li>Hotel and transportation bookings track <strong>independent payment status</strong></li>
-                <li>Pending transfer auto-expires <strong>48 h after the hotel <code>paidAt</code></strong> timestamp</li>
-                <li>Reminder fires 24 h before the deadline; agency staff can confirm the saved transfer quote in one click</li>
-                <li>Per-booking vouchers + per-booking refunds; the two share a <code>bookingGroupId</code> for retrieval</li>
+                <li>One checkout <strong>closes both bookings</strong> — hotel first, then the Mozio transfer, both paid together</li>
+                <li>Two independent bookings under one <code>bookingGroupId</code> — if the transfer fails, <strong>the hotel stays booked</strong> (no cascade)</li>
+                <li>Per-item vouchers, invoices and refunds — each lane has its own documents</li>
+                <li>Driven by one GCP Workflows saga per item (spec §3)</li>
               </ul>
             </div>
           </div>
@@ -1570,16 +1573,15 @@
               <span class="f1-lane-ref">Ref <code id="f1-hotel-ref">PTA18G28E7CUANQ</code></span>
             </div>
           </div>
-          <div class="f1-lane f1-lane-transport f1-lane-pending">
+          <div class="f1-lane f1-lane-transport f1-lane-paid">
             <div class="f1-lane-head">
               <span class="f1-lane-icon"><i class="ti ti-car"></i></span>
               <span class="f1-lane-title">Transportation (Mozio)</span>
-              <span class="f1-lane-status f1-status-pending">⏱ Pending — quote saved</span>
+              <span class="f1-lane-status f1-status-paid">✓ Confirmed &amp; Paid</span>
             </div>
             <div class="f1-lane-body">
               <span class="f1-lane-amount" id="f1-transport-amount">USD 45.00</span>
-              <span class="f1-lane-ref">Expires in <strong id="f1-countdown" class="f1-countdown">47 h 23 min</strong></span>
-              <button class="btn-secondary f1-confirm-now-btn" onclick="f1ConfirmTransferNow()">Confirm transfer now</button>
+              <span class="f1-lane-ref">Ref <code>MOZIO-RSV-4938-K2</code> · Voucher available</span>
             </div>
           </div>
         </div>
@@ -2162,12 +2164,12 @@
         </div>
       </div>
 
-      <!-- F1 — two-lane status block (only shown when F1_TRANSPORT_PENDING is set) -->
+      <!-- F1 — two-lane status block (shown when the booking has a transfer) -->
       <div class="in-dev-banner" id="bd-f1-in-dev-banner" style="display:none">
         <div class="in-dev-icon"><i class="ti ti-tool"></i></div>
         <div class="in-dev-body">
           <div class="in-dev-title">Functionality In Development</div>
-          <div class="in-dev-msg"><strong>Decoupled bookings (F1)</strong> — hotel and transportation tracked as independent confirm/pay lifecycles. See <a href="https://github.com/lukzen/documentation/issues/23" target="_blank">USER_STORIES F1 (#23)</a>.</div>
+          <div class="in-dev-msg"><strong>Hotel + transfer booking (F1)</strong> — two independent bookings under one <code>bookingGroupId</code>, closed together at checkout; per-item documents and refunds. See <a href="https://github.com/lukzen/documentation/issues/23" target="_blank">USER_STORIES F1 (#23)</a>.</div>
         </div>
       </div>
       <div class="f1-status-block" id="bd-f1-status-block" style="display:none">
@@ -2180,19 +2182,36 @@
           <div class="f1-lane-body">
             <span class="f1-lane-amount" id="bd-f1-hotel-amount">USD 194.40</span>
             <span class="f1-lane-ref">Ref <code id="bd-f1-hotel-ref">PTA18G28E7CUANQ</code></span>
-            <span class="f1-lane-ref">Voucher available · Invoice available</span>
+            <span class="f1-lane-ref"><a href="#" onclick="showScreen('voucher');return false">Voucher</a> · <a href="#" onclick="showScreen('invoice');return false">Invoice</a></span>
+            <button class="btn-secondary" id="bd-f1-cancel-hotel-btn" onclick="bdOpenCancelHotel()">Cancel hotel…</button>
           </div>
         </div>
-        <div class="f1-lane f1-lane-transport f1-lane-pending" id="bd-f1-transport-lane">
+        <div class="f1-lane f1-lane-transport f1-lane-paid" id="bd-f1-transport-lane">
           <div class="f1-lane-head">
             <span class="f1-lane-icon"><i class="ti ti-car"></i></span>
             <span class="f1-lane-title">Transportation (Mozio)</span>
-            <span class="f1-lane-status f1-status-pending" id="bd-f1-transport-status">⏱ Pending — quote saved</span>
+            <span class="f1-lane-status f1-status-paid" id="bd-f1-transport-status">✓ Confirmed &amp; Paid</span>
           </div>
           <div class="f1-lane-body">
             <span class="f1-lane-amount" id="bd-f1-transport-amount">USD 45.00</span>
-            <span class="f1-lane-ref" id="bd-f1-transport-meta">Expires in <strong id="bd-f1-countdown" class="f1-countdown">47 h 23 min</strong></span>
-            <button class="btn-secondary f1-confirm-now-btn" id="bd-f1-confirm-now-btn" onclick="f1ConfirmTransferFromBookingDetail()">Confirm transfer now</button>
+            <span class="f1-lane-ref" id="bd-f1-transport-meta">Ref <code>MOZIO-RSV-4938-K2</code> · <a href="#" onclick="showScreen('voucher');return false">Voucher</a> · <a href="#" onclick="showScreen('invoice');return false">Invoice</a></span>
+            <button class="btn-secondary" id="bd-f1-cancel-transfer-btn" onclick="bdCancelTransfer()">Cancel transfer…</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- F1 v0.4 — Q6 surface-and-prompt: cancelling the hotel with a PAID transfer -->
+      <div id="bd-q6-modal" style="display:none;position:fixed;inset:0;background:rgba(28,25,23,.45);z-index:60;align-items:center;justify-content:center">
+        <div style="background:#fff;border-radius:14px;max-width:480px;width:92%;padding:24px 26px;box-shadow:0 20px 60px rgba(0,0,0,.25)">
+          <h3 style="margin:0 0 8px"><i class="ti ti-alert-triangle" style="color:#d97706"></i> This booking has a PAID transfer</h3>
+          <p style="font-size:13.5px;color:#57534e;margin:0 0 14px">Cancelling the hotel does <strong>not</strong> cancel the Mozio transfer. Its cancellation terms were frozen when it was quoted:</p>
+          <div style="background:#fef3c7;border:1px solid #d97706;border-radius:10px;padding:12px 14px;font-size:13px;color:#78350f;margin-bottom:16px">
+            Transfer USD 45.00 · cancel now → <strong>penalty USD 9.00</strong>, refund <strong>USD 36.00</strong><br>
+            <span style="font-size:12px">(Mozio policy frozen at quote time — penalty grows closer to pickup)</span>
+          </div>
+          <div style="display:flex;gap:10px;justify-content:flex-end">
+            <button class="btn-secondary" onclick="bdQ6KeepTransfer()">Cancel hotel, KEEP transfer</button>
+            <button class="confirm-btn" style="width:auto;padding:10px 16px" onclick="bdQ6CancelBoth()">Cancel both (refund USD 36.00)</button>
           </div>
         </div>
       </div>

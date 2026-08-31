@@ -2360,105 +2360,103 @@ document.addEventListener('input', (e) => {
   }
 });
 
-// ========== F1 — DECOUPLED HOTEL + TRANSPORT BOOKING ==========
-// USER_STORIES F1 (issue #23). Hotel and Mozio transportation are independent
-// confirm/pay lifecycles. When the agency confirms the hotel without yet
-// confirming the transfer, the transfer is saved as "pending" with a 48-hour
-// expiry from the hotel's paidAt timestamp. Prototype-only — backend
-// support, scheduled expiry job, and reminder pipeline are aspirational.
+// ========== F1 — HOTEL + TRANSFER, CLOSED AT CHECKOUT (spec v0.4) ==========
+// USER_STORIES F1 (issue #23). ONE checkout books AND pays both items: the
+// saga runs hotel steps first (write-ahead, pay, vendor confirm), then the
+// transfer steps — if the transfer fails, the hotel stays booked (item
+// boundary, no cascade). No 48h hold in v1 (post-October candidate).
+// Prototype-only — backend saga (GCP Workflows) per spec §1b/§3.
 
-window.F1_TRANSPORT_PENDING = false;
-window.F1_HOTEL_PAID_AT = null;        // ms epoch — set on confirmHotelOnly
-let _f1CountdownInterval = null;
-
-// Agency staff: confirm hotel now, save the transfer quote for up to 48 h.
-// Delegates to confirmBooking() (which populates the confirmation screen +
-// triggers showScreen('confirmation')), and the F1 hook on showScreen renders
-// the two-lane status block + in-dev banner when F1_TRANSPORT_PENDING is set.
+// "Book Hotel Only" — the agent drops the transfer and closes hotel-only.
 function confirmHotelOnly() {
-  if (!serviceTransferAdded) {
-    // No transfer to defer — falls through to the normal flow
-    return confirmBooking();
+  if (serviceTransferAdded) {
+    serviceTransferAdded = false;
+    serviceTransferVehicle = null;
+    serviceTransferPrice = 0;
+    serviceTransferNet = 0;
+    protoToast && protoToast('Transfer dropped — booking the hotel only.', 2000);
   }
-  window.F1_TRANSPORT_PENDING = true;
-  window.F1_HOTEL_PAID_AT = Date.now();
-  protoToast && protoToast('Hotel confirmed. Transfer quote saved — customer has 48 h to complete it.', 2400);
-  confirmBooking();
+  return confirmBooking();
 }
 
-// Hook into the confirmation render — show the F1 status block + banner if mode active
+// Saga progress overlay — mirrors the spec §3 end-to-end steps so the
+// checkout visibly closes both bookings in order (hotel first).
+function f1RunSagaOverlay(done) {
+  const steps = [
+    'Booking hotel — record created',
+    'Paying hotel…',
+    'Confirming hotel at the vendor…',
+    'Hotel booked ✓',
+    'Booking transfer — record created',
+    'Paying transfer…',
+    'Confirming transfer at Mozio…',
+    'Transfer booked ✓',
+  ];
+  let overlay = document.getElementById('f1-saga-overlay');
+  if (!overlay) {
+    overlay = document.createElement('div');
+    overlay.id = 'f1-saga-overlay';
+    overlay.style.cssText = 'position:fixed;inset:0;background:rgba(28,25,23,.5);z-index:70;display:flex;align-items:center;justify-content:center';
+    overlay.innerHTML = '<div style="background:#fff;border-radius:14px;min-width:340px;padding:22px 26px;box-shadow:0 20px 60px rgba(0,0,0,.3)"><h3 style="margin:0 0 12px">Closing your booking…</h3><div id="f1-saga-steps" style="font-size:13.5px;line-height:2;color:#57534e"></div></div>';
+    document.body.appendChild(overlay);
+  }
+  overlay.style.display = 'flex';
+  const list = overlay.querySelector('#f1-saga-steps');
+  list.innerHTML = '';
+  let i = 0;
+  const tick = () => {
+    if (i > 0) list.children[i - 1].innerHTML = '<span style="color:#0d9488">✓</span> ' + steps[i - 1];
+    if (i >= steps.length) {
+      setTimeout(() => { overlay.style.display = 'none'; done && done(); }, 350);
+      return;
+    }
+    const row = document.createElement('div');
+    row.innerHTML = '<span style="color:#d97706">●</span> ' + steps[i];
+    list.appendChild(row);
+    i += 1;
+    setTimeout(tick, 320);
+  };
+  tick();
+}
+
+// Wrap confirmBooking: with a transfer in the cart, the checkout runs the
+// full saga overlay first (hotel steps then transfer steps), then confirms.
+(function f1WrapConfirmBooking() {
+  const orig = window.confirmBooking;
+  if (typeof orig !== 'function') return;
+  window.confirmBooking = function () {
+    if (serviceTransferAdded && !window.__f1SagaRan) {
+      window.__f1SagaRan = true;
+      return f1RunSagaOverlay(() => { const r = orig.apply(this); window.__f1SagaRan = false; return r; });
+    }
+    return orig.apply(this, arguments);
+  };
+})();
+
+// Confirmation screen: show the two-lane block whenever a transfer was
+// booked — BOTH lanes Confirmed & Paid (v0.4: nothing is ever pending).
 function f1RenderOnConfirmation() {
   const block = document.getElementById('f1-status-block');
   const banner = document.getElementById('f1-in-dev-banner');
   const transferSection = document.getElementById('conf-transfer-section');
   if (!block || !banner) return;
-  if (window.F1_TRANSPORT_PENDING) {
+  if (serviceTransferAdded) {
     block.style.display = 'flex';
     banner.style.display = 'flex';
-    // Hide the bundled "Transfer Details" section since the transport lane covers it
     if (transferSection) transferSection.style.display = 'none';
-    // Update confirmation heading to reflect partial confirmation
+    const amt = document.getElementById('f1-transport-amount');
+    if (amt && serviceTransferPrice) amt.textContent = 'USD ' + serviceTransferPrice.toFixed(2);
     const h1 = document.getElementById('conf-heading');
     const sub = document.getElementById('conf-subheading');
-    if (h1) h1.textContent = 'Hotel confirmed!';
-    if (sub) sub.textContent = 'Customer can come back within 48 hours to complete the transfer at the saved price.';
-    f1StartCountdown();
+    if (h1) h1.textContent = 'Booking closed — hotel + transfer confirmed!';
+    if (sub) sub.textContent = 'Both bookings are confirmed and paid. Vouchers and invoices are available per item.';
   } else {
     block.style.display = 'none';
     banner.style.display = 'none';
   }
 }
 
-// Countdown ticker — shows hours/minutes remaining in the 48h window
-function f1StartCountdown() {
-  if (_f1CountdownInterval) clearInterval(_f1CountdownInterval);
-  const update = () => {
-    const el = document.getElementById('f1-countdown');
-    if (!el || !window.F1_HOTEL_PAID_AT) return;
-    const expiresAt = window.F1_HOTEL_PAID_AT + (48 * 60 * 60 * 1000);
-    const ms = expiresAt - Date.now();
-    if (ms <= 0) {
-      el.textContent = 'Expired';
-      el.classList.add('f1-countdown-expired');
-      clearInterval(_f1CountdownInterval);
-      const lane = document.querySelector('.f1-lane-transport');
-      if (lane) {
-        lane.classList.remove('f1-lane-pending');
-        lane.classList.add('f1-lane-expired');
-        const s = lane.querySelector('.f1-lane-status');
-        if (s) { s.textContent = '✗ Expired — re-quote required'; s.className = 'f1-lane-status f1-status-expired'; }
-      }
-      return;
-    }
-    const h = Math.floor(ms / 3600000);
-    const m = Math.floor((ms % 3600000) / 60000);
-    el.textContent = `${h} h ${m} min`;
-  };
-  update();
-  // Tick every 30 seconds (prototype — production would use a timer-anchored render)
-  _f1CountdownInterval = setInterval(update, 30000);
-}
-
-// "Confirm transfer now" button handler — completes the transport lane
-function f1ConfirmTransferNow() {
-  protoToast && protoToast('Re-quoting Mozio at current price… confirmed.', 1800);
-  if (_f1CountdownInterval) { clearInterval(_f1CountdownInterval); _f1CountdownInterval = null; }
-  const lane = document.querySelector('.f1-lane-transport');
-  if (lane) {
-    lane.classList.remove('f1-lane-pending', 'f1-lane-expired');
-    lane.classList.add('f1-lane-paid');
-    const s = lane.querySelector('.f1-lane-status');
-    if (s) { s.textContent = '✓ Confirmed & Paid'; s.className = 'f1-lane-status f1-status-paid'; }
-    const cd = lane.querySelector('.f1-lane-body span:nth-child(2)');
-    if (cd) cd.innerHTML = 'Ref <code>MOZIO-RSV-4938-K2</code>';
-    const btn = lane.querySelector('.f1-confirm-now-btn');
-    if (btn) btn.remove();
-  }
-  window.F1_TRANSPORT_PENDING = false;
-}
-
-// Show the F1 "Confirm hotel only" alternative button on the payment screen
-// when a transfer has been added (so the agency staff has a real choice)
+// Payment screen: show the hotel-only alternative + the pay-both note
 function f1UpdatePaymentScreenAlternative() {
   const altBtn = document.getElementById('pay-confirm-hotel-only');
   const altHint = document.getElementById('pay-f1-hint');
@@ -2466,79 +2464,51 @@ function f1UpdatePaymentScreenAlternative() {
   const show = !!serviceTransferAdded;
   altBtn.style.display = show ? '' : 'none';
   altHint.style.display = show ? '' : 'none';
+  if (typeof updatePaymentForServices === 'function') updatePaymentForServices();
+  const due = document.getElementById('pay-os-duenow');
+  const total = document.getElementById('pay-os-total');
+  if (due && total) due.textContent = total.textContent;
 }
 
-// Booking-detail mirror of the two-lane block (F1 AC #5).
-// Uses separate `bd-f1-*` DOM ids so it coexists with the confirmation screen
-// block; both read from the same window.F1_TRANSPORT_PENDING flag.
-let _bdF1CountdownInterval = null;
-
+// Booking detail: two lanes, both paid; per-lane documents + cancel entries.
 function f1RenderOnBookingDetail() {
   const banner = document.getElementById('bd-f1-in-dev-banner');
   const block = document.getElementById('bd-f1-status-block');
-  const headerStatus = document.getElementById('bd-header-status');
   if (!banner || !block) return;
-  if (window.F1_TRANSPORT_PENDING) {
+  if (serviceTransferAdded) {
     banner.style.display = 'flex';
     block.style.display = 'flex';
-    // Header status becomes PARTIAL when only one of the two is paid
-    if (headerStatus) {
-      headerStatus.textContent = 'PARTIAL';
-      headerStatus.className = 'status-badge';
-      headerStatus.style.background = '#fef3c7';
-      headerStatus.style.color = '#92400e';
-    }
-    f1StartBookingDetailCountdown();
+    const amt = document.getElementById('bd-f1-transport-amount');
+    if (amt && serviceTransferPrice) amt.textContent = 'USD ' + serviceTransferPrice.toFixed(2);
   } else {
     banner.style.display = 'none';
     block.style.display = 'none';
   }
 }
 
-function f1StartBookingDetailCountdown() {
-  if (_bdF1CountdownInterval) clearInterval(_bdF1CountdownInterval);
-  const update = () => {
-    const el = document.getElementById('bd-f1-countdown');
-    if (!el || !window.F1_HOTEL_PAID_AT) return;
-    const expiresAt = window.F1_HOTEL_PAID_AT + (48 * 60 * 60 * 1000);
-    const ms = expiresAt - Date.now();
-    if (ms <= 0) {
-      el.textContent = 'Expired';
-      el.classList.add('f1-countdown-expired');
-      clearInterval(_bdF1CountdownInterval);
-      const lane = document.getElementById('bd-f1-transport-lane');
-      const status = document.getElementById('bd-f1-transport-status');
-      if (lane) { lane.classList.remove('f1-lane-pending'); lane.classList.add('f1-lane-expired'); }
-      if (status) { status.textContent = '✗ Expired — re-quote required'; status.className = 'f1-lane-status f1-status-expired'; }
-      return;
-    }
-    const h = Math.floor(ms / 3600000);
-    const m = Math.floor((ms % 3600000) / 60000);
-    el.textContent = `${h} h ${m} min`;
-  };
-  update();
-  _bdF1CountdownInterval = setInterval(update, 30000);
+// Q6 — surface-and-prompt: cancelling the hotel while a PAID transfer exists.
+function bdOpenCancelHotel() {
+  const modal = document.getElementById('bd-q6-modal');
+  if (modal) modal.style.display = 'flex';
 }
-
-function f1ConfirmTransferFromBookingDetail() {
-  protoToast && protoToast('Re-quoting Mozio at current price… confirmed.', 1800);
-  if (_bdF1CountdownInterval) { clearInterval(_bdF1CountdownInterval); _bdF1CountdownInterval = null; }
-  const lane = document.getElementById('bd-f1-transport-lane');
+function bdQ6KeepTransfer() {
+  document.getElementById('bd-q6-modal').style.display = 'none';
+  protoToast && protoToast('Hotel cancelled. Transfer KEPT — Mozio booking untouched.', 2600);
+}
+function bdQ6CancelBoth() {
+  document.getElementById('bd-q6-modal').style.display = 'none';
+  protoToast && protoToast('Hotel cancelled. Transfer cancelled at Mozio — USD 36.00 refunded per frozen policy.', 3000);
   const status = document.getElementById('bd-f1-transport-status');
-  const meta = document.getElementById('bd-f1-transport-meta');
-  const btn = document.getElementById('bd-f1-confirm-now-btn');
-  const headerStatus = document.getElementById('bd-header-status');
-  if (lane) { lane.classList.remove('f1-lane-pending', 'f1-lane-expired'); lane.classList.add('f1-lane-paid'); }
-  if (status) { status.textContent = '✓ Confirmed & Paid'; status.className = 'f1-lane-status f1-status-paid'; }
-  if (meta) meta.innerHTML = 'Ref <code>MOZIO-RSV-4938-K2</code> · Voucher available';
-  if (btn) btn.remove();
-  if (headerStatus) {
-    headerStatus.textContent = 'CONFIRMED';
-    headerStatus.className = 'status-badge confirmed';
-    headerStatus.style.background = '';
-    headerStatus.style.color = '';
-  }
-  window.F1_TRANSPORT_PENDING = false;
+  const lane = document.getElementById('bd-f1-transport-lane');
+  if (status) { status.textContent = '✗ Cancelled — USD 36.00 refunded'; status.className = 'f1-lane-status f1-status-expired'; }
+  if (lane) { lane.classList.remove('f1-lane-paid'); lane.classList.add('f1-lane-expired'); }
+}
+function bdCancelTransfer() {
+  protoToast && protoToast('Transfer cancelled at Mozio — refund per the frozen policy. Hotel untouched.', 2800);
+  const status = document.getElementById('bd-f1-transport-status');
+  const lane = document.getElementById('bd-f1-transport-lane');
+  if (status) { status.textContent = '✗ Cancelled — refunded per policy'; status.className = 'f1-lane-status f1-status-expired'; }
+  if (lane) { lane.classList.remove('f1-lane-paid'); lane.classList.add('f1-lane-expired'); }
 }
 
 // Hook into showScreen to render F1 on confirmation + payment + booking-detail
