@@ -12,7 +12,7 @@ mkdir -p "$CLAUDE_DIR/hooks" "$CLAUDE_DIR/skills/karpathy-guidelines" "$CLAUDE_D
          "$CLAUDE_DIR/agent-memory/business-aware-qa-analyst"
 
 echo "→ hooks"
-cp -f hooks/gate-bash.sh hooks/karpathy-reminder.sh "$CLAUDE_DIR/hooks/"
+cp -f hooks/gate-bash.sh hooks/karpathy-reminder.sh hooks/pre-pr-gate.sh "$CLAUDE_DIR/hooks/"
 chmod +x "$CLAUDE_DIR/hooks/"*.sh
 
 echo "→ karpathy-guidelines skill"

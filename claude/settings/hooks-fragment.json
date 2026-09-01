@@ -7,6 +7,11 @@
           {
             "type": "command",
             "command": "~/.claude/hooks/gate-bash.sh"
+          },
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/pre-pr-gate.sh",
+            "statusMessage": "Pre-PR gate: checking review + e2e evidence"
           }
         ]
       },
