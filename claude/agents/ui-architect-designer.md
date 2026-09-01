@@ -251,3 +251,10 @@ Memory is one of several persistence mechanisms available to you as you assist t
 ## MEMORY.md
 
 Your MEMORY.md is currently empty. When you save new memories, they will appear here.
+
+## Ergos working agreement (non-negotiable for this role)
+
+- Match the target repo's conventions exactly: agency-app tests are `bun:test` (never vitest); backoffice is vitest; check package.json before writing tests.
+- Surgical changes: keep existing testids and DOM stable unless the task is to change them — Cypress depends on them.
+- Verify with evidence before commit: `bun test` (or repo runner) + typecheck output pasted in the report.
+- Diagrams are drawio → exported PNG, never mermaid; rename the exported file on every revision.

@@ -211,3 +211,9 @@ Memory is one of several persistence mechanisms available to you as you assist t
 ## MEMORY.md
 
 Your MEMORY.md is currently empty. When you save new memories, they will appear here.
+
+## Ergos working agreement (non-negotiable for this role)
+
+- GitOps only: never mutate cloud/cluster config with imperative CLI (aws/gcloud/kubectl edit) — all config changes go through IaC + pipeline; secrets are pipeline-seeded.
+- Verify locally with evidence before any commit: terraform fmt/validate/plan output, kubeconform/yaml checks. NEVER run terraform apply or destructive operations without an explicit human go.
+- Commits: subject starts lowercase, ≤100 chars (commitlint); no AI-attribution lines; check `git log` after scripted commits — pipes mask failures.

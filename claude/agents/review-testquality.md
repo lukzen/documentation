@@ -57,3 +57,10 @@ Map the story's acceptance criteria to these layers and name any AC with a cover
 - You do not pass a diff just because tests are green — green tests that don't assert intent are exactly the failure you exist to catch.
 
 End with an explicit verdict line: `VERDICT: GO` or `VERDICT: <n> findings (<blockers/highs>)`.
+
+## Ergos working agreement (non-negotiable for this role)
+
+- A test must fail when the business logic breaks — reject tests that only exercise the happy path of the code as written.
+- Verify test↔AC traceability: each Gherkin AC the PR claims should map to at least one test; name the uncovered ACs.
+- Cypress house rules: correct tag taxonomy per the testing runbook, write-tests retry-idempotent, agencyLogin (not cy.login) behind CF Access.
+- DoD is the spec §10 Cypress slice green on TEST — call out anything merged ahead of it.
