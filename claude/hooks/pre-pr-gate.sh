@@ -1,3 +1,4 @@
+
 #!/usr/bin/env bash
 # PreToolUse(Bash) gate: refuses `gh pr create` unless pre-PR evidence exists
 # and is FRESH for the current HEAD. Evidence = .claude/pr-evidence/<branch>.md
@@ -18,11 +19,12 @@ except Exception:
 cmd=$(printf '%s' "$parsed" | sed -n 1p)
 cwd=$(printf '%s' "$parsed" | sed -n 2p)
 
-# Only gate PR creation.
-case "$cmd" in
-  *"gh pr create"*) ;;
-  *) exit 0 ;;
-esac
+# Only gate actual INVOCATIONS of `gh pr create` — i.e. at the start of a
+# command segment (line start, after ; & | or $( ). A mere mention of the
+# string inside quotes/heredocs (e.g. writing docs about this hook) must NOT
+# trigger. Heuristic, not a parser: worst-case false negative is caught by
+# the PR template checklist.
+printf '%s' "$cmd" | grep -Eq '(^|[;&|]|\$\()[[:space:]]*gh[[:space:]]+pr[[:space:]]+create' || exit 0
 
 deny() {
   printf '%s' "$1" | python3 -c 'import sys,json
