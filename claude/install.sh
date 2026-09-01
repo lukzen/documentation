@@ -43,8 +43,15 @@ for event, entries in fragment["hooks"].items():
     existing = hooks.setdefault(event, [])
     for entry in entries:
         cmds = {h["command"] for e in existing for h in e.get("hooks", [])}
-        if not any(h["command"] in cmds for h in entry["hooks"]):
-            existing.append(entry)
+        new_hooks = [h for h in entry["hooks"] if h["command"] not in cmds]
+        if not new_hooks:
+            continue
+        # merge into an existing entry with the same matcher, else append
+        match = next((e for e in existing if e.get("matcher") == entry.get("matcher")), None)
+        if match is not None:
+            match.setdefault("hooks", []).extend(new_hooks)
+        else:
+            existing.append({**entry, "hooks": new_hooks})
 json.dump(settings, open(settings_path, "w"), indent=2)
 print("   settings.json merged")
 PY
