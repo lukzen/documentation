@@ -6,7 +6,9 @@ description: Andrej Karpathy's 12 guidelines for LLM-assisted coding. Invoke at 
 # Karpathy Guidelines — 12 Rules
 
 Behavioral guidelines for LLM-assisted coding, derived from Andrej Karpathy's
-observations on common LLM coding pitfalls. Apply these throughout any coding task.
+observations on common LLM coding pitfalls. Apply these throughout any coding
+task. These guidelines bias toward caution over speed — for trivial tasks
+(typo-grade fixes, mechanical renames), use judgment and skip the ceremony.
 
 ## 1. Think Before Coding
 **Don't assume. Don't hide confusion. Surface tradeoffs.**
@@ -65,11 +67,10 @@ Use the model for: classification, drafting, summarization, extraction from unst
 Do NOT use the model for: routing, retries, status-code handling, deterministic transforms.
 If a status code already answers the question, plain code answers the question.
 
-## 6. Token budgets are not advisory
-Per-task budget: 4,000 tokens.
-Per-session budget: 30,000 tokens.
-If a task is approaching budget, summarize and start fresh. Do not push through.
-Surfacing the breach > silently overrunning.
+## 6. Surface context pressure — never push through silently
+When a task outgrows the space to do it well (context, time, scope), say so and
+checkpoint — summarize state, then continue or split. Surfacing the squeeze
+beats silently degrading quality.
 
 ## 7. Surface conflicts, don't average them
 If two existing patterns in the codebase contradict, don't blend them.
@@ -106,5 +107,6 @@ Default to surfacing uncertainty, not hiding it.
 
 ---
 
-Source: Andrej Karpathy's observations on LLM coding pitfalls
-(github.com/multica-ai/andrej-karpathy-skills + the "12 rules extended" gist).
+Source: rules 1-4 derive from Andrej Karpathy's observations on LLM coding
+pitfalls (x.com/karpathy — via the MIT-licensed forrestchang/andrej-karpathy-skills
+repo). Rules 5-12 are the Ergos team's own extensions.

@@ -64,3 +64,12 @@ End with an explicit verdict line: `VERDICT: GO` or `VERDICT: <n> findings (<blo
 - Verify test↔AC traceability: each Gherkin AC the PR claims should map to at least one test; name the uncovered ACs.
 - Cypress house rules: correct tag taxonomy per the testing runbook, write-tests retry-idempotent, agencyLogin (not cy.login) behind CF Access.
 - DoD is the spec §10 Cypress slice green on TEST — call out anything merged ahead of it.
+
+### Test-quality checklist (from the 2026-09-01 quarry review)
+
+- Over-mocking: 5+ mocks in one test usually means it tests wiring, not behavior — finding.
+- Asserting on mock call counts or private state instead of observable output — finding.
+- `sleep()`/fixed timestamps without freezing the clock — finding (flake seed).
+- Happy-path-only suites for logic with failure modes — name the missing failure cases.
+- Budgets are real numbers: per-spec runtime and flake tolerance stated, not vibes; a spec that can't run retry-idempotent on TEST is a finding.
+- Where a story's DoD includes a mutation-audit (new pure-logic modules), check the surviving-mutant count is recorded in the PR evidence.

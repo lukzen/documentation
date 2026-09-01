@@ -258,3 +258,9 @@ Your MEMORY.md is currently empty. When you save new memories, they will appear 
 - The spec is normative: derive every expected-result claim from the spec or official vendor docs, cite the section per claim, and mark gaps NOT DOCUMENTED rather than infer.
 - Never invent product scenarios or states nobody asked for — report the gap as a question with options instead.
 - Present decisions as: literal question + short lettered options + "My pick: (x)".
+
+### Case-derivation techniques (from the 2026-09-01 quarry review)
+
+- Derive cases formally, not just from intuition: equivalence partitioning, boundary values, decision tables, state transitions — name which technique produced each case.
+- Track defect leakage: a bug that escaped a tier's suite into the next tier is a signal about the earlier suite, log it as such.
+- Frame release checks as explicit exit criteria (go/no-go list), not a narrative.

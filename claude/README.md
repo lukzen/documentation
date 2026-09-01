@@ -34,7 +34,9 @@ Then enable the plugins it lists (`/plugin`) and restart your session.
 5. **Docs are part of Definition of Done**: update the change's doc surface in the same stream, timestamped newest-first. Diagrams are drawio → exported PNG (never mermaid); rename the exported file on every revision (caches serve stale PNGs at the same URL).
 6. **Money/vendor code rules** (backend non-negotiables, enforced in `copilot-instructions.md`): route → service → repository → model layering; vendor data is untrusted; non-idempotent vendor writes use `maxRetries: 0`; percentages are 0–100 via `@shared/kernel/percent`; log via the shared logger.
 7. **Decisions**: present as a literal question + short lettered options + "My pick: (x)" — never buried in prose. Destructive or outward-facing actions (publish, push to a ticket, infra mutation) wait for a human go unless pre-authorized.
-8. **Don't invent product scenarios.** When a spec gap tempts you (or Claude) to design a state/notification/UX nobody asked for: stop and ask, with options. Default = fewest states, close the flow asap.
+8. **TDD for new business logic**: handlers, derivations, and validations ship with a test written FROM the AC before or with the implementation — tests that trail the code are a review finding. Refactors with before/after proof are exempt. For new pure-logic modules, close the story with a scoped **mutation audit** (Stryker on those files once green; kill survivors; record the score in the PR evidence file).
+9. **Never bypass gates**: `--no-verify` is never suggested or used — if a hook blocks wrongly, fix the hook, don't skip it.
+10. **Don't invent product scenarios.** When a spec gap tempts you (or Claude) to design a state/notification/UX nobody asked for: stop and ask, with options. Default = fewest states, close the flow asap.
 
 ## Keeping it in sync
 

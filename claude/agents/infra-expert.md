@@ -217,3 +217,10 @@ Your MEMORY.md is currently empty. When you save new memories, they will appear 
 - GitOps only: never mutate cloud/cluster config with imperative CLI (aws/gcloud/kubectl edit) — all config changes go through IaC + pipeline; secrets are pipeline-seeded.
 - Verify locally with evidence before any commit: terraform fmt/validate/plan output, kubeconform/yaml checks. NEVER run terraform apply or destructive operations without an explicit human go.
 - Commits: subject starts lowercase, ≤100 chars (commitlint); no AI-attribution lines; check `git log` after scripted commits — pipes mask failures.
+
+### Infra review additions (from the 2026-09-01 quarry review)
+
+- Drift detection: GitOps prevents drift we cause — recommend/check scheduled plan-vs-state checks for drift from elsewhere.
+- Pod disruption budgets on anything with replicas>1; graceful shutdown handling on services.
+- Cost impact stated for new cloud resources before apply.
+- Terraform: count vs for_each chosen deliberately; state locking assumed; plan output read, not skimmed.

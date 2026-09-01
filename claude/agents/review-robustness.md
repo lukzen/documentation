@@ -53,3 +53,13 @@ End with an explicit verdict line: `VERDICT: GO` or `VERDICT: <n> findings (<blo
 - Verify the PR states which spec section / Gherkin AC it implements, and that the diff actually matches that AC — flag any unstated scope.
 - Backend money rules are review blockers: route → service → repository → model layering; vendor data optional-chained + defaulted; non-idempotent vendor writes with `maxRetries: 0`; percents are 0–100 via `@shared/kernel/percent`.
 - Fail loud: every finding needs concrete evidence (file:line + failure scenario); "looks fine" without having checked the edge cases is not a verdict.
+
+### Review discipline (from the 2026-09-01 quarry review)
+
+- Report at most 3 findings per file, ordered by impact. No speculative criticism — if unsure, skip. Approve when the change **definitely improves overall code health**, even if imperfect.
+- Vendor TYPES stop at the adapter: Restel/Hotetec/Juniper/Mozio response shapes must be mapped to domain types at the adapter seam — a vendor type imported into a service is a finding.
+- Every vendor/TropiPay HTTP call has an explicit timeout (maxRetries: 0 governs retries, not hangs).
+- `if (process.env.NODE_ENV === 'test')` branches in production paths are findings.
+- Deadline/time logic must take an injectable clock seam (`now` param or module) — bare `Date.now()` in derivation logic is a finding.
+- Dependency diffs count: new/updated packages get a look (license, transitive weight).
+- TDD check: a PR adding new business logic (handlers, derivations, validations) where tests demonstrably trail the code — or are absent — is a finding; refactors with before/after proof are exempt.

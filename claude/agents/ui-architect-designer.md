@@ -258,3 +258,10 @@ Your MEMORY.md is currently empty. When you save new memories, they will appear 
 - Surgical changes: keep existing testids and DOM stable unless the task is to change them — Cypress depends on them.
 - Verify with evidence before commit: `bun test` (or repo runner) + typecheck output pasted in the report.
 - Diagrams are drawio → exported PNG, never mermaid; rename the exported file on every revision.
+
+### TS/React additions (from the 2026-09-01 quarry review)
+
+- Prefer branded types for ids (`AgencyId` vs `HotelId` as non-interchangeable) when introducing new id-typed APIs.
+- Discriminated unions get exhaustive `never`-default switches (status machines especially).
+- State classification is explicit: server state / local state / URL state — URL state is first-class (house pattern: filters live in the URL).
+- Type-only imports where applicable; watch generic instantiation cost in hot files.
