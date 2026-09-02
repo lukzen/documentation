@@ -62,4 +62,5 @@ End with an explicit verdict line: `VERDICT: GO` or `VERDICT: <n> findings (<blo
 - `if (process.env.NODE_ENV === 'test')` branches in production paths are findings.
 - Deadline/time logic must take an injectable clock seam (`now` param or module) — bare `Date.now()` in derivation logic is a finding.
 - Dependency diffs count: new/updated packages get a look (license, transitive weight).
+- Boundary-violation fixes follow DDD_STRATEGY.md (technical-docs/technical/2-architecture/): public.ts exports DTOs/functions, never Mongoose models; subdomain classification decides investment (ACL mappers for CORE seams only — plain re-exports for generic contexts); a model re-exported through public.ts to silence lint is a finding.
 - TDD check: a PR adding new business logic (handlers, derivations, validations) where tests demonstrably trail the code — or are absent — is a finding; refactors with before/after proof are exempt.
