@@ -18,4 +18,6 @@ Reviewed 2026-08-31 against [clean-code-skill](https://github.com/unrealandychan
 
 **Beyond the table (2026-09-01):** the pre-PR pipeline is now HARD-enforced by `hooks/pre-pr-gate.sh` — creating a PR via gh is blocked unless `.claude/pr-evidence/<branch>.md` carries both review-agent verdicts, local + end-to-end run evidence, and a fresh `HEAD:` sha. See README rule 3.
 
+**Beyond the table (2026-09-02):** security CI shipped and validated across all 4 repos — per-PR `security.yml` (Trivy SCA blocking CRITICAL, Semgrep SAST report-only, gitleaks per-repo), Trivy image gate in the shared `build-image.yml` (proven: backoffice run 33596100581), Dependabot + `bun.lock` regen workflow, pre-commit gitleaks hooks. Canonical doc: technical-docs `5-infrastructure/CICD/CICD_PIPELINE.md` §2.9. Baseline CVEs fixed first (backend handlebars, agency form-data).
+
 **Execution order:** 1 → 2 → 3 inside the F1 week; 4 → 5 right after; 6–7 as capacity allows.
