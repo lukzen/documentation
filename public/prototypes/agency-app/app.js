@@ -2457,6 +2457,71 @@ function f1RenderOnConfirmation() {
 }
 
 // Payment screen: show the hotel-only alternative + the pay-both note
+// F1.B (documentation#36) — where the transfer flow was entered from.
+// 'checkout'     → the Payment step's Airport Transfer card; the transfer joins THIS
+//                  booking and is paid with the room, so the flow returns to payment.
+// 'confirmation' → the post-booking path (room already paid), unchanged.
+let transferEntryContext = 'confirmation';
+
+const SVC_SUBTITLE_CHECKOUT =
+  'Added here, the transfer is part of <strong>this booking</strong> — one Trip Total, ' +
+  'one payment. Nothing is charged until you confirm payment on the previous step.';
+
+// Entry point from the Payment step. This is the REAL click path to screen-services,
+// which otherwise has none (it was reachable only from the prototype toolbar).
+function openCheckoutTransfer() {
+  transferEntryContext = 'checkout';
+  // The confirmation screen may have relocated the card and the book button into itself.
+  // Put them back before showing the services screen, or it renders empty.
+  const anchor = document.getElementById('svc-card-anchor');
+  const card = document.getElementById('svc-transfer-card');
+  if (anchor && card && card.parentElement !== anchor.parentElement) {
+    anchor.parentElement.insertBefore(card, anchor.nextSibling);
+  }
+  const actions = document.getElementById('svc-actions');
+  const bookBtn = document.getElementById('svc-book-btn');
+  if (actions && bookBtn && bookBtn.parentElement !== actions) {
+    actions.insertBefore(bookBtn, actions.firstChild);
+  }
+  const sub = document.getElementById('svc-subtitle');
+  if (sub) sub.innerHTML = SVC_SUBTITLE_CHECKOUT;
+  const note = document.getElementById('svc-pay-note');
+  if (note) {
+    note.innerHTML =
+      '<strong>Paid with the room.</strong> This transfer is part of the same booking — ' +
+      'one Trip Total, one payment at checkout. Your margin is tracked in the booking P&amp;L.';
+  }
+  const back = document.getElementById('svc-back-link');
+  if (back) back.textContent = '← Back to payment';
+  const backBtn = document.getElementById('svc-back-btn');
+  if (backBtn) backBtn.textContent = '← Back to payment';
+  showScreen('services');
+}
+
+// Back out of the transfer flow to wherever it was entered from.
+function svcBack() {
+  showScreen(transferEntryContext === 'checkout' ? 'payment' : 'confirmation');
+}
+
+// Reflect an added transfer on the Payment step's entry card.
+function f1UpdateCheckoutTransferEntry() {
+  const card = document.getElementById('pay-transfer-entry');
+  const sub = document.getElementById('pay-transfer-entry-sub');
+  const badge = document.getElementById('pay-transfer-entry-badge');
+  if (!card || !sub || !badge) return;
+  if (serviceTransferAdded) {
+    card.classList.add('added');
+    badge.textContent = 'Added';
+    sub.textContent =
+      (serviceTransferVehicle || 'Transfer') +
+      (serviceTransferPrice ? ' · USD ' + Number(serviceTransferPrice).toFixed(2) : '');
+  } else {
+    card.classList.remove('added');
+    badge.textContent = 'Optional';
+    sub.textContent = 'Private car service from airport to hotel';
+  }
+}
+
 function f1UpdatePaymentScreenAlternative() {
   const altBtn = document.getElementById('pay-confirm-hotel-only');
   const altHint = document.getElementById('pay-f1-hint');
@@ -2464,6 +2529,7 @@ function f1UpdatePaymentScreenAlternative() {
   const show = !!serviceTransferAdded;
   altBtn.style.display = show ? '' : 'none';
   altHint.style.display = show ? '' : 'none';
+  f1UpdateCheckoutTransferEntry();
   if (typeof updatePaymentForServices === 'function') updatePaymentForServices();
   const due = document.getElementById('pay-os-duenow');
   const total = document.getElementById('pay-os-total');
@@ -2677,6 +2743,14 @@ function bookServiceTransfer() {
   transferBookingState.date = document.getElementById('svc-tf-date').value;
   transferBookingState.time = document.getElementById('svc-tf-time').value;
   transferBookingState.passengers = document.getElementById('svc-tf-pax').value;
+  // F1.B — entered from checkout, the transfer is ADDED to this booking, not booked and
+  // billed on its own: it is confirmed and paid with the room when payment is confirmed.
+  if (transferEntryContext === 'checkout') {
+    protoToast('Transfer added — it is paid together with the room at checkout', 'success');
+    if (typeof updateBookingListFromState === 'function') updateBookingListFromState();
+    showScreen('payment');
+    return;
+  }
   protoToast('Transfer booked - billed to your Mozio account', 'success');
   renderConfirmationTransfer();
   if (typeof updateBookingListFromState === 'function') updateBookingListFromState();
@@ -2690,6 +2764,9 @@ function bookServiceTransfer() {
 // with a "Skip — Hotel Only" option. The transfer UI is relocated into the panel so
 // the existing search/select/book handlers keep working against the same element ids.
 function confExpandTransfer() {
+  // The confirmation path reuses the same card and book handler as the checkout path,
+  // so the entry context must be reset or a later add would route back to payment.
+  transferEntryContext = 'confirmation';
   const host = document.getElementById('conf-tf-host');
   const actions = document.getElementById('conf-tf-actions');
   const card = document.getElementById('svc-transfer-card');
@@ -2786,8 +2863,11 @@ function updatePaymentForServices() {
 
   if (serviceTransferAdded) {
     payTransfer.style.display = 'block';
+    // F1.B / AC3 — a round trip is ONE item at ONE price: both directions ride on this
+    // single line and the single fare below it, never a second transfer row.
     document.getElementById('pay-os-route').textContent =
-      document.getElementById('svc-pickup').value.split('(')[0].trim() + ' → Hotel';
+      document.getElementById('svc-pickup').value.split('(')[0].trim() + ' → Hotel'
+      + (transferMode === 'roundtrip' ? ' (round trip)' : '');
     document.getElementById('pay-os-tf-price').textContent = formatPrice(serviceTransferPrice);
     const total = parseFloat(bookingState.price) + serviceTransferPrice;
     payTotal.textContent = formatUSD(total);
@@ -3155,9 +3235,40 @@ function bdatGenConfNumber() {
   return 'MOZ-' + n;
 }
 
+// F1.B / AC3 — a booking carries at most ONE active transfer. The live app does not
+// guard the entry: it lets the whole search and selection run and refuses on Book
+// transfer, with the backend's own message (TRANSFER_ALREADY_ON_BOOKING). Mirrored here.
+let bdatTransferBooked = false;
+
+function bdatAddAnother() {
+  const cta = document.getElementById('bdat-cta');
+  const panel = document.getElementById('bdat-panel');
+  if (cta) cta.style.display = 'none';
+  if (panel) panel.style.display = '';
+  const add = document.getElementById('bdat-add-another');
+  if (add) add.style.display = 'none';
+  if (panel) panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function bdatShowRefusal() {
+  const note = document.getElementById('bdat-policy-note');
+  if (!note) return;
+  let alert = document.getElementById('bdat-refusal');
+  if (!alert) {
+    alert = document.createElement('div');
+    alert.id = 'bdat-refusal';
+    alert.className = 'bdat-refusal';
+    note.parentElement.insertBefore(alert, note);
+  }
+  alert.textContent = 'This booking already has a transfer — cancel it before adding another';
+  alert.style.display = 'block';
+  alert.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
 function bdatBook() {
   const card = bdatSelectedCard;
   if (!card) { if (typeof protoToast === 'function') protoToast('Select a vehicle first', 'error'); return; }
+  if (bdatTransferBooked) { bdatShowRefusal(); return; }
   const btn = document.querySelector('.bdat-book-btn');
   if (btn) { btn.textContent = 'Booking with Mozio…'; btn.disabled = true; }
   setTimeout(() => {
@@ -3190,6 +3301,11 @@ function bdatBook() {
     document.getElementById('bdat-panel').style.display = 'none';
     document.getElementById('bdat-cta').style.display = 'none';
     document.getElementById('bdat-booked').style.display = '';
+    // The booking now carries a transfer. Keep offering the add button, exactly as the
+    // live booking detail does, so AC3's refusal is reachable by clicking.
+    bdatTransferBooked = true;
+    const addAnother = document.getElementById('bdat-add-another');
+    if (addAnother) addAnother.style.display = '';
     if (typeof updateVisiblePrices === 'function') updateVisiblePrices();
     document.getElementById('bdat-booked').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 

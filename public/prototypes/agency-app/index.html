@@ -1057,10 +1057,13 @@
     <div class="booking-flow-page">
       <div class="flow-layout">
         <div class="flow-main">
-          <a href="#" class="back-link" onclick="showScreen('confirmation')">← Back to booking</a>
+          <a href="#" class="back-link" id="svc-back-link" onclick="svcBack()">← Back to booking</a>
           <h2>Add Airport Transfer</h2>
-          <p class="services-subtitle">Booking <strong id="svc-booking-ref">8W5D5P</strong> · This is a <strong>separate Mozio booking</strong> — it is <strong>not</strong> charged to the card on file. The net fare is billed to your agency's Mozio account; your client price (with markup) is tracked in the booking P&amp;L.</p>
+          <p class="services-subtitle" id="svc-subtitle">Booking <strong id="svc-booking-ref">8W5D5P</strong> · This is a <strong>separate Mozio booking</strong> — it is <strong>not</strong> charged to the card on file. The net fare is billed to your agency's Mozio account; your client price (with markup) is tracked in the booking P&amp;L.</p>
 
+          <!-- Anchor: the confirmation screen relocates #svc-transfer-card into itself, so the
+               checkout entry point needs a fixed place to put it back. -->
+          <div id="svc-card-anchor"></div>
           <!-- Transfer Service Offer Card -->
           <div class="service-offer-card" id="svc-transfer-card">
             <div class="svc-offer-header" onclick="toggleServiceConfig('transfer')">
@@ -1315,11 +1318,11 @@
               <div class="os-row os-total"><span>Client price</span><span id="svc-os-tf-price">USD 0.00</span></div>
             </div>
             <div class="svc-mozio-note" id="svc-mozio-note" style="display:none">
-              <strong>Separate from the room payment.</strong> The net fare is billed to your agency's <strong>Mozio account</strong> — not the card on file. Your margin is tracked in the booking P&amp;L.
+              <span id="svc-pay-note"><strong>Separate from the room payment.</strong> The net fare is billed to your agency's <strong>Mozio account</strong> — not the card on file. Your margin is tracked in the booking P&amp;L.</span>
             </div>
-            <div class="svc-actions">
+            <div class="svc-actions" id="svc-actions">
               <button class="continue-btn" id="svc-book-btn" onclick="bookServiceTransfer()" style="display:none">Book Transfer →</button>
-              <button class="btn-outline" onclick="showScreen('confirmation')">← Back to booking</button>
+              <button class="btn-outline" id="svc-back-btn" onclick="svcBack()">← Back to booking</button>
             </div>
           </div>
         </div>
@@ -1366,7 +1369,38 @@
             .tp-bar{background:#115e59;color:#fff;font-size:12px;padding:8px 12px;font-family:ui-monospace,Menlo,monospace}
             .tp-body{padding:16px;text-align:center}.tp-brand{font-weight:800;color:#115e59;letter-spacing:.06em;font-size:18px}
             .tp-amt{font-family:Georgia,serif;font-size:26px;margin:8px 0}.tp-note{font-size:12.5px;color:#78716c}
+            /* F1.B checkout transfer entry — warm cream + gold, matching the app shell. */
+            .pay-transfer-entry{display:flex;align-items:center;justify-content:space-between;cursor:pointer;margin-bottom:16px}
+            .pay-transfer-entry:hover{border-color:#a97f24}
+            .pte-left{display:flex;align-items:center;gap:12px}
+            .pte-icon{width:42px;height:42px;border-radius:10px;background:#1a1a4e;color:#fff;display:flex;align-items:center;justify-content:center;font-size:20px}
+            .pte-title{font-weight:700;font-size:15px}
+            .pte-sub{font-size:13px;color:#78716c;margin-top:2px}
+            .pte-right{display:flex;align-items:center;gap:10px}
+            .pte-chevron{color:#a8a29e;font-size:20px;line-height:1}
+            .pay-transfer-entry.added{border-color:#a97f24;background:#fdfaf3}
+            /* F1.B / AC3 — the one-transfer-per-booking refusal, as the live app shows it. */
+            .bdat-refusal{display:none;background:#f5f3f1;border:1px solid #d6d0c8;border-left:3px solid #b91c1c;
+              color:#44403c;font-size:13.5px;padding:11px 14px;border-radius:8px;margin:12px 0}
+            .bdat-add-another{display:block;width:100%;margin-top:12px}
           </style>
+
+          <!-- F1.B (documentation#36) — the transfer is offered HERE, before payment, so one
+               checkout closes both items. Mirrors the deployed Payment step, which opens with an
+               "Airport Transfer / OPTIONAL" section above "Choose Payment Method". -->
+          <div class="form-card pay-transfer-entry" id="pay-transfer-entry" onclick="openCheckoutTransfer()">
+            <div class="pte-left">
+              <div class="pte-icon"><i class="ti ti-car"></i></div>
+              <div>
+                <div class="pte-title">Airport Transfer</div>
+                <div class="pte-sub" id="pay-transfer-entry-sub">Private car service from airport to hotel</div>
+              </div>
+            </div>
+            <div class="pte-right">
+              <span class="pay-off" id="pay-transfer-entry-badge">Optional</span>
+              <span class="pte-chevron">›</span>
+            </div>
+          </div>
 
           <div class="ni-ribbon">🚧 Not implemented yet — target design per the Ergos payment-module spec (agency corporate card / credit balance / soft credit — paying with credit <b>pays now</b>; only the settlement comes later; replaces the direct card form).</div>
 
@@ -1515,9 +1549,9 @@
             <div class="os-row os-total"><span>Total Client Price</span><span id="pay-os-total">USD 201.20</span></div>
             <button class="confirm-btn" id="pay-confirm-btn" onclick="confirmBooking()">Send payment link to client</button>
             <!-- F1 v0.4 — one checkout closes BOTH bookings; hotel-only = drop the transfer -->
-            <p class="f1-alt-hint" id="pay-f1-hint" style="display:none">One payment books hotel + transfer together — both confirmed &amp; paid at checkout.</p>
+            <p class="f1-alt-hint" id="pay-f1-hint" style="display:none">One payment books the hotel and the transfer together — both confirmed and paid at checkout.</p>
             <button class="confirm-btn confirm-btn-alt" id="pay-confirm-hotel-only" onclick="confirmHotelOnly()" style="display:none">
-              Book Hotel Only — drop the transfer
+              Book hotel only — drop the transfer
             </button>
           </div>
         </div>
@@ -2409,6 +2443,13 @@
               <div class="bd-sc-row"><span class="bd-sc-label">Cancellation</span><span id="bdat-booked-cancel">—</span></div>
               <div class="bd-sc-row bd-sc-price-row"><span class="bd-sc-label">Transfer Price (client)</span><span id="bdat-booked-price" class="bd-sc-price" data-base-usd="55.20">USD 55.20</span></div>
             </div>
+
+            <!-- F1.B / AC3 — the live booking detail keeps offering this even when a transfer
+                 is already on the booking; the refusal only lands on Book transfer. -->
+            <button class="btn-outline bdat-add-another" id="bdat-add-another"
+                    onclick="bdatAddAnother()" style="display:none">
+              + Add Another Transfer (e.g. Return Trip)
+            </button>
 
             <div class="change-callout" data-change="M1">
               <span class="change-badge">NEW</span>
