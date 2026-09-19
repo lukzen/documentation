@@ -289,15 +289,80 @@
       <h4 class="lang-es">El flujo de reserva en 3 pasos</h4>
       <ol class="lang-en">
         <li><strong>Guest details:</strong> name(s) of every guest, primary contact email and phone. If multiple rooms, you assign guests to rooms here.</li>
-        <li><strong>Payment:</strong> capture the customer's payment method — credit/debit card or, in supported regions, Tropipay. Your agency markup is added automatically.</li>
+        <li><strong>Payment:</strong> the <em>Secure your booking</em> step. It carries an optional <strong>Airport Transfer</strong> section at the top and a <strong>Choose Payment Method</strong> block below it — <strong>Direct Card Payment</strong> or <strong>Pay with soft credit</strong>. Anything you add here is paid in this one step. Your agency markup is added automatically.</li>
         <li><strong>Confirmation:</strong> a confirmation screen with the locator (booking ID), the hotel's confirmation code (when the supplier returns one immediately), and a link to download the voucher.</li>
       </ol>
       <ol class="lang-es">
         <li><strong>Datos del huésped:</strong> nombre(s) de cada huésped, correo y teléfono de contacto principal. Si son varias habitaciones, aquí asigna los huéspedes a cada habitación.</li>
-        <li><strong>Pago:</strong> captura el método de pago del cliente — tarjeta de crédito/débito o, en regiones compatibles, Tropipay. El markup de su agencia se agrega automáticamente.</li>
+        <li><strong>Pago:</strong> el paso <em>Secure your booking</em> (Asegure su reserva). Arriba lleva una sección opcional <strong>Airport Transfer</strong> (Traslado al aeropuerto) y debajo el bloque <strong>Choose Payment Method</strong> (Elija el método de pago) — <strong>Direct Card Payment</strong> (pago directo con tarjeta) o <strong>Pay with soft credit</strong> (pagar con soft credit, el crédito que Ergos le otorga). Todo lo que agregue aquí se paga en este único paso. El markup de su agencia se agrega automáticamente.</li>
         <li><strong>Confirmación:</strong> una pantalla de confirmación con el locator (ID de reserva), el código de confirmación del hotel (cuando el proveedor lo devuelve en el momento) y un link para descargar el voucher.</li>
       </ol>
     </div>
+
+    <figure class="screenshot">
+      <div class="screenshot-frame">
+        <img src="f1b-01-checkout-transfer-and-credit.png"
+             alt="The Payment step showing an optional Airport Transfer section above the Choose Payment Method block."
+             loading="lazy" onerror="this.style.display='none'" />
+      </div>
+      <figcaption class="lang-en">The <em>Payment</em> step. The <strong>Airport Transfer</strong> section sits above <em>Choose Payment Method</em> and is marked <strong>OPTIONAL</strong> — the dropoff is pre-filled with the hotel and <em>Passengers</em> with the number of guests on the booking.</figcaption>
+      <figcaption class="lang-es">El paso <em>Payment</em> (Pago). La sección <strong>Airport Transfer</strong> aparece arriba de <em>Choose Payment Method</em> y está marcada como <strong>OPTIONAL</strong> (opcional) — el <em>Dropoff</em> (destino) viene precargado con el hotel y <em>Passengers</em> (pasajeros) con la cantidad de huéspedes de la reserva.</figcaption>
+    </figure>
+
+    <h3 class="lang-en">One checkout pays for everything on the booking</h3>
+    <h3 class="lang-es">Un solo checkout paga todo lo de la reserva</h3>
+    <p class="lang-en">Whatever the booking carries when you pay — the room on its own, or the room plus an airport transfer — is confirmed and paid in this single step. You are never asked for a second payment for the transfer.</p>
+    <p class="lang-es">Lo que la reserva tenga al momento de pagar — solo la habitación, o la habitación más un traslado al aeropuerto — se confirma y se paga en este único paso. Nunca se le pide un segundo pago por el traslado.</p>
+    <p class="lang-en">Once a transfer is added, the section header shows the vehicle and its fare with an <strong>ADDED</strong> badge, the summary gains a <em>Transfer — &lt;vehicle&gt;</em> line, and the sidebar total becomes <strong>Trip Total</strong> — room plus transfer in one figure. The confirm button reads <strong>Pay for both with credit →</strong>, under the note <em>"One payment books the hotel and the transfer together — both confirmed and paid at checkout."</em></p>
+    <p class="lang-es">Una vez agregado el traslado, el encabezado de la sección muestra el vehículo y su tarifa con la insignia <strong>ADDED</strong> (agregado), el resumen suma una línea <em>Transfer — &lt;vehículo&gt;</em>, y el total de la barra lateral pasa a ser <strong>Trip Total</strong> (total del viaje) — habitación más traslado en una sola cifra. El botón de confirmación dice <strong>Pay for both with credit →</strong> (pagar ambos con crédito), bajo la nota <em>"One payment books the hotel and the transfer together — both confirmed and paid at checkout."</em> (un solo pago reserva el hotel y el traslado juntos, ambos confirmados y pagados en el checkout).</p>
+
+    <figure class="screenshot">
+      <div class="screenshot-frame">
+        <img src="f1b-04-checkout-transfer-added-trip-total.png"
+             alt="Checkout with a transfer added, showing an ADDED badge, a Transfer line in the summary and a combined Trip Total."
+             loading="lazy" onerror="this.style.display='none'" />
+      </div>
+      <figcaption class="lang-en">A transfer added at checkout. Room USD 384.51 + transfer USD 33.37 = <strong>Trip Total USD 417.88</strong>, paid once.</figcaption>
+      <figcaption class="lang-es">Un traslado agregado en el checkout. Habitación USD 384,51 + traslado USD 33,37 = <strong>Trip Total USD 417,88</strong>, pagado una sola vez.</figcaption>
+    </figure>
+
+    <div class="callout callout-warning">
+      <strong class="lang-en">A transfer needs the credit rail</strong>
+      <strong class="lang-es">El traslado necesita la vía de crédito</strong>
+      <span class="lang-en"> With <strong>Direct Card Payment</strong> selected, the transfer is listed but <strong>not charged</strong>: the summary marks it <em>"Not included — card payment is not available yet. Pay with your Ergos credit account to book the ride too."</em> and the total stays at the room price. Choose <strong>Pay with soft credit</strong> to book and pay for both. The app never promises a ride the card rail cannot book.</span>
+      <span class="lang-es"> Con <strong>Direct Card Payment</strong> seleccionado, el traslado aparece pero <strong>no se cobra</strong>: el resumen lo marca como <em>"Not included — card payment is not available yet. Pay with your Ergos credit account to book the ride too."</em> (no incluido; el pago con tarjeta aún no está disponible, pague con su cuenta de crédito Ergos para reservar también el traslado) y el total se queda en el precio de la habitación. Elija <strong>Pay with soft credit</strong> para reservar y pagar ambos. La app nunca promete un traslado que la vía de tarjeta no puede reservar.</span>
+    </div>
+
+    <p class="lang-en">To book the room without the ride, use <strong>Book hotel only — drop the transfer</strong> under the confirm button. The transfer is discarded and nothing is charged for it.</p>
+    <p class="lang-es">Para reservar la habitación sin el traslado, use <strong>Book hotel only — drop the transfer</strong> (reservar solo el hotel y descartar el traslado) debajo del botón de confirmación. El traslado se descarta y no se cobra nada por él.</p>
+
+    <p class="lang-en">The confirmation screen then lists both: the hotel with its own status, an <em>AIRPORT TRANSFER</em> block with the vehicle, provider, pickup, dropoff and its Mozio confirmation number, and a <strong>Trip Total</strong> spelled out as <em>"Hotel USD 384.51 + airport transfer USD 33.37"</em>.</p>
+    <p class="lang-es">La pantalla de confirmación luego lista ambos: el hotel con su propio estado, un bloque <em>AIRPORT TRANSFER</em> con el vehículo, el proveedor, la recogida, el destino y su número de confirmación de Mozio, y un <strong>Trip Total</strong> detallado como <em>"Hotel USD 384.51 + airport transfer USD 33.37"</em>.</p>
+
+    <figure class="screenshot">
+      <div class="screenshot-frame">
+        <img src="f1b-05-confirmation-both-items.png"
+             alt="Booking confirmation listing the hotel and the airport transfer with a combined Trip Total."
+             loading="lazy" onerror="this.style.display='none'" />
+      </div>
+      <figcaption class="lang-en">One confirmation, both items — hotel <strong>CONFIRMED</strong> and transfer <strong>CONFIRMED</strong>, paid once with credit.</figcaption>
+      <figcaption class="lang-es">Una sola confirmación, ambos ítems — hotel <strong>CONFIRMED</strong> y traslado <strong>CONFIRMED</strong>, pagados una sola vez con crédito.</figcaption>
+    </figure>
+
+    <h3 class="lang-en">Paying with soft credit</h3>
+    <h3 class="lang-es">Pagar con soft credit</h3>
+    <p class="lang-en">Choosing <strong>Pay with soft credit</strong> draws on the credit Ergos granted your agency instead of a card. The app states it plainly: <em>"Pays now from your Ergos credit account — the balance settles later"</em>, followed by how much is left — for example <em>"$2,831.77 available — granted accounts never spend past zero; larger bookings pay by card."</em> Picking it changes the confirm button to <strong>Pay with credit →</strong>. The amount leaves your <em>Available</em> balance immediately; you settle with Ergos afterwards (see §10d).</p>
+    <p class="lang-es">Elegir <strong>Pay with soft credit</strong> usa el crédito que Ergos le otorgó a su agencia en lugar de una tarjeta. La app lo indica textualmente: <em>"Pays now from your Ergos credit account — the balance settles later"</em> (se paga ahora desde su cuenta de crédito Ergos; el saldo se liquida después), seguido de cuánto le queda — por ejemplo <em>"$2,831.77 available — granted accounts never spend past zero; larger bookings pay by card."</em> ($2.831,77 disponibles; las cuentas otorgadas nunca gastan por debajo de cero, las reservas más grandes se pagan con tarjeta). Al elegirlo, el botón de confirmación cambia a <strong>Pay with credit →</strong>. El monto sale de su saldo <em>Available</em> (disponible) de inmediato; la liquidación con Ergos es posterior (ver §10d).</p>
+
+    <figure class="screenshot">
+      <div class="screenshot-frame">
+        <img src="f1b-02-checkout-pay-with-credit.png"
+             alt="The Pay with soft credit option selected, with the confirm button reading Pay with credit."
+             loading="lazy" onerror="this.style.display='none'" />
+      </div>
+      <figcaption class="lang-en"><strong>Pay with soft credit</strong> selected — the confirm button becomes <strong>Pay with credit →</strong>.</figcaption>
+      <figcaption class="lang-es"><strong>Pay with soft credit</strong> seleccionado — el botón de confirmación pasa a ser <strong>Pay with credit →</strong>.</figcaption>
+    </figure>
 
     <div class="callout callout-info">
       <strong class="lang-en">What the customer pays vs. what Ergos charges:</strong>
@@ -336,12 +401,12 @@
       <strong class="lang-en">Three places to add a transfer</strong>
       <strong class="lang-es">Tres lugares para agregar un traslado</strong>
       <ul class="lang-en">
-        <li><strong>During the booking</strong> — when offered, an <em>Enhance your trip</em> step appears right after guest details. The transfer is still booked <strong>separately</strong> from the room (see payment note below).</li>
+        <li><strong>At checkout</strong> — the <em>Payment</em> step opens with an <strong>Airport Transfer</strong> section marked <strong>OPTIONAL</strong>. A transfer added here is part of the same booking and is paid together with the room (see payment note below).</li>
         <li><strong>On the confirmation screen</strong> — right after the room is booked, an <em>Additional services</em> card offers a transfer with one click.</li>
         <li><strong>On a confirmed booking, later</strong> — open the booking's detail page and use the <em>Airport Transfer</em> section (<strong>+ Add Airport Transfer</strong>) any time before travel.</li>
       </ul>
       <ul class="lang-es">
-        <li><strong>Durante la reserva</strong> — cuando está disponible, aparece un paso <em>Mejore su viaje</em> justo después de los datos del huésped. El traslado igual se reserva <strong>por separado</strong> de la habitación (ver la nota de pago más abajo).</li>
+        <li><strong>En el checkout</strong> — el paso <em>Payment</em> (Pago) abre con una sección <strong>Airport Transfer</strong> marcada como <strong>OPTIONAL</strong> (opcional). Un traslado agregado aquí forma parte de la misma reserva y se paga junto con la habitación (ver la nota de pago más abajo).</li>
         <li><strong>En la pantalla de confirmación</strong> — apenas se reserva la habitación, una tarjeta de <em>Servicios adicionales</em> ofrece el traslado con un clic.</li>
         <li><strong>En una reserva ya confirmada, más tarde</strong> — abra la página de detalle de la reserva y use la sección <em>Traslado al Aeropuerto</em> (<strong>+ Agregar traslado al aeropuerto</strong>) en cualquier momento antes del viaje.</li>
       </ul>
@@ -399,8 +464,8 @@
     <div class="callout callout-warning">
       <strong class="lang-en">How the transfer is paid</strong>
       <strong class="lang-es">Cómo se paga el traslado</strong>
-      <span class="lang-en"> The transfer is a <strong>separate booking</strong> — it is <strong>not</strong> charged to the card used for the room. The net fare is billed to your agency's <strong>Mozio account</strong>, and the client price (with your markup) is tracked in the booking's P&amp;L. That's why the room is booked and paid first, and the transfer is added afterwards.</span>
-      <span class="lang-es"> El traslado es una <strong>reserva separada</strong> — <strong>no</strong> se cobra a la tarjeta usada para la habitación. La tarifa neta se factura a la <strong>cuenta Mozio</strong> de su agencia, y el precio al cliente (con su markup) se registra en el P&amp;L de la reserva. Por eso la habitación se reserva y se paga primero, y el traslado se agrega después.</span>
+      <span class="lang-en"> A transfer added <strong>at checkout</strong> belongs to the same booking as the room: one booking reference, one <strong>Trip Total</strong> covering both, and one payment. You are not asked to pay for it separately. A transfer added <strong>later</strong>, from a booking that is already confirmed, is its own action taken after the room was paid. Either way the client price (with your markup) is tracked in the booking's P&amp;L.</span>
+      <span class="lang-es"> Un traslado agregado <strong>en el checkout</strong> pertenece a la misma reserva que la habitación: una sola referencia de reserva, un solo <strong>Trip Total</strong> (total del viaje) que cubre ambos, y un solo pago. No se le pide pagarlo por separado. Un traslado agregado <strong>más tarde</strong>, sobre una reserva ya confirmada, es una acción aparte posterior al pago de la habitación. En ambos casos el precio al cliente (con su markup) se registra en el P&amp;L de la reserva.</span>
     </div>
     <figure class="screenshot">
       <div class="screenshot-frame">
@@ -411,6 +476,43 @@
       <figcaption class="lang-en">The selected vehicle is marked <em>Selected</em>; the sticky <strong>Book Transfer</strong> bar shows the total. Confirm to attach the transfer to the booking.</figcaption>
       <figcaption class="lang-es">El vehículo elegido queda marcado como <em>Seleccionado</em>; la barra fija <strong>Reservar traslado</strong> muestra el total. Confirme para asociar el traslado a la reserva.</figcaption>
     </figure>
+    <h3 class="lang-en">Round trips: one item, one price</h3>
+    <h3 class="lang-es">Ida y vuelta: un ítem, un precio</h3>
+    <p class="lang-en">Switch <em>Mode</em> to <strong>Round Trip</strong> and the form asks for a <em>Return Date</em> and <em>Return Time</em>; <strong>Search Vehicles</strong> stays disabled until both are set (<em>"Return date and time are required for a round trip."</em>). The results price the whole round trip as a single figure, and it stays a single item all the way through: one <em>Transfer</em> line in the summary and one <strong>Trip Total</strong>. Both directions are confirmed and paid together — there is no second fare and no second booking to manage.</p>
+    <p class="lang-es">Cambie <em>Mode</em> (modo) a <strong>Round Trip</strong> (ida y vuelta) y el formulario pide una <em>Return Date</em> (fecha de regreso) y una <em>Return Time</em> (hora de regreso); <strong>Search Vehicles</strong> permanece deshabilitado hasta completar ambas (<em>"Return date and time are required for a round trip."</em>). Los resultados cotizan todo el viaje de ida y vuelta como una sola cifra, y sigue siendo un solo ítem de principio a fin: una línea <em>Transfer</em> en el resumen y un <strong>Trip Total</strong>. Ambos trayectos se confirman y se pagan juntos — no hay una segunda tarifa ni una segunda reserva que administrar.</p>
+
+    <figure class="screenshot">
+      <div class="screenshot-frame">
+        <img src="f1b-07-round-trip-one-item.png"
+             alt="A round-trip transfer at checkout with return date and time, priced as one item with one Trip Total."
+             loading="lazy" onerror="this.style.display='none'" />
+      </div>
+      <figcaption class="lang-en">A round trip with a return leg on Oct 21 — still one <em>Transfer</em> line (USD 120.00) and one <strong>Trip Total</strong>.</figcaption>
+      <figcaption class="lang-es">Una ida y vuelta con regreso el 21 de octubre — sigue siendo una sola línea <em>Transfer</em> (USD 120,00) y un solo <strong>Trip Total</strong>.</figcaption>
+    </figure>
+
+    <h3 class="lang-en">One transfer per booking</h3>
+    <h3 class="lang-es">Un traslado por reserva</h3>
+    <p class="lang-en">A booking carries <strong>at most one</strong> airport transfer. If it already has an active one, adding another is refused with <em>"This booking already has a transfer — cancel it before adding another"</em>. Cancel the existing transfer first, then add the replacement. A cancelled transfer does not count, so a booking whose ride you cancelled is free to take a new one.</p>
+    <p class="lang-es">Una reserva lleva <strong>como máximo un</strong> traslado al aeropuerto. Si ya tiene uno activo, agregar otro se rechaza con <em>"This booking already has a transfer — cancel it before adding another"</em> (esta reserva ya tiene un traslado; cancélelo antes de agregar otro). Cancele primero el traslado existente y luego agregue el reemplazo. Un traslado cancelado no cuenta, así que una reserva cuyo traslado usted canceló puede tomar uno nuevo.</p>
+
+    <div class="callout callout-warning">
+      <strong class="lang-en">The refusal comes at the end, not the start</strong>
+      <strong class="lang-es">El rechazo llega al final, no al principio</strong>
+      <span class="lang-en"> The booking detail still offers <strong>+ Add Another Transfer (e.g. Return Trip)</strong>, and the whole search runs normally — you can pick a vehicle and fill in the flight details. The refusal only appears when you press <strong>Book Transfer</strong>. Nothing is charged and no ride is reserved, but the work is wasted: if the booking already shows a transfer, cancel that one first. For a return leg, use <strong>Round Trip</strong> at the start instead of adding a second transfer.</span>
+      <span class="lang-es"> La página de detalle igualmente ofrece <strong>+ Add Another Transfer (e.g. Return Trip)</strong>, y la búsqueda funciona con normalidad — puede elegir un vehículo y completar los datos del vuelo. El rechazo aparece recién al presionar <strong>Book Transfer</strong>. No se cobra nada ni se reserva ningún traslado, pero el trabajo se pierde: si la reserva ya muestra un traslado, cancele ese primero. Para un trayecto de regreso, use <strong>Round Trip</strong> desde el inicio en lugar de agregar un segundo traslado.</span>
+    </div>
+
+    <figure class="screenshot">
+      <div class="screenshot-frame">
+        <img src="f1b-06-second-transfer-refused.png"
+             alt="The add-transfer page refusing a second transfer with the message that the booking already has one."
+             loading="lazy" onerror="this.style.display='none'" />
+      </div>
+      <figcaption class="lang-en">The refusal appears above <strong>Book Transfer</strong>, after the vehicle and flight details were already filled in.</figcaption>
+      <figcaption class="lang-es">El rechazo aparece encima de <strong>Book Transfer</strong>, después de haber completado el vehículo y los datos del vuelo.</figcaption>
+    </figure>
+
     <h3 class="lang-en">Managing a transfer afterwards</h3>
     <h3 class="lang-es">Gestionar un traslado después</h3>
     <p class="lang-en">Every transfer attached to a booking shows up in the <em>Airport Transfer</em> section of the booking detail page with a status badge:</p>
@@ -481,6 +583,45 @@
     <h3 class="lang-es">Encontrar una reserva específica rápidamente</h3>
     <p class="lang-en">Use the search box at the top of the list. You can search by locator, customer name, hotel name, or email. The filters on the right narrow by date range and status.</p>
     <p class="lang-es">Use el cuadro de búsqueda en la parte superior de la lista. Puede buscar por locator, nombre del cliente, nombre del hotel o correo. Los filtros a la derecha limitan por rango de fechas y estado.</p>
+
+    <h3 class="lang-en">Reopening a booking that has a transfer</h3>
+    <h3 class="lang-es">Reabrir una reserva que tiene traslado</h3>
+    <p class="lang-en">In the list, a booking that carries an airport transfer is totalled as <strong>TRIP TOTAL</strong> instead of <strong>TOTAL CLIENT PRICE</strong> — that label is how you spot one at a glance. Click <strong>View Booking Details</strong> to open it.</p>
+    <p class="lang-es">En la lista, una reserva que lleva un traslado al aeropuerto se totaliza como <strong>TRIP TOTAL</strong> (total del viaje) en lugar de <strong>TOTAL CLIENT PRICE</strong> (precio total al cliente) — esa etiqueta es la forma de reconocerla de un vistazo. Haga clic en <strong>View Booking Details</strong> para abrirla.</p>
+    <p class="lang-en">The detail page shows the current state of <em>both</em> items under one booking reference: a <strong>Hotel &amp; Room Details</strong> section and an <strong>Airport Transfer</strong> section (vehicle, pickup, dropoff, provider, its own confirmation number and price), plus <strong>Payment Information</strong> and a <strong>Booking Timeline</strong> that records the events of both. Reopening it never asks you to pay again — a booking paid with credit shows <em>Method</em> <strong>CREDIT</strong> and <em>Payment Status</em> <strong>PAID</strong>.</p>
+    <p class="lang-es">La página de detalle muestra el estado actual de <em>ambos</em> ítems bajo una sola referencia de reserva: una sección <strong>Hotel &amp; Room Details</strong> (detalle del hotel y la habitación) y una sección <strong>Airport Transfer</strong> (vehículo, recogida, destino, proveedor, su propio número de confirmación y precio), además de <strong>Payment Information</strong> (información de pago) y un <strong>Booking Timeline</strong> (línea de tiempo) que registra los eventos de ambos. Reabrirla nunca le pide pagar de nuevo — una reserva pagada con crédito muestra <em>Method</em> <strong>CREDIT</strong> y <em>Payment Status</em> <strong>PAID</strong>.</p>
+
+    <figure class="screenshot">
+      <div class="screenshot-frame">
+        <img src="f1b-03-booking-detail-both-items.png"
+             alt="Booking detail page with a Trip Total header, a Hotel and Room Details section and an Airport Transfer section under one booking reference."
+             loading="lazy" onerror="this.style.display='none'" />
+      </div>
+      <figcaption class="lang-en">One booking reference, one <strong>TRIP TOTAL</strong>, and both items listed — hotel and transfer each <strong>CONFIRMED</strong>, paid once with credit.</figcaption>
+      <figcaption class="lang-es">Una sola referencia de reserva, un solo <strong>TRIP TOTAL</strong>, y ambos ítems listados — hotel y traslado cada uno <strong>CONFIRMED</strong>, pagados una sola vez con crédito.</figcaption>
+    </figure>
+
+    <div class="callout callout-info">
+      <strong class="lang-en">Where each figure comes from</strong>
+      <strong class="lang-es">De dónde sale cada cifra</strong>
+      <span class="lang-en"> <em>TRIP TOTAL</em> in the header is the combined figure (room + transfer). <em>Payment Information → Amount Paid</em> shows the <strong>room</strong> only; the transfer's fare is shown in its own <em>Airport Transfer</em> block. Both are drawn from your credit account, and the Credit Account ledger records them as two entries even though you paid once.</span>
+      <span class="lang-es"> <em>TRIP TOTAL</em> en el encabezado es la cifra combinada (habitación + traslado). <em>Payment Information → Amount Paid</em> muestra solo la <strong>habitación</strong>; la tarifa del traslado aparece en su propio bloque <em>Airport Transfer</em>. Ambos salen de su cuenta de crédito, y el ledger de Credit Account los registra como dos asientos aunque usted haya pagado una sola vez.</span>
+    </div>
+
+    <h3 class="lang-en">Cancelling a booking that has a transfer</h3>
+    <h3 class="lang-es">Cancelar una reserva que tiene traslado</h3>
+    <p class="lang-en"><strong>Cancel Booking</strong> warns you first: <em>"The airport transfer will be cancelled too"</em>, naming the vehicle, route, Mozio confirmation number and fare. The final step states the refund in full — for example <em>"Refund: USD 417.88 (room USD 384.51 + airport transfer USD 33.37) (full refund, no penalty)"</em> — and asks for a cancellation reason. To keep the room and drop only the ride, use <strong>Cancel Transfer</strong> in the booking's <em>Airport Transfer</em> block instead.</p>
+    <p class="lang-es"><strong>Cancel Booking</strong> le avisa primero: <em>"The airport transfer will be cancelled too"</em> (el traslado al aeropuerto también se cancelará), indicando el vehículo, la ruta, el número de confirmación de Mozio y la tarifa. El último paso detalla el reembolso completo — por ejemplo <em>"Refund: USD 417.88 (room USD 384.51 + airport transfer USD 33.37) (full refund, no penalty)"</em> — y pide un motivo de cancelación. Para conservar la habitación y descartar solo el traslado, use <strong>Cancel Transfer</strong> en el bloque <em>Airport Transfer</em> de la reserva.</p>
+
+    <figure class="screenshot">
+      <div class="screenshot-frame">
+        <img src="f1b-08-cancel-takes-transfer-too.png"
+             alt="Cancel booking dialog warning that the airport transfer will be cancelled too, listing the vehicle and fare."
+             loading="lazy" onerror="this.style.display='none'" />
+      </div>
+      <figcaption class="lang-en">Cancelling the booking cancels the ride with it — the dialog says so before you commit.</figcaption>
+      <figcaption class="lang-es">Cancelar la reserva cancela también el traslado — el diálogo lo advierte antes de confirmar.</figcaption>
+    </figure>
 
     <h3 class="lang-en">Modifying or cancelling</h3>
     <h3 class="lang-es">Modificar o cancelar</h3>
