@@ -4250,3 +4250,42 @@ details[open] .mr-tier-summary::before {
   .bd-lane-actions .btn-secondary, .bd-agency-head .btn-secondary { flex: 1 1 100%; }
   .bd-doc-line { flex-direction: column; align-items: stretch; }
 }
+
+/* Booking-detail dialogs (mirror the live CancellationFlow / ModifyBookingModal / TransferSection) */
+.bd-modal-sm { max-width: 460px; }
+.cancel-warning.bd-cx-amber { background: var(--amber-50); border-bottom-color: var(--amber-100); }
+.cancel-warning.bd-cx-amber strong { color: #92400e; }
+.cancel-warning.bd-cx-amber p { color: #78350f; }
+.bd-cx-breakdown { display: inline-block; margin-top: 4px; font-size: 12.5px; color: var(--warm-500); }
+.bd-cx-ride-card { margin: 0; }
+.bd-cx-ride-line { background: var(--warm-100); border-radius: var(--radius); padding: 10px 14px; font-size: 14px; }
+.bd-cx-ride-line span { display: block; font-size: 12.5px; color: var(--warm-500); margin-top: 2px; overflow-wrap: anywhere; }
+.bd-cx-done { display: inline-flex; width: 56px; height: 56px; border-radius: 50%; align-items: center; justify-content: center; background: var(--green-100); color: var(--green-700); font-size: 28px; font-weight: 700; }
+.modal-actions.bd-cx-center { justify-content: center; }
+#bd-modify-modal .modal-actions, #bd-tfc-modal .modal-actions { padding: 24px 28px 28px; }
+.bd-mb-field { display: flex; flex-direction: column; gap: 4px; flex: 1; min-width: 0; font-size: 12px; font-weight: 600; color: var(--warm-600); }
+.bd-mb-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; }
+.bd-mb-dates { display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap; }
+.bd-mb-apply { min-width: 0 !important; }
+.bd-mb-rooms-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 10px; }
+.bd-mb-rooms-head h4 { margin: 0; }
+#bd-modify-modal .modal-info-box h4 { margin-bottom: 10px; }
+.bd-tfm-row { flex-wrap: wrap; margin-top: 12px; }
+#bd-tfm-modal .svc-route-row { display: flex; gap: 12px; }
+#bd-tfm-search { margin-top: 16px; }
+.bd-tfm-results { margin-top: 16px; display: flex; flex-direction: column; gap: 10px; }
+.bd-tfm-footer { position: sticky; bottom: 0; background: var(--white); padding-top: 10px; margin-top: 12px; border-top: 1px solid var(--warm-200); }
+.bd-tfm-confirm { width: 100%; margin-top: 10px; }
+.bd-tfc-grid { display: grid; grid-template-columns: 120px 1fr; row-gap: 6px; margin: 16px 0 0; font-size: 14px; }
+.bd-tfc-grid dt { color: var(--warm-500); }
+.bd-tfc-grid dd { margin: 0; text-align: right; font-weight: 600; overflow-wrap: anywhere; }
+#bd-tfc-modal .cancel-warning { border: 1px solid var(--red-100); border-radius: var(--radius); padding: 12px 14px; }
+.bd-tfc-actions .btn-secondary, .bd-tfc-actions .btn-danger { flex: 1; }
+#bd-cancel-modal [hidden], #bd-tfm-modal [hidden] { display: none !important; }
+@media (max-width: 600px) {
+  #bd-tfm-modal .svc-route-row, .bd-mb-dates { flex-direction: column; align-items: stretch; }
+  .bd-tfc-grid { grid-template-columns: 1fr; }
+  .bd-tfc-grid dd { text-align: left; }
+  #bd-modify-modal .modal-actions, #bd-tfc-modal .modal-actions { padding: 16px; }
+}
+.bd-mb-rooms-head .btn-secondary { flex: 0 0 auto; }
