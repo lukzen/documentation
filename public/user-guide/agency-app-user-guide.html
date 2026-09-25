@@ -588,24 +588,51 @@
     <h3 class="lang-es">Reabrir una reserva que tiene traslado</h3>
     <p class="lang-en">In the list, a booking that carries an airport transfer is totalled as <strong>TRIP TOTAL</strong> instead of <strong>TOTAL CLIENT PRICE</strong> — that label is how you spot one at a glance. Click <strong>View Booking Details</strong> to open it.</p>
     <p class="lang-es">En la lista, una reserva que lleva un traslado al aeropuerto se totaliza como <strong>TRIP TOTAL</strong> (total del viaje) en lugar de <strong>TOTAL CLIENT PRICE</strong> (precio total al cliente) — esa etiqueta es la forma de reconocerla de un vistazo. Haga clic en <strong>View Booking Details</strong> para abrirla.</p>
-    <p class="lang-en">The detail page shows the current state of <em>both</em> items under one booking reference: a <strong>Hotel &amp; Room Details</strong> section and an <strong>Airport Transfer</strong> section (vehicle, pickup, dropoff, provider, its own confirmation number and price), plus <strong>Payment Information</strong> and a <strong>Booking Timeline</strong> that records the events of both. Reopening it never asks you to pay again — a booking paid with credit shows <em>Method</em> <strong>CREDIT</strong> and <em>Payment Status</em> <strong>PAID</strong>.</p>
-    <p class="lang-es">La página de detalle muestra el estado actual de <em>ambos</em> ítems bajo una sola referencia de reserva: una sección <strong>Hotel &amp; Room Details</strong> (detalle del hotel y la habitación) y una sección <strong>Airport Transfer</strong> (vehículo, recogida, destino, proveedor, su propio número de confirmación y precio), además de <strong>Payment Information</strong> (información de pago) y un <strong>Booking Timeline</strong> (línea de tiempo) que registra los eventos de ambos. Reabrirla nunca le pide pagar de nuevo — una reserva pagada con crédito muestra <em>Method</em> <strong>CREDIT</strong> y <em>Payment Status</em> <strong>PAID</strong>.</p>
+    <p class="lang-en">The detail page opens with the booking header (<em>BOOKING REFERENCE</em>, <em>CONFIRMATION DATE</em>, <em>CANCELLATION DEADLINE</em>, <em>TRIP TOTAL</em>, <em>STATUS</em>). Below it, every service on the itinerary is its own <strong>lane</strong> — a <strong>Hotel</strong> lane and a <strong>Transfer</strong> lane — each with its own status badge, its <em>Amount</em> and its <em>Provider reference</em>. The badge tells you the state of that service alone, for example <strong>CONFIRMED &amp; PAID</strong>, <strong>CONFIRMED — NOT PAID</strong> or <strong>CANCELLED</strong>; a cancelled lane also shows the provider's reason. The ride's full details (vehicle, pickup, dropoff, confirmation number, <strong>Modify</strong> / <strong>Cancel Transfer</strong>) stay in the <strong>Airport Transfer</strong> section further down, where a cancelled ride is folded behind <strong>Show cancelled</strong>.</p>
+    <p class="lang-es">La página de detalle se abre con el encabezado de la reserva (<em>BOOKING REFERENCE</em>, <em>CONFIRMATION DATE</em>, <em>CANCELLATION DEADLINE</em>, <em>TRIP TOTAL</em>, <em>STATUS</em>). Debajo, cada servicio del itinerario es su propio <strong>lane</strong> (carril): un carril <strong>Hotel</strong> y un carril <strong>Transfer</strong> (traslado), cada uno con su propia etiqueta de estado, su <em>Amount</em> (importe) y su <em>Provider reference</em> (referencia del proveedor). La etiqueta indica el estado de ese servicio únicamente, por ejemplo <strong>CONFIRMED &amp; PAID</strong> (confirmado y pagado), <strong>CONFIRMED — NOT PAID</strong> (confirmado, sin pagar) o <strong>CANCELLED</strong> (cancelado); un carril cancelado muestra además el motivo que dio el proveedor. Los detalles completos del traslado (vehículo, recogida, destino, número de confirmación, <strong>Modify</strong> / <strong>Cancel Transfer</strong>) siguen en la sección <strong>Airport Transfer</strong> más abajo, donde un traslado cancelado queda plegado tras <strong>Show cancelled</strong> (mostrar cancelados).</p>
 
     <figure class="screenshot">
       <div class="screenshot-frame">
-        <img src="f1b-03-booking-detail-both-items.png"
-             alt="Booking detail page with a Trip Total header, a Hotel and Room Details section and an Airport Transfer section under one booking reference."
+        <img src="f1-38-01-itinerary-lanes.png"
+             alt="Booking detail with a Trip Total header, a Hotel lane marked Confirmed and paid, a Transfer lane marked Confirmed not paid, and a cancelled Transfer lane showing the provider's reason."
              loading="lazy" onerror="this.style.display='none'" />
       </div>
-      <figcaption class="lang-en">One booking reference, one <strong>TRIP TOTAL</strong>, and both items listed — hotel and transfer each <strong>CONFIRMED</strong>, paid once with credit.</figcaption>
-      <figcaption class="lang-es">Una sola referencia de reserva, un solo <strong>TRIP TOTAL</strong>, y ambos ítems listados — hotel y traslado cada uno <strong>CONFIRMED</strong>, pagados una sola vez con crédito.</figcaption>
+      <figcaption class="lang-en">One booking reference, one lane per service — here the hotel is <strong>CONFIRMED &amp; PAID</strong>, a transfer added later from this page is <strong>CONFIRMED — NOT PAID</strong>, and a ride the provider refused is <strong>CANCELLED</strong> with its reason.</figcaption>
+      <figcaption class="lang-es">Una sola referencia de reserva, un carril por servicio — aquí el hotel está <strong>CONFIRMED &amp; PAID</strong>, un traslado agregado después desde esta página está <strong>CONFIRMED — NOT PAID</strong>, y un traslado que el proveedor rechazó figura como <strong>CANCELLED</strong> con su motivo.</figcaption>
+    </figure>
+
+    <h3 class="lang-en">What is paid and what is still due</h3>
+    <h3 class="lang-es">Qué está pagado y qué queda pendiente</h3>
+    <p class="lang-en">Under the lanes, the card <strong>What Ergos charged you for this itinerary</strong> keeps paid and unpaid money apart. Each figure is explained on the card itself:</p>
+    <p class="lang-es">Debajo de los carriles, la tarjeta <strong>What Ergos charged you for this itinerary</strong> (lo que Ergos le cobró por este itinerario) separa el dinero pagado del no pagado. Cada cifra se explica en la propia tarjeta:</p>
+    <ul class="lang-en">
+      <li><strong>Paid</strong> — what Ergos has charged you for these services so far.</li>
+      <li><strong>Outstanding</strong> — services still booked that have not been charged yet.</li>
+      <li><strong>Itinerary total</strong> — every service still booked. Cancelled services are not counted.</li>
+    </ul>
+    <ul class="lang-es">
+      <li><strong>Paid</strong> (pagado) — lo que Ergos le ha cobrado por estos servicios hasta ahora.</li>
+      <li><strong>Outstanding</strong> (pendiente) — servicios aún reservados que todavía no se han cobrado.</li>
+      <li><strong>Itinerary total</strong> (total del itinerario) — todos los servicios aún reservados. Los servicios cancelados no se cuentan.</li>
+    </ul>
+    <p class="lang-en">A separate card, <strong>Your Ergos account</strong>, shows <strong>Due now</strong>: what your agency owes Ergos across all bookings, not only this one. A <strong>Settle balance</strong> button sits beneath it.</p>
+    <p class="lang-es">Una tarjeta aparte, <strong>Your Ergos account</strong> (su cuenta Ergos), muestra <strong>Due now</strong> (a pagar ahora): lo que su agencia le debe a Ergos por todas sus reservas, no solo por esta. Debajo aparece el botón <strong>Settle balance</strong> (saldar el saldo).</p>
+
+    <figure class="screenshot">
+      <div class="screenshot-frame">
+        <img src="f1-38-02-money-summary.png"
+             alt="Money summary card with Paid, Outstanding and Itinerary total and their legend, above a Your Ergos account card with Due now and a Settle balance button."
+             loading="lazy" onerror="this.style.display='none'" />
+      </div>
+      <figcaption class="lang-en"><strong>Paid</strong> USD 213.76 (the hotel) and <strong>Outstanding</strong> USD 33.68 (the unpaid transfer) add up to the <strong>Itinerary total</strong>; the cancelled ride is not counted. <strong>Due now</strong> is your agency-wide balance.</figcaption>
+      <figcaption class="lang-es"><strong>Paid</strong> USD 213.76 (el hotel) y <strong>Outstanding</strong> USD 33.68 (el traslado sin pagar) suman el <strong>Itinerary total</strong>; el traslado cancelado no se cuenta. <strong>Due now</strong> es el saldo de toda su agencia.</figcaption>
     </figure>
 
     <div class="callout callout-info">
-      <strong class="lang-en">Where each figure comes from</strong>
-      <strong class="lang-es">De dónde sale cada cifra</strong>
-      <span class="lang-en"> <em>TRIP TOTAL</em> in the header is the combined figure (room + transfer). <em>Payment Information → Amount Paid</em> shows the <strong>room</strong> only; the transfer's fare is shown in its own <em>Airport Transfer</em> block. Both are drawn from your credit account, and the Credit Account ledger records them as two entries even though you paid once.</span>
-      <span class="lang-es"> <em>TRIP TOTAL</em> en el encabezado es la cifra combinada (habitación + traslado). <em>Payment Information → Amount Paid</em> muestra solo la <strong>habitación</strong>; la tarifa del traslado aparece en su propio bloque <em>Airport Transfer</em>. Ambos salen de su cuenta de crédito, y el ledger de Credit Account los registra como dos asientos aunque usted haya pagado una sola vez.</span>
+      <strong class="lang-en">Itinerary figures vs. the booking's own payment</strong>
+      <strong class="lang-es">Cifras del itinerario frente al pago de la reserva</strong>
+      <span class="lang-en"> The money card covers every service on the itinerary. <em>Payment Information</em>, further down, still describes the hotel booking alone — <em>Method</em> <strong>CREDIT</strong>, <em>Amount Paid</em> for the room, <em>Payment Status</em> <strong>PAID</strong> — so its <em>Amount Pending</em> can read USD 0.00 while the itinerary still has an <em>Outstanding</em> amount.</span>
+      <span class="lang-es"> La tarjeta de dinero abarca todos los servicios del itinerario. <em>Payment Information</em> (información de pago), más abajo, sigue describiendo solo la reserva del hotel — <em>Method</em> <strong>CREDIT</strong>, <em>Amount Paid</em> de la habitación, <em>Payment Status</em> <strong>PAID</strong> — por eso su <em>Amount Pending</em> puede indicar USD 0.00 mientras el itinerario todavía tiene un importe <em>Outstanding</em>.</span>
     </div>
 
     <h3 class="lang-en">Cancelling a booking that has a transfer</h3>
@@ -639,23 +666,46 @@
 
     <ul class="lang-en">
       <li><strong>Voucher (Bono):</strong> the customer-facing document that proves the reservation. Hand it to the customer; they present it at the hotel.</li>
-      <li><strong>Invoice (Factura):</strong> the agency-facing document — what your agency owes Ergos for this booking, broken down by line item.</li>
+      <li><strong>Invoice (Factura):</strong> the document for the end client, at their price, broken down by service.</li>
     </ul>
     <ul class="lang-es">
       <li><strong>Voucher (Bono):</strong> el documento para el cliente que prueba la reserva. Entrégueselo al cliente; lo presenta en el hotel.</li>
-      <li><strong>Invoice (Factura):</strong> el documento para la agencia — lo que su agencia le debe a Ergos por esta reserva, desglosado por línea.</li>
+      <li><strong>Invoice (Factura):</strong> el documento para el cliente final, a su precio, desglosado por servicio.</li>
     </ul>
 
-    <h3 class="lang-en">Downloading them</h3>
-    <h3 class="lang-es">Descargarlos</h3>
-    <p class="lang-en">From any confirmed booking's detail page, click <strong>Download Voucher</strong> or <strong>Download Invoice</strong>. Both render as PDF and open in a new tab; you can save or email them directly from your browser. Both documents are available indefinitely after the booking is created — you can re-download for completed stays years later.</p>
-    <p class="lang-es">Desde la página de detalle de cualquier reserva confirmada, haga clic en <strong>Descargar Voucher</strong> o <strong>Descargar Factura</strong>. Ambos se generan como PDF y se abren en una pestaña nueva; puede guardarlos o enviarlos por correo directamente desde su navegador. Ambos documentos están disponibles indefinidamente después de crear la reserva — puede volver a descargarlos para estadías completadas años después.</p>
+    <h3 class="lang-en">One voucher and one invoice for the whole itinerary</h3>
+    <h3 class="lang-es">Un voucher y una factura para todo el itinerario</h3>
+    <p class="lang-en">On a booking's detail page, the <strong>Itinerary documents</strong> card offers "One of each, covering every service on this itinerary." — a single <strong>Voucher</strong> ("What the traveller presents. No prices.") and a single <strong>Invoice</strong> ("For the end client, at their price."). Click <strong>Open PDF</strong> next to either one and the PDF opens in a new browser tab, ready to save or send.</p>
+    <p class="lang-es">En la página de detalle de una reserva, la tarjeta <strong>Itinerary documents</strong> (documentos del itinerario) ofrece "One of each, covering every service on this itinerary." (uno de cada uno, que cubre todos los servicios del itinerario): un solo <strong>Voucher</strong> ("What the traveller presents. No prices." — lo que presenta el viajero, sin precios) y una sola <strong>Invoice</strong> (factura; "For the end client, at their price." — para el cliente final, a su precio). Haga clic en <strong>Open PDF</strong> (abrir PDF) junto a cualquiera de los dos y el PDF se abre en una pestaña nueva del navegador, listo para guardar o enviar.</p>
+    <ul class="lang-en">
+      <li>The <strong>voucher</strong> lists the hotel stay and the transfer (pickup, dropoff, time and confirmation) on one document, under your agency's name. A service that was cancelled is named at the end as not on the voucher — "not valid for travel".</li>
+      <li>The <strong>invoice</strong> is addressed to the end client and lists each service on its own line with its state — <em>Paid</em>, <em>Due</em> or <em>Cancelled</em>.</li>
+    </ul>
+    <ul class="lang-es">
+      <li>El <strong>voucher</strong> incluye la estadía en el hotel y el traslado (recogida, destino, hora y confirmación) en un solo documento, con el nombre de su agencia. Un servicio cancelado aparece al final como fuera del voucher — "not valid for travel" (no válido para viajar).</li>
+      <li>La <strong>factura</strong> va dirigida al cliente final y muestra cada servicio en su propia línea con su estado — <em>Paid</em> (pagado), <em>Due</em> (pendiente) o <em>Cancelled</em> (cancelado).</li>
+    </ul>
+
+    <figure class="screenshot">
+      <div class="screenshot-frame">
+        <img src="f1-38-03-itinerary-documents.png"
+             alt="Itinerary documents card with one Voucher and one Invoice, each with an Open PDF button."
+             loading="lazy" onerror="this.style.display='none'" />
+      </div>
+      <figcaption class="lang-en"><em>Itinerary documents</em> — one voucher and one invoice for every service on the itinerary; <strong>Open PDF</strong> opens each in a new tab.</figcaption>
+      <figcaption class="lang-es"><em>Itinerary documents</em> — un voucher y una factura para todos los servicios del itinerario; <strong>Open PDF</strong> abre cada uno en una pestaña nueva.</figcaption>
+    </figure>
+
+    <h3 class="lang-en">The per-booking documents</h3>
+    <h3 class="lang-es">Los documentos por reserva</h3>
+    <p class="lang-en">Further down the same page, the <strong>Booking Documentation</strong> block keeps the documents of the hotel booking itself: <strong>Preview Voucher</strong> and <strong>Preview Invoice</strong> open the <em>Booking Voucher</em> and the <em>Proforma Invoice</em> on screen, headed with your agency's name, and each has a <strong>Download</strong> button beside it.</p>
+    <p class="lang-es">Más abajo en la misma página, el bloque <strong>Booking Documentation</strong> (documentación de la reserva) conserva los documentos de la propia reserva del hotel: <strong>Preview Voucher</strong> (ver voucher) y <strong>Preview Invoice</strong> (ver factura) abren en pantalla el <em>Booking Voucher</em> y la <em>Proforma Invoice</em> (factura proforma), encabezados con el nombre de su agencia, y cada uno tiene al lado un botón <strong>Download</strong> (descargar).</p>
 
     <div class="callout callout-info">
       <strong class="lang-en">What's on the voucher:</strong>
       <strong class="lang-es">Qué tiene el voucher:</strong>
-      <span class="lang-en"> guest names, hotel name + address + phone, dates, room type, board, supplier confirmation code, agency contact info, and any special remarks (e.g., "Late check-in confirmed", "Honeymoon"). The price shown is the customer's price, NOT the Ergos sell price.</span>
-      <span class="lang-es"> nombres de los huéspedes, nombre + dirección + teléfono del hotel, fechas, tipo de habitación, régimen, código de confirmación del proveedor, datos de contacto de la agencia y cualquier observación especial (ej. "Check-in tardío confirmado", "Luna de miel"). El precio mostrado es el precio del cliente, NO el precio de venta de Ergos (Ergos sell).</span>
+      <span class="lang-en"> your agency's name, a reference, the guest, the hotel with check-in, check-out and room, and — when the booking has one — the airport transfer (vehicle, confirmation number, pickup, pickup time, dropoff). No price is printed on it.</span>
+      <span class="lang-es"> el nombre de su agencia, una referencia, el huésped, el hotel con check-in, check-out y habitación, y — cuando la reserva lo tiene — el traslado al aeropuerto (vehículo, número de confirmación, recogida, hora de recogida, destino). No lleva ningún precio impreso.</span>
     </div>
   </section>
 
@@ -1122,6 +1172,31 @@
     </ul>
     <p class="lang-en">Opening the page marks the reminders as <strong>read</strong>, so the bell badge clears. Note that the urgency banner stays up until the cover is actually paid — reading the page clears the badge, not the banner.</p>
     <p class="lang-es">Abrir la página marca los recordatorios como <strong>leídos</strong>, así que la insignia de la campana se limpia. Tenga en cuenta que el banner de urgencia permanece hasta que el cover se paga efectivamente — leer la página limpia la insignia, no el banner.</p>
+
+    <h3 class="lang-en">Opening a reminder takes you to the hotel</h3>
+    <h3 class="lang-es">Abrir un recordatorio le lleva al hotel</h3>
+    <p class="lang-en">Each reminder on the page names its booking — for example <em>"Cover payment due — booking 54130175"</em> with <em>"Pay by 25 Sep, 2026 to keep your booking."</em> and a <strong>DUE WITHIN 24H</strong> badge. Click the reminder and the booking's detail page opens scrolled to the <strong>Hotel</strong> lane, just below the page header, so the service the payment is about is the first thing you see.</p>
+    <p class="lang-es">Cada recordatorio de la página indica su reserva — por ejemplo <em>"Cover payment due — booking 54130175"</em> (pago de cover pendiente — reserva 54130175) con <em>"Pay by 25 Sep, 2026 to keep your booking."</em> (pague antes del 25 de septiembre de 2026 para conservar su reserva) y una etiqueta <strong>DUE WITHIN 24H</strong> (vence en 24 h). Haga clic en el recordatorio y la página de detalle de la reserva se abre desplazada hasta el carril <strong>Hotel</strong>, justo debajo del encabezado de la página, de modo que lo primero que ve es el servicio al que se refiere el pago.</p>
+
+    <figure class="screenshot">
+      <div class="screenshot-frame">
+        <img src="f1-38-04-notification-item.png"
+             alt="Notifications page with the 24-hour banner, the Browser notifications switch and one reminder under Due within 24 hours."
+             loading="lazy" onerror="this.style.display='none'" />
+      </div>
+      <figcaption class="lang-en">A reminder under <em>Due within 24 hours</em> — click it to open the booking.</figcaption>
+      <figcaption class="lang-es">Un recordatorio en <em>Due within 24 hours</em> — haga clic en él para abrir la reserva.</figcaption>
+    </figure>
+
+    <figure class="screenshot">
+      <div class="screenshot-frame">
+        <img src="f1-38-05-notification-opens-hotel-lane.png"
+             alt="Booking detail opened from a reminder, scrolled so the Hotel lane sits just below the top bar."
+             loading="lazy" onerror="this.style.display='none'" />
+      </div>
+      <figcaption class="lang-en">The booking opens on its <strong>Hotel</strong> lane, not at the top of the page.</figcaption>
+      <figcaption class="lang-es">La reserva se abre en su carril <strong>Hotel</strong>, no en la parte superior de la página.</figcaption>
+    </figure>
 
     <h3 class="lang-en">Browser notifications (Web Push)</h3>
     <h3 class="lang-es">Notificaciones del navegador (Web Push)</h3>

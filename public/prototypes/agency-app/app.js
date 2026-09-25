@@ -2536,20 +2536,40 @@ function f1UpdatePaymentScreenAlternative() {
   if (due && total) due.textContent = total.textContent;
 }
 
-// Booking detail: two lanes, both paid; per-lane documents + cancel entries.
+// Booking detail (documentation#38): one lane per service with its own status, the
+// itinerary money summary, and ONE voucher + ONE invoice for the whole itinerary.
+// Shown when the booking carries a transfer — or when it is opened from a cover
+// notification, which always lands on the demo itinerary's hotel lane (AC 3).
+let bdItineraryFromNotification = false;
+let bdTransferLaneCancelled = false;
+
+function bdParseUSD(text) {
+  const n = parseFloat(String(text || '').replace(/[^0-9.]/g, ''));
+  return isNaN(n) ? 0 : n;
+}
+
+function bdItRender() {
+  const hotel = bdParseUSD((document.getElementById('bd-hotel-price') || {}).textContent);
+  const transfer = bdTransferLaneCancelled ? 0 : bdParseUSD((document.getElementById('bd-f1-transport-amount') || {}).textContent);
+  const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = 'USD ' + v.toFixed(2); };
+  set('bd-f1-hotel-amount', hotel);
+  // Paid together at checkout: nothing outstanding; a cancelled ride drops out of both.
+  set('bd-it-paid', hotel + transfer);
+  set('bd-it-outstanding', 0);
+  set('bd-it-total', hotel + transfer);
+}
+
 function f1RenderOnBookingDetail() {
-  const banner = document.getElementById('bd-f1-in-dev-banner');
   const block = document.getElementById('bd-f1-status-block');
-  if (!banner || !block) return;
-  if (serviceTransferAdded) {
-    banner.style.display = 'flex';
-    block.style.display = 'flex';
-    const amt = document.getElementById('bd-f1-transport-amount');
-    if (amt && serviceTransferPrice) amt.textContent = 'USD ' + serviceTransferPrice.toFixed(2);
-  } else {
-    banner.style.display = 'none';
-    block.style.display = 'none';
-  }
+  const cards = document.getElementById('bd-itinerary-cards');
+  if (!block || !cards) return;
+  const show = !!serviceTransferAdded || bdItineraryFromNotification;
+  block.style.display = show ? 'flex' : 'none';
+  cards.style.display = show ? '' : 'none';
+  if (!show) return;
+  const amt = document.getElementById('bd-f1-transport-amount');
+  if (amt && serviceTransferAdded && serviceTransferPrice) amt.textContent = 'USD ' + serviceTransferPrice.toFixed(2);
+  bdItRender();
 }
 
 // Q6 — surface-and-prompt: cancelling the hotel while a PAID transfer exists.
@@ -2568,6 +2588,7 @@ function bdQ6CancelBoth() {
   const lane = document.getElementById('bd-f1-transport-lane');
   if (status) { status.textContent = '✗ Cancelled — USD 36.00 refunded'; status.className = 'f1-lane-status f1-status-expired'; }
   if (lane) { lane.classList.remove('f1-lane-paid'); lane.classList.add('f1-lane-expired'); }
+  bdTransferLaneCancelled = true; bdItRender();
 }
 function bdCancelTransfer() {
   protoToast && protoToast('Transfer cancelled at Mozio — refund per the frozen policy. Hotel untouched.', 2800);
@@ -2575,6 +2596,7 @@ function bdCancelTransfer() {
   const lane = document.getElementById('bd-f1-transport-lane');
   if (status) { status.textContent = '✗ Cancelled — refunded per policy'; status.className = 'f1-lane-status f1-status-expired'; }
   if (lane) { lane.classList.remove('f1-lane-paid'); lane.classList.add('f1-lane-expired'); }
+  bdTransferLaneCancelled = true; bdItRender();
 }
 
 // Hook into showScreen to render F1 on confirmation + payment + booking-detail
@@ -2582,6 +2604,7 @@ function bdCancelTransfer() {
   const orig = window.showScreen;
   if (typeof orig !== 'function') return;
   window.showScreen = function (id) {
+    if (id !== 'booking-detail') bdItineraryFromNotification = false;
     const r = orig.apply(this, arguments);
     if (id === 'confirmation') setTimeout(f1RenderOnConfirmation, 50);
     if (id === 'payment') setTimeout(f1UpdatePaymentScreenAlternative, 50);

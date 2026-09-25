@@ -2198,37 +2198,32 @@
         </div>
       </div>
 
-      <!-- F1 — two-lane status block (shown when the booking has a transfer) -->
-      <div class="in-dev-banner" id="bd-f1-in-dev-banner" style="display:none">
-        <div class="in-dev-icon"><i class="ti ti-tool"></i></div>
-        <div class="in-dev-body">
-          <div class="in-dev-title">Functionality In Development</div>
-          <div class="in-dev-msg"><strong>Hotel + transfer booking (F1)</strong> — two independent bookings under one <code>bookingGroupId</code>, closed together at checkout; per-item documents and refunds. See <a href="https://github.com/lukzen/documentation/issues/23" target="_blank">USER_STORIES F1 (#23)</a>.</div>
-        </div>
-      </div>
+      <!-- documentation#38 AC 1 — one lane per service, each with its own status (mirrors
+           the live itinerary-lanes: title, status badge, Amount, Provider reference).
+           One voucher + one invoice for the whole itinerary live in "Itinerary documents"
+           below, never per lane (AC 2). -->
       <div class="f1-status-block" id="bd-f1-status-block" style="display:none">
-        <div class="f1-lane f1-lane-hotel">
+        <div class="f1-lane f1-lane-hotel" id="bd-lane-hotel" tabindex="-1">
           <div class="f1-lane-head">
-            <span class="f1-lane-icon"><i class="ti ti-bed"></i></span>
-            <span class="f1-lane-title">Hotel booking</span>
-            <span class="f1-lane-status f1-status-paid">✓ Confirmed &amp; Paid</span>
+            <span class="f1-lane-icon" style="color:var(--accent)"><i class="ti ti-bed"></i></span>
+            <span class="f1-lane-title">Hotel</span>
+            <span class="f1-lane-status f1-status-paid">Confirmed &amp; paid</span>
           </div>
           <div class="f1-lane-body">
-            <span class="f1-lane-amount" id="bd-f1-hotel-amount">USD 194.40</span>
-            <span class="f1-lane-ref">Ref <code id="bd-f1-hotel-ref">PTA18G28E7CUANQ</code></span>
-            <span class="f1-lane-ref"><a href="#" onclick="showScreen('voucher');return false">Voucher</a> · <a href="#" onclick="showScreen('invoice');return false">Invoice</a></span>
+            <span class="f1-lane-ref">Amount <span class="f1-lane-amount" id="bd-f1-hotel-amount">USD 194.40</span></span>
+            <span class="f1-lane-ref">Provider reference <code id="bd-f1-hotel-ref">PTA18G28E7CUANQ</code></span>
             <button class="btn-secondary" id="bd-f1-cancel-hotel-btn" onclick="bdOpenCancelHotel()">Cancel hotel…</button>
           </div>
         </div>
         <div class="f1-lane f1-lane-transport f1-lane-paid" id="bd-f1-transport-lane">
           <div class="f1-lane-head">
-            <span class="f1-lane-icon"><i class="ti ti-car"></i></span>
-            <span class="f1-lane-title">Transportation (Mozio)</span>
-            <span class="f1-lane-status f1-status-paid" id="bd-f1-transport-status">✓ Confirmed &amp; Paid</span>
+            <span class="f1-lane-icon" style="color:var(--accent)"><i class="ti ti-car"></i></span>
+            <span class="f1-lane-title">Transfer</span>
+            <span class="f1-lane-status f1-status-paid" id="bd-f1-transport-status">Confirmed &amp; paid</span>
           </div>
           <div class="f1-lane-body">
-            <span class="f1-lane-amount" id="bd-f1-transport-amount">USD 45.00</span>
-            <span class="f1-lane-ref" id="bd-f1-transport-meta">Ref <code>MOZIO-RSV-4938-K2</code> · <a href="#" onclick="showScreen('voucher');return false">Voucher</a> · <a href="#" onclick="showScreen('invoice');return false">Invoice</a></span>
+            <span class="f1-lane-ref">Amount <span class="f1-lane-amount" id="bd-f1-transport-amount">USD 45.00</span></span>
+            <span class="f1-lane-ref" id="bd-f1-transport-meta">Provider reference <code>MOZIO-RSV-4938-K2</code></span>
             <button class="btn-secondary" id="bd-f1-cancel-transfer-btn" onclick="bdCancelTransfer()">Cancel transfer…</button>
           </div>
         </div>
@@ -2454,6 +2449,47 @@
             <div class="change-callout" data-change="M1">
               <span class="change-badge">NEW</span>
               Mozio airport transfer can be added <strong>after</strong> the hotel is confirmed — collapsed CTA → search → quote → book, returning a Mozio confirmation number. Mirrors the real booking-details TransferSection.
+            </div>
+          </div>
+
+          <!-- documentation#38 AC 1 + AC 2 — itinerary money summary, the agency-wide
+               balance, and ONE voucher + ONE invoice for the whole itinerary.
+               Shown with the lanes. Labels are the live app's copy. -->
+          <div id="bd-itinerary-cards" style="display:none">
+            <div class="bd-section">
+              <div class="bd-service-card">
+                <h3 style="margin-bottom:8px">What Ergos charged you for this itinerary</h3>
+                <div class="bd-sc-row"><span class="bd-sc-label">Paid</span><span id="bd-it-paid">USD 0.00</span></div>
+                <div class="bd-sc-row"><span class="bd-sc-label">Outstanding</span><span id="bd-it-outstanding">USD 0.00</span></div>
+                <div class="bd-sc-row"><span class="bd-sc-label">Itinerary total</span><span id="bd-it-total">USD 0.00</span></div>
+                <div style="font-size:12px;color:var(--warm-500);margin-top:10px;line-height:1.5">
+                  <b>Paid</b> — what Ergos has charged you for these services so far.<br>
+                  <b>Outstanding</b> — services still booked that have not been charged yet.<br>
+                  <b>Itinerary total</b> — every service still booked. Cancelled services are not counted.
+                </div>
+              </div>
+            </div>
+            <div class="bd-section">
+              <div class="bd-service-card">
+                <h3 style="margin-bottom:8px">Your Ergos account</h3>
+                <div class="bd-sc-row" style="border-bottom:none"><span class="bd-sc-label">Due now</span><span>USD 4,050.00</span></div>
+                <div style="font-size:12px;color:var(--warm-500);margin:2px 0 10px">What your agency owes Ergos across all bookings — not only this one.</div>
+                <button class="btn-secondary" onclick="showScreen('settle-balance')">Settle balance</button>
+              </div>
+            </div>
+            <div class="bd-section">
+              <div class="bd-service-card">
+                <h3 style="margin-bottom:4px">Itinerary documents</h3>
+                <div style="font-size:12.5px;color:var(--warm-500);margin-bottom:6px">One of each, covering every service on this itinerary.</div>
+                <div class="bd-sc-row" style="align-items:center">
+                  <span><span class="bd-sc-label">Voucher</span><br><span style="font-size:12px;color:var(--warm-500)">What the traveller presents. No prices.</span></span>
+                  <button class="btn-doc" id="bd-it-voucher-open" onclick="showScreen('voucher')">Open PDF</button>
+                </div>
+                <div class="bd-sc-row" style="align-items:center;border-bottom:none">
+                  <span><span class="bd-sc-label">Invoice</span><br><span style="font-size:12px;color:var(--warm-500)">For the end client, at their price.</span></span>
+                  <button class="btn-doc" id="bd-it-invoice-open" onclick="showScreen('invoice')">Open PDF</button>
+                </div>
+              </div>
             </div>
           </div>
 

@@ -1334,7 +1334,11 @@ function ntRenderGroup(key, label) {
     const unread = !i.read && key !== 'resolved';
     const cls = 'nt-item' + (unread ? ' unread' : '') + (key === 'resolved' ? ' resolved' : '');
     const tag = unread ? '<span class="nt-unread-tag">Unread</span>' : '';
-    return `<div class="${cls}">
+    // documentation#38 AC 3 — an open reminder opens the booking on its hotel lane.
+    const open = key !== 'resolved'
+      ? ` role="button" tabindex="0" style="cursor:pointer" onclick="ntOpenItem('${i.id}')" onkeydown="if(event.key==='Enter')ntOpenItem('${i.id}')"`
+      : '';
+    return `<div class="${cls}"${open}>
       <span class="nt-dot"></span>
       <div class="nt-body">
         <div class="nt-title">${i.title}${tag}</div>
@@ -1347,6 +1351,23 @@ function ntRenderGroup(key, label) {
     <div class="nt-group-head">${label} <span class="nt-group-count">${items.length}</span></div>
     ${rows}
   </div>`;
+}
+
+/* documentation#38 AC 3 — click a reminder → the booking view opens scrolled to the
+   HOTEL lane, just below the header (live: /bookings/:id?item=<ref>, lane title focused). */
+function ntOpenItem(id) {
+  bdItineraryFromNotification = true;
+  showScreen('booking-detail');
+  setTimeout(() => {
+    const lane = document.getElementById('bd-lane-hotel');
+    if (!lane) return;
+    lane.scrollIntoView({ block: 'start' });
+    // Land just below the sticky header (prototype toolbar + app navbar).
+    const nav = document.querySelector('#screen-booking-detail .navbar');
+    const headerBottom = nav ? nav.getBoundingClientRect().bottom : 0;
+    window.scrollBy(0, lane.getBoundingClientRect().top - headerBottom - 12);
+    lane.focus({ preventScroll: true });
+  }, 150);
 }
 
 /* Render the page, then mark the actionable reminders READ + clear the bell.
