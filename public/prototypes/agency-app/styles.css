@@ -4162,24 +4162,6 @@ details[open] .mr-tier-summary::before {
 .bdat-book-btn { display: inline-flex; align-items: center; gap: 6px; }
 .bdat-policy-text { font-size: 12.5px; color: var(--warm-500); }
 
-/* booked confirmation card */
-.bdat-booked-head {
-  display: flex; align-items: center; gap: 12px;
-  padding-bottom: 14px; margin-bottom: 6px;
-  border-bottom: 1px solid var(--warm-200, #e8e5e0);
-}
-.bdat-booked-check {
-  width: 30px; height: 30px; flex-shrink: 0; border-radius: 50%;
-  background: #059669; display: flex; align-items: center; justify-content: center;
-}
-.bdat-booked-head > div { flex: 1; min-width: 0; }
-.bdat-booked-head strong { display: block; font-size: 15px; color: var(--navy); }
-.bdat-booked-conf { font-size: 12.5px; color: var(--warm-500); }
-.bdat-booked-conf code {
-  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-  font-size: 12.5px; color: var(--teal-dark); font-weight: 600;
-}
-
 /* Mozio transfer — flight info + confirmation extras */
 .svc-flight-info {
   margin-top: 12px; padding: 12px 14px;
@@ -4210,3 +4192,61 @@ details[open] .mr-tier-summary::before {
   color: var(--navy, #1a1a4e);
 }
 .conf-addtf-paneltitle i { color: var(--teal, #0d9488); }
+
+/* ============================================================
+   BOOKING DETAIL — REGROUP PROPOSAL (documentation#37/#38 reopened)
+   Services lanes · Guest · Documents · Agency view (hidden by default).
+   Gold accent + warm neutrals only; status uses the app's .status-badge.
+   ============================================================ */
+.bd-group-title {
+  font-family: var(--font-display); font-size: 20px; font-weight: 600;
+  color: var(--warm-800); margin: 0 0 12px;
+}
+.bd-group-title .ti { color: var(--accent); font-size: 18px; }
+.bd-card-title { font-family: var(--font-display); font-size: 16px; font-weight: 600; margin: 0 0 2px; color: var(--warm-800); }
+.bd-card-title-sub { margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--warm-200); }
+.bd-card-hint { font-size: 12.5px; color: var(--warm-500); margin: 0 0 6px; line-height: 1.45; }
+.bd-group dl, .bd-group dd { margin: 0; }
+.bd-group .bd-sc-row dd { text-align: right; overflow-wrap: anywhere; }
+
+.bd-lane {
+  background: var(--white); border: 1px solid var(--warm-200); border-left: 4px solid var(--accent);
+  border-radius: var(--radius-lg); padding: 16px 20px; margin-bottom: 14px; box-shadow: var(--shadow-sm);
+  scroll-margin-top: 84px;
+}
+.bd-lane:focus { outline: 2px solid var(--accent); outline-offset: 2px; }
+.bd-lane.is-cancelled { border-left-color: var(--warm-300); background: var(--warm-50); }
+.bd-lane-head { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; padding-bottom: 8px; border-bottom: 1px solid var(--warm-100); }
+.bd-lane-icon { color: var(--accent); font-size: 18px; line-height: 1; }
+.bd-lane-title { flex: 1; min-width: 0; margin: 0; font-family: var(--font-display); font-size: 17px; font-weight: 600; color: var(--warm-800); }
+.bd-lane-rows { margin: 0; }
+.bd-lane-amount-row dd { font-weight: 700; color: var(--warm-800); font-size: 15px; }
+.bd-amount-void s { color: var(--warm-400); font-weight: 500; }
+.bd-amount-void .bd-not-counted { display: block; font-size: 11.5px; font-weight: 500; color: var(--warm-500); }
+.bd-ref { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12.5px; font-weight: 600; color: var(--warm-700); background: var(--warm-100); padding: 1px 6px; border-radius: 4px; }
+.bd-group [hidden] { display: none !important; }
+.bd-lane-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+.bd-lane-actions .btn-secondary { flex: 0 0 auto; }
+.bd-btn-danger { color: var(--red-700); border-color: var(--red-100); }
+.bd-btn-danger:hover { background: var(--red-50); }
+
+.bd-doc-line { align-items: center; gap: 10px; }
+.bd-doc-kind { min-width: 64px; }
+
+.bd-agency { border-top: 2px dashed var(--warm-300); padding-top: 20px; }
+.bd-agency-head { display: flex; gap: 14px; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; }
+.bd-agency-head > div { flex: 1; min-width: 200px; }
+.bd-agency-head .btn-secondary[aria-expanded="true"] { border-color: var(--accent); color: var(--accent-hover); }
+.bd-agency-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; margin-top: 12px; }
+.bd-agency-grid .bd-service-card, .bd-agency-pnl { border-left: 4px solid var(--accent); }
+.bd-agency-pnl { margin-top: 14px; }
+.bd-pnl-total dt, .bd-pnl-total dd { font-weight: 700; color: var(--warm-800); }
+.bd-pnl-total { border-top: 2px solid var(--warm-200); margin-top: 6px; }
+.bd-pnl-plus { color: var(--green-700); font-weight: 600; }
+
+@media (max-width: 600px) {
+  .bd-lane { padding: 14px; }
+  .bd-group .bd-sc-row dd { text-align: left; }
+  .bd-lane-actions .btn-secondary, .bd-agency-head .btn-secondary { flex: 1 1 100%; }
+  .bd-doc-line { flex-direction: column; align-items: stretch; }
+}
