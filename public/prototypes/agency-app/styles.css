@@ -4226,6 +4226,8 @@ details[open] .mr-tier-summary::before {
 .bd-ref { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12.5px; font-weight: 600; color: var(--warm-700); background: var(--warm-100); padding: 1px 6px; border-radius: 4px; }
 .bd-group [hidden] { display: none !important; }
 .bd-lane-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+.bd-lane-reason { margin: 10px 0 0; padding-top: 10px; border-top: 1px solid var(--warm-100); font-size: 13px; color: var(--warm-700); }
+.f1-refuse-demo { display: block; margin-top: 10px; color: var(--warm-600); }
 .bd-lane-actions .btn-secondary { flex: 0 0 auto; }
 .bd-btn-danger { color: var(--red-700); border-color: var(--red-100); }
 .bd-btn-danger:hover { background: var(--red-50); }
