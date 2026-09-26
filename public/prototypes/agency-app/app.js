@@ -103,8 +103,6 @@ function updateVisiblePrices() {
   const transferPriceMap = {
     'svc-os-tf-price': serviceTransferAdded ? serviceTransferPrice : 0,
     'conf-tf-subtotal': serviceTransferAdded ? serviceTransferPrice : 0,
-    'bd-tf-price': serviceTransferAdded ? serviceTransferPrice : 0,
-    'bd-pb-transfer': serviceTransferAdded ? serviceTransferPrice : 0,
   };
   Object.entries(transferPriceMap).forEach(([id, usdVal]) => {
     const el = document.getElementById(id);
@@ -261,9 +259,9 @@ function openModal(id) {
 
   if (id === 'modify-modal') {
     const tfSection = document.getElementById('modify-transfer-section');
-    if (serviceTransferAdded && tfSection) {
+    if (bdHasActiveRide() && tfSection) {
       tfSection.style.display = '';
-      document.getElementById('modify-tf-vehicle-display').textContent = serviceTransferVehicle;
+      document.getElementById('modify-tf-vehicle-display').textContent = serviceTransferVehicle || transferBookingState.vehicle;
       document.getElementById('modify-tf-route-display').textContent = transferBookingState.pickup + ' → ' + transferBookingState.dropoff;
       document.getElementById('modify-tf-date').value = document.getElementById('svc-tf-date')?.value || transferBookingState.date;
       document.getElementById('modify-tf-time').value = document.getElementById('svc-tf-time')?.value || transferBookingState.time;
@@ -456,7 +454,7 @@ function confirmModification() {
   bookingState.checkout = checkout;
 
   // Save transfer changes if applicable
-  if (serviceTransferAdded) {
+  if (bdHasActiveRide()) {
     const tfDate = document.getElementById('modify-tf-date').value;
     const tfTime = document.getElementById('modify-tf-time').value;
     const tfPax = document.getElementById('modify-tf-pax').value;
@@ -473,22 +471,6 @@ function confirmModification() {
     transferBookingState.date = tfDate;
     transferBookingState.time = tfTime;
     transferBookingState.passengers = parseInt(tfPax) || transferBookingState.passengers;
-
-    // Update booking detail display
-    const bdDate = document.getElementById('bd-tf-date');
-    const bdTime = document.getElementById('bd-tf-time');
-    const bdPax = document.getElementById('bd-tf-passengers');
-    if (bdDate) bdDate.textContent = formatDate(tfDate);
-    if (bdTime) bdTime.textContent = tfTime;
-    if (bdPax) bdPax.textContent = tfPax;
-
-    // Header "Total Client Price" = room only; the transfer is a separate Mozio line.
-    const headerPrice = document.getElementById('bd-header-price');
-    if (headerPrice) headerPrice.textContent = formatUSD(roomTotal);
-    const bdPbHotel = document.getElementById('bd-pb-hotel');
-    if (bdPbHotel) bdPbHotel.textContent = formatUSD(roomTotal);
-    const bdPbTotal = document.getElementById('bd-pb-total');
-    if (bdPbTotal) bdPbTotal.textContent = formatUSD(roomTotal);
     bookingState.totalPrice = roomTotal;
   }
 
@@ -647,12 +629,6 @@ function renumberRooms() {
 
 function updateBookingDetailFromState() {
   const nights = nightsBetween(bookingState.checkin, bookingState.checkout);
-  const hotelPrice = parseFloat(bookingState.price);
-
-  // Header "Total Client Price" = room only (the transfer is a separate Mozio
-  // booking, shown in its own section — matches the live app).
-  const headerPrice = document.getElementById('bd-header-price');
-  if (headerPrice) headerPrice.textContent = formatUSD(hotelPrice);
 
   // Service card rows
   const bdCheckin = document.getElementById('bd-checkin');
@@ -660,18 +636,15 @@ function updateBookingDetailFromState() {
   const bdDuration = document.getElementById('bd-duration');
   const bdRoom = document.getElementById('bd-room');
   const bdMeal = document.getElementById('bd-meal');
-  const bdHotelPrice = document.getElementById('bd-hotel-price');
 
   if (bdCheckin) bdCheckin.textContent = formatDate(bookingState.checkin);
   if (bdCheckout) bdCheckout.textContent = formatDate(bookingState.checkout);
   if (bdDuration) bdDuration.textContent = nights + ' Night' + (nights !== 1 ? 's' : '');
   if (bdRoom) bdRoom.textContent = bookingState.room;
   if (bdMeal) bdMeal.textContent = bookingState.mealPlan;
-  if (bdHotelPrice) bdHotelPrice.textContent = formatUSD(hotelPrice);
 
-  // Amount paid by card = room only (the transfer fare is billed to the Mozio account).
-  const bdAmountPaid = document.getElementById('bd-amount-paid');
-  if (bdAmountPaid) bdAmountPaid.textContent = formatUSD(hotelPrice);
+  // Lanes, header total and (when shown) the agency figures all derive from state.
+  if (typeof f1RenderOnBookingDetail === 'function') f1RenderOnBookingDetail();
 }
 
 // ========== DYNAMIC BOOKINGS LIST ==========
@@ -813,7 +786,7 @@ function renderBookingsList() {
       '<div class="blc-right">' +
         '<div class="blc-price-label">Total Client Price</div>' +
         '<div class="blc-price">' + priceStr + '</div>' +
-        '<button class="btn-view-details" onclick="showScreen(\'' + b.screen + '\')">View Booking Details</button>' +
+        '<button class="btn-view-details" onclick="bdOpenBooking(\'' + b.screen + '\')">View Booking Details</button>' +
         rebookBtn +
       '</div>' +
     '</div>';
@@ -836,10 +809,10 @@ function addTimelineEntry(color, text) {
 
 // ========== CANCELLATION ==========
 
-function showCancelSuccess() {
+function showCancelSuccess(message) {
   bookingState.isCancelled = true;
 
-  showToast('success', 'Booking Cancelled', 'Your booking has been cancelled. Refund of ' + formatUSD(bookingState.price) + ' will be processed.');
+  showToast('success', 'Booking Cancelled', message || ('Your booking has been cancelled. Refund of ' + formatUSD(bookingState.price) + ' will be processed.'));
 
   // Update status badges in booking detail
   const badges = document.querySelectorAll('#screen-booking-detail .status-badge.confirmed');
@@ -852,7 +825,11 @@ function showCancelSuccess() {
   const banner = document.querySelector('#screen-booking-detail .cancellation-banner');
   if (banner) {
     banner.className = 'cancellation-banner red';
-    banner.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6M9 9l6 6"/></svg><span>This booking has been cancelled. Refund of ' + formatUSD(bookingState.price) + ' is being processed.</span>';
+    // The banner states the fact; the money moved to the agency view (live cancelledBanner.ts).
+    const withRide = typeof bdTransferLaneCancelled !== 'undefined' && bdTransferLaneCancelled && !bdRideNotBooked;
+    const day = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    banner.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6M9 9l6 6"/></svg><span>' +
+      (withRide ? 'This booking and its airport transfer were' : 'This booking was') + ' cancelled on ' + day + '.</span>';
   }
 
   // Update history and re-render bookings list
@@ -867,6 +844,9 @@ function showCancelSuccess() {
 
   // Add "Cancelled" timeline entry
   addTimelineEntry('red', 'Cancelled: ' + nowFormatted());
+
+  // The cancelled hotel reads as not counted; totals follow.
+  if (typeof f1RenderOnBookingDetail === 'function') f1RenderOnBookingDetail();
 }
 
 // ========== BUTTON HANDLERS ==========
@@ -1044,7 +1024,7 @@ document.querySelectorAll('.help-btn').forEach(btn => {
 });
 
 // Navbar icon buttons (globe, notification bell)
-document.querySelectorAll('.navbar .icon-btn:not(.help-btn)').forEach(btn => {
+document.querySelectorAll('.navbar .icon-btn:not(.help-btn):not(.notif-bell)').forEach(btn => {
   btn.addEventListener('click', () => {
     showToast('info', 'Feature', 'This feature would open in the full application.');
   });
@@ -2355,6 +2335,7 @@ function validateForm(formCard) {
 document.addEventListener('input', (e) => {
   if (e.target.classList.contains('form-input') && e.target.classList.contains('error')) {
     e.target.classList.remove('error');
+    e.target.removeAttribute('aria-invalid');
     const errEl = e.target.parentElement.querySelector('.form-error');
     if (errEl) errEl.classList.remove('show');
   }
@@ -2381,7 +2362,7 @@ function confirmHotelOnly() {
 
 // Saga progress overlay — mirrors the spec §3 end-to-end steps so the
 // checkout visibly closes both bookings in order (hotel first).
-function f1RunSagaOverlay(done) {
+function f1RunSagaOverlay(done, rideRefused) {
   const steps = [
     'Booking hotel — record created',
     'Paying hotel…',
@@ -2390,8 +2371,9 @@ function f1RunSagaOverlay(done) {
     'Booking transfer — record created',
     'Paying transfer…',
     'Confirming transfer at Mozio…',
-    'Transfer booked ✓',
-  ];
+  ].concat(rideRefused
+    ? ['Transfer refused by the provider — fare returned to your credit']
+    : ['Transfer booked ✓']);
   let overlay = document.getElementById('f1-saga-overlay');
   if (!overlay) {
     overlay = document.createElement('div');
@@ -2432,6 +2414,31 @@ function f1RunSagaOverlay(done) {
     return orig.apply(this, arguments);
   };
 })();
+
+// The live app checks the guest phone with libphonenumber for the widget's country; the
+// prototype stands in with "a + country code and a full number".
+function f1RidePhoneOk() {
+  const v = (document.getElementById('guest-phone')?.value || '').trim();
+  return /^\+/.test(v) && v.replace(/\D/g, '').length >= 10;
+}
+const F1_PHONE_REFUSED = "Enter the guest's phone with its country code — the airport transfer needs a number the driver can reach (e.g. +1 305 555 0123).";
+function f1RefusePhone() {
+  showScreen('guest');
+  const input = document.getElementById('guest-phone');
+  const err = document.getElementById('guest-phone-error');
+  if (err) { err.textContent = F1_PHONE_REFUSED; err.classList.add('show'); }
+  if (input) { input.classList.add('error'); input.setAttribute('aria-invalid', 'true'); input.focus(); }
+  if (typeof showToast === 'function') showToast('error', 'Check the guest phone', F1_PHONE_REFUSED);
+}
+// Demo (documentation#37): the provider refuses the ride after the hotel is booked. The hotel
+// stands, the ride's fare comes back, and the booking carries a "Not booked" ride lane.
+function f1RideRefusedAfterHotel() {
+  bdRideNotBooked = true;
+  bdRideNotBookedFare = serviceTransferPrice || 0;
+  bdRideNotBookedReason = 'Vehicle no longer available for this pickup time.';
+  serviceTransferAdded = false;
+  bdTransferLaneCancelled = false;
+}
 
 // Confirmation screen: show the two-lane block whenever a transfer was
 // booked — BOTH lanes Confirmed & Paid (v0.4: nothing is ever pending).
@@ -2529,6 +2536,8 @@ function f1UpdatePaymentScreenAlternative() {
   const show = !!serviceTransferAdded;
   altBtn.style.display = show ? '' : 'none';
   altHint.style.display = show ? '' : 'none';
+  const demo = document.getElementById('pay-f1-refuse-demo-wrap');
+  if (demo) demo.style.display = show ? '' : 'none';
   f1UpdateCheckoutTransferEntry();
   if (typeof updatePaymentForServices === 'function') updatePaymentForServices();
   const due = document.getElementById('pay-os-duenow');
@@ -2536,45 +2545,468 @@ function f1UpdatePaymentScreenAlternative() {
   if (due && total) due.textContent = total.textContent;
 }
 
-// Booking detail: two lanes, both paid; per-lane documents + cancel entries.
-function f1RenderOnBookingDetail() {
-  const banner = document.getElementById('bd-f1-in-dev-banner');
-  const block = document.getElementById('bd-f1-status-block');
-  if (!banner || !block) return;
-  if (serviceTransferAdded) {
-    banner.style.display = 'flex';
-    block.style.display = 'flex';
-    const amt = document.getElementById('bd-f1-transport-amount');
-    if (amt && serviceTransferPrice) amt.textContent = 'USD ' + serviceTransferPrice.toFixed(2);
-  } else {
-    banner.style.display = 'none';
-    block.style.display = 'none';
-  }
+// Booking detail (documentation#38, regrouped): one lane per service with its own details,
+// status, amount, reference and actions. The ride lane shows when the booking carries a
+// transfer — added at checkout, added from this page, or the demo itinerary a cover
+// notification opens (AC 3). Every figure on the page derives from state here, so the
+// header total and the itinerary total can never disagree.
+let bdItineraryFromNotification = false;
+let bdTransferLaneCancelled = false;
+let bdRideConf = null;       // Mozio confirmation returned by a post-booking add on this page
+let bdAgencyOpen = false;    // agency-only figures; closed every time the page opens
+const BD_DEMO_RESERVATION_ID = 'MOZIO-RSV-4938-K2';
+let bdRideReservationId = BD_DEMO_RESERVATION_ID;  // Mozio's internal id — agency view only
+let bdRideNotBooked = false;       // documentation#37: refused by the provider, never booked
+let bdRideNotBookedFare = 0;
+let bdRideNotBookedReason = '';
+let bdRetrying = false;            // the lane's retry opened the add-transfer flow
+
+function bdRideConfNumber() {
+  return bdRideConf || ('MOZ-' + (bookingState.bookingRef || 'PTA18G28E7CUANQ') + '-4821');
 }
 
-// Q6 — surface-and-prompt: cancelling the hotel while a PAID transfer exists.
-function bdOpenCancelHotel() {
-  const modal = document.getElementById('bd-q6-modal');
-  if (modal) modal.style.display = 'flex';
+function bdHasRide() { return !!serviceTransferAdded || bdItineraryFromNotification || bdRideNotBooked; }
+function bdHasActiveRide() { return bdHasRide() && !bdTransferLaneCancelled && !bdRideNotBooked; }
+function bdRideAmount() {
+  if (serviceTransferAdded) return serviceTransferPrice || 0;
+  if (bdRideNotBooked) return bdRideNotBookedFare;
+  return parseFloat(transferBookingState.price) || 0;
 }
-function bdQ6KeepTransfer() {
-  document.getElementById('bd-q6-modal').style.display = 'none';
-  protoToast && protoToast('Hotel cancelled. Transfer KEPT — Mozio booking untouched.', 2600);
+// Why an amount is not counted, in the live app's words (serviceLanes.laneAmountNote).
+function bdRideNote() {
+  return bdRideNotBooked ? 'Not booked — not counted' : 'Refunded — not counted';
 }
-function bdQ6CancelBoth() {
-  document.getElementById('bd-q6-modal').style.display = 'none';
-  protoToast && protoToast('Hotel cancelled. Transfer cancelled at Mozio — USD 36.00 refunded per frozen policy.', 3000);
-  const status = document.getElementById('bd-f1-transport-status');
+function bdUSD(v) {
+  return 'USD ' + v.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+// A cancelled service's amount stays visible but reads as not counted.
+function bdSetAmount(id, amount, counted, note) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.classList.toggle('bd-amount-void', !counted);
+  el.innerHTML = counted ? bdUSD(amount) : '<s>' + bdUSD(amount) + '</s><span class="bd-not-counted">' + (note || 'Cancelled — not counted') + '</span>';
+}
+
+// The hotel price is Ergos's (bookingState.price); a ride's fare is already the client price
+// (serviceTransferPrice), so its Ergos charge is that fare without the agency markup.
+function bdTotals() {
+  const hotel = parseFloat(bookingState.price) || 0;
+  const hotelCounted = !bookingState.isCancelled;
+  const rideClient = bdRideAmount();
+  const ride = bdErgosPrice(rideClient);
+  const rideCounted = bdHasActiveRide();
+  const total = (hotelCounted ? hotel : 0) + (rideCounted ? ride : 0);
+  const totalClient = (hotelCounted ? bdClientPrice(hotel) : 0) + (rideCounted ? rideClient : 0);
+  return { hotel, hotelCounted, ride, rideClient, rideCounted, total, totalClient };
+}
+
+// Owner decision 1a: everything visible by default is the CLIENT price (Ergos price × (1 +
+// agency markup), the P&L's "Customer paid"); Ergos figures live only in the agency view.
+function bdMarkupFactor() {
+  const pct = (typeof agencyMarkupState !== 'undefined' && agencyMarkupState.percentage) || 0;
+  return 1 + pct / 100;
+}
+function bdClientPrice(ergos) { return Math.round(ergos * bdMarkupFactor() * 100) / 100; }
+function bdErgosPrice(client) { return Math.round(client / bdMarkupFactor() * 100) / 100; }
+
+function bdItRender() {
+  const t = bdTotals();
+  bdSetAmount('bd-f1-hotel-amount', bdClientPrice(t.hotel), t.hotelCounted);
+  if (bdHasRide()) bdSetAmount('bd-f1-transport-amount', t.rideClient, t.rideCounted, bdRideNote());
+  // Header: the client's total of the services still booked, cancelled ones excluded.
+  const price = document.getElementById('bd-header-price');
+  if (price) price.textContent = bdUSD(t.totalClient);
+  const label = document.getElementById('bd-header-price-label');
+  if (label) label.textContent = t.rideCounted ? 'Trip Total' : 'Total Client Price';
+  if (bdAgencyOpen) bdAgencyRender();
+}
+
+function bdRenderRideLane() {
   const lane = document.getElementById('bd-f1-transport-lane');
-  if (status) { status.textContent = '✗ Cancelled — USD 36.00 refunded'; status.className = 'f1-lane-status f1-status-expired'; }
-  if (lane) { lane.classList.remove('f1-lane-paid'); lane.classList.add('f1-lane-expired'); }
+  if (!lane) return;
+  const has = bdHasRide();
+  lane.hidden = !has;
+  if (has) {
+    const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+    const s = transferBookingState;
+    set('bd-tf-vehicle', serviceTransferVehicle || s.vehicle);
+    set('bd-tf-pickup', s.pickup);
+    set('bd-tf-dropoff', s.dropoff);
+    set('bd-tf-datetime', formatDate(s.date) + ' at ' + s.time);
+    set('bd-tf-passengers', String(s.passengers));
+    set('bd-tf-provider', s.supplier);
+    // The number the client and the driver use — never Mozio's internal reservation id.
+    set('bd-f1-transport-conf', bdRideNotBooked ? '—' : bdRideConfNumber());
+    const status = document.getElementById('bd-f1-transport-status');
+    if (status) {
+      status.className = 'status-badge ' + (bdTransferLaneCancelled || bdRideNotBooked ? 'cancelled' : 'confirmed');
+      status.textContent = bdRideNotBooked ? 'Not booked' : bdTransferLaneCancelled ? 'Cancelled' : 'Confirmed & paid';
+    }
+    lane.classList.toggle('is-cancelled', bdTransferLaneCancelled || bdRideNotBooked);
+    const actions = document.getElementById('bd-ride-actions');
+    if (actions) actions.hidden = bdTransferLaneCancelled || bdRideNotBooked || !!bookingState.isCancelled;
+    const reason = document.getElementById('bd-ride-reason');
+    if (reason) { reason.hidden = !bdRideNotBooked; reason.textContent = bdRideNotBookedReason; }
+  }
+  // A refused ride is retried from its own lane — no retry on a cancelled booking.
+  const canRetry = bdRideNotBooked && !bookingState.isCancelled;
+  const retry = document.getElementById('bd-ride-retry-wrap');
+  if (retry) retry.hidden = !canRetry || bdRetrying;
+  // ONE add-transfer entry, only while there is no active ride on a live booking — and not
+  // beside a lane that already offers the same flow as its retry.
+  const add = document.getElementById('bdat-section');
+  if (add) add.hidden = bdHasActiveRide() || !!bookingState.isCancelled || (canRetry && !bdRetrying);
+  const hotelLane = document.getElementById('bd-lane-hotel');
+  if (hotelLane) hotelLane.classList.toggle('is-cancelled', !!bookingState.isCancelled);
 }
-function bdCancelTransfer() {
-  protoToast && protoToast('Transfer cancelled at Mozio — refund per the frozen policy. Hotel untouched.', 2800);
-  const status = document.getElementById('bd-f1-transport-status');
-  const lane = document.getElementById('bd-f1-transport-lane');
-  if (status) { status.textContent = '✗ Cancelled — refunded per policy'; status.className = 'f1-lane-status f1-status-expired'; }
-  if (lane) { lane.classList.remove('f1-lane-paid'); lane.classList.add('f1-lane-expired'); }
+
+// A real booking opened from the list or the confirmation — not the notification demo.
+function bdOpenBooking(screen) {
+  bdItineraryFromNotification = false;
+  showScreen(screen || 'booking-detail');
+}
+
+// The lane's retry is the add-transfer flow for this booking.
+function bdRideRetry() {
+  bdRetrying = true;
+  bdRenderRideLane();
+  bdatExpand();
+  document.getElementById('bdat-pickup')?.focus({ preventScroll: true });
+}
+
+let bdNotificationBooking = null;   // { hotel, ref } of the reminder that opened the page
+function bdApplyBookingIdentity() {
+  const keep = (id) => { const el = document.getElementById(id); if (el && el.dataset.orig == null) el.dataset.orig = el.textContent; return el; };
+  const n = bdItineraryFromNotification ? bdNotificationBooking : null;
+  [['bd-header-ref', n && n.ref], ['bd-f1-hotel-ref', n && n.ref], ['bd-hotel-name', n && n.hotel]].forEach(([id, v]) => {
+    const el = keep(id); if (el) el.textContent = v || el.dataset.orig;
+  });
+}
+
+function f1RenderOnBookingDetail() {
+  bdApplyBookingIdentity();
+  bdRenderRideLane();
+  bdItRender();
+}
+
+/* ---- Agency view: agency↔Ergos figures, hidden by default (owner, 2026-09-25) ----
+   Rendered only on the deliberate click and removed on hide, so while it is closed
+   none of these amounts is on the page. */
+function bdAgencyToggle() { if (bdAgencyOpen) bdAgencyHide(); else bdAgencyShow(); }
+function bdAgencySetButton() {
+  const btn = document.getElementById('bd-agency-toggle');
+  if (!btn) return;
+  btn.setAttribute('aria-expanded', bdAgencyOpen ? 'true' : 'false');
+  btn.textContent = bdAgencyOpen ? 'Hide agency figures' : 'Show agency figures';
+}
+function bdAgencyShow() { bdAgencyOpen = true; bdAgencyRender(); bdAgencySetButton(); }
+function bdAgencyHide() {
+  bdAgencyOpen = false;
+  const body = document.getElementById('bd-agency-body');
+  if (body) { body.innerHTML = ''; body.hidden = true; }
+  bdAgencySetButton();
+}
+function bdAgencyRender() {
+  const body = document.getElementById('bd-agency-body');
+  if (!body) return;
+  const t = bdTotals();
+  const row = (label, val, cls) => '<div class="bd-sc-row' + (cls ? ' ' + cls : '') + '"><dt class="bd-sc-label">' + label + '</dt><dd>' + val + '</dd></div>';
+  // How the agency paid Ergos, as chosen at checkout. No card/holder rows for credit.
+  const method = document.querySelector('#pmBalance.selected') ? 'Credit balance'
+    : document.querySelector('#pmLater.selected') ? 'CREDIT' : 'card';
+  const payRows = method === 'card'
+    ? row('Method', 'Credit Card') + row('Card', 'Visa ****4222') + row('Holder', 'Testing Guest')
+    : row('Method', method);
+  const payStatus = bookingState.isCancelled
+    ? '<span class="status-badge cancelled">Refunded</span>'
+    : '<span class="status-badge confirmed">Paid</span>';
+  const refundRow = bookingState.isCancelled && method !== 'card' ? row('Amount Refunded', bdUSD(t.hotel)) : '';
+  // After a cancellation the money lives here, not in the page banner (live cancelledBanner.ts).
+  const rideRefunded = bdTransferLaneCancelled && !bdRideNotBooked;
+  const cancelMoney = !bookingState.isCancelled ? '' :
+    '<div class="bd-service-card bd-agency-pnl"><h3 class="bd-card-title">The cancellation and your money</h3><p class="bd-card-hint">' +
+      (method === 'card'
+        ? 'Refund of ' + bdUSD(t.hotel) + ' is being processed.'
+        : bdUSD(t.hotel) + ' has been refunded; your credit account has been restored.') +
+      (rideRefunded ? ' The airport transfer has been refunded to your credit account.' : '') +
+    '</p></div>';
+  // P&L of the whole itinerary — the hotel and its ride — frozen at booking time.
+  const markupPct = agencyMarkupState.percentage;
+  const rebatePct = 12;
+  const ergosCost = t.total;
+  const customerPaid = t.totalClient;
+  const markup = customerPaid - ergosCost;
+  const rebate = ergosCost * rebatePct / 100;
+  body.innerHTML = cancelMoney +
+    '<div class="bd-agency-grid">' +
+      '<div class="bd-service-card"><h3 class="bd-card-title">What Ergos charged you for this itinerary</h3><dl>' +
+        row('Paid', bdUSD(t.total)) + row('Outstanding', bdUSD(0)) + row('Itinerary total', bdUSD(t.total)) +
+        payRows + refundRow + row('Payment Status', payStatus) +
+      '</dl><p class="bd-card-hint" style="margin-top:10px"><b>Paid</b> — what Ergos has charged you for these services so far.<br>' +
+        '<b>Outstanding</b> — services still booked that have not been charged yet.<br>' +
+        '<b>Itinerary total</b> — every service still booked. Cancelled services are not counted.</p></div>' +
+      '<div class="bd-service-card"><h3 class="bd-card-title">Your Ergos account</h3><dl>' +
+        row('Due now', 'USD 4,050.00') +
+      '</dl><p class="bd-card-hint">What your agency owes Ergos across all bookings — not only this one.</p>' +
+        '<button class="btn-secondary" id="bd-settle-balance-btn" onclick="showScreen(\'settle-balance\')">Settle balance</button></div>' +
+    '</div>' +
+    (bdHasRide() && !bdRideNotBooked ? '<div class="bd-service-card bd-agency-pnl"><h3 class="bd-card-title">Airport transfer — for Ergos support</h3><dl>' +
+      row('Mozio reservation id', '<code class="bd-ref" id="bd-agency-mozio-id">' + bdRideReservationId + '</code>') +
+      row('Confirmation # (client and driver)', '<code class="bd-ref">' + bdRideConfNumber() + '</code>') +
+    '</dl></div>' : '') +
+    '<div class="bd-service-card bd-agency-pnl"><h3 class="bd-card-title">Your earnings (P&amp;L)</h3>' +
+      '<p class="bd-card-hint">The whole itinerary — the hotel and its airport transfers. A cancelled service counts only the charge you kept.</p><dl>' +
+      row('Ergos cost (what you paid)', bdUSD(ergosCost)) +
+      row('Customer paid (your sell price)', bdUSD(customerPaid)) +
+      row('Your markup income (' + markupPct + '%)', '<span class="bd-pnl-plus">+' + bdUSD(markup) + '</span>') +
+      row('Ergos rebate (cashback) (' + rebatePct + '%)', '<span class="bd-pnl-plus">+' + bdUSD(rebate) + '</span>') +
+      row('Total profit', bdUSD(markup + rebate), 'bd-pnl-total') +
+    '</dl><p class="bd-card-hint" style="margin-top:10px">Frozen at booking time — these values reflect the markup and rebate that were active when this booking was made.</p></div>';
+  body.hidden = false;
+}
+
+/* ---- Booking-detail dialogs: each mirrors the live agency-app flow ----
+   Cancel Booking → CancellationFlow.tsx · Modify Booking → ModifyBookingModal.tsx ·
+   ride Modify / Cancel Transfer → TransferSection.tsx. Copy is the live app's. */
+function bdFmtDay(iso) {
+  const [y, m, d] = String(iso).split('-').map(Number);
+  return new Date(y, m - 1, d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+}
+function bdSetText(id, v) { const el = document.getElementById(id); if (el) el.textContent = v; }
+
+// Cancel Booking — the whole itinerary: the room and, with it, its ride (documentation#44).
+function bdCancelFigures() {
+  const room = parseFloat(bookingState.price) || 0;
+  const hasRide = bdHasActiveRide();
+  const fare = hasRide ? bdRideAmount() : 0;
+  // Inside the free-cancellation window: no room penalty; the ride's policy (100% back
+  // ≥ 24 h before pickup) gives the whole fare back.
+  const f = { room, roomRefund: room, roomPenalty: 0, hasRide, fare, ridePenalty: 0, rideRefund: fare };
+  f.total = room + fare;
+  f.totalRefund = f.roomRefund + f.rideRefund;
+  f.breakdown = hasRide ? ' (room ' + bdUSD(f.roomRefund) + ' + airport transfer ' + bdUSD(f.rideRefund) + ')' : '';
+  return f;
+}
+function bdCancelStep(step) {
+  ['review', 'prompt', 'confirm', 'result'].forEach(k => {
+    const el = document.getElementById('bd-cancel-step-' + k);
+    if (el) el.classList.toggle('active', k === step);
+  });
+  const modal = document.querySelector('#bd-cancel-modal .modal');
+  if (modal) modal.scrollIntoView({ block: 'start' });
+}
+function bdCancelOpen() {
+  const f = bdCancelFigures();
+  const s = transferBookingState;
+  bdSetText('bd-cx-checkin', bdFmtDay(bookingState.checkin));
+  bdSetText('bd-cx-checkout', bdFmtDay(bookingState.checkout));
+  bdSetText('bd-cx-room', bookingState.room + ' — ' + bookingState.mealPlan);
+  bdSetText('bd-cx-policy-refund', bdUSD(f.totalRefund));
+  bdSetText('bd-cx-policy-breakdown', f.breakdown.trim());
+  document.getElementById('bd-cx-ride-policy').hidden = !f.hasRide;
+  document.querySelectorAll('#bd-cancel-modal .bd-cx-ride-only').forEach(r => { r.hidden = !f.hasRide; });
+  bdSetText('bd-cx-ride-fare', bdUSD(f.fare));
+  bdSetText('bd-cx-ride-penalty', bdUSD(f.ridePenalty));
+  bdSetText('bd-cx-ride-refund', bdUSD(f.rideRefund));
+  bdSetText('bd-cx-room-total', bdUSD(f.room));
+  bdSetText('bd-cx-ride-total', bdUSD(f.fare));
+  bdSetText('bd-cx-total-label', f.hasRide ? 'Trip Total' : 'Booking Total');
+  bdSetText('bd-cx-total', bdUSD(f.total));
+  bdSetText('bd-cx-penalty-label', f.hasRide ? 'Cancellation Penalty (room)' : 'Cancellation Penalty');
+  bdSetText('bd-cx-room-penalty', bdUSD(f.roomPenalty));
+  bdSetText('bd-cx-ride-penalty2', bdUSD(f.ridePenalty));
+  bdSetText('bd-cx-refund', bdUSD(f.totalRefund));
+  bdSetText('bd-cx-prompt-vehicle', serviceTransferVehicle || s.vehicle);
+  bdSetText('bd-cx-prompt-meta', s.pickup + ' → ' + s.dropoff + ' · #' + bdRideConfNumber() + ' · ' + bdUSD(f.fare));
+  const ci = bdFmtDay(bookingState.checkin), co = bdFmtDay(bookingState.checkout);
+  document.getElementById('bd-cx-confirm-sub').innerHTML = '<strong>' + bookingState.hotel + '</strong> · ' +
+    ci.replace(/, \d{4}$/, '') + '–' + co.replace(/^[A-Za-z]+ /, '') + ' · ' + bookingState.room;
+  bdSetText('bd-cx-confirm-refund', 'Refund: ' + bdUSD(f.totalRefund) + f.breakdown + ' (full refund, no penalty)');
+  // The result states the ROOM's refund only — as the live result step does.
+  bdSetText('bd-cx-result-refund', 'Refund of ' + bdUSD(f.roomRefund) + ' will be processed.');
+  document.getElementById('bd-cx-reason').value = '';
+  document.getElementById('bd-cx-ack').checked = false;
+  bdCancelValidate();
+  bdCancelStep('review');
+  openModal('bd-cancel-modal');
+}
+function bdCancelValidate() {
+  const ok = document.getElementById('bd-cx-reason').value.trim() && document.getElementById('bd-cx-ack').checked;
+  document.getElementById('bd-cx-confirm-btn').disabled = !ok;
+}
+function bdCancelConfirm() {
+  const f = bdCancelFigures();
+  const btn = document.getElementById('bd-cx-confirm-btn');
+  btn.disabled = true; btn.textContent = 'Cancelling...';
+  setTimeout(() => {
+    btn.textContent = '⊘ Confirm Cancellation';
+    if (f.hasRide) bdTransferLaneCancelled = true;
+    const msg = 'Your booking has been cancelled.' +
+      (f.totalRefund > 0 ? ' Refund of ' + bdUSD(f.totalRefund) + ' will be processed' + f.breakdown + '.' : '') +
+      (f.hasRide ? ' 1 airport transfer(s) also cancelled.' : '');
+    showCancelSuccess(msg);
+    bdCancelStep('result');
+  }, 700);
+}
+
+// Modify Booking — the hotel stay only (dates, room, guest); the live modal has no ride part.
+const BD_MODIFY_ROOMS = [
+  { room: 'Standard Room', rate: 'Bed & Breakfast', price: 194.40 },
+  { room: 'Standard Room', rate: 'Half Board', price: 294.40 },
+  { room: 'Standard Room', rate: 'All Inclusive', price: 394.40 },
+  { room: 'Superior Room — Ocean View', rate: 'Bed & Breakfast', price: 284.00 },
+];
+function bdModifyFillRooms(available) {
+  const sel = document.getElementById('bd-mb-room');
+  sel.innerHTML = '<option value="">' + (available ? 'Choose from available rooms' : 'No rooms available') + '</option>' +
+    (available ? BD_MODIFY_ROOMS.map((r, i) => '<option value="' + i + '">' + r.room + ' - ' + r.rate + ' - $' + r.price.toFixed(2) + '</option>').join('') : '');
+  sel.disabled = !available;
+  bdModifyValidate();
+}
+function bdModifyOpen() {
+  bdSetText('bd-mb-cur-checkin', bdFmtDay(bookingState.checkin));
+  bdSetText('bd-mb-cur-checkout', bdFmtDay(bookingState.checkout));
+  bdSetText('bd-mb-cur-room', 'Room: ' + bookingState.room + ' | Rate: N/A | Meal Plan: ' + bookingState.mealPlan);
+  document.getElementById('bd-mb-checkin').value = bookingState.checkin;
+  document.getElementById('bd-mb-checkout').value = bookingState.checkout;
+  document.getElementById('bd-mb-name').value = document.getElementById('bd-guest-name')?.textContent || '';
+  document.getElementById('bd-mb-phone').value = document.getElementById('bd-guest-phone')?.textContent || '';
+  bdModifyFillRooms(true);
+  openModal('bd-modify-modal');
+}
+function bdModifyDatesChanged() { bdModifyFillRooms(false); }   // new dates invalidate the room choice
+function bdModifyApply() {
+  const btn = document.getElementById('bd-mb-apply');
+  btn.disabled = true;
+  setTimeout(() => { btn.disabled = false; bdModifyFillRooms(true); }, 500);
+}
+function bdModifyValidate() {
+  document.getElementById('bd-mb-confirm').disabled = document.getElementById('bd-mb-room').value === '';
+}
+function bdModifyConfirm() {
+  const r = BD_MODIFY_ROOMS[parseInt(document.getElementById('bd-mb-room').value, 10)];
+  if (!r) return;
+  bookingState.room = r.room;
+  bookingState.mealPlan = r.rate;
+  bookingState.price = r.price.toFixed(2);
+  bookingState.checkin = document.getElementById('bd-mb-checkin').value || bookingState.checkin;
+  bookingState.checkout = document.getElementById('bd-mb-checkout').value || bookingState.checkout;
+  bdSetText('bd-guest-name', document.getElementById('bd-mb-name').value);
+  bdSetText('bd-guest-phone', document.getElementById('bd-mb-phone').value);
+  closeModal('bd-modify-modal');
+  showToast('success', 'Booking modified successfully.', '');
+  updateBookingDetailFromState();
+  snapshotBooking();
+  updateBookingListFromState();
+}
+
+// Ride — Modify Transfer: search a new vehicle, then "Confirm Modification — <price>".
+let bdTfmModeVal = 'oneway';
+let bdTfmCard = null;
+function bdTfmOpen() {
+  document.getElementById('bd-tfm-pickup').value = '';
+  document.getElementById('bd-tfm-dropoff').value = bookingState.hotel;
+  document.getElementById('bd-tfm-date').value = bookingState.checkin;
+  document.getElementById('bd-tfm-time').value = '12:00';
+  document.getElementById('bd-tfm-pax').value = '2';
+  document.getElementById('bd-tfm-airline').value = '';
+  document.getElementById('bd-tfm-flightno').value = '';
+  bdTfmMode('oneway');
+  document.getElementById('bd-tfm-results').hidden = true;
+  document.getElementById('bd-tfm-footer').hidden = true;
+  bdTfmCard = null;
+  bdTfmValidate();
+  openModal('bd-tfm-modal');
+}
+function bdTfmMode(m) {
+  bdTfmModeVal = m;
+  document.getElementById('bd-tfm-oneway').classList.toggle('active', m === 'oneway');
+  document.getElementById('bd-tfm-roundtrip').classList.toggle('active', m === 'roundtrip');
+  document.getElementById('bd-tfm-return').hidden = m !== 'roundtrip';
+}
+function bdTfmValidate() {
+  const filled = id => document.getElementById(id).value.trim() !== '';
+  document.getElementById('bd-tfm-search').disabled = !(filled('bd-tfm-pickup') && filled('bd-tfm-dropoff'));
+  const confirm = document.getElementById('bd-tfm-confirm');
+  const needsFlight = !document.getElementById('bd-tfm-flight').hidden;
+  confirm.disabled = !bdTfmCard || (needsFlight && !(filled('bd-tfm-airline') && filled('bd-tfm-flightno')));
+}
+function bdTfmSearch() {
+  const btn = document.getElementById('bd-tfm-search');
+  btn.disabled = true; btn.textContent = 'Searching…';
+  setTimeout(() => {
+    btn.textContent = 'Search Vehicles';
+    const list = document.getElementById('bd-tfm-results');
+    // The same Mozio quotes the add-transfer search returns on this page.
+    list.innerHTML = '';
+    document.querySelectorAll('#bdat-results-list .vehicle-card').forEach(src => {
+      const c = src.cloneNode(true);
+      c.classList.remove('selected');
+      const b = c.querySelector('.vc-add-btn');
+      if (b) { b.textContent = 'Select'; b.removeAttribute('onclick'); b.addEventListener('click', () => bdTfmSelect(c)); }
+      list.appendChild(c);
+    });
+    list.hidden = false;
+    bdTfmCard = null;
+    document.getElementById('bd-tfm-footer').hidden = true;
+    bdTfmValidate();
+  }, 900);
+}
+function bdTfmSelect(card) {
+  document.querySelectorAll('#bd-tfm-results .vehicle-card').forEach(c => {
+    const on = c === card && bdTfmCard !== card;
+    c.classList.toggle('selected', on);
+    const b = c.querySelector('.vc-add-btn'); if (b) b.textContent = on ? 'Selected' : 'Select';
+  });
+  bdTfmCard = bdTfmCard === card ? null : card;          // a second click deselects
+  document.getElementById('bd-tfm-footer').hidden = !bdTfmCard;
+  if (bdTfmCard) {
+    // Flight info is asked for when the provider tracks the flight — the prototype's checkout rule.
+    document.getElementById('bd-tfm-flight').hidden = !/Flight Tracking/i.test(bdTfmCard.textContent);
+    const price = parseFloat(bdTfmCard.querySelector('.vc-sell')?.dataset.baseUsd) || 0;
+    bdSetText('bd-tfm-confirm', 'Confirm Modification — ' + bdUSD(price));
+  }
+  bdTfmValidate();
+}
+function bdTfmConfirm() {
+  const card = bdTfmCard; if (!card) return;
+  serviceTransferAdded = true;
+  serviceTransferVehicle = card.dataset.vehicle;
+  serviceTransferPrice = parseFloat(card.querySelector('.vc-sell')?.dataset.baseUsd) || 0;
+  serviceTransferNet = parseFloat(card.dataset.basePrice) || 0;
+  const s = transferBookingState;
+  s.vehicleClass = card.dataset.class || s.vehicleClass;
+  s.supplier = card.dataset.provider || s.supplier;
+  s.pickup = document.getElementById('bd-tfm-pickup').value.trim();
+  s.dropoff = document.getElementById('bd-tfm-dropoff').value.trim();
+  s.date = document.getElementById('bd-tfm-date').value || s.date;
+  s.time = document.getElementById('bd-tfm-time').value || s.time;
+  s.passengers = document.getElementById('bd-tfm-pax').value || s.passengers;
+  closeModal('bd-tfm-modal');
+  showToast('success', 'Transfer modified successfully', '');
+  f1RenderOnBookingDetail();
+  if (typeof updateBookingListFromState === 'function') updateBookingListFromState();
+}
+
+// Ride — Cancel Airport Transfer: confirm, then the lane reads Cancelled; the hotel stays.
+function bdTfcOpen() {
+  const s = transferBookingState;
+  bdSetText('bd-tfc-vehicle', (serviceTransferVehicle || s.vehicle) + ' (' + s.vehicleClass + ')');
+  bdSetText('bd-tfc-pickup', s.pickup);
+  bdSetText('bd-tfc-price', bdUSD(bdRideAmount()));
+  bdSetText('bd-tfc-conf', bdRideConfNumber());
+  openModal('bd-tfc-modal');
+}
+function bdTfcConfirm() {
+  const btn = document.getElementById('bd-tfc-yes');
+  btn.disabled = true;
+  setTimeout(() => {
+    btn.disabled = false;
+    bdTransferLaneCancelled = true;
+    closeModal('bd-tfc-modal');
+    showToast('success', 'Transfer cancelled successfully', '');
+    f1RenderOnBookingDetail();
+  }, 600);
 }
 
 // Hook into showScreen to render F1 on confirmation + payment + booking-detail
@@ -2582,10 +3014,12 @@ function bdCancelTransfer() {
   const orig = window.showScreen;
   if (typeof orig !== 'function') return;
   window.showScreen = function (id) {
+    // The notification demo itinerary survives Open PDF → Back; opening a real booking
+    // (the list's or the confirmation's View Booking Details) clears it — bdOpenBooking().
     const r = orig.apply(this, arguments);
     if (id === 'confirmation') setTimeout(f1RenderOnConfirmation, 50);
     if (id === 'payment') setTimeout(f1UpdatePaymentScreenAlternative, 50);
-    if (id === 'booking-detail') setTimeout(f1RenderOnBookingDetail, 50);
+    if (id === 'booking-detail') { bdAgencyHide(); setTimeout(f1RenderOnBookingDetail, 50); }
     return r;
   };
 })();
@@ -2821,18 +3255,6 @@ function renderConfirmationTransfer() {
   if (h) h.textContent = 'Transfer added!';
   const sh = document.getElementById('conf-subheading');
   if (sh) sh.textContent = 'The airport transfer is booked and billed to your Mozio account.';
-  // Mirror onto the booking-detail transfer section
-  const bdTfSection = document.getElementById('bd-transfer-section');
-  if (bdTfSection) {
-    bdTfSection.style.display = '';
-    const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
-    set('bd-tf-route', transferBookingState.pickup + arrow + transferBookingState.dropoff);
-    set('bd-tf-date', formatDate(transferBookingState.date));
-    set('bd-tf-time', transferBookingState.time);
-    set('bd-tf-vehicle', serviceTransferVehicle);
-    set('bd-tf-passengers', transferBookingState.passengers);
-    set('bd-tf-price', formatPrice(serviceTransferPrice));
-  }
 }
 
 function removeServiceTransfer() {
@@ -2963,35 +3385,7 @@ function updatePaymentForServices() {
 
       // Bookings list will re-render dynamically on next visit
 
-      // Populate booking detail transfer section
-      const bdTfSection = document.getElementById('bd-transfer-section');
-      if (bdTfSection) {
-        bdTfSection.style.display = '';
-        const pickup = document.getElementById('svc-pickup')?.value || transferBookingState.pickup;
-        const dropoff = document.getElementById('svc-dropoff')?.value || transferBookingState.dropoff;
-        const tfDate = document.getElementById('svc-tf-date')?.value || transferBookingState.date;
-        const tfTime = document.getElementById('svc-tf-time')?.value || transferBookingState.time;
-        const tfPax = document.getElementById('svc-tf-pax')?.value || transferBookingState.passengers;
-        document.getElementById('bd-tf-route').textContent = pickup + ' → ' + dropoff;
-        document.getElementById('bd-tf-date').textContent = formatDate(tfDate);
-        document.getElementById('bd-tf-time').textContent = tfTime;
-        document.getElementById('bd-tf-vehicle').textContent = serviceTransferVehicle;
-        document.getElementById('bd-tf-passengers').textContent = tfPax;
-        document.getElementById('bd-tf-price').textContent = formatPrice(serviceTransferPrice);
-        // Update header total to combined price
-        const headerPrice = document.getElementById('bd-header-price');
-        if (headerPrice) headerPrice.textContent = formatUSD(totalPrice);
-        // Show price breakdown
-        const bdPriceSummary = document.getElementById('bd-price-summary');
-        if (bdPriceSummary) {
-          bdPriceSummary.style.display = '';
-          document.getElementById('bd-pb-hotel').textContent = formatUSD(parseFloat(bookingState.price));
-          document.getElementById('bd-pb-transfer').textContent = formatPrice(serviceTransferPrice);
-          document.getElementById('bd-pb-total').textContent = formatUSD(totalPrice);
-        }
-      }
-
-      // Update booking detail hotel info
+      // Update booking detail (the ride lane renders from transferBookingState)
       updateBookingDetailFromState();
     } else {
       document.getElementById('conf-price').textContent = formatUSD(bookingState.price);
@@ -3004,12 +3398,6 @@ function updatePaymentForServices() {
       confSubheading.textContent = 'Your client\'s stay has been confirmed. Here\'s everything you need.';
 
       // Bookings list re-renders dynamically
-
-      // Hide transfer section and price breakdown in booking detail
-      const bdTfSection = document.getElementById('bd-transfer-section');
-      if (bdTfSection) bdTfSection.style.display = 'none';
-      const bdPriceSummary = document.getElementById('bd-price-summary');
-      if (bdPriceSummary) bdPriceSummary.style.display = 'none';
 
       updateBookingDetailFromState();
       updateBookingListFromState();
@@ -3160,6 +3548,7 @@ function bdatCollapse() {
   if (results) results.style.display = 'none';
   if (cta) cta.style.display = '';
   bdatSelectedCard = null;
+  if (bdRetrying) { bdRetrying = false; bdRenderRideLane(); }
   document.querySelectorAll('#bdat-results-list .vehicle-card').forEach(c => {
     c.classList.remove('selected');
     const b = c.querySelector('.vc-add-btn');
@@ -3235,79 +3624,38 @@ function bdatGenConfNumber() {
   return 'MOZ-' + n;
 }
 
-// F1.B / AC3 — a booking carries at most ONE active transfer. The live app does not
-// guard the entry: it lets the whole search and selection run and refuses on Book
-// transfer, with the backend's own message (TRANSFER_ALREADY_ON_BOOKING). Mirrored here.
-let bdatTransferBooked = false;
-
-function bdatAddAnother() {
-  const cta = document.getElementById('bdat-cta');
-  const panel = document.getElementById('bdat-panel');
-  if (cta) cta.style.display = 'none';
-  if (panel) panel.style.display = '';
-  const add = document.getElementById('bdat-add-another');
-  if (add) add.style.display = 'none';
-  if (panel) panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-}
-
-function bdatShowRefusal() {
-  const note = document.getElementById('bdat-policy-note');
-  if (!note) return;
-  let alert = document.getElementById('bdat-refusal');
-  if (!alert) {
-    alert = document.createElement('div');
-    alert.id = 'bdat-refusal';
-    alert.className = 'bdat-refusal';
-    note.parentElement.insertBefore(alert, note);
-  }
-  alert.textContent = 'This booking already has a transfer — cancel it before adding another';
-  alert.style.display = 'block';
-  alert.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-}
-
+// Booking a quote here makes it THE ride of this booking: the Services section then shows
+// it as the ride lane and the add-transfer entry goes away (one entry, only with no ride).
 function bdatBook() {
   const card = bdatSelectedCard;
   if (!card) { if (typeof protoToast === 'function') protoToast('Select a vehicle first', 'error'); return; }
-  if (bdatTransferBooked) { bdatShowRefusal(); return; }
   const btn = document.querySelector('.bdat-book-btn');
   if (btn) { btn.textContent = 'Booking with Mozio…'; btn.disabled = true; }
   setTimeout(() => {
     const vehicle = card.dataset.vehicle;
     const vClass = card.dataset.class;
-    const provider = card.dataset.provider;
-    const maxPax = card.dataset.maxpax;
-    const cancel = card.dataset.cancel;
-    const baseUsd = card.querySelector('.vc-sell')?.dataset.baseUsd;
-    const pickup = document.getElementById('bdat-pickup')?.value || '';
-    const dropoff = document.getElementById('bdat-dropoff')?.value || '';
-    const date = document.getElementById('bdat-date')?.value || '';
-    const time = document.getElementById('bdat-time')?.value || '';
-    const pax = document.getElementById('bdat-pax')?.value || '2';
+    const baseUsd = parseFloat(card.querySelector('.vc-sell')?.dataset.baseUsd);
     const conf = bdatGenConfNumber();
 
-    // Populate the booked state
-    const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
-    set('bdat-conf-number', conf);
-    set('bdat-booked-route', pickup + ' → ' + dropoff + (bdatMode === 'roundtrip' ? ' (round trip)' : ''));
-    set('bdat-booked-vehicle', vehicle + ' · ' + vClass);
-    set('bdat-booked-provider', provider);
-    set('bdat-booked-datetime', (date ? formatDateShort(date) : '') + (time ? ' at ' + time : ''));
-    set('bdat-booked-pax', pax + ' passenger' + (pax === '1' ? '' : 's') + ' · up to ' + maxPax);
-    set('bdat-booked-cancel', cancel);
-    const priceEl = document.getElementById('bdat-booked-price');
-    if (priceEl && baseUsd) { priceEl.dataset.baseUsd = baseUsd; }
+    serviceTransferAdded = true;
+    serviceTransferVehicle = vehicle + ' · ' + vClass;
+    serviceTransferPrice = isNaN(baseUsd) ? 0 : baseUsd;
+    serviceTransferNet = parseFloat(card.dataset.basePrice) || 0;
+    transferBookingState.pickup = document.getElementById('bdat-pickup')?.value || '';
+    transferBookingState.dropoff = document.getElementById('bdat-dropoff')?.value || '';
+    transferBookingState.date = document.getElementById('bdat-date')?.value || transferBookingState.date;
+    transferBookingState.time = document.getElementById('bdat-time')?.value || transferBookingState.time;
+    transferBookingState.passengers = document.getElementById('bdat-pax')?.value || '2';
+    transferBookingState.supplier = card.dataset.provider || transferBookingState.supplier;
+    bdRideConf = conf;
+    bdRideReservationId = 'MOZIO-RSV-' + Math.floor(1000 + Math.random() * 9000) + '-' + conf.slice(4, 6);
+    bdTransferLaneCancelled = false;
+    bdRideNotBooked = false;
 
-    // Swap to booked state
-    document.getElementById('bdat-panel').style.display = 'none';
-    document.getElementById('bdat-cta').style.display = 'none';
-    document.getElementById('bdat-booked').style.display = '';
-    // The booking now carries a transfer. Keep offering the add button, exactly as the
-    // live booking detail does, so AC3's refusal is reachable by clicking.
-    bdatTransferBooked = true;
-    const addAnother = document.getElementById('bdat-add-another');
-    if (addAnother) addAnother.style.display = '';
-    if (typeof updateVisiblePrices === 'function') updateVisiblePrices();
-    document.getElementById('bdat-booked').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    bdatCollapse();
+    f1RenderOnBookingDetail();
+    if (typeof updateBookingListFromState === 'function') updateBookingListFromState();
+    document.getElementById('bd-f1-transport-lane')?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 
     if (typeof showToast === 'function') {
       showToast('success', 'Transfer Booked', 'Mozio confirmation ' + conf + ' · ' + vehicle + '. Added to this booking and the client invoice.');
@@ -3316,3 +3664,33 @@ function bdatBook() {
     }
   }, 1100);
 }
+
+// documentation#37 — the checkout's two failure answers. Installed last, so it wraps the
+// final confirmBooking (the combined-booking override above replaces earlier wrappers).
+//  • A phone the ride cannot be booked with is refused BEFORE payment: back on Guest
+//    Details, the error on the field, nothing charged.
+//  • Demo: the provider refuses the ride after the hotel is booked — the hotel stands, the
+//    ride's fare comes back, and the booking detail shows a "Not booked" ride lane.
+(function f1WrapCheckoutFailures() {
+  const orig = window.confirmBooking;
+  if (typeof orig !== 'function') return;
+  window.confirmBooking = function () {
+    // Live BookingPage.tsx checks the phone on the soft-credit rail only.
+    if (serviceTransferAdded && window.__pmMode === 'later' && !f1RidePhoneOk()) return f1RefusePhone();
+    // A new booking starts clean: no ride state carries over from the previous one.
+    bdTransferLaneCancelled = false;
+    bdRideNotBooked = false;
+    bdRideNotBookedFare = 0;
+    bdRideNotBookedReason = '';
+    bdRetrying = false;
+    bdRideConf = null;
+    bdRideReservationId = BD_DEMO_RESERVATION_ID;
+    const demo = document.getElementById('pay-f1-refuse-demo');
+    const refuse = !!(serviceTransferAdded && demo && demo.checked);
+    if (demo) demo.checked = false;
+    const phone = document.getElementById('guest-phone');
+    if (phone) bdSetText('bd-guest-phone', phone.value.trim());
+    if (refuse) return f1RunSagaOverlay(() => { f1RideRefusedAfterHotel(); orig.apply(this); }, true);
+    return orig.apply(this, arguments);
+  };
+})();

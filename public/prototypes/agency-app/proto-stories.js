@@ -1322,10 +1322,47 @@ function ntSyncBadges() {
   });
 }
 
-/* Bell click → open the Notifications page (marks read on render via showScreen). */
-function openNotifications() {
-  showScreen('notifications');
+/* Bell click → a small list under the bell, as in the live app (documentation#38): each
+   open reminder opens its booking on the hotel lane; "View all →" opens the Notifications
+   page (which marks them read). */
+function ntDropdownItemLabel(i) {
+  return 'Cover payment due — booking ' + i.ref + ' · ' + (i.group === 'due' ? 'due within 24h' : i.when);
 }
+function ntCloseDropdown() {
+  const dd = document.getElementById('nt-dropdown');
+  if (dd) dd.remove();
+  document.querySelectorAll('.notif-bell[aria-expanded]').forEach(b => b.setAttribute('aria-expanded', 'false'));
+}
+function openNotifications(ev) {
+  const bell = ev && ev.currentTarget;
+  if (document.getElementById('nt-dropdown')) { ntCloseDropdown(); return; }
+  if (!bell) { showScreen('notifications'); return; }
+  const open = NT_STORE.items.filter(i => i.group !== 'resolved');
+  const dd = document.createElement('div');
+  dd.id = 'nt-dropdown';
+  dd.className = 'nt-dropdown';
+  dd.setAttribute('role', 'menu');
+  dd.innerHTML = '<div class="nt-dd-title">Notifications</div>' +
+    (open.length
+      ? open.map(i => '<button type="button" role="menuitem" class="nt-dd-item" data-id="' + i.id + '">' + ntDropdownItemLabel(i) + '</button>').join('')
+      : '<p class="nt-dd-empty">You\'re all caught up.</p>') +
+    '<button type="button" role="menuitem" class="nt-dd-all">View all →</button>';
+  document.body.appendChild(dd);
+  const r = bell.getBoundingClientRect();
+  dd.style.top = (window.scrollY + r.bottom + 8) + 'px';
+  dd.style.left = Math.max(16, Math.min(window.scrollX + r.right - dd.offsetWidth, window.innerWidth - dd.offsetWidth - 16)) + 'px';
+  bell.setAttribute('aria-expanded', 'true');
+  dd.addEventListener('click', e => {
+    const item = e.target.closest('.nt-dd-item');
+    if (item) { ntCloseDropdown(); ntOpenItem(item.dataset.id); return; }
+    if (e.target.closest('.nt-dd-all')) { ntCloseDropdown(); showScreen('notifications'); }
+  });
+  dd.querySelector('button')?.focus();
+}
+document.addEventListener('click', e => {
+  if (!e.target.closest('#nt-dropdown') && !e.target.closest('.notif-bell')) ntCloseDropdown();
+});
+document.addEventListener('keydown', e => { if (e.key === 'Escape') ntCloseDropdown(); });
 
 function ntRenderGroup(key, label) {
   const items = NT_STORE.items.filter(i => i.group === key);
@@ -1334,7 +1371,11 @@ function ntRenderGroup(key, label) {
     const unread = !i.read && key !== 'resolved';
     const cls = 'nt-item' + (unread ? ' unread' : '') + (key === 'resolved' ? ' resolved' : '');
     const tag = unread ? '<span class="nt-unread-tag">Unread</span>' : '';
-    return `<div class="${cls}">
+    // documentation#38 AC 3 — an open reminder opens the booking on its hotel lane.
+    const open = key !== 'resolved'
+      ? ` role="button" tabindex="0" style="cursor:pointer" onclick="ntOpenItem('${i.id}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();ntOpenItem('${i.id}')}"`
+      : '';
+    return `<div class="${cls}"${open}>
       <span class="nt-dot"></span>
       <div class="nt-body">
         <div class="nt-title">${i.title}${tag}</div>
@@ -1347,6 +1388,26 @@ function ntRenderGroup(key, label) {
     <div class="nt-group-head">${label} <span class="nt-group-count">${items.length}</span></div>
     ${rows}
   </div>`;
+}
+
+/* documentation#38 AC 3 — click a reminder → the booking view opens scrolled to the
+   HOTEL lane, just below the header (live: /bookings/:id?item=<ref>, lane title focused). */
+function ntOpenItem(id) {
+  // Open the reminder's own booking: its hotel and reference, not the demo's.
+  const it = NT_STORE.items.find(i => i.id === id);
+  bdNotificationBooking = it ? { hotel: it.hotel, ref: it.ref } : null;
+  bdItineraryFromNotification = true;
+  showScreen('booking-detail');
+  setTimeout(() => {
+    const lane = document.getElementById('bd-lane-hotel');
+    if (!lane) return;
+    lane.scrollIntoView({ block: 'start' });
+    // Land just below the sticky header (prototype toolbar + app navbar).
+    const nav = document.querySelector('#screen-booking-detail .navbar');
+    const headerBottom = nav ? nav.getBoundingClientRect().bottom : 0;
+    window.scrollBy(0, lane.getBoundingClientRect().top - headerBottom - 12);
+    lane.focus({ preventScroll: true });
+  }, 150);
 }
 
 /* Render the page, then mark the actionable reminders READ + clear the bell.

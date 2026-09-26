@@ -117,7 +117,7 @@
       <div class="nav-right">
         <button class="icon-btn help-btn" title="Need help?" aria-label="Help"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg></button>
         <button class="icon-btn" aria-label="Language"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></button>
-        <button class="icon-btn notif-bell" aria-label="Notifications" title="Notifications" onclick="openNotifications()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0"/></svg><span class="notif-badge">2</span></button>
+        <button class="icon-btn notif-bell" aria-label="Notifications" title="Notifications" aria-haspopup="menu" aria-expanded="false" onclick="openNotifications(event)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0"/></svg><span class="notif-badge">2</span></button>
         <span class="nav-greeting" id="nav-greeting">Good afternoon, Demo Agency</span>
         <div class="avatar">TA</div>
       </div>
@@ -1009,7 +1009,7 @@
             </div>
             <div class="form-row">
               <div class="form-group"><label>Email *</label><input type="email" value="mayankjariwala1994@gmail.com" class="form-input"></div>
-              <div class="form-group"><label>Phone *</label><input type="tel" value="123456789" class="form-input"></div>
+              <div class="form-group"><label for="guest-phone">Phone *</label><input type="tel" id="guest-phone" value="+1 305 555 0123" class="form-input" aria-describedby="guest-phone-error"><div class="form-error" id="guest-phone-error" role="alert"></div></div>
             </div>
             <div class="form-row">
               <div class="form-group"><label>Nationality</label>
@@ -1379,10 +1379,6 @@
             .pte-right{display:flex;align-items:center;gap:10px}
             .pte-chevron{color:#a8a29e;font-size:20px;line-height:1}
             .pay-transfer-entry.added{border-color:#a97f24;background:#fdfaf3}
-            /* F1.B / AC3 — the one-transfer-per-booking refusal, as the live app shows it. */
-            .bdat-refusal{display:none;background:#f5f3f1;border:1px solid #d6d0c8;border-left:3px solid #b91c1c;
-              color:#44403c;font-size:13.5px;padding:11px 14px;border-radius:8px;margin:12px 0}
-            .bdat-add-another{display:block;width:100%;margin-top:12px}
           </style>
 
           <!-- F1.B (documentation#36) — the transfer is offered HERE, before payment, so one
@@ -1553,6 +1549,8 @@
             <button class="confirm-btn confirm-btn-alt" id="pay-confirm-hotel-only" onclick="confirmHotelOnly()" style="display:none">
               Book hotel only — drop the transfer
             </button>
+            <!-- documentation#37 demo: the provider refuses the ride AFTER the hotel is booked. -->
+            <label class="f1-refuse-demo" id="pay-f1-refuse-demo-wrap" style="display:none;font-size:12px"><input type="checkbox" id="pay-f1-refuse-demo"> <b>Demo:</b> the provider refuses the ride after the hotel is booked</label>
           </div>
         </div>
       </div>
@@ -1727,7 +1725,7 @@
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
             Email to Client
           </button>
-          <button class="btn-primary" onclick="showScreen('booking-detail')">View Booking Details</button>
+          <button class="btn-primary" onclick="bdOpenBooking('booking-detail')">View Booking Details</button>
         </div>
       </div>
     </div>
@@ -1742,7 +1740,7 @@
         <a href="#" class="nav-link active">My Bookings</a>
       </div>
       <div class="nav-right">
-        <button class="icon-btn notif-bell" aria-label="Notifications" title="Notifications" onclick="openNotifications()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0"/></svg><span class="notif-badge">2</span></button>
+        <button class="icon-btn notif-bell" aria-label="Notifications" title="Notifications" aria-haspopup="menu" aria-expanded="false" onclick="openNotifications(event)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0"/></svg><span class="notif-badge">2</span></button>
         <span class="nav-greeting">Good afternoon, Demo Agency</span>
         <div class="avatar">DA</div>
       </div>
@@ -2115,7 +2113,7 @@
         <a href="#" class="nav-link" onclick="showScreen('bookings')">My Bookings</a>
       </div>
       <div class="nav-right">
-        <button class="icon-btn notif-bell" aria-label="Notifications" title="Notifications" onclick="openNotifications()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0"/></svg><span class="notif-badge">2</span></button>
+        <button class="icon-btn notif-bell" aria-label="Notifications" title="Notifications" aria-haspopup="menu" aria-expanded="false" onclick="openNotifications(event)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0"/></svg><span class="notif-badge">2</span></button>
         <div class="avatar">DA</div>
       </div>
     </nav>
@@ -2186,10 +2184,10 @@
       <!-- Header Summary -->
       <div class="bd-header">
         <div class="bd-header-grid">
-          <div class="bd-h-item"><span class="bd-h-label">Booking Reference</span><span class="bd-h-val">PTA18G28E7CUANQ</span></div>
+          <div class="bd-h-item"><span class="bd-h-label">Booking Reference</span><span class="bd-h-val" id="bd-header-ref">PTA18G28E7CUANQ</span></div>
           <div class="bd-h-item"><span class="bd-h-label">Confirmation Date</span><span class="bd-h-val">Mar 19, 2026</span></div>
           <div class="bd-h-item"><span class="bd-h-label">Cancellation Deadline</span><span class="bd-h-val">Mar 25, 2026 08:00</span></div>
-          <div class="bd-h-item"><span class="bd-h-label">Total Client Price</span><span class="bd-h-val bd-h-price" id="bd-header-price">USD 194.40</span></div>
+          <div class="bd-h-item"><span class="bd-h-label" id="bd-header-price-label">Total Client Price</span><span class="bd-h-val bd-h-price" id="bd-header-price">USD 194.40</span></div>
           <div class="bd-h-item"><span class="bd-h-label">Status</span><span class="status-badge confirmed" id="bd-header-status">CONFIRMED</span></div>
         </div>
         <div class="change-callout" data-change="4.2">
@@ -2198,58 +2196,10 @@
         </div>
       </div>
 
-      <!-- F1 — two-lane status block (shown when the booking has a transfer) -->
-      <div class="in-dev-banner" id="bd-f1-in-dev-banner" style="display:none">
-        <div class="in-dev-icon"><i class="ti ti-tool"></i></div>
-        <div class="in-dev-body">
-          <div class="in-dev-title">Functionality In Development</div>
-          <div class="in-dev-msg"><strong>Hotel + transfer booking (F1)</strong> — two independent bookings under one <code>bookingGroupId</code>, closed together at checkout; per-item documents and refunds. See <a href="https://github.com/lukzen/documentation/issues/23" target="_blank">USER_STORIES F1 (#23)</a>.</div>
-        </div>
-      </div>
-      <div class="f1-status-block" id="bd-f1-status-block" style="display:none">
-        <div class="f1-lane f1-lane-hotel">
-          <div class="f1-lane-head">
-            <span class="f1-lane-icon"><i class="ti ti-bed"></i></span>
-            <span class="f1-lane-title">Hotel booking</span>
-            <span class="f1-lane-status f1-status-paid">✓ Confirmed &amp; Paid</span>
-          </div>
-          <div class="f1-lane-body">
-            <span class="f1-lane-amount" id="bd-f1-hotel-amount">USD 194.40</span>
-            <span class="f1-lane-ref">Ref <code id="bd-f1-hotel-ref">PTA18G28E7CUANQ</code></span>
-            <span class="f1-lane-ref"><a href="#" onclick="showScreen('voucher');return false">Voucher</a> · <a href="#" onclick="showScreen('invoice');return false">Invoice</a></span>
-            <button class="btn-secondary" id="bd-f1-cancel-hotel-btn" onclick="bdOpenCancelHotel()">Cancel hotel…</button>
-          </div>
-        </div>
-        <div class="f1-lane f1-lane-transport f1-lane-paid" id="bd-f1-transport-lane">
-          <div class="f1-lane-head">
-            <span class="f1-lane-icon"><i class="ti ti-car"></i></span>
-            <span class="f1-lane-title">Transportation (Mozio)</span>
-            <span class="f1-lane-status f1-status-paid" id="bd-f1-transport-status">✓ Confirmed &amp; Paid</span>
-          </div>
-          <div class="f1-lane-body">
-            <span class="f1-lane-amount" id="bd-f1-transport-amount">USD 45.00</span>
-            <span class="f1-lane-ref" id="bd-f1-transport-meta">Ref <code>MOZIO-RSV-4938-K2</code> · <a href="#" onclick="showScreen('voucher');return false">Voucher</a> · <a href="#" onclick="showScreen('invoice');return false">Invoice</a></span>
-            <button class="btn-secondary" id="bd-f1-cancel-transfer-btn" onclick="bdCancelTransfer()">Cancel transfer…</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- F1 v0.4 — Q6 surface-and-prompt: cancelling the hotel with a PAID transfer -->
-      <div id="bd-q6-modal" style="display:none;position:fixed;inset:0;background:rgba(28,25,23,.45);z-index:60;align-items:center;justify-content:center">
-        <div style="background:#fff;border-radius:14px;max-width:480px;width:92%;padding:24px 26px;box-shadow:0 20px 60px rgba(0,0,0,.25)">
-          <h3 style="margin:0 0 8px"><i class="ti ti-alert-triangle" style="color:#d97706"></i> This booking has a PAID transfer</h3>
-          <p style="font-size:13.5px;color:#57534e;margin:0 0 14px">Cancelling the hotel does <strong>not</strong> cancel the Mozio transfer. Its cancellation terms were frozen when it was quoted:</p>
-          <div style="background:#fef3c7;border:1px solid #d97706;border-radius:10px;padding:12px 14px;font-size:13px;color:#78350f;margin-bottom:16px">
-            Transfer USD 45.00 · cancel now → <strong>penalty USD 9.00</strong>, refund <strong>USD 36.00</strong><br>
-            <span style="font-size:12px">(Mozio policy frozen at quote time — penalty grows closer to pickup)</span>
-          </div>
-          <div style="display:flex;gap:10px;justify-content:flex-end">
-            <button class="btn-secondary" onclick="bdQ6KeepTransfer()">Cancel hotel, KEEP transfer</button>
-            <button class="confirm-btn" style="width:auto;padding:10px 16px" onclick="bdQ6CancelBoth()">Cancel both (refund USD 36.00)</button>
-          </div>
-        </div>
-      </div>
-
+      <!-- Booking-detail regroup (proposal, documentation#37/#38 reopened): every fact
+           appears once. Top to bottom: Services (one lane per hotel/ride, each with its
+           own details and actions) → Guest → Documents → Agency view (hidden by default).
+           What an end client may see is visible; the agency↔Ergos figures are not. -->
       <div class="bd-body">
         <div class="bd-main">
           <!-- Cancellation Policy -->
@@ -2265,64 +2215,71 @@
             </div>
           </div>
 
-          <!-- Service Details: Hotel -->
-          <div class="bd-section">
-            <div class="bd-svc-header hotel">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M3 7v14M21 7v14M6 11h4v4H6zM14 11h4v4h-4zM9 3h6l3 4H6z"/></svg>
-              <h3>Hotel &amp; Room Details</h3>
-            </div>
-            <div class="bd-service-card" id="bd-service-card">
-              <div class="bd-sc-row"><span class="bd-sc-label">Hotel</span><span>Gran Muthu Habana ★★★★★</span></div>
-              <div class="bd-sc-row"><span class="bd-sc-label">Address</span><span>Calle 66, Miramar, Playa</span></div>
-              <div class="bd-sc-row"><span class="bd-sc-label">Check-in</span><span id="bd-checkin">Wed, Mar 25, 2026</span></div>
-              <div class="bd-sc-row"><span class="bd-sc-label">Check-out</span><span id="bd-checkout">Fri, Mar 27, 2026</span></div>
-              <div class="bd-sc-row"><span class="bd-sc-label">Duration</span><span id="bd-duration">2 Nights</span></div>
-              <div class="bd-sc-row"><span class="bd-sc-label">Room</span><span id="bd-room">Standard Room</span></div>
-              <div class="bd-sc-row"><span class="bd-sc-label">Meal Plan</span><span id="bd-meal">Bed & Breakfast</span></div>
-              <div class="bd-sc-row"><span class="bd-sc-label">Occupancy</span><span>2 Adults</span></div>
-              <div class="bd-sc-row bd-sc-price-row"><span class="bd-sc-label">Accommodation Price</span><span id="bd-hotel-price" class="bd-sc-price">USD 194.40</span></div>
-            </div>
-          </div>
+          <!-- (1) SERVICES — one lane per hotel / ride. Each lane carries its own
+               details, amount, reference and actions; nothing about a service is
+               repeated anywhere else on the page. -->
+          <section class="bd-section bd-group" aria-labelledby="bd-services-title">
+            <h2 class="bd-group-title" id="bd-services-title">Services</h2>
 
-          <!-- Transfer Details (hidden unless combined booking) -->
-          <div class="bd-section" id="bd-transfer-section" style="display:none">
-            <div class="bd-svc-header transfer">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13" rx="2"/><path d="M16 8h4l3 3v5h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
-              <h3>Transfer — Transport Details</h3>
-            </div>
-            <div class="bd-service-card">
-              <div class="bd-sc-row"><span class="bd-sc-label">Route</span><span id="bd-tf-route"></span></div>
-              <div class="bd-sc-row"><span class="bd-sc-label">Transfer Date</span><span id="bd-tf-date"></span></div>
-              <div class="bd-sc-row"><span class="bd-sc-label">Pickup Time</span><span id="bd-tf-time"></span></div>
-              <div class="bd-sc-row"><span class="bd-sc-label">Vehicle</span><span id="bd-tf-vehicle"></span></div>
-              <div class="bd-sc-row"><span class="bd-sc-label">Passengers</span><span id="bd-tf-passengers"></span></div>
-              <div class="bd-sc-row bd-sc-price-row"><span class="bd-sc-label">Transfer Price</span><span id="bd-tf-price" class="bd-sc-price">USD 0.00</span></div>
-            </div>
-          </div>
-
-          <!-- ===== Airport Transfer (Mozio) — post-booking add-on ===== -->
-          <!-- Mirrors the real TransferSection.tsx / BookingConfirmationPage "Add Transfer"
-               CTA: a collapsed section on a confirmed booking that expands a Mozio
-               search form → quotes → book → mozioConfirmationNumber. Self-contained
-               bdat-* ids so it coexists with the in-flow services-screen transfer. -->
-          <div class="bd-section" id="bdat-section">
-            <div class="bd-svc-header transfer">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13" rx="2"/><path d="M16 8h4l3 3v5h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
-              <h3>Airport Transfer</h3>
-            </div>
-
-            <!-- State A — collapsed CTA -->
-            <div class="bd-service-card bdat-cta" id="bdat-cta">
-              <div class="bdat-cta-copy">
-                <strong>Add an airport transfer to this booking</strong>
-                <p>Private door-to-door car service via Mozio, billed to the same client. Pickup is pre-filled with the hotel address.</p>
+            <section class="bd-lane" id="bd-lane-hotel" tabindex="-1" aria-labelledby="bd-lane-hotel-title">
+              <div class="bd-lane-head">
+                <span class="bd-lane-icon" aria-hidden="true"><i class="ti ti-bed"></i></span>
+                <h3 class="bd-lane-title" id="bd-lane-hotel-title">Hotel</h3>
+                <span class="status-badge confirmed" id="bd-f1-hotel-status">Confirmed &amp; paid</span>
               </div>
-              <button class="btn-primary bdat-add-btn" onclick="bdatExpand()">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-                Add Transfer
-              </button>
-            </div>
+              <dl class="bd-lane-rows">
+                <div class="bd-sc-row"><dt class="bd-sc-label">Hotel</dt><dd id="bd-hotel-name">Gran Muthu Habana ★★★★★</dd></div>
+                <div class="bd-sc-row"><dt class="bd-sc-label">Check-in</dt><dd id="bd-checkin">Wed, Mar 25, 2026</dd></div>
+                <div class="bd-sc-row"><dt class="bd-sc-label">Check-out</dt><dd id="bd-checkout">Fri, Mar 27, 2026</dd></div>
+                <div class="bd-sc-row"><dt class="bd-sc-label">Duration</dt><dd id="bd-duration">2 Nights</dd></div>
+                <div class="bd-sc-row"><dt class="bd-sc-label">Room</dt><dd id="bd-room">Standard Room</dd></div>
+                <div class="bd-sc-row"><dt class="bd-sc-label">Meal Plan</dt><dd id="bd-meal">Bed &amp; Breakfast</dd></div>
+                <div class="bd-sc-row"><dt class="bd-sc-label">Occupancy</dt><dd>2 Adults</dd></div>
+                <div class="bd-sc-row"><dt class="bd-sc-label">Provider reference</dt><dd><code class="bd-ref" id="bd-f1-hotel-ref">PTA18G28E7CUANQ</code></dd></div>
+                <div class="bd-sc-row bd-lane-amount-row"><dt class="bd-sc-label">Amount</dt><dd id="bd-f1-hotel-amount">USD 194.40</dd></div>
+              </dl>
+            </section>
 
+            <!-- The ride's lane: shown when the itinerary has a ride (added at checkout,
+                 added after booking, or the demo itinerary a notification opens). -->
+            <section class="bd-lane" id="bd-f1-transport-lane" aria-labelledby="bd-lane-ride-title" hidden>
+              <div class="bd-lane-head">
+                <span class="bd-lane-icon" aria-hidden="true"><i class="ti ti-car"></i></span>
+                <h3 class="bd-lane-title" id="bd-lane-ride-title">Airport transfer</h3>
+                <span class="status-badge confirmed" id="bd-f1-transport-status">Confirmed &amp; paid</span>
+              </div>
+              <dl class="bd-lane-rows">
+                <div class="bd-sc-row"><dt class="bd-sc-label">Vehicle</dt><dd id="bd-tf-vehicle">—</dd></div>
+                <div class="bd-sc-row"><dt class="bd-sc-label">Pickup</dt><dd id="bd-tf-pickup">—</dd></div>
+                <div class="bd-sc-row"><dt class="bd-sc-label">Dropoff</dt><dd id="bd-tf-dropoff">—</dd></div>
+                <div class="bd-sc-row"><dt class="bd-sc-label">Pickup time</dt><dd id="bd-tf-datetime">—</dd></div>
+                <div class="bd-sc-row"><dt class="bd-sc-label">Passengers</dt><dd id="bd-tf-passengers">—</dd></div>
+                <div class="bd-sc-row"><dt class="bd-sc-label">Provider</dt><dd id="bd-tf-provider">—</dd></div>
+                <div class="bd-sc-row"><dt class="bd-sc-label">Confirmation #</dt><dd><code class="bd-ref" id="bd-f1-transport-conf">—</code></dd></div>
+                <div class="bd-sc-row bd-lane-amount-row"><dt class="bd-sc-label">Amount</dt><dd id="bd-f1-transport-amount">USD 0.00</dd></div>
+              </dl>
+              <!-- documentation#37: a ride the provider refused after the hotel was booked — never
+                   booked, not counted; the provider's reason and the retry sit in its own lane. -->
+              <p class="bd-lane-reason" id="bd-ride-reason" hidden></p>
+              <div class="bd-lane-actions" id="bd-ride-retry-wrap" hidden>
+                <button class="btn-secondary" id="bd-ride-retry-btn" onclick="bdRideRetry()">Retry airport transfer</button>
+              </div>
+              <div class="bd-lane-actions" id="bd-ride-actions">
+                <button class="btn-secondary" id="bd-f1-modify-transfer-btn" onclick="bdTfmOpen()">Modify</button>
+                <button class="btn-secondary bd-btn-danger" id="bd-f1-cancel-transfer-btn" onclick="bdTfcOpen()">Cancel Transfer</button>
+              </div>
+            </section>
+
+            <!-- The ONE add-transfer entry: only while the itinerary has no active ride.
+                 Expands the Mozio search → quotes → Book, which then becomes the ride lane. -->
+            <div id="bdat-section">
+              <div class="bd-service-card bdat-cta" id="bdat-cta">
+                <div class="bdat-cta-copy">
+                  <strong>No airport transfer on this booking</strong>
+                  <p>Private door-to-door car service via Mozio, billed to the same client. Pickup is pre-filled with the hotel address.</p>
+                </div>
+                <button class="btn-outline bdat-add-btn" id="bdat-add-btn" onclick="bdatExpand()">+ Add airport transfer</button>
+              </div>
             <!-- State B + C — search form + results (hidden until expanded) -->
             <div class="bd-service-card bdat-panel" id="bdat-panel" style="display:none">
               <div class="svc-route-config">
@@ -2397,7 +2354,6 @@
                       </div>
                     </div>
                     <div class="vc-price">
-                      <div class="vc-net">Net USD 48.00</div>
                       <div class="vc-sell" data-base-usd="55.20">USD 55.20</div>
                     </div>
                     <button class="vc-add-btn" onclick="bdatSelect(this.closest('.vehicle-card'))">Select</button>
@@ -2415,7 +2371,6 @@
                       </div>
                     </div>
                     <div class="vc-price">
-                      <div class="vc-net">Net USD 62.00</div>
                       <div class="vc-sell" data-base-usd="71.30">USD 71.30</div>
                     </div>
                     <button class="vc-add-btn" onclick="bdatSelect(this.closest('.vehicle-card'))">Select</button>
@@ -2424,119 +2379,106 @@
                 <p class="bdat-policy-note" id="bdat-policy-note"></p>
               </div>
             </div>
+            </div>
 
-            <!-- State D — booked confirmation -->
-            <div class="bd-service-card bdat-booked" id="bdat-booked" style="display:none">
-              <div class="bdat-booked-head">
-                <span class="bdat-booked-check"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
-                <div>
-                  <strong>Airport Transfer Confirmed</strong>
-                  <span class="bdat-booked-conf">Mozio confirmation <code id="bdat-conf-number">—</code></span>
+            <div class="change-callout" data-change="R1">
+              <span class="change-badge">CHANGED</span>
+              Regrouped: each service's details, amount, reference and actions live in its own lane — no separate "Hotel &amp; Room Details", "Transfer" or "Airport Transfer" cards, one status-badge style, and one "+ Add airport transfer" only while there is no ride. A ride the provider refused reads "Not booked — not counted" with its reason, and is retried from its own lane (no second add entry). The ride's reference is the Mozio confirmation number the client and driver use. A cancelled service's amount is struck through and not counted.
+            </div>
+          </section>
+
+          <!-- (2) GUEST -->
+          <section class="bd-section bd-group" aria-labelledby="bd-guest-title">
+            <h2 class="bd-group-title" id="bd-guest-title">Guest</h2>
+            <div class="bd-service-card">
+              <dl>
+                <div class="bd-sc-row"><dt class="bd-sc-label">Name</dt><dd id="bd-guest-name">Testing Guest</dd></div>
+                <div class="bd-sc-row"><dt class="bd-sc-label">Email</dt><dd>mayankjariwala1994@gmail.com</dd></div>
+                <div class="bd-sc-row"><dt class="bd-sc-label">Phone</dt><dd id="bd-guest-phone">123456789</dd></div>
+              </dl>
+            </div>
+          </section>
+
+          <!-- (3) DOCUMENTS — one card: the itinerary PDFs and the per-booking previews
+               (kept by the owner: the itinerary PDFs do not carry the agency logo yet). -->
+          <section class="bd-section bd-group" aria-labelledby="bd-docs-title">
+            <h2 class="bd-group-title" id="bd-docs-title">Documents</h2>
+            <div class="bd-service-card">
+              <h3 class="bd-card-title">Itinerary</h3>
+              <p class="bd-card-hint">One of each, covering every service on this itinerary.</p>
+              <div class="bd-sc-row bd-doc-line">
+                <span><span class="bd-sc-label">Voucher</span><br><span class="bd-card-hint">What the traveller presents. No prices.</span></span>
+                <button class="btn-doc" id="bd-it-voucher-open" onclick="showScreen('voucher')" aria-label="Open itinerary voucher (PDF)">Open PDF</button>
+              </div>
+              <div class="bd-sc-row bd-doc-line">
+                <span><span class="bd-sc-label">Invoice</span><br><span class="bd-card-hint">For the end client, at their price.</span></span>
+                <button class="btn-doc" id="bd-it-invoice-open" onclick="showScreen('invoice')" aria-label="Open itinerary invoice (PDF)">Open PDF</button>
+              </div>
+
+              <h3 class="bd-card-title bd-card-title-sub">Hotel booking — with your agency logo</h3>
+              <p class="bd-card-hint">Previews of this hotel booking's voucher and invoice, branded with your logo.</p>
+              <div class="bd-docs">
+                <div class="bd-doc-row">
+                  <span class="bd-sc-label bd-doc-kind">Voucher</span>
+                  <select class="doc-lang-select" id="voucher-lang" aria-label="Voucher language"><option>English</option><option>Spanish</option></select>
+                  <button class="btn-doc" onclick="openVoucherPreview()">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                    Preview Voucher
+                  </button>
+                  <button class="btn-doc" onclick="downloadVoucher()">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+                    Download
+                  </button>
                 </div>
-                <span class="status-badge confirmed">CONFIRMED</span>
-              </div>
-              <div class="bd-sc-row"><span class="bd-sc-label">Route</span><span id="bdat-booked-route">—</span></div>
-              <div class="bd-sc-row"><span class="bd-sc-label">Vehicle</span><span id="bdat-booked-vehicle">—</span></div>
-              <div class="bd-sc-row"><span class="bd-sc-label">Provider</span><span id="bdat-booked-provider">—</span></div>
-              <div class="bd-sc-row"><span class="bd-sc-label">Date &amp; Time</span><span id="bdat-booked-datetime">—</span></div>
-              <div class="bd-sc-row"><span class="bd-sc-label">Passengers</span><span id="bdat-booked-pax">—</span></div>
-              <div class="bd-sc-row"><span class="bd-sc-label">Cancellation</span><span id="bdat-booked-cancel">—</span></div>
-              <div class="bd-sc-row bd-sc-price-row"><span class="bd-sc-label">Transfer Price (client)</span><span id="bdat-booked-price" class="bd-sc-price" data-base-usd="55.20">USD 55.20</span></div>
-            </div>
-
-            <!-- F1.B / AC3 — the live booking detail keeps offering this even when a transfer
-                 is already on the booking; the refusal only lands on Book transfer. -->
-            <button class="btn-outline bdat-add-another" id="bdat-add-another"
-                    onclick="bdatAddAnother()" style="display:none">
-              + Add Another Transfer (e.g. Return Trip)
-            </button>
-
-            <div class="change-callout" data-change="M1">
-              <span class="change-badge">NEW</span>
-              Mozio airport transfer can be added <strong>after</strong> the hotel is confirmed — collapsed CTA → search → quote → book, returning a Mozio confirmation number. Mirrors the real booking-details TransferSection.
-            </div>
-          </div>
-
-          <!-- Price Summary (hidden unless combined booking) -->
-          <div class="bd-section" id="bd-price-summary" style="display:none">
-            <h3>Price Breakdown</h3>
-            <div class="bd-price-breakdown">
-              <div class="bd-pb-line"><span>Accommodation</span><span id="bd-pb-hotel">USD 0.00</span></div>
-              <div class="bd-pb-line"><span>Private Transfer</span><span id="bd-pb-transfer">USD 0.00</span></div>
-              <div class="bd-pb-line bd-pb-total"><span>Total Charged to Client</span><span id="bd-pb-total">USD 0.00</span></div>
-            </div>
-          </div>
-
-          <!-- Guest Info -->
-          <div class="bd-section">
-            <h3>Guest Information</h3>
-            <div class="bd-service-card">
-              <div class="bd-sc-row"><span class="bd-sc-label">Name</span><span>Testing Guest</span></div>
-              <div class="bd-sc-row"><span class="bd-sc-label">Email</span><span>mayankjariwala1994@gmail.com</span></div>
-              <div class="bd-sc-row"><span class="bd-sc-label">Phone</span><span>123456789</span></div>
-            </div>
-          </div>
-
-          <!-- Payment Info -->
-          <div class="bd-section">
-            <h3>Payment Information</h3>
-            <div class="bd-service-card">
-              <div class="bd-sc-row"><span class="bd-sc-label">Method</span><span>Credit Card</span></div>
-              <div class="bd-sc-row"><span class="bd-sc-label">Card</span><span>Visa ****4222</span></div>
-              <div class="bd-sc-row"><span class="bd-sc-label">Holder</span><span>Testing Guest</span></div>
-              <div class="bd-sc-row"><span class="bd-sc-label">Amount Paid</span><span id="bd-amount-paid" class="text-green">USD 194.40</span></div>
-              <div class="bd-sc-row"><span class="bd-sc-label">Amount Pending</span><span>USD 0.00</span></div>
-              <div class="bd-sc-row"><span class="bd-sc-label">Payment Status</span><span class="status-badge confirmed">PAID</span></div>
-            </div>
-            <div class="change-callout" data-change="4.7">
-              <span class="change-badge">NEW</span>
-              Payment breakdown: paid, pending, deadline, and status — per review requirement 4.7.
-            </div>
-          </div>
-
-          <!-- Booking Documentation -->
-          <div class="bd-section">
-            <h3>Booking Documentation</h3>
-            <div class="bd-docs">
-              <div class="bd-doc-row">
-                <select class="doc-lang-select" id="voucher-lang"><option>English</option><option>Spanish</option></select>
-                <button class="btn-doc" onclick="openVoucherPreview()">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                  Preview Voucher
-                </button>
-                <button class="btn-doc" onclick="downloadVoucher()">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
-                  Download
-                </button>
-              </div>
-              <div class="bd-doc-row">
-                <select class="doc-lang-select" id="invoice-lang"><option>English</option><option>Spanish</option></select>
-                <button class="btn-doc" onclick="openInvoicePreview()">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                  Preview Invoice
-                </button>
-                <button class="btn-doc" onclick="downloadProforma()">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
-                  Download
-                </button>
+                <div class="bd-doc-row">
+                  <span class="bd-sc-label bd-doc-kind">Invoice</span>
+                  <select class="doc-lang-select" id="invoice-lang" aria-label="Invoice language"><option>English</option><option>Spanish</option></select>
+                  <button class="btn-doc" onclick="openInvoicePreview()">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                    Preview Invoice
+                  </button>
+                  <button class="btn-doc" onclick="downloadProforma()">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+                    Download
+                  </button>
+                </div>
               </div>
             </div>
             <div class="change-callout" data-change="4.6">
               <span class="change-badge critical">CRITICAL — NEW</span>
               Voucher and proforma invoice download with language selector. This was completely missing and is mandatory for B2B operations.
             </div>
-          </div>
+          </section>
+
+          <!-- (4) AGENCY VIEW — every agency↔Ergos figure, together, hidden each time the
+               page opens (owner, 2026-09-25) so the employee can show this booking to the
+               end client. While hidden, the amounts are not in the page at all: they are
+               rendered on the deliberate click and removed again on hide. -->
+          <section class="bd-section bd-group bd-agency" aria-labelledby="bd-agency-title">
+            <div class="bd-agency-head">
+              <div>
+                <h2 class="bd-group-title" id="bd-agency-title"><i class="ti ti-lock" aria-hidden="true"></i> Agency view</h2>
+                <p class="bd-card-hint">What Ergos charged you, your Ergos account and your earnings. Hidden each time this page opens, so you can show the booking to your client.</p>
+              </div>
+              <button class="btn-secondary" id="bd-agency-toggle" aria-expanded="false" aria-controls="bd-agency-body" onclick="bdAgencyToggle()">Show agency figures</button>
+            </div>
+            <div id="bd-agency-body" hidden></div>
+            <div class="change-callout" data-change="R2">
+              <span class="change-badge">CHANGED</span>
+              One agency-only group replaces "What Ergos charged you", "Your Ergos account", "Payment Information" and "Your Earnings (P&amp;L)". Payment method and status fold into the itinerary figures; per-booking Amount Paid / Pending (a second copy of Paid / Outstanding) and the "Price Breakdown" card are gone; no "Holder" row for a credit payment.
+            </div>
+          </section>
         </div>
 
         <!-- Action Sidebar -->
         <div class="bd-sidebar">
           <div class="bd-action-card">
             <h3>Manage Booking</h3>
-            <button class="btn-modify" id="btn-modify-booking" onclick="openModal('modify-modal')">
+            <button class="btn-modify" id="btn-modify-booking" onclick="bdModifyOpen()">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
               Modify Booking
             </button>
-            <button class="btn-cancel" id="btn-cancel-booking" onclick="openModal('cancel-modal')">
+            <button class="btn-cancel" id="btn-cancel-booking" onclick="bdCancelOpen()">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6M9 9l6 6"/></svg>
               Cancel Booking
             </button>
@@ -2568,6 +2510,269 @@
             <div class="timeline-item"><span class="tl-dot blue"></span><span class="tl-text">Payment: Mar 19, 2026 at 8:39 PM</span></div>
           </div>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== BOOKING DETAIL DIALOGS — mirror the live agency-app ==========
+       Cancel Booking  = CancellationFlow.tsx (review → transfer prompt → confirm → result)
+       Modify Booking  = ModifyBookingModal.tsx (room/dates/guest; no transfer part)
+       Ride Modify     = TransferSection.tsx "Modify Transfer — Search New Vehicle"
+       Ride Cancel     = TransferSection.tsx "Cancel Airport Transfer"
+       Figures are filled from the prototype's booking state by bdCancel*/bdModify* in app.js. -->
+
+  <!-- Cancel Booking (whole itinerary) -->
+  <div class="modal-overlay" id="bd-cancel-modal" onclick="closeModalOnOverlay(event)">
+    <div class="modal modal-cancel" role="dialog" aria-modal="true" aria-labelledby="bd-cancel-title" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <h2 id="bd-cancel-title">Cancel Booking</h2>
+        <button class="modal-close" aria-label="Close" onclick="closeModal('bd-cancel-modal')">&times;</button>
+      </div>
+
+      <!-- Step: review -->
+      <div class="cancel-step active" id="bd-cancel-step-review">
+        <div class="cancel-warning">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2" aria-hidden="true"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><path d="M12 9v4M12 17h.01"/></svg>
+          <div>
+            <strong>This action cannot be undone</strong>
+            <p>Please review the cancellation policy carefully before proceeding.</p>
+          </div>
+        </div>
+        <div class="modal-section">
+          <h4>Booking Summary</h4>
+          <div class="cancel-summary-grid">
+            <div class="cancel-summary-item"><span class="modal-info-label">Hotel</span><span id="bd-cx-hotel">Gran Muthu Habana</span></div>
+            <div class="cancel-summary-item"><span class="modal-info-label">Booking Reference</span><span id="bd-cx-ref">PTA18G28E7CUANQ</span></div>
+            <div class="cancel-summary-item"><span class="modal-info-label">Check-in</span><span id="bd-cx-checkin">Mar 25, 2026</span></div>
+            <div class="cancel-summary-item"><span class="modal-info-label">Check-out</span><span id="bd-cx-checkout">Mar 27, 2026</span></div>
+            <div class="cancel-summary-item"><span class="modal-info-label">Room</span><span id="bd-cx-room">Standard Room — Bed &amp; Breakfast</span></div>
+            <div class="cancel-summary-item"><span class="modal-info-label">Guests</span><span>2 Adults</span></div>
+            <div class="cancel-summary-item"><span class="modal-info-label">Cancellation Deadline</span><span>Mar 25, 2026 at 8:00 AM</span></div>
+            <div class="cancel-summary-item"><span class="modal-info-label">Hours Until Check-in</span><span>137h</span></div>
+          </div>
+        </div>
+        <div class="modal-section">
+          <h4>Cancellation Policy</h4>
+          <div class="cancel-policy-banner green">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2" aria-hidden="true"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4 12 14.01l-3-3"/></svg>
+            <div>
+              <strong>Cancellable</strong>
+              <span>No penalty will be charged. Full refund of<br><strong id="bd-cx-policy-refund">USD 0.00</strong><br>will be issued.<br><span class="bd-cx-breakdown" id="bd-cx-policy-breakdown"></span></span>
+            </div>
+          </div>
+        </div>
+        <div class="modal-section" id="bd-cx-ride-policy">
+          <h4>Airport Transfer Cancellation Policy</h4>
+          <div class="cancel-refund-box bd-cx-ride-card">
+            <div class="cancel-refund-row"><span>Fare</span><span id="bd-cx-ride-fare">USD 0.00</span></div>
+            <div class="cancel-refund-row"><span>Penalty if cancelled now</span><span id="bd-cx-ride-penalty">USD 0.00</span></div>
+            <div class="cancel-refund-row"><span>Refund</span><span class="text-green" id="bd-cx-ride-refund">USD 0.00</span></div>
+            <p class="cancel-reason-hint">100% back if cancelled at least 24h before pickup</p>
+          </div>
+        </div>
+        <div class="modal-section">
+          <h4>Cancellation Policy Tiers</h4>
+          <table class="cancel-tiers-table">
+            <thead><tr><th>Deadline</th><th>Penalty</th><th>Type</th></tr></thead>
+            <tbody>
+              <tr><td>Mar 25, 2026</td><td>50%</td><td><span class="tier-partial">Partial Penalty</span></td></tr>
+              <tr><td>Mar 26, 2026</td><td>100%</td><td><span class="tier-full">Full Penalty</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="cancel-refund-box">
+          <div class="cancel-refund-row bd-cx-ride-only"><span>Room</span><span id="bd-cx-room-total">USD 0.00</span></div>
+          <div class="cancel-refund-row bd-cx-ride-only"><span>Airport Transfer</span><span id="bd-cx-ride-total">USD 0.00</span></div>
+          <div class="cancel-refund-row"><span id="bd-cx-total-label">Booking Total</span><span id="bd-cx-total">USD 0.00</span></div>
+          <div class="cancel-refund-row"><span id="bd-cx-penalty-label">Cancellation Penalty</span><span id="bd-cx-room-penalty">USD 0.00</span></div>
+          <div class="cancel-refund-row bd-cx-ride-only"><span>Cancellation Penalty (transfer)</span><span id="bd-cx-ride-penalty2">USD 0.00</span></div>
+          <div class="cancel-refund-row cancel-refund-total"><span>Refund Amount</span><span class="text-green" id="bd-cx-refund">USD 0.00</span></div>
+        </div>
+        <div class="modal-actions">
+          <button class="btn-secondary" onclick="closeModal('bd-cancel-modal')">Back</button>
+          <button class="btn-danger" id="bd-cx-continue" onclick="bdCancelStep(bdHasActiveRide() ? 'prompt' : 'confirm')">Continue to Cancellation →</button>
+        </div>
+      </div>
+
+      <!-- Step: the ride goes too (only when the booking has an active ride) -->
+      <div class="cancel-step" id="bd-cancel-step-prompt">
+        <div class="cancel-warning bd-cx-amber">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#b45309" stroke-width="2" aria-hidden="true"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><path d="M12 9v4M12 17h.01"/></svg>
+          <div>
+            <strong>The airport transfer will be cancelled too</strong>
+            <p>This booking has <b>1</b> active airport transfer. Cancelling the booking cancels it as well, and refunds its fare. To keep the room and drop only the ride, cancel the transfer from the booking details page instead.</p>
+          </div>
+        </div>
+        <div class="modal-section">
+          <div class="bd-cx-ride-line">
+            <strong id="bd-cx-prompt-vehicle">Transfer</strong>
+            <span id="bd-cx-prompt-meta"></span>
+          </div>
+        </div>
+        <div class="modal-actions">
+          <button class="btn-secondary" onclick="bdCancelStep('review')">← Back</button>
+          <button class="btn-danger" id="bd-cx-prompt-continue" onclick="bdCancelStep('confirm')">Continue →</button>
+        </div>
+      </div>
+
+      <!-- Step: confirm -->
+      <div class="cancel-step" id="bd-cancel-step-confirm">
+        <div class="cancel-confirm-icon">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="1.5" aria-hidden="true"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><path d="M12 9v4M12 17h.01"/></svg>
+        </div>
+        <h3 class="cancel-confirm-title">Are you sure you want to cancel this booking?</h3>
+        <p class="cancel-confirm-sub"><span id="bd-cx-confirm-sub"><strong>Gran Muthu Habana</strong> · Mar 25–27, 2026 · Standard Room</span><br>
+          <strong id="bd-cx-confirm-refund">Refund: USD 0.00 (full refund, no penalty)</strong></p>
+        <div class="modal-section">
+          <h4><label for="bd-cx-reason">Cancellation Reason</label> <span class="required" aria-hidden="true">*</span></h4>
+          <textarea class="cancel-reason" id="bd-cx-reason" rows="4" required placeholder="Please provide a reason for cancellation..." oninput="bdCancelValidate()"></textarea>
+          <p class="cancel-reason-hint">This helps us improve our service and is required to proceed.</p>
+        </div>
+        <div class="cancel-confirm-checkbox">
+          <label>
+            <input type="checkbox" id="bd-cx-ack" onchange="bdCancelValidate()">
+            <span>I understand that this cancellation is <strong>irreversible</strong> and I have reviewed the cancellation policy and refund terms.</span>
+          </label>
+        </div>
+        <div class="modal-actions">
+          <button class="btn-secondary" onclick="bdCancelStep(bdHasActiveRide() ? 'prompt' : 'review')">← Back</button>
+          <button class="btn-danger" id="bd-cx-confirm-btn" disabled onclick="bdCancelConfirm()">⊘ Confirm Cancellation</button>
+        </div>
+      </div>
+
+      <!-- Step: result -->
+      <div class="cancel-step" id="bd-cancel-step-result">
+        <div class="cancel-confirm-icon"><span class="bd-cx-done" aria-hidden="true">✓</span></div>
+        <h3 class="cancel-confirm-title">Booking Cancelled Successfully</h3>
+        <p class="cancel-confirm-sub" id="bd-cx-result-refund">Refund of USD 0.00 will be processed.</p>
+        <div class="modal-actions bd-cx-center">
+          <button class="btn-secondary" onclick="closeModal('bd-cancel-modal')">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modify Booking (hotel stay: dates, room, guest) -->
+  <div class="modal-overlay" id="bd-modify-modal" onclick="closeModalOnOverlay(event)">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="bd-modify-title" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <h2 id="bd-modify-title">Modify Booking</h2>
+        <button class="modal-close" aria-label="Close" onclick="closeModal('bd-modify-modal')">&times;</button>
+      </div>
+      <p class="modal-subtitle">The system will automatically handle room additions/cancellations based on your changes.</p>
+      <div class="modal-section">
+        <div class="modal-info-box">
+          <h4>Current Booking Details</h4>
+          <div class="modal-info-row">
+            <div><span class="modal-info-label">Check-in</span><span id="bd-mb-cur-checkin">Mar 25, 2026</span></div>
+            <div><span class="modal-info-label">Check-out</span><span id="bd-mb-cur-checkout">Mar 27, 2026</span></div>
+          </div>
+          <span class="modal-info-label">Current Room Details</span>
+          <div id="bd-mb-cur-room">Room: Standard Room | Rate: N/A | Meal Plan: Bed &amp; Breakfast</div>
+          <div>Total Rooms: 1</div>
+        </div>
+      </div>
+      <div class="modal-section"><div class="modal-section-divider">Guest Information</div>
+        <div class="modal-info-box">
+          <h4>Primary Guest Details</h4>
+          <div class="modal-form-row bd-mb-grid">
+            <label class="bd-mb-field">Name<input class="form-input" id="bd-mb-name" value="Testing Guest"></label>
+            <label class="bd-mb-field">Email<input class="form-input" id="bd-mb-email" value="mayankjariwala1994@gmail.com" readonly></label>
+            <label class="bd-mb-field">Phone<input class="form-input" id="bd-mb-phone" value="123456789"></label>
+          </div>
+        </div>
+      </div>
+      <div class="modal-section"><div class="modal-section-divider">Modify Booking</div>
+        <div class="bd-mb-dates">
+          <label class="bd-mb-field">Check-in<input type="date" class="form-input" id="bd-mb-checkin" onchange="bdModifyDatesChanged()"></label>
+          <label class="bd-mb-field">Check-out<input type="date" class="form-input" id="bd-mb-checkout" onchange="bdModifyDatesChanged()"></label>
+          <button class="btn-primary bd-mb-apply" id="bd-mb-apply" onclick="bdModifyApply()">Apply</button>
+        </div>
+      </div>
+      <div class="modal-section">
+        <div class="bd-mb-rooms-head">
+          <div><h4>Rooms (1)</h4><span class="cancel-reason-hint">No change in room count</span></div>
+          <button class="btn-secondary" disabled>+ Add Room</button>
+        </div>
+        <div class="modal-info-box">
+          <h4>Room 1</h4>
+          <label class="bd-mb-field">Select Available Room
+            <select class="form-input" id="bd-mb-room" onchange="bdModifyValidate()"></select>
+          </label>
+          <span class="modal-info-label" style="margin-top:12px">Guest Quantities</span>
+          <div class="modal-form-row bd-mb-grid">
+            <label class="bd-mb-field">Adults<input class="form-input" type="number" value="2" readonly></label>
+            <label class="bd-mb-field">Children<input class="form-input" type="number" value="0" readonly></label>
+          </div>
+        </div>
+      </div>
+      <div class="modal-actions bd-mb-actions">
+        <button class="btn-secondary" onclick="closeModal('bd-modify-modal')">Cancel</button>
+        <button class="btn-primary" id="bd-mb-confirm" disabled onclick="bdModifyConfirm()">Confirm Modification</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Ride: Modify Transfer — Search New Vehicle -->
+  <div class="modal-overlay" id="bd-tfm-modal" onclick="closeModalOnOverlay(event)">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="bd-tfm-title" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <h2 id="bd-tfm-title">Modify Transfer — Search New Vehicle</h2>
+        <button class="modal-close" aria-label="Close" onclick="closeModal('bd-tfm-modal')">&times;</button>
+      </div>
+      <div class="modal-section">
+        <div class="svc-route-row">
+          <label class="bd-mb-field">Pickup<input class="form-input" id="bd-tfm-pickup" placeholder="Airport or address" oninput="bdTfmValidate()"></label>
+          <label class="bd-mb-field">Dropoff<input class="form-input" id="bd-tfm-dropoff" placeholder="Hotel or address" oninput="bdTfmValidate()"></label>
+        </div>
+        <div class="svc-route-row bd-tfm-row">
+          <label class="bd-mb-field">Date *<input type="date" class="form-input" id="bd-tfm-date"></label>
+          <label class="bd-mb-field">Time *<input type="time" class="form-input" id="bd-tfm-time" value="12:00"></label>
+          <label class="bd-mb-field">Passengers<input type="number" class="form-input" id="bd-tfm-pax" min="1" max="20" value="2"></label>
+          <div class="bd-mb-field">Mode
+            <div class="transfer-mode-pills" role="group" aria-label="Mode">
+              <button type="button" class="mode-pill active" id="bd-tfm-oneway" onclick="bdTfmMode('oneway')">One Way</button>
+              <button type="button" class="mode-pill" id="bd-tfm-roundtrip" onclick="bdTfmMode('roundtrip')">Round Trip</button>
+            </div>
+          </div>
+        </div>
+        <div class="svc-route-row bd-tfm-row" id="bd-tfm-return" hidden>
+          <label class="bd-mb-field">Return Date *<input type="date" class="form-input" id="bd-tfm-return-date"></label>
+          <label class="bd-mb-field">Return Time *<input type="time" class="form-input" id="bd-tfm-return-time"></label>
+        </div>
+        <button class="btn-primary" id="bd-tfm-search" disabled onclick="bdTfmSearch()">Search Vehicles</button>
+        <div class="svc-tf-results-list bd-tfm-results" id="bd-tfm-results" hidden></div>
+        <div class="bd-tfm-footer" id="bd-tfm-footer" hidden>
+          <div class="svc-route-row" id="bd-tfm-flight" hidden>
+            <label class="bd-mb-field">Airline (IATA) *<input class="form-input" id="bd-tfm-airline" placeholder="AA" oninput="this.value=this.value.toUpperCase();bdTfmValidate()"></label>
+            <label class="bd-mb-field">Flight Number *<input class="form-input" id="bd-tfm-flightno" placeholder="1234" oninput="bdTfmValidate()"></label>
+          </div>
+          <button class="btn-primary bd-tfm-confirm" id="bd-tfm-confirm" disabled onclick="bdTfmConfirm()">Confirm Modification</button>
+        </div>
+      </div>
+      <div style="height:28px"></div>
+    </div>
+  </div>
+
+  <!-- Ride: Cancel Airport Transfer -->
+  <div class="modal-overlay" id="bd-tfc-modal" onclick="closeModalOnOverlay(event)">
+    <div class="modal bd-modal-sm" role="dialog" aria-modal="true" aria-labelledby="bd-tfc-title" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <h2 id="bd-tfc-title">Cancel Airport Transfer</h2>
+        <button class="modal-close" aria-label="Close" onclick="closeModal('bd-tfc-modal')">&times;</button>
+      </div>
+      <div class="modal-section">
+        <div class="cancel-warning" role="alert"><div><p>Are you sure you want to cancel this transfer? This action cannot be undone.</p></div></div>
+        <dl class="bd-tfc-grid">
+          <dt>Vehicle</dt><dd id="bd-tfc-vehicle">—</dd>
+          <dt>Pickup</dt><dd id="bd-tfc-pickup">—</dd>
+          <dt>Price</dt><dd id="bd-tfc-price">—</dd>
+          <dt>Confirmation #</dt><dd><code class="bd-ref" id="bd-tfc-conf">—</code></dd>
+        </dl>
+      </div>
+      <div class="modal-actions bd-tfc-actions">
+        <button class="btn-secondary" onclick="closeModal('bd-tfc-modal')">Keep Transfer</button>
+        <button class="btn-danger" id="bd-tfc-yes" onclick="bdTfcConfirm()">Yes, Cancel</button>
       </div>
     </div>
   </div>

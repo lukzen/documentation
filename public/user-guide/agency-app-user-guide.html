@@ -383,10 +383,40 @@
     <p class="lang-en">If your search had more than one room, the guest-info step expands into one block per room. Assign the lead guest of each room — they appear on the voucher per-room. Children's names are also required by most suppliers.</p>
     <p class="lang-es">Si su búsqueda tenía más de una habitación, el paso de datos del huésped se expande en un bloque por habitación. Asigne al huésped principal de cada habitación — aparecen en el voucher por habitación. La mayoría de los proveedores también requiere los nombres de los niños.</p>
 
+    <h3 class="lang-en">A phone the ride cannot use is refused before payment</h3>
+    <h3 class="lang-es">Un teléfono que el traslado no puede usar se rechaza antes del pago</h3>
+    <p class="lang-en">When the booking carries an airport transfer, the guest's <strong>Phone</strong> must carry its country code and be a number the driver can actually call. If it is not, pressing <strong>Pay for both with credit →</strong> charges nothing: the app takes you back to <em>Guest Details</em> with the error on the phone field — <em>"Enter the guest's phone with its country code — the airport transfer needs a number the driver can reach (e.g. +1 305 555 0123)."</em> Correct the number, press <strong>Continue →</strong> and pay again; the transfer you picked is kept.</p>
+    <p class="lang-es">Cuando la reserva lleva un traslado al aeropuerto, el <strong>Phone</strong> (teléfono) del huésped debe incluir su código de país y ser un número al que el conductor pueda llamar. Si no lo es, al presionar <strong>Pay for both with credit →</strong> (pagar ambos con crédito) no se cobra nada: la app lo lleva de vuelta a <em>Guest Details</em> (datos del huésped) con el error en el campo del teléfono — <em>"Enter the guest's phone with its country code — the airport transfer needs a number the driver can reach (e.g. +1 305 555 0123)."</em> (ingrese el teléfono del huésped con su código de país; el traslado necesita un número al que el conductor pueda comunicarse). Corrija el número, presione <strong>Continue →</strong> (continuar) y vuelva a pagar; el traslado que eligió se conserva.</p>
+
+    <figure class="screenshot">
+      <div class="screenshot-frame">
+        <img src="f1-37-01-phone-refused-before-payment.png"
+             alt="Guest Details with the phone +34 555 123 456 marked in red and the message asking for a phone with its country code; the summary still shows the transfer and the Trip Total."
+             loading="lazy" onerror="this.style.display='none'" />
+      </div>
+      <figcaption class="lang-en">Refused before payment: <em>+34 555 123 456</em> is not a number the driver can reach. Nothing was charged; the transfer is still in the <em>Booking Summary</em>.</figcaption>
+      <figcaption class="lang-es">Rechazado antes del pago: <em>+34 555 123 456</em> no es un número al que el conductor pueda comunicarse. No se cobró nada; el traslado sigue en el <em>Booking Summary</em> (resumen de la reserva).</figcaption>
+    </figure>
+
     <h3 class="lang-en">If a booking fails partway through</h3>
     <h3 class="lang-es">Si una reserva falla a mitad de camino</h3>
-    <p class="lang-en">Occasionally a supplier rejects the booking at the last second (e.g. the room sold out in the seconds since search). When that happens, your card is <strong>not charged</strong> and you'll see a clear error message with the option to pick a different room or retry. Always confirm the customer's email confirmation arrived before considering the booking final.</p>
-    <p class="lang-es">A veces un proveedor rechaza la reserva en el último segundo (ej. la habitación se agotó en los segundos transcurridos desde la búsqueda). Cuando eso ocurre, <strong>no se cobra la tarjeta</strong> y verá un mensaje de error claro con la opción de elegir otra habitación o reintentar. Confirme siempre que el correo de confirmación llegó al cliente antes de considerar la reserva como final.</p>
+    <p class="lang-en">The hotel is always booked first. If the hotel provider refuses it (for example, the room sold out in the seconds since your search), <strong>nothing is charged</strong>: whatever the checkout drew from your soft credit comes back, and you can pick another room or try again.</p>
+    <p class="lang-es">El hotel siempre se reserva primero. Si el proveedor del hotel lo rechaza (por ejemplo, la habitación se agotó en los segundos transcurridos desde su búsqueda), <strong>no se cobra nada</strong>: lo que el checkout haya tomado de su soft credit vuelve a su cuenta, y puede elegir otra habitación o volver a intentarlo.</p>
+    <p class="lang-en">If the hotel is booked but the ride then fails, <strong>the hotel stands</strong> — it stays confirmed and paid — and only the ride's fare comes back to your credit. On the booking page the ride keeps its own lane, marked <strong>NOT BOOKED</strong>, with its amount struck through as <em>Not booked — not counted</em>, the provider's reason underneath, and a <strong>Retry airport transfer</strong> button that opens the transfer search for this booking. That button is the only way in: the page does not also offer <strong>+ Add airport transfer</strong> beside it.</p>
+    <p class="lang-es">Si el hotel queda reservado pero luego falla el traslado, <strong>el hotel se mantiene</strong> — sigue confirmado y pagado — y solo la tarifa del traslado vuelve a su crédito. En la página de la reserva, el traslado conserva su propio carril, marcado <strong>NOT BOOKED</strong> (no reservado), con el importe tachado como <em>Not booked — not counted</em> (no reservado, no se cuenta), el motivo del proveedor debajo, y un botón <strong>Retry airport transfer</strong> (reintentar el traslado) que abre la búsqueda de traslados para esta reserva. Ese botón es la única entrada: la página no ofrece además <strong>+ Add airport transfer</strong> a su lado.</p>
+
+    <figure class="screenshot">
+      <div class="screenshot-frame">
+        <img src="f1-37-02-ride-not-booked-lane.png"
+             alt="An Airport transfer lane marked NOT BOOKED, the amount struck through with Not booked — not counted, and the provider's reason below it."
+             loading="lazy" onerror="this.style.display='none'" />
+      </div>
+      <figcaption class="lang-en">A ride the provider refused: <strong>NOT BOOKED</strong>, no confirmation number, <em>Not booked — not counted</em>, and Mozio's reason. This booking was later cancelled, so no retry is offered; on a live booking <strong>Retry airport transfer</strong> sits under the reason.</figcaption>
+      <figcaption class="lang-es">Un traslado que el proveedor rechazó: <strong>NOT BOOKED</strong>, sin número de confirmación, <em>Not booked — not counted</em> y el motivo de Mozio. Esta reserva se canceló después, por eso no ofrece reintento; en una reserva vigente, <strong>Retry airport transfer</strong> aparece debajo del motivo.</figcaption>
+    </figure>
+
+    <p class="lang-en">Always confirm the customer's email confirmation arrived before considering the booking final.</p>
+    <p class="lang-es">Confirme siempre que el correo de confirmación llegó al cliente antes de considerar la reserva como final.</p>
   </section>
 
   <!-- SECTION 6: AIRPORT TRANSFERS (MOZIO) -->
@@ -403,27 +433,27 @@
       <ul class="lang-en">
         <li><strong>At checkout</strong> — the <em>Payment</em> step opens with an <strong>Airport Transfer</strong> section marked <strong>OPTIONAL</strong>. A transfer added here is part of the same booking and is paid together with the room (see payment note below).</li>
         <li><strong>On the confirmation screen</strong> — right after the room is booked, an <em>Additional services</em> card offers a transfer with one click.</li>
-        <li><strong>On a confirmed booking, later</strong> — open the booking's detail page and use the <em>Airport Transfer</em> section (<strong>+ Add Airport Transfer</strong>) any time before travel.</li>
+        <li><strong>On a confirmed booking, later</strong> — open the booking's detail page and use <strong>+ Add airport transfer</strong> at the end of its <em>Services</em> section, any time before travel. It is offered only while the booking has no ride.</li>
       </ul>
       <ul class="lang-es">
         <li><strong>En el checkout</strong> — el paso <em>Payment</em> (Pago) abre con una sección <strong>Airport Transfer</strong> marcada como <strong>OPTIONAL</strong> (opcional). Un traslado agregado aquí forma parte de la misma reserva y se paga junto con la habitación (ver la nota de pago más abajo).</li>
         <li><strong>En la pantalla de confirmación</strong> — apenas se reserva la habitación, una tarjeta de <em>Servicios adicionales</em> ofrece el traslado con un clic.</li>
-        <li><strong>En una reserva ya confirmada, más tarde</strong> — abra la página de detalle de la reserva y use la sección <em>Traslado al Aeropuerto</em> (<strong>+ Agregar traslado al aeropuerto</strong>) en cualquier momento antes del viaje.</li>
+        <li><strong>En una reserva ya confirmada, más tarde</strong> — abra la página de detalle de la reserva y use <strong>+ Add airport transfer</strong> (agregar traslado al aeropuerto) al final de su sección <em>Services</em> (servicios), en cualquier momento antes del viaje. Solo se ofrece mientras la reserva no tiene traslado.</li>
       </ul>
     </div>
 
     <h3 class="lang-en">Starting a transfer search</h3>
     <h3 class="lang-es">Iniciar una búsqueda de traslado</h3>
-    <p class="lang-en">Whichever entry point you use, you open the <em>Airport Transfer</em> section and start a search. On a confirmed booking, click <strong>+ Add Airport Transfer</strong>; during the booking flow the card is already on the <em>Enhance your trip</em> step.</p>
-    <p class="lang-es">Sea cual sea el punto de entrada, abre la sección <em>Traslado al Aeropuerto</em> e inicia una búsqueda. En una reserva confirmada, haga clic en <strong>+ Agregar traslado al aeropuerto</strong>; durante el flujo de reserva la tarjeta ya está en el paso <em>Mejore su viaje</em>.</p>
+    <p class="lang-en">Whichever entry point you use, you open the <em>Airport Transfer</em> search. On a confirmed booking without a ride, the <em>Services</em> section ends with <em>"No airport transfer on this booking"</em> and one <strong>+ Add airport transfer</strong> button, which opens the <em>Add Airport Transfer</em> page for that booking; at checkout the <em>Airport Transfer</em> section is already on the <em>Payment</em> step.</p>
+    <p class="lang-es">Sea cual sea el punto de entrada, abre la búsqueda <em>Airport Transfer</em> (traslado al aeropuerto). En una reserva confirmada sin traslado, la sección <em>Services</em> (servicios) termina con <em>"No airport transfer on this booking"</em> (esta reserva no tiene traslado al aeropuerto) y un único botón <strong>+ Add airport transfer</strong>, que abre la página <em>Add Airport Transfer</em> de esa reserva; en el checkout, la sección <em>Airport Transfer</em> ya está en el paso <em>Payment</em> (pago).</p>
     <figure class="screenshot">
       <div class="screenshot-frame">
-        <img src="mozio-01-transfer-section.png"
-             alt="The Airport Transfer section on a booking's detail page with the Add Airport Transfer button."
+        <img src="f1-38-09-ride-cancelled-add-transfer.png"
+             alt="A cancelled Airport transfer lane with its amount struck through as Refunded — not counted, followed by the No airport transfer on this booking card and its + Add airport transfer button."
              loading="lazy" onerror="this.style.display='none'" />
       </div>
-      <figcaption class="lang-en">On a confirmed booking's detail page, the <em>Airport Transfer</em> section sits below the payment summary. Click <strong>+ Add Airport Transfer</strong> to begin.</figcaption>
-      <figcaption class="lang-es">En la página de detalle de una reserva confirmada, la sección <em>Traslado al Aeropuerto</em> está debajo del resumen de pago. Haga clic en <strong>+ Agregar traslado al aeropuerto</strong> para empezar.</figcaption>
+      <figcaption class="lang-en">With no active ride — here the ride was cancelled and reads <em>Refunded — not counted</em> — the <em>Services</em> section offers one <strong>+ Add airport transfer</strong>.</figcaption>
+      <figcaption class="lang-es">Sin un traslado activo — aquí el traslado se canceló y figura como <em>Refunded — not counted</em> (reembolsado, no se cuenta) — la sección <em>Services</em> ofrece un único <strong>+ Add airport transfer</strong>.</figcaption>
     </figure>
     <p class="lang-en">Fill the search form: the <em>pickup</em> (usually the arrival airport), the <em>dropoff</em>, the date and time, the number of passengers, and whether it's <em>one way</em> or <em>round trip</em>. To save time, the app <strong>auto-fills</strong> the dropoff with the hotel (when its address is known), the date with the check-in date, and the passenger count from the room occupancy — you can change any of them. Choosing <em>round trip</em> reveals an extra return date and time. The date and time must be in the future. Then click <strong>Search Vehicles</strong>.</p>
     <p class="lang-es">Complete el formulario: el <em>punto de recogida</em> (normalmente el aeropuerto de llegada), el <em>destino</em>, la fecha y hora, la cantidad de pasajeros, y si es <em>solo ida</em> o <em>ida y vuelta</em>. Para ahorrar tiempo, la app <strong>autocompleta</strong> el destino con el hotel (cuando se conoce su dirección), la fecha con el check-in y la cantidad de pasajeros según la ocupación de la habitación — puede cambiar cualquiera de estos datos. Al elegir <em>ida y vuelta</em> aparece una fecha y hora de regreso. La fecha y hora deben ser futuras. Después haga clic en <strong>Buscar vehículos</strong>.</p>
@@ -493,50 +523,42 @@
 
     <h3 class="lang-en">One transfer per booking</h3>
     <h3 class="lang-es">Un traslado por reserva</h3>
-    <p class="lang-en">A booking carries <strong>at most one</strong> airport transfer. If it already has an active one, adding another is refused with <em>"This booking already has a transfer — cancel it before adding another"</em>. Cancel the existing transfer first, then add the replacement. A cancelled transfer does not count, so a booking whose ride you cancelled is free to take a new one.</p>
-    <p class="lang-es">Una reserva lleva <strong>como máximo un</strong> traslado al aeropuerto. Si ya tiene uno activo, agregar otro se rechaza con <em>"This booking already has a transfer — cancel it before adding another"</em> (esta reserva ya tiene un traslado; cancélelo antes de agregar otro). Cancele primero el traslado existente y luego agregue el reemplazo. Un traslado cancelado no cuenta, así que una reserva cuyo traslado usted canceló puede tomar uno nuevo.</p>
+    <p class="lang-en">A booking carries <strong>at most one</strong> airport transfer. While it has a booked ride, its page offers no entry to add another: <strong>+ Add airport transfer</strong> is hidden. Cancel the existing transfer first and the button comes back for the replacement. A cancelled transfer does not count, so a booking whose ride you cancelled is free to take a new one.</p>
+    <p class="lang-es">Una reserva lleva <strong>como máximo un</strong> traslado al aeropuerto. Mientras tenga un traslado reservado, su página no ofrece ninguna entrada para agregar otro: <strong>+ Add airport transfer</strong> (agregar traslado al aeropuerto) está oculto. Cancele primero el traslado existente y el botón vuelve a aparecer para el reemplazo. Un traslado cancelado no cuenta, así que una reserva cuyo traslado usted canceló puede tomar uno nuevo.</p>
 
-    <div class="callout callout-warning">
-      <strong class="lang-en">The refusal comes at the end, not the start</strong>
-      <strong class="lang-es">El rechazo llega al final, no al principio</strong>
-      <span class="lang-en"> The booking detail still offers <strong>+ Add Another Transfer (e.g. Return Trip)</strong>, and the whole search runs normally — you can pick a vehicle and fill in the flight details. The refusal only appears when you press <strong>Book Transfer</strong>. Nothing is charged and no ride is reserved, but the work is wasted: if the booking already shows a transfer, cancel that one first. For a return leg, use <strong>Round Trip</strong> at the start instead of adding a second transfer.</span>
-      <span class="lang-es"> La página de detalle igualmente ofrece <strong>+ Add Another Transfer (e.g. Return Trip)</strong>, y la búsqueda funciona con normalidad — puede elegir un vehículo y completar los datos del vuelo. El rechazo aparece recién al presionar <strong>Book Transfer</strong>. No se cobra nada ni se reserva ningún traslado, pero el trabajo se pierde: si la reserva ya muestra un traslado, cancele ese primero. Para un trayecto de regreso, use <strong>Round Trip</strong> desde el inicio en lugar de agregar un segundo traslado.</span>
+    <div class="callout callout-info">
+      <strong class="lang-en">No second entry while a ride is booked</strong>
+      <strong class="lang-es">Sin una segunda entrada mientras haya un traslado reservado</strong>
+      <span class="lang-en"> While the booking has a booked ride, its page does not offer <strong>+ Add airport transfer</strong> at all. To replace the ride, use <strong>Cancel Transfer</strong> in its lane first; the button then comes back. For a return leg, choose <strong>Round Trip</strong> at the start instead of adding a second transfer.</span>
+      <span class="lang-es"> Mientras la reserva tenga un traslado reservado, su página no ofrece <strong>+ Add airport transfer</strong>. Para reemplazar el traslado, use primero <strong>Cancel Transfer</strong> (cancelar traslado) en su carril; luego el botón vuelve a aparecer. Para un trayecto de regreso, elija <strong>Round Trip</strong> (ida y vuelta) desde el inicio en lugar de agregar un segundo traslado.</span>
     </div>
-
-    <figure class="screenshot">
-      <div class="screenshot-frame">
-        <img src="f1b-06-second-transfer-refused.png"
-             alt="The add-transfer page refusing a second transfer with the message that the booking already has one."
-             loading="lazy" onerror="this.style.display='none'" />
-      </div>
-      <figcaption class="lang-en">The refusal appears above <strong>Book Transfer</strong>, after the vehicle and flight details were already filled in.</figcaption>
-      <figcaption class="lang-es">El rechazo aparece encima de <strong>Book Transfer</strong>, después de haber completado el vehículo y los datos del vuelo.</figcaption>
-    </figure>
 
     <h3 class="lang-en">Managing a transfer afterwards</h3>
     <h3 class="lang-es">Gestionar un traslado después</h3>
-    <p class="lang-en">Every transfer attached to a booking shows up in the <em>Airport Transfer</em> section of the booking detail page with a status badge:</p>
-    <p class="lang-es">Cada traslado asociado a una reserva aparece en la sección <em>Traslado al Aeropuerto</em> de la página de detalle, con una etiqueta de estado:</p>
+    <p class="lang-en">Every ride on a booking has its own <strong>Airport transfer</strong> lane in the booking's <em>Services</em> section (see §7), with a status badge:</p>
+    <p class="lang-es">Cada traslado de una reserva tiene su propio carril <strong>Airport transfer</strong> (traslado al aeropuerto) en la sección <em>Services</em> (servicios) de la reserva (ver §7), con una etiqueta de estado:</p>
     <ul class="lang-en">
-      <li><strong>Confirmed</strong> — booked and ready; the confirmation number and driver instructions are available.</li>
-      <li><strong>Pending</strong> — the provider hasn't finalised yet; it usually settles on its own.</li>
-      <li><strong>Failed</strong> — the transfer couldn't be booked. Your room booking is <em>not</em> affected — use <strong>Retry Booking</strong> to try again.</li>
-      <li><strong>Cancelled</strong> — the transfer was cancelled; it no longer counts toward the booking total.</li>
+      <li><strong>IN PROGRESS</strong> — the ride is still being booked; its amount reads <em>Not booked yet — not counted</em>.</li>
+      <li><strong>CONFIRMED — NOT PAID</strong> — booked, not charged yet; it counts in the total and appears as <em>Outstanding</em> in the agency view.</li>
+      <li><strong>CONFIRMED &amp; PAID</strong> — booked and paid. The lane lists the vehicle, pickup, dropoff, pickup time, passengers, provider and the <em>Confirmation #</em> the client and the driver use, with <strong>Modify</strong> and <strong>Cancel Transfer</strong> underneath.</li>
+      <li><strong>CANCELLED</strong> — you cancelled it, and it is no longer in the total. Its amount is struck through as <em>Refunded — not counted</em> when its fare came back to you, or <em>Cancelled — not counted</em> when nothing was refunded.</li>
+      <li><strong>NOT BOOKED</strong> — the provider refused it. The amount reads <em>Not booked — not counted</em>, the provider's reason is shown, and <strong>Retry airport transfer</strong> starts a new search (see §5). Your room is <em>not</em> affected.</li>
     </ul>
     <ul class="lang-es">
-      <li><strong>Confirmado</strong> — reservado y listo; están disponibles el número de confirmación y las instrucciones del conductor.</li>
-      <li><strong>Pendiente</strong> — el proveedor todavía no finalizó; normalmente se resuelve solo.</li>
-      <li><strong>Falló</strong> — no se pudo reservar el traslado. Su reserva de habitación <em>no</em> se ve afectada — use <strong>Reintentar reserva</strong> para volver a intentar.</li>
-      <li><strong>Cancelado</strong> — el traslado fue cancelado; ya no cuenta para el total de la reserva.</li>
+      <li><strong>IN PROGRESS</strong> (en curso) — el traslado todavía se está reservando; su importe indica <em>Not booked yet — not counted</em> (aún no reservado, no se cuenta).</li>
+      <li><strong>CONFIRMED — NOT PAID</strong> (confirmado, sin pagar) — reservado y aún no cobrado; cuenta en el total y figura como <em>Outstanding</em> (pendiente) en la vista de la agencia.</li>
+      <li><strong>CONFIRMED &amp; PAID</strong> (confirmado y pagado) — reservado y pagado. El carril muestra el vehículo, la recogida, el destino, la hora de recogida, los pasajeros, el proveedor y el <em>Confirmation #</em> (número de confirmación) que usan el cliente y el conductor, con <strong>Modify</strong> (modificar) y <strong>Cancel Transfer</strong> (cancelar traslado) debajo.</li>
+      <li><strong>CANCELLED</strong> (cancelado) — usted lo canceló y ya no forma parte del total. Su importe aparece tachado como <em>Refunded — not counted</em> (reembolsado, no se cuenta) cuando la tarifa le fue devuelta, o <em>Cancelled — not counted</em> (cancelado, no se cuenta) cuando no hubo reembolso.</li>
+      <li><strong>NOT BOOKED</strong> (no reservado) — el proveedor lo rechazó. El importe indica <em>Not booked — not counted</em>, se muestra el motivo del proveedor y <strong>Retry airport transfer</strong> (reintentar el traslado) inicia una nueva búsqueda (ver §5). Su habitación <em>no</em> se ve afectada.</li>
     </ul>
-    <p class="lang-en">From a confirmed transfer you can <strong>Modify</strong> it (change date, time, passengers) or <strong>Cancel Transfer</strong>. Cancelling asks for confirmation; once cancelled, the row moves into a <strong>Show cancelled</strong> list so your history stays clean. You can also add a <strong>second transfer</strong> (for example the return trip) with <strong>+ Add Another Transfer</strong>.</p>
-    <p class="lang-es">Desde un traslado confirmado puede <strong>Modificarlo</strong> (cambiar fecha, hora, pasajeros) o <strong>Cancelar traslado</strong>. Cancelar pide confirmación; una vez cancelado, la fila pasa a una lista <strong>Ver cancelados</strong> para mantener limpio el historial. También puede agregar un <strong>segundo traslado</strong> (por ejemplo el regreso) con <strong>+ Agregar otro traslado</strong>.</p>
+    <p class="lang-en"><strong>Modify</strong> opens <em>Modify Transfer — Search New Vehicle</em> to change the pickup, date, time or passengers. <strong>Cancel Transfer</strong> shows the vehicle, pickup, price and confirmation number and asks <em>"Are you sure you want to cancel this transfer? This action cannot be undone."</em> — <strong>Keep Transfer</strong> or <strong>Yes, Cancel</strong>. The hotel stays booked, and <strong>+ Add airport transfer</strong> is offered again.</p>
+    <p class="lang-es"><strong>Modify</strong> abre <em>Modify Transfer — Search New Vehicle</em> (modificar traslado, buscar un vehículo nuevo) para cambiar la recogida, la fecha, la hora o los pasajeros. <strong>Cancel Transfer</strong> muestra el vehículo, la recogida, el precio y el número de confirmación y pregunta <em>"Are you sure you want to cancel this transfer? This action cannot be undone."</em> (¿está seguro de que desea cancelar este traslado? Esta acción no se puede deshacer) — <strong>Keep Transfer</strong> (conservar el traslado) o <strong>Yes, Cancel</strong> (sí, cancelar). El hotel sigue reservado y se vuelve a ofrecer <strong>+ Add airport transfer</strong>.</p>
 
     <div class="callout callout-warning">
       <strong class="lang-en">If the room books but the transfer fails</strong>
       <strong class="lang-es">Si la habitación se reserva pero el traslado falla</strong>
-      <span class="lang-en"> The two are independent: a failed or pending transfer never rolls back a confirmed room. The confirmation screen and the booking detail page both surface the problem with a <strong>Retry</strong> option, so the client's stay is never at risk.</span>
-      <span class="lang-es"> Son independientes: un traslado fallido o pendiente nunca revierte una habitación confirmada. Tanto la pantalla de confirmación como la página de detalle muestran el problema con una opción de <strong>Reintentar</strong>, así la estadía del cliente nunca corre ningún riesgo.</span>
+      <span class="lang-en"> The hotel is booked first, and a ride that fails afterwards never undoes it: the hotel stays confirmed and paid, the ride's fare comes back to your credit, and the ride's lane reads <strong>NOT BOOKED</strong> with <strong>Retry airport transfer</strong>. The client's stay is never at risk.</span>
+      <span class="lang-es"> El hotel se reserva primero, y un traslado que falla después nunca lo deshace: el hotel sigue confirmado y pagado, la tarifa del traslado vuelve a su crédito y el carril del traslado indica <strong>NOT BOOKED</strong> con <strong>Retry airport transfer</strong>. La estadía del cliente nunca corre riesgo.</span>
     </div>
 
     <div class="callout callout-info">
@@ -588,30 +610,103 @@
     <h3 class="lang-es">Reabrir una reserva que tiene traslado</h3>
     <p class="lang-en">In the list, a booking that carries an airport transfer is totalled as <strong>TRIP TOTAL</strong> instead of <strong>TOTAL CLIENT PRICE</strong> — that label is how you spot one at a glance. Click <strong>View Booking Details</strong> to open it.</p>
     <p class="lang-es">En la lista, una reserva que lleva un traslado al aeropuerto se totaliza como <strong>TRIP TOTAL</strong> (total del viaje) en lugar de <strong>TOTAL CLIENT PRICE</strong> (precio total al cliente) — esa etiqueta es la forma de reconocerla de un vistazo. Haga clic en <strong>View Booking Details</strong> para abrirla.</p>
-    <p class="lang-en">The detail page shows the current state of <em>both</em> items under one booking reference: a <strong>Hotel &amp; Room Details</strong> section and an <strong>Airport Transfer</strong> section (vehicle, pickup, dropoff, provider, its own confirmation number and price), plus <strong>Payment Information</strong> and a <strong>Booking Timeline</strong> that records the events of both. Reopening it never asks you to pay again — a booking paid with credit shows <em>Method</em> <strong>CREDIT</strong> and <em>Payment Status</em> <strong>PAID</strong>.</p>
-    <p class="lang-es">La página de detalle muestra el estado actual de <em>ambos</em> ítems bajo una sola referencia de reserva: una sección <strong>Hotel &amp; Room Details</strong> (detalle del hotel y la habitación) y una sección <strong>Airport Transfer</strong> (vehículo, recogida, destino, proveedor, su propio número de confirmación y precio), además de <strong>Payment Information</strong> (información de pago) y un <strong>Booking Timeline</strong> (línea de tiempo) que registra los eventos de ambos. Reabrirla nunca le pide pagar de nuevo — una reserva pagada con crédito muestra <em>Method</em> <strong>CREDIT</strong> y <em>Payment Status</em> <strong>PAID</strong>.</p>
+    <p class="lang-en">The detail page opens with the booking header: <em>BOOKING REFERENCE</em>, <em>CONFIRMATION DATE</em>, <em>CANCELLATION DEADLINE</em>, the total and <em>STATUS</em>. The total reads <em>TRIP TOTAL</em> while a ride is counted and <em>TOTAL CLIENT PRICE</em> otherwise; it adds up only the services still booked. Under the header, a banner states the cancellation policy — for example <em>Cancellable</em>, <em>"No cancellation fees until 23/10/2026 at 20:00."</em> and <strong>See more</strong>. Below it the page has four parts, each fact in one place: <strong>Services</strong>, <strong>Guest</strong>, <strong>Documents</strong> and the <strong>Agency view</strong>. <em>Manage Booking</em> (<strong>Modify Booking</strong>, <strong>Cancel Booking</strong>) and the <em>Booking Timeline</em> sit on the right.</p>
+    <p class="lang-es">La página de detalle se abre con el encabezado de la reserva: <em>BOOKING REFERENCE</em> (referencia), <em>CONFIRMATION DATE</em> (fecha de confirmación), <em>CANCELLATION DEADLINE</em> (fecha límite de cancelación), el total y <em>STATUS</em> (estado). El total dice <em>TRIP TOTAL</em> (total del viaje) mientras se cuenta un traslado y <em>TOTAL CLIENT PRICE</em> (precio total al cliente) en los demás casos; solo suma los servicios que siguen reservados. Bajo el encabezado, un banner indica la política de cancelación — por ejemplo <em>Cancellable</em> (cancelable), <em>"No cancellation fees until 23/10/2026 at 20:00."</em> (sin cargos de cancelación hasta el 23/10/2026 a las 20:00) y <strong>See more</strong> (ver más). Debajo, la página tiene cuatro partes, cada dato en un solo lugar: <strong>Services</strong> (servicios), <strong>Guest</strong> (huésped), <strong>Documents</strong> (documentos) y la <strong>Agency view</strong> (vista de la agencia). <em>Manage Booking</em> (<strong>Modify Booking</strong>, <strong>Cancel Booking</strong>) y el <em>Booking Timeline</em> (historial de la reserva) están a la derecha.</p>
+
+    <h3 class="lang-en">Services: one lane per service</h3>
+    <h3 class="lang-es">Services: un carril por servicio</h3>
+    <p class="lang-en">Each service on the itinerary is its own <strong>lane</strong> with its own status badge and <em>Amount</em>. Every amount outside the agency view — each lane's <em>Amount</em> and the header total — is the <strong>client's price</strong>, your markup included; what Ergos charged you appears only inside the agency view:</p>
+    <p class="lang-es">Cada servicio del itinerario es su propio <strong>lane</strong> (carril), con su propia etiqueta de estado y su <em>Amount</em> (importe). Todo importe fuera de la vista de la agencia — el <em>Amount</em> de cada carril y el total del encabezado — es el <strong>precio al cliente</strong>, con su markup incluido; lo que Ergos le cobró aparece solo dentro de la vista de la agencia:</p>
+    <ul class="lang-en">
+      <li><strong>Hotel</strong> — the hotel, <em>Check-in</em>, <em>Check-out</em>, <em>Duration</em>, <em>Room</em>, <em>Meal Plan</em>, <em>Occupancy</em> and the <em>Provider reference</em>.</li>
+      <li><strong>Airport transfer</strong> — the vehicle, pickup, dropoff, pickup time, passengers, provider and <em>Confirmation #</em> (the number the client and the driver use), with <strong>Modify</strong> and <strong>Cancel Transfer</strong> inside the lane (see §6).</li>
+    </ul>
+    <ul class="lang-es">
+      <li><strong>Hotel</strong> — el hotel, <em>Check-in</em>, <em>Check-out</em>, <em>Duration</em> (duración), <em>Room</em> (habitación), <em>Meal Plan</em> (régimen), <em>Occupancy</em> (ocupación) y la <em>Provider reference</em> (referencia del proveedor).</li>
+      <li><strong>Airport transfer</strong> (traslado al aeropuerto) — el vehículo, la recogida, el destino, la hora de recogida, los pasajeros, el proveedor y el <em>Confirmation #</em> (el número que usan el cliente y el conductor), con <strong>Modify</strong> y <strong>Cancel Transfer</strong> dentro del carril (ver §6).</li>
+    </ul>
+    <p class="lang-en">A service that no longer counts keeps its amount visible, struck through, with the reason: <em>Cancelled — not counted</em>, <em>Refunded — not counted</em> or <em>Not booked — not counted</em>. When the booking has no ride, the section ends with a single <strong>+ Add airport transfer</strong>.</p>
+    <p class="lang-es">Un servicio que ya no se cuenta mantiene su importe visible, tachado, con el motivo: <em>Cancelled — not counted</em> (cancelado, no se cuenta), <em>Refunded — not counted</em> (reembolsado, no se cuenta) o <em>Not booked — not counted</em> (no reservado, no se cuenta). Cuando la reserva no tiene traslado, la sección termina con un único <strong>+ Add airport transfer</strong>.</p>
 
     <figure class="screenshot">
       <div class="screenshot-frame">
-        <img src="f1b-03-booking-detail-both-items.png"
-             alt="Booking detail page with a Trip Total header, a Hotel and Room Details section and an Airport Transfer section under one booking reference."
+        <img src="f1-38-01-itinerary-lanes.png"
+             alt="Booking header with a Trip Total of USD 290.14, then the Services section with a Hotel lane and an Airport transfer lane, both CONFIRMED &amp; PAID, the ride lane ending with Modify and Cancel Transfer."
              loading="lazy" onerror="this.style.display='none'" />
       </div>
-      <figcaption class="lang-en">One booking reference, one <strong>TRIP TOTAL</strong>, and both items listed — hotel and transfer each <strong>CONFIRMED</strong>, paid once with credit.</figcaption>
-      <figcaption class="lang-es">Una sola referencia de reserva, un solo <strong>TRIP TOTAL</strong>, y ambos ítems listados — hotel y traslado cada uno <strong>CONFIRMED</strong>, pagados una sola vez con crédito.</figcaption>
+      <figcaption class="lang-en">Client prices: hotel USD 256.52 + ride USD 33.62 = <strong>TRIP TOTAL USD 290.14</strong>. Each lane carries its own details; the ride's <strong>Modify</strong> and <strong>Cancel Transfer</strong> are inside its lane.</figcaption>
+      <figcaption class="lang-es">Precios al cliente: hotel USD 256,52 + traslado USD 33,62 = <strong>TRIP TOTAL USD 290,14</strong>. Cada carril lleva sus propios datos; <strong>Modify</strong> y <strong>Cancel Transfer</strong> del traslado están dentro de su carril.</figcaption>
     </figure>
 
-    <div class="callout callout-info">
-      <strong class="lang-en">Where each figure comes from</strong>
-      <strong class="lang-es">De dónde sale cada cifra</strong>
-      <span class="lang-en"> <em>TRIP TOTAL</em> in the header is the combined figure (room + transfer). <em>Payment Information → Amount Paid</em> shows the <strong>room</strong> only; the transfer's fare is shown in its own <em>Airport Transfer</em> block. Both are drawn from your credit account, and the Credit Account ledger records them as two entries even though you paid once.</span>
-      <span class="lang-es"> <em>TRIP TOTAL</em> en el encabezado es la cifra combinada (habitación + traslado). <em>Payment Information → Amount Paid</em> muestra solo la <strong>habitación</strong>; la tarifa del traslado aparece en su propio bloque <em>Airport Transfer</em>. Ambos salen de su cuenta de crédito, y el ledger de Credit Account los registra como dos asientos aunque usted haya pagado una sola vez.</span>
-    </div>
+    <p class="lang-en"><strong>Guest</strong> shows the lead guest's name, email, phone and emergency phone. <strong>Documents</strong> holds the voucher and the invoice (see §8).</p>
+    <p class="lang-es"><strong>Guest</strong> (huésped) muestra el nombre, el correo, el teléfono y el teléfono de emergencia del huésped principal. <strong>Documents</strong> (documentos) reúne el voucher y la factura (ver §8).</p>
+
+    <h3 class="lang-en">The agency view: hidden so you can show the screen to your client</h3>
+    <h3 class="lang-es">La vista de la agencia: oculta para que pueda mostrarle la pantalla a su cliente</h3>
+    <p class="lang-en">Everything between your agency and Ergos sits in one <strong>Agency view</strong> at the bottom of the page: <em>"What Ergos charged you, your Ergos account and your earnings. Hidden each time this page opens, so you can show the booking to your client."</em> It is closed <strong>every time the page opens</strong>, even if you opened it last time. Click <strong>Show agency figures</strong> to reveal it and <strong>Hide agency figures</strong> to close it again:</p>
+    <p class="lang-es">Todo lo que ocurre entre su agencia y Ergos está en una única <strong>Agency view</strong> (vista de la agencia), al final de la página: <em>"What Ergos charged you, your Ergos account and your earnings. Hidden each time this page opens, so you can show the booking to your client."</em> (lo que Ergos le cobró, su cuenta Ergos y sus ganancias; se oculta cada vez que se abre la página, para que pueda mostrarle la reserva a su cliente). Está cerrada <strong>cada vez que se abre la página</strong>, aunque la haya abierto la vez anterior. Haga clic en <strong>Show agency figures</strong> (mostrar las cifras de la agencia) para verla y en <strong>Hide agency figures</strong> (ocultar las cifras) para volver a cerrarla:</p>
+    <ul class="lang-en">
+      <li><strong>What Ergos charged you for this itinerary</strong> — <em>Paid</em>, <em>Outstanding</em> and <em>Itinerary total</em>, then <em>Method</em> and <em>Payment Status</em>. The card explains its own figures: <em>Paid</em> is what Ergos has charged you for these services so far, <em>Outstanding</em> the services still booked that have not been charged yet, and <em>Itinerary total</em> every service still booked — cancelled services are not counted.</li>
+      <li><strong>Your Ergos account</strong> — <strong>Due now</strong>, <em>"What your agency owes Ergos across all bookings — not only this one."</em>, with <strong>Settle balance</strong>.</li>
+      <li><strong>Airport transfer — for Ergos support</strong> — the <em>Mozio reservation id</em> to quote when you contact Ergos about the ride, next to the <em>Confirmation # (client and driver)</em>.</li>
+      <li><strong>Your earnings (P&amp;L)</strong> — <em>"The whole itinerary — the hotel and its airport transfers. A cancelled service counts only the charge you kept."</em> <em>Ergos cost (what you paid)</em>, <em>Customer paid (your sell price)</em>, <em>Your markup income</em>, <em>Ergos rebate (cashback)</em> and <em>Total profit</em>, frozen at booking time.</li>
+    </ul>
+    <ul class="lang-es">
+      <li><strong>What Ergos charged you for this itinerary</strong> (lo que Ergos le cobró por este itinerario) — <em>Paid</em> (pagado), <em>Outstanding</em> (pendiente) e <em>Itinerary total</em> (total del itinerario), y luego <em>Method</em> (método) y <em>Payment Status</em> (estado del pago). La tarjeta explica sus propias cifras: <em>Paid</em> es lo que Ergos le ha cobrado por estos servicios hasta ahora, <em>Outstanding</em> los servicios aún reservados que todavía no se cobraron, e <em>Itinerary total</em> todos los servicios aún reservados — los servicios cancelados no se cuentan.</li>
+      <li><strong>Your Ergos account</strong> (su cuenta Ergos) — <strong>Due now</strong> (a pagar ahora), <em>"What your agency owes Ergos across all bookings — not only this one."</em> (lo que su agencia le debe a Ergos por todas sus reservas, no solo por esta), con <strong>Settle balance</strong> (saldar el saldo).</li>
+      <li><strong>Airport transfer — for Ergos support</strong> (traslado al aeropuerto, para el soporte de Ergos) — el <em>Mozio reservation id</em> (ID de reserva de Mozio) que debe indicar cuando contacte a Ergos por el traslado, junto al <em>Confirmation # (client and driver)</em> (número de confirmación para el cliente y el conductor).</li>
+      <li><strong>Your earnings (P&amp;L)</strong> (sus ganancias; P&amp;L = resultado de la reserva) — <em>"The whole itinerary — the hotel and its airport transfers. A cancelled service counts only the charge you kept."</em> (todo el itinerario, el hotel y sus traslados; un servicio cancelado solo cuenta el cargo que usted conservó). <em>Ergos cost (what you paid)</em>, <em>Customer paid (your sell price)</em>, <em>Your markup income</em> (ingreso por su markup), <em>Ergos rebate (cashback)</em> y <em>Total profit</em> (ganancia total), fijados al momento de reservar.</li>
+    </ul>
+
+    <figure class="screenshot">
+      <div class="screenshot-frame">
+        <img src="f1-38-06-agency-view-hidden.png"
+             alt="The Agency view heading with its explanation and a Show agency figures button, no figures visible."
+             loading="lazy" onerror="this.style.display='none'" />
+      </div>
+      <figcaption class="lang-en">How every booking page opens: the agency figures are hidden.</figcaption>
+      <figcaption class="lang-es">Así se abre cada página de reserva: las cifras de la agencia están ocultas.</figcaption>
+    </figure>
+
+    <figure class="screenshot">
+      <div class="screenshot-frame">
+        <img src="f1-38-02-agency-view-open.png"
+             alt="The Agency view opened: What Ergos charged you for this itinerary, Your Ergos account with Due now and Settle balance, Airport transfer — for Ergos support with the Mozio reservation id, and Your earnings (P&amp;L)."
+             loading="lazy" onerror="this.style.display='none'" />
+      </div>
+      <figcaption class="lang-en">After <strong>Show agency figures</strong>: <em>Paid</em> USD 290.14 is what Ergos charged you for the hotel and the ride (<em>Method</em> CREDIT, <em>Payment Status</em> PAID). It equals the client's Trip Total here only because this test agency's markup is 0% — see <em>Your markup income (0%)</em>; with a markup, the Trip Total is higher than <em>Paid</em>. The Mozio reservation id is here for Ergos support.</figcaption>
+      <figcaption class="lang-es">Después de <strong>Show agency figures</strong>: <em>Paid</em> USD 290,14 es lo que Ergos le cobró por el hotel y el traslado (<em>Method</em> CREDIT, <em>Payment Status</em> PAID). Coincide aquí con el Trip Total del cliente solo porque el markup de esta agencia de prueba es 0 % — vea <em>Your markup income (0%)</em>; con un markup, el Trip Total es mayor que <em>Paid</em>. El ID de reserva de Mozio está aquí para el soporte de Ergos.</figcaption>
+    </figure>
+
+    <h3 class="lang-en">A cancelled booking: the fact on the page, the money in the agency view</h3>
+    <h3 class="lang-es">Una reserva cancelada: el hecho en la página, el dinero en la vista de la agencia</h3>
+    <p class="lang-en">Once cancelled, the page states only the fact, in a red banner under the header — for example <em>"This booking and its airport transfer were cancelled on Sep 25, 2026."</em> (or <em>"This booking was cancelled on …"</em> when it had no ride). It says nothing about money, so the page can still be shown to the client. The refund is inside the agency view, in <strong>The cancellation and your money</strong> — for example <em>"USD 256.52 has been refunded; your credit account has been restored. The airport transfer has been refunded to your credit account."</em> — and the money card then reads <em>Amount Refunded</em> and <em>Payment Status</em> <strong>REFUNDED</strong>.</p>
+    <p class="lang-es">Una vez cancelada, la página solo indica el hecho, en un banner rojo debajo del encabezado — por ejemplo <em>"This booking and its airport transfer were cancelled on Sep 25, 2026."</em> (esta reserva y su traslado al aeropuerto se cancelaron el 25 de septiembre de 2026), o <em>"This booking was cancelled on …"</em> cuando no tenía traslado. No dice nada sobre dinero, así que la página se puede seguir mostrando al cliente. El reembolso está dentro de la vista de la agencia, en <strong>The cancellation and your money</strong> (la cancelación y su dinero) — por ejemplo <em>"USD 256.52 has been refunded; your credit account has been restored. The airport transfer has been refunded to your credit account."</em> (se reembolsaron USD 256,52; su cuenta de crédito fue restablecida; el traslado al aeropuerto se reembolsó a su cuenta de crédito) — y la tarjeta de dinero muestra <em>Amount Refunded</em> (importe reembolsado) y <em>Payment Status</em> <strong>REFUNDED</strong> (reembolsado).</p>
+
+    <figure class="screenshot">
+      <div class="screenshot-frame">
+        <img src="f1-38-10-cancelled-banner.png"
+             alt="Header of a cancelled booking showing TOTAL CLIENT PRICE USD 0.00 and STATUS CANCELLED, with a red banner saying the booking and its airport transfer were cancelled on Sep 25, 2026."
+             loading="lazy" onerror="this.style.display='none'" />
+      </div>
+      <figcaption class="lang-en">The banner states the cancellation and its date — no amounts.</figcaption>
+      <figcaption class="lang-es">El banner indica la cancelación y su fecha — sin importes.</figcaption>
+    </figure>
+
+    <figure class="screenshot">
+      <div class="screenshot-frame">
+        <img src="f1-38-11-agency-view-after-cancel.png"
+             alt="Agency view of the cancelled booking: The cancellation and your money with the refund wording, then Paid, Outstanding and Itinerary total at USD 0.00, Amount Refunded USD 256.52 and Payment Status REFUNDED."
+             loading="lazy" onerror="this.style.display='none'" />
+      </div>
+      <figcaption class="lang-en">The refund wording lives in the agency view: USD 256.52 back on the credit account, and the ride refunded too.</figcaption>
+      <figcaption class="lang-es">El texto del reembolso está en la vista de la agencia: USD 256,52 de vuelta en la cuenta de crédito, y el traslado también reembolsado.</figcaption>
+    </figure>
 
     <h3 class="lang-en">Cancelling a booking that has a transfer</h3>
     <h3 class="lang-es">Cancelar una reserva que tiene traslado</h3>
-    <p class="lang-en"><strong>Cancel Booking</strong> warns you first: <em>"The airport transfer will be cancelled too"</em>, naming the vehicle, route, Mozio confirmation number and fare. The final step states the refund in full — for example <em>"Refund: USD 417.88 (room USD 384.51 + airport transfer USD 33.37) (full refund, no penalty)"</em> — and asks for a cancellation reason. To keep the room and drop only the ride, use <strong>Cancel Transfer</strong> in the booking's <em>Airport Transfer</em> block instead.</p>
-    <p class="lang-es"><strong>Cancel Booking</strong> le avisa primero: <em>"The airport transfer will be cancelled too"</em> (el traslado al aeropuerto también se cancelará), indicando el vehículo, la ruta, el número de confirmación de Mozio y la tarifa. El último paso detalla el reembolso completo — por ejemplo <em>"Refund: USD 417.88 (room USD 384.51 + airport transfer USD 33.37) (full refund, no penalty)"</em> — y pide un motivo de cancelación. Para conservar la habitación y descartar solo el traslado, use <strong>Cancel Transfer</strong> en el bloque <em>Airport Transfer</em> de la reserva.</p>
+    <p class="lang-en"><strong>Cancel Booking</strong> warns you first: <em>"The airport transfer will be cancelled too"</em>, naming the vehicle, route, Mozio confirmation number and fare. The final step states the refund in full — for example <em>"Refund: USD 417.88 (room USD 384.51 + airport transfer USD 33.37) (full refund, no penalty)"</em> — and asks for a cancellation reason. To keep the room and drop only the ride, use <strong>Cancel Transfer</strong> in the ride's lane instead.</p>
+    <p class="lang-es"><strong>Cancel Booking</strong> le avisa primero: <em>"The airport transfer will be cancelled too"</em> (el traslado al aeropuerto también se cancelará), indicando el vehículo, la ruta, el número de confirmación de Mozio y la tarifa. El último paso detalla el reembolso completo — por ejemplo <em>"Refund: USD 417.88 (room USD 384.51 + airport transfer USD 33.37) (full refund, no penalty)"</em> — y pide un motivo de cancelación. Para conservar la habitación y descartar solo el traslado, use <strong>Cancel Transfer</strong> en el carril del traslado.</p>
 
     <figure class="screenshot">
       <div class="screenshot-frame">
@@ -625,8 +720,8 @@
 
     <h3 class="lang-en">Modifying or cancelling</h3>
     <h3 class="lang-es">Modificar o cancelar</h3>
-    <p class="lang-en">Click the booking row to open its detail page. The <strong>Modify</strong> and <strong>Cancel</strong> actions appear in the header — both are gated by the supplier's policy (modifications are not supported by all chains, and cancellation may incur a penalty depending on how close to the check-in date you are). The system always tells you the consequence <em>before</em> you confirm.</p>
-    <p class="lang-es">Haga clic en la fila de la reserva para abrir su página de detalle. Las acciones <strong>Modificar</strong> y <strong>Cancelar</strong> aparecen en el encabezado — ambas están sujetas a la política del proveedor (no todas las cadenas admiten modificaciones, y la cancelación puede tener una penalización según qué tan cerca del check-in se encuentre). El sistema siempre le indica la consecuencia <em>antes</em> de que confirme.</p>
+    <p class="lang-en">Click the booking row to open its detail page. <strong>Modify Booking</strong> and <strong>Cancel Booking</strong> sit in the <em>Manage Booking</em> card on the right — both are gated by the supplier's policy (modifications are not supported by all chains, and cancellation may incur a penalty depending on how close to the check-in date you are). The system always tells you the consequence <em>before</em> you confirm.</p>
+    <p class="lang-es">Haga clic en la fila de la reserva para abrir su página de detalle. <strong>Modify Booking</strong> (modificar la reserva) y <strong>Cancel Booking</strong> (cancelar la reserva) están en la tarjeta <em>Manage Booking</em> (gestionar la reserva), a la derecha — ambas están sujetas a la política del proveedor (no todas las cadenas admiten modificaciones, y la cancelación puede tener una penalización según qué tan cerca del check-in se encuentre). El sistema siempre le indica la consecuencia <em>antes</em> de que confirme.</p>
   </section>
 
   <!-- SECTION 7: VOUCHERS & INVOICES -->
@@ -639,23 +734,77 @@
 
     <ul class="lang-en">
       <li><strong>Voucher (Bono):</strong> the customer-facing document that proves the reservation. Hand it to the customer; they present it at the hotel.</li>
-      <li><strong>Invoice (Factura):</strong> the agency-facing document — what your agency owes Ergos for this booking, broken down by line item.</li>
+      <li><strong>Invoice (Factura):</strong> the document for the end client, at their price, broken down by service.</li>
     </ul>
     <ul class="lang-es">
       <li><strong>Voucher (Bono):</strong> el documento para el cliente que prueba la reserva. Entrégueselo al cliente; lo presenta en el hotel.</li>
-      <li><strong>Invoice (Factura):</strong> el documento para la agencia — lo que su agencia le debe a Ergos por esta reserva, desglosado por línea.</li>
+      <li><strong>Invoice (Factura):</strong> el documento para el cliente final, a su precio, desglosado por servicio.</li>
     </ul>
 
-    <h3 class="lang-en">Downloading them</h3>
-    <h3 class="lang-es">Descargarlos</h3>
-    <p class="lang-en">From any confirmed booking's detail page, click <strong>Download Voucher</strong> or <strong>Download Invoice</strong>. Both render as PDF and open in a new tab; you can save or email them directly from your browser. Both documents are available indefinitely after the booking is created — you can re-download for completed stays years later.</p>
-    <p class="lang-es">Desde la página de detalle de cualquier reserva confirmada, haga clic en <strong>Descargar Voucher</strong> o <strong>Descargar Factura</strong>. Ambos se generan como PDF y se abren en una pestaña nueva; puede guardarlos o enviarlos por correo directamente desde su navegador. Ambos documentos están disponibles indefinidamente después de crear la reserva — puede volver a descargarlos para estadías completadas años después.</p>
+    <h3 class="lang-en">One Documents card</h3>
+    <h3 class="lang-es">Una sola tarjeta Documents</h3>
+    <p class="lang-en">On a booking's detail page, every document sits in one <strong>Documents</strong> card with two parts:</p>
+    <p class="lang-es">En la página de detalle de una reserva, todos los documentos están en una sola tarjeta <strong>Documents</strong> (documentos), con dos partes:</p>
+    <ul class="lang-en">
+      <li><strong>Itinerary</strong> — <em>"One of each, covering every service on this itinerary."</em> A single <strong>Voucher</strong> (<em>"What the traveller presents. No prices."</em>) and a single <strong>Invoice</strong> (<em>"For the end client, at their price."</em>). <strong>Open PDF</strong> opens either one in a new browser tab, ready to save or send.</li>
+      <li><strong>Hotel booking — with your agency logo</strong> — <em>"Previews of this hotel booking's voucher and invoice, branded with your logo."</em> <strong>Preview Voucher</strong> and <strong>Preview Invoice</strong> show them on screen; <strong>Download</strong> saves them.</li>
+    </ul>
+    <ul class="lang-es">
+      <li><strong>Itinerary</strong> (itinerario) — <em>"One of each, covering every service on this itinerary."</em> (uno de cada uno, que cubre todos los servicios del itinerario). Un solo <strong>Voucher</strong> (<em>"What the traveller presents. No prices."</em> — lo que presenta el viajero, sin precios) y una sola <strong>Invoice</strong> (factura; <em>"For the end client, at their price."</em> — para el cliente final, a su precio). <strong>Open PDF</strong> (abrir PDF) abre cualquiera de los dos en una pestaña nueva del navegador, listo para guardar o enviar.</li>
+      <li><strong>Hotel booking — with your agency logo</strong> (reserva de hotel, con el logo de su agencia) — <em>"Previews of this hotel booking's voucher and invoice, branded with your logo."</em> (vistas previas del voucher y la factura de esta reserva de hotel, con su logo). <strong>Preview Voucher</strong> y <strong>Preview Invoice</strong> los muestran en pantalla; <strong>Download</strong> (descargar) los guarda.</li>
+    </ul>
+
+    <figure class="screenshot">
+      <div class="screenshot-frame">
+        <img src="f1-38-03-itinerary-documents.png"
+             alt="The Documents card: Itinerary with Voucher and Invoice and an Open PDF button each, then Hotel booking — with your agency logo with Preview Voucher, Preview Invoice and Download buttons."
+             loading="lazy" onerror="this.style.display='none'" />
+      </div>
+      <figcaption class="lang-en">One card: the itinerary PDFs on top, the branded hotel-booking previews below.</figcaption>
+      <figcaption class="lang-es">Una sola tarjeta: los PDF del itinerario arriba y las vistas previas de la reserva de hotel con su logo debajo.</figcaption>
+    </figure>
+
+    <ul class="lang-en">
+      <li>The <strong>voucher</strong> lists the hotel stay and the transfer (pickup, dropoff, time and confirmation) on one document, under your agency's name. A service that was cancelled is named at the end as not on the voucher — "not valid for travel".</li>
+    </ul>
+    <ul class="lang-es">
+      <li>El <strong>voucher</strong> incluye la estadía en el hotel y el traslado (recogida, destino, hora y confirmación) en un solo documento, con el nombre de su agencia. Un servicio cancelado aparece al final como fuera del voucher — "not valid for travel" (no válido para viajar).</li>
+    </ul>
+
+    <h3 class="lang-en">The itinerary invoice: a proforma invoice</h3>
+    <h3 class="lang-es">La factura del itinerario: una factura proforma</h3>
+    <p class="lang-en">The itinerary <strong>Invoice</strong> opens as a <strong>PROFORMA INVOICE</strong> headed with your agency's name and a reference (<em>Ref: INV-…</em>). A dark band carries the date and the payment badge (for example <strong>PAID</strong>). Then:</p>
+    <p class="lang-es">La <strong>Invoice</strong> del itinerario se abre como una <strong>PROFORMA INVOICE</strong> (factura proforma) encabezada con el nombre de su agencia y una referencia (<em>Ref: INV-…</em>). Una banda oscura lleva la fecha y la etiqueta de pago (por ejemplo <strong>PAID</strong>, pagada). Luego:</p>
+    <ul class="lang-en">
+      <li><strong>BILL TO</strong> — the end client's name and email.</li>
+      <li><strong>SERVICE DETAILS</strong> — grouped under <strong>ACCOMMODATION</strong> and <strong>TRANSFER</strong>; each line has its description, a provider reference, its <em>Status</em> (for example <em>Paid</em>) and its total at the client's price.</li>
+      <li><em>Accommodation Subtotal</em>, <em>Transfer Subtotal</em> and the <strong>TOTAL</strong>.</li>
+      <li><strong>PAYMENT INFORMATION</strong> — the amount <em>PAID</em> and the <em>STATUS</em> (for example <strong>PAID IN FULL</strong>).</li>
+    </ul>
+    <ul class="lang-es">
+      <li><strong>BILL TO</strong> (facturar a) — el nombre y el correo del cliente final.</li>
+      <li><strong>SERVICE DETAILS</strong> (detalle de servicios) — agrupados bajo <strong>ACCOMMODATION</strong> (alojamiento) y <strong>TRANSFER</strong> (traslado); cada línea tiene su descripción, una referencia del proveedor, su <em>Status</em> (estado, por ejemplo <em>Paid</em>) y su total al precio del cliente.</li>
+      <li><em>Accommodation Subtotal</em>, <em>Transfer Subtotal</em> y el <strong>TOTAL</strong>.</li>
+      <li><strong>PAYMENT INFORMATION</strong> (información de pago) — el importe <em>PAID</em> (pagado) y el <em>STATUS</em> (por ejemplo <strong>PAID IN FULL</strong>, pagada en su totalidad).</li>
+    </ul>
+    <p class="lang-en">The footer repeats your agency's name and states <em>"This is a proforma invoice and does not constitute a tax invoice."</em></p>
+    <p class="lang-es">El pie repite el nombre de su agencia e indica <em>"This is a proforma invoice and does not constitute a tax invoice."</em> (esta es una factura proforma y no constituye una factura fiscal).</p>
+
+    <figure class="screenshot">
+      <div class="screenshot-frame">
+        <img src="f1-38-07-itinerary-invoice-proforma.png"
+             alt="The itinerary invoice PDF: PROFORMA INVOICE under the agency name, a PAID badge, Bill to, Service details with an Accommodation line and a Transfer line, subtotals, a total of USD 290.14 and Paid in full."
+             loading="lazy" onerror="this.style.display='none'" />
+      </div>
+      <figcaption class="lang-en">The itinerary invoice for a hotel (USD 256.52) and a ride (USD 33.62): one <strong>TOTAL</strong> of USD 290.14, <strong>PAID IN FULL</strong>.</figcaption>
+      <figcaption class="lang-es">La factura del itinerario de un hotel (USD 256,52) y un traslado (USD 33,62): un solo <strong>TOTAL</strong> de USD 290,14, <strong>PAID IN FULL</strong>.</figcaption>
+    </figure>
 
     <div class="callout callout-info">
-      <strong class="lang-en">What's on the voucher:</strong>
-      <strong class="lang-es">Qué tiene el voucher:</strong>
-      <span class="lang-en"> guest names, hotel name + address + phone, dates, room type, board, supplier confirmation code, agency contact info, and any special remarks (e.g., "Late check-in confirmed", "Honeymoon"). The price shown is the customer's price, NOT the Ergos sell price.</span>
-      <span class="lang-es"> nombres de los huéspedes, nombre + dirección + teléfono del hotel, fechas, tipo de habitación, régimen, código de confirmación del proveedor, datos de contacto de la agencia y cualquier observación especial (ej. "Check-in tardío confirmado", "Luna de miel"). El precio mostrado es el precio del cliente, NO el precio de venta de Ergos (Ergos sell).</span>
+      <strong class="lang-en">What's on the itinerary voucher:</strong>
+      <strong class="lang-es">Qué tiene el voucher del itinerario:</strong>
+      <span class="lang-en"> your agency's name and contact, the itinerary reference and the issue date; for the hotel, its name, the guest, the dates with the number of nights and its confirmation; and — when the booking has one — the airport transfer (provider and vehicle, passenger, pickup, pickup time, dropoff and confirmation). No price is printed on it. The room type is not on it; it appears on the branded hotel-booking voucher (<strong>Preview Voucher</strong>).</span>
+      <span class="lang-es"> el nombre y el contacto de su agencia, la referencia del itinerario y la fecha de emisión; para el hotel, su nombre, el huésped, las fechas con la cantidad de noches y su confirmación; y — cuando la reserva lo tiene — el traslado al aeropuerto (proveedor y vehículo, pasajero, recogida, hora de recogida, destino y confirmación). No lleva ningún precio impreso. El tipo de habitación no figura en él; aparece en el voucher de la reserva de hotel con su logo (<strong>Preview Voucher</strong>).</span>
     </div>
   </section>
 
@@ -1122,6 +1271,41 @@
     </ul>
     <p class="lang-en">Opening the page marks the reminders as <strong>read</strong>, so the bell badge clears. Note that the urgency banner stays up until the cover is actually paid — reading the page clears the badge, not the banner.</p>
     <p class="lang-es">Abrir la página marca los recordatorios como <strong>leídos</strong>, así que la insignia de la campana se limpia. Tenga en cuenta que el banner de urgencia permanece hasta que el cover se paga efectivamente — leer la página limpia la insignia, no el banner.</p>
+
+    <h3 class="lang-en">Opening a reminder takes you to the hotel</h3>
+    <h3 class="lang-es">Abrir un recordatorio lo lleva al hotel</h3>
+    <p class="lang-en">Each reminder on the page names its booking — for example <em>"Cover payment due — booking 54144526"</em> with <em>"Pay by 26 Sep, 2026 to keep your booking."</em> and a <strong>DUE WITHIN 24H</strong> badge. The bell's own list shows the same reminder in short — <em>"Cover payment due — booking 54144526 · due within 24h"</em>. Click the reminder in either place and the booking's detail page opens scrolled to the <strong>Hotel</strong> lane, just below the top bar, so the service the payment is about is the first thing you see.</p>
+    <p class="lang-es">Cada recordatorio de la página indica su reserva — por ejemplo <em>"Cover payment due — booking 54144526"</em> (pago de cover pendiente — reserva 54144526) con <em>"Pay by 26 Sep, 2026 to keep your booking."</em> (pague antes del 26 de septiembre de 2026 para conservar su reserva) y una etiqueta <strong>DUE WITHIN 24H</strong> (vence en 24 h). La lista de la propia campana muestra el mismo recordatorio en forma breve — <em>"Cover payment due — booking 54144526 · due within 24h"</em>. Haga clic en el recordatorio en cualquiera de los dos lugares y la página de detalle de la reserva se abre desplazada hasta el carril <strong>Hotel</strong>, justo debajo de la barra superior, de modo que lo primero que ve es el servicio al que se refiere el pago.</p>
+
+    <figure class="screenshot">
+      <div class="screenshot-frame">
+        <img src="f1-38-04-notification-item.png"
+             alt="Notifications page with the 24-hour banner, the Browser notifications switch and one reminder under Due within 24 hours."
+             loading="lazy" onerror="this.style.display='none'" />
+      </div>
+      <figcaption class="lang-en">A reminder under <em>Due within 24 hours</em> — click it to open the booking.</figcaption>
+      <figcaption class="lang-es">Un recordatorio en <em>Due within 24 hours</em> — haga clic en él para abrir la reserva.</figcaption>
+    </figure>
+
+    <figure class="screenshot">
+      <div class="screenshot-frame">
+        <img src="f1-38-08-bell-dropdown-reminder.png"
+             alt="The bell opened in the top bar, listing one reminder: Cover payment due — booking 54144526 · due within 24h, above View all."
+             loading="lazy" onerror="this.style.display='none'" />
+      </div>
+      <figcaption class="lang-en">The same reminder in the bell's list — clicking it also opens the booking on its <strong>Hotel</strong> lane.</figcaption>
+      <figcaption class="lang-es">El mismo recordatorio en la lista de la campana — al hacer clic también abre la reserva en su carril <strong>Hotel</strong>.</figcaption>
+    </figure>
+
+    <figure class="screenshot">
+      <div class="screenshot-frame">
+        <img src="f1-38-05-notification-opens-hotel-lane.png"
+             alt="Booking detail opened from a reminder, scrolled so the Hotel lane sits just below the top bar."
+             loading="lazy" onerror="this.style.display='none'" />
+      </div>
+      <figcaption class="lang-en">From the bell or the <em>Notifications</em> page, the booking opens on its <strong>Hotel</strong> lane, not at the top of the page.</figcaption>
+      <figcaption class="lang-es">Desde la campana o desde la página <em>Notifications</em>, la reserva se abre en su carril <strong>Hotel</strong>, no en la parte superior de la página.</figcaption>
+    </figure>
 
     <h3 class="lang-en">Browser notifications (Web Push)</h3>
     <h3 class="lang-es">Notificaciones del navegador (Web Push)</h3>
