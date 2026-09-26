@@ -4291,3 +4291,11 @@ details[open] .mr-tier-summary::before {
   #bd-modify-modal .modal-actions, #bd-tfc-modal .modal-actions { padding: 16px; }
 }
 .bd-mb-rooms-head .btn-secondary { flex: 0 0 auto; }
+
+/* Bell dropdown (documentation#38) — mirrors the live NotifyDropDown */
+.nt-dropdown { position: absolute; z-index: 80; width: 360px; max-width: calc(100vw - 32px); background: #fff; border: 1px solid var(--warm-200); border-radius: 14px; box-shadow: 0 12px 32px rgba(28,25,23,.14); padding: 18px 16px 12px; }
+.nt-dd-title { font-family: var(--font-display, Georgia, serif); font-weight: 700; font-size: 17px; color: var(--warm-900); margin: 0 4px 10px; }
+.nt-dd-item, .nt-dd-all { display: block; width: 100%; text-align: left; background: none; border: 0; border-radius: 8px; padding: 10px 12px; font: inherit; font-size: 14px; color: var(--warm-800); cursor: pointer; }
+.nt-dd-item:hover, .nt-dd-item:focus-visible, .nt-dd-all:hover, .nt-dd-all:focus-visible { background: var(--warm-100); outline: none; }
+.nt-dd-all { margin-top: 6px; font-weight: 500; }
+.nt-dd-empty { margin: 4px 12px 8px; font-size: 13px; color: var(--warm-500); }

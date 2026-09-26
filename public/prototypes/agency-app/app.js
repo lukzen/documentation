@@ -1024,7 +1024,7 @@ document.querySelectorAll('.help-btn').forEach(btn => {
 });
 
 // Navbar icon buttons (globe, notification bell)
-document.querySelectorAll('.navbar .icon-btn:not(.help-btn)').forEach(btn => {
+document.querySelectorAll('.navbar .icon-btn:not(.help-btn):not(.notif-bell)').forEach(btn => {
   btn.addEventListener('click', () => {
     showToast('info', 'Feature', 'This feature would open in the full application.');
   });
@@ -2587,29 +2587,35 @@ function bdSetAmount(id, amount, counted, note) {
   el.innerHTML = counted ? bdUSD(amount) : '<s>' + bdUSD(amount) + '</s><span class="bd-not-counted">' + (note || 'Cancelled — not counted') + '</span>';
 }
 
+// The hotel price is Ergos's (bookingState.price); a ride's fare is already the client price
+// (serviceTransferPrice), so its Ergos charge is that fare without the agency markup.
 function bdTotals() {
   const hotel = parseFloat(bookingState.price) || 0;
   const hotelCounted = !bookingState.isCancelled;
-  const ride = bdRideAmount();
+  const rideClient = bdRideAmount();
+  const ride = bdErgosPrice(rideClient);
   const rideCounted = bdHasActiveRide();
   const total = (hotelCounted ? hotel : 0) + (rideCounted ? ride : 0);
-  return { hotel, hotelCounted, ride, rideCounted, total };
+  const totalClient = (hotelCounted ? bdClientPrice(hotel) : 0) + (rideCounted ? rideClient : 0);
+  return { hotel, hotelCounted, ride, rideClient, rideCounted, total, totalClient };
 }
 
 // Owner decision 1a: everything visible by default is the CLIENT price (Ergos price × (1 +
 // agency markup), the P&L's "Customer paid"); Ergos figures live only in the agency view.
-function bdClientPrice(ergos) {
+function bdMarkupFactor() {
   const pct = (typeof agencyMarkupState !== 'undefined' && agencyMarkupState.percentage) || 0;
-  return Math.round(ergos * (1 + pct / 100) * 100) / 100;
+  return 1 + pct / 100;
 }
+function bdClientPrice(ergos) { return Math.round(ergos * bdMarkupFactor() * 100) / 100; }
+function bdErgosPrice(client) { return Math.round(client / bdMarkupFactor() * 100) / 100; }
 
 function bdItRender() {
   const t = bdTotals();
   bdSetAmount('bd-f1-hotel-amount', bdClientPrice(t.hotel), t.hotelCounted);
-  if (bdHasRide()) bdSetAmount('bd-f1-transport-amount', bdClientPrice(t.ride), t.rideCounted, bdRideNote());
+  if (bdHasRide()) bdSetAmount('bd-f1-transport-amount', t.rideClient, t.rideCounted, bdRideNote());
   // Header: the client's total of the services still booked, cancelled ones excluded.
   const price = document.getElementById('bd-header-price');
-  if (price) price.textContent = bdUSD(bdClientPrice(t.total));
+  if (price) price.textContent = bdUSD(t.totalClient);
   const label = document.getElementById('bd-header-price-label');
   if (label) label.textContent = t.rideCounted ? 'Trip Total' : 'Total Client Price';
   if (bdAgencyOpen) bdAgencyRender();
@@ -2665,9 +2671,20 @@ function bdRideRetry() {
   bdRetrying = true;
   bdRenderRideLane();
   bdatExpand();
+  document.getElementById('bdat-pickup')?.focus({ preventScroll: true });
+}
+
+let bdNotificationBooking = null;   // { hotel, ref } of the reminder that opened the page
+function bdApplyBookingIdentity() {
+  const keep = (id) => { const el = document.getElementById(id); if (el && el.dataset.orig == null) el.dataset.orig = el.textContent; return el; };
+  const n = bdItineraryFromNotification ? bdNotificationBooking : null;
+  [['bd-header-ref', n && n.ref], ['bd-f1-hotel-ref', n && n.ref], ['bd-hotel-name', n && n.hotel]].forEach(([id, v]) => {
+    const el = keep(id); if (el) el.textContent = v || el.dataset.orig;
+  });
 }
 
 function f1RenderOnBookingDetail() {
+  bdApplyBookingIdentity();
   bdRenderRideLane();
   bdItRender();
 }
@@ -2717,7 +2734,7 @@ function bdAgencyRender() {
   const markupPct = agencyMarkupState.percentage;
   const rebatePct = 12;
   const ergosCost = t.total;
-  const customerPaid = ergosCost * (1 + markupPct / 100);
+  const customerPaid = t.totalClient;
   const markup = customerPaid - ergosCost;
   const rebate = ergosCost * rebatePct / 100;
   body.innerHTML = cancelMoney +
@@ -3658,7 +3675,8 @@ function bdatBook() {
   const orig = window.confirmBooking;
   if (typeof orig !== 'function') return;
   window.confirmBooking = function () {
-    if (serviceTransferAdded && !f1RidePhoneOk()) return f1RefusePhone();
+    // Live BookingPage.tsx checks the phone on the soft-credit rail only.
+    if (serviceTransferAdded && window.__pmMode === 'later' && !f1RidePhoneOk()) return f1RefusePhone();
     // A new booking starts clean: no ride state carries over from the previous one.
     bdTransferLaneCancelled = false;
     bdRideNotBooked = false;

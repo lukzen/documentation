@@ -117,7 +117,7 @@
       <div class="nav-right">
         <button class="icon-btn help-btn" title="Need help?" aria-label="Help"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg></button>
         <button class="icon-btn" aria-label="Language"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></button>
-        <button class="icon-btn notif-bell" aria-label="Notifications" title="Notifications" onclick="openNotifications()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0"/></svg><span class="notif-badge">2</span></button>
+        <button class="icon-btn notif-bell" aria-label="Notifications" title="Notifications" aria-haspopup="menu" aria-expanded="false" onclick="openNotifications(event)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0"/></svg><span class="notif-badge">2</span></button>
         <span class="nav-greeting" id="nav-greeting">Good afternoon, Demo Agency</span>
         <div class="avatar">TA</div>
       </div>
@@ -1740,7 +1740,7 @@
         <a href="#" class="nav-link active">My Bookings</a>
       </div>
       <div class="nav-right">
-        <button class="icon-btn notif-bell" aria-label="Notifications" title="Notifications" onclick="openNotifications()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0"/></svg><span class="notif-badge">2</span></button>
+        <button class="icon-btn notif-bell" aria-label="Notifications" title="Notifications" aria-haspopup="menu" aria-expanded="false" onclick="openNotifications(event)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0"/></svg><span class="notif-badge">2</span></button>
         <span class="nav-greeting">Good afternoon, Demo Agency</span>
         <div class="avatar">DA</div>
       </div>
@@ -2113,7 +2113,7 @@
         <a href="#" class="nav-link" onclick="showScreen('bookings')">My Bookings</a>
       </div>
       <div class="nav-right">
-        <button class="icon-btn notif-bell" aria-label="Notifications" title="Notifications" onclick="openNotifications()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0"/></svg><span class="notif-badge">2</span></button>
+        <button class="icon-btn notif-bell" aria-label="Notifications" title="Notifications" aria-haspopup="menu" aria-expanded="false" onclick="openNotifications(event)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0"/></svg><span class="notif-badge">2</span></button>
         <div class="avatar">DA</div>
       </div>
     </nav>
@@ -2184,7 +2184,7 @@
       <!-- Header Summary -->
       <div class="bd-header">
         <div class="bd-header-grid">
-          <div class="bd-h-item"><span class="bd-h-label">Booking Reference</span><span class="bd-h-val">PTA18G28E7CUANQ</span></div>
+          <div class="bd-h-item"><span class="bd-h-label">Booking Reference</span><span class="bd-h-val" id="bd-header-ref">PTA18G28E7CUANQ</span></div>
           <div class="bd-h-item"><span class="bd-h-label">Confirmation Date</span><span class="bd-h-val">Mar 19, 2026</span></div>
           <div class="bd-h-item"><span class="bd-h-label">Cancellation Deadline</span><span class="bd-h-val">Mar 25, 2026 08:00</span></div>
           <div class="bd-h-item"><span class="bd-h-label" id="bd-header-price-label">Total Client Price</span><span class="bd-h-val bd-h-price" id="bd-header-price">USD 194.40</span></div>
@@ -2228,7 +2228,7 @@
                 <span class="status-badge confirmed" id="bd-f1-hotel-status">Confirmed &amp; paid</span>
               </div>
               <dl class="bd-lane-rows">
-                <div class="bd-sc-row"><dt class="bd-sc-label">Hotel</dt><dd>Gran Muthu Habana ★★★★★</dd></div>
+                <div class="bd-sc-row"><dt class="bd-sc-label">Hotel</dt><dd id="bd-hotel-name">Gran Muthu Habana ★★★★★</dd></div>
                 <div class="bd-sc-row"><dt class="bd-sc-label">Check-in</dt><dd id="bd-checkin">Wed, Mar 25, 2026</dd></div>
                 <div class="bd-sc-row"><dt class="bd-sc-label">Check-out</dt><dd id="bd-checkout">Fri, Mar 27, 2026</dd></div>
                 <div class="bd-sc-row"><dt class="bd-sc-label">Duration</dt><dd id="bd-duration">2 Nights</dd></div>
@@ -2354,7 +2354,6 @@
                       </div>
                     </div>
                     <div class="vc-price">
-                      <div class="vc-net">Net USD 48.00</div>
                       <div class="vc-sell" data-base-usd="55.20">USD 55.20</div>
                     </div>
                     <button class="vc-add-btn" onclick="bdatSelect(this.closest('.vehicle-card'))">Select</button>
@@ -2372,7 +2371,6 @@
                       </div>
                     </div>
                     <div class="vc-price">
-                      <div class="vc-net">Net USD 62.00</div>
                       <div class="vc-sell" data-base-usd="71.30">USD 71.30</div>
                     </div>
                     <button class="vc-add-btn" onclick="bdatSelect(this.closest('.vehicle-card'))">Select</button>
