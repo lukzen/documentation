@@ -23,7 +23,7 @@ Before a user story is Done, verify its PR/branch carries **all three test layer
 1. **Unit** — pure logic / view-model / calc (`*.test.ts` / `*.unit.test.ts`) covering the story's rules and boundaries.
 2. **Integration** — route/DB or seam integration (`*.int-test.ts`) — and it must be **in the CI allowlist** (a `*.int-test.ts` that no workflow runs is a gap, not coverage; this bit us on #187/#186).
 3. **Cypress** — a real-browser e2e slice for the story's acceptance criteria, and it must be **in a run lane** (not dispatch-only) so it executes on every push.
-4. **Local validation** — the story was run end-to-end on the local dev stack against **Atlas DEV** (`ergos-dev.vwljbjp`, per env-topology): browser walkthrough for UI stories (screenshot evidence), or real invocation for non-browser (job run / DB-state check). Its evidence belongs in the verification dossier / on the issue. Flag a story that has green tests but **no local-validation evidence** — "tests pass" ≠ "ran it and watched it work."
+4. **Local validation** — the story was run end-to-end on the local dev stack against **Atlas DEV** (`ergos-dev-gcp.zbe7iq4`, per env-topology): browser walkthrough for UI stories (screenshot evidence), or real invocation for non-browser (job run / DB-state check). Its evidence belongs in the verification dossier / on the issue. Flag a story that has green tests but **no local-validation evidence** — "tests pass" ≠ "ran it and watched it work."
 
 Map the story's acceptance criteria to these layers and name any AC with a coverage hole. "Covered by proxy" (another story's run exercises this AC) is acceptable only if you can point to the specific run.
 
