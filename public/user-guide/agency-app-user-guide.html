@@ -523,8 +523,8 @@
 
     <h3 class="lang-en">One transfer per booking</h3>
     <h3 class="lang-es">Un traslado por reserva</h3>
-    <p class="lang-en">A booking carries <strong>at most one</strong> airport transfer. If it already has an active one, adding another is refused with <em>"This booking already has a transfer — cancel it before adding another"</em>. Cancel the existing transfer first, then add the replacement. A cancelled transfer does not count, so a booking whose ride you cancelled is free to take a new one.</p>
-    <p class="lang-es">Una reserva lleva <strong>como máximo un</strong> traslado al aeropuerto. Si ya tiene uno activo, agregar otro se rechaza con <em>"This booking already has a transfer — cancel it before adding another"</em> (esta reserva ya tiene un traslado; cancélelo antes de agregar otro). Cancele primero el traslado existente y luego agregue el reemplazo. Un traslado cancelado no cuenta, así que una reserva cuyo traslado usted canceló puede tomar uno nuevo.</p>
+    <p class="lang-en">A booking carries <strong>at most one</strong> airport transfer. While it has a booked ride, its page hides <strong>+ Add airport transfer</strong>, so there is no way to start a second one. Cancel the existing transfer first and the button comes back for the replacement. A cancelled transfer does not count, so a booking whose ride you cancelled is free to take a new one.</p>
+    <p class="lang-es">Una reserva lleva <strong>como máximo un</strong> traslado al aeropuerto. Mientras tenga un traslado reservado, su página oculta <strong>+ Add airport transfer</strong> (agregar traslado al aeropuerto), así que no hay forma de iniciar un segundo. Cancele primero el traslado existente y el botón vuelve a aparecer para el reemplazo. Un traslado cancelado no cuenta, así que una reserva cuyo traslado usted canceló puede tomar uno nuevo.</p>
 
     <div class="callout callout-info">
       <strong class="lang-en">No second entry while a ride is booked</strong>
@@ -611,8 +611,8 @@
 
     <h3 class="lang-en">Services: one lane per service</h3>
     <h3 class="lang-es">Services: un carril por servicio</h3>
-    <p class="lang-en">Each service on the itinerary is its own <strong>lane</strong> with its own status badge and <em>Amount</em>:</p>
-    <p class="lang-es">Cada servicio del itinerario es su propio <strong>lane</strong> (carril), con su propia etiqueta de estado y su <em>Amount</em> (importe):</p>
+    <p class="lang-en">Each service on the itinerary is its own <strong>lane</strong> with its own status badge and <em>Amount</em>. Every amount outside the agency view — each lane's <em>Amount</em> and the header total — is the <strong>client's price</strong>, your markup included; what Ergos charged you appears only inside the agency view:</p>
+    <p class="lang-es">Cada servicio del itinerario es su propio <strong>lane</strong> (carril), con su propia etiqueta de estado y su <em>Amount</em> (importe). Todo importe fuera de la vista de la agencia — el <em>Amount</em> de cada carril y el total del encabezado — es el <strong>precio al cliente</strong>, con su markup incluido; lo que Ergos le cobró aparece solo dentro de la vista de la agencia:</p>
     <ul class="lang-en">
       <li><strong>Hotel</strong> — the hotel, <em>Check-in</em>, <em>Check-out</em>, <em>Duration</em>, <em>Room</em>, <em>Meal Plan</em>, <em>Occupancy</em> and the <em>Provider reference</em>.</li>
       <li><strong>Airport transfer</strong> — the vehicle, pickup, dropoff, pickup time, passengers, provider and <em>Confirmation #</em> (the number the client and the driver use), with <strong>Modify</strong> and <strong>Cancel Transfer</strong> inside the lane (see §6).</li>
@@ -630,8 +630,8 @@
              alt="Booking header with a Trip Total of USD 290.14, then the Services section with a Hotel lane and an Airport transfer lane, both CONFIRMED &amp; PAID, the ride lane ending with Modify and Cancel Transfer."
              loading="lazy" onerror="this.style.display='none'" />
       </div>
-      <figcaption class="lang-en">Hotel USD 256.52 + ride USD 33.62 = <strong>TRIP TOTAL USD 290.14</strong>. Each lane carries its own details; the ride's <strong>Modify</strong> and <strong>Cancel Transfer</strong> are inside its lane.</figcaption>
-      <figcaption class="lang-es">Hotel USD 256,52 + traslado USD 33,62 = <strong>TRIP TOTAL USD 290,14</strong>. Cada carril lleva sus propios datos; <strong>Modify</strong> y <strong>Cancel Transfer</strong> del traslado están dentro de su carril.</figcaption>
+      <figcaption class="lang-en">Client prices: hotel USD 256.52 + ride USD 33.62 = <strong>TRIP TOTAL USD 290.14</strong>. Each lane carries its own details; the ride's <strong>Modify</strong> and <strong>Cancel Transfer</strong> are inside its lane.</figcaption>
+      <figcaption class="lang-es">Precios al cliente: hotel USD 256,52 + traslado USD 33,62 = <strong>TRIP TOTAL USD 290,14</strong>. Cada carril lleva sus propios datos; <strong>Modify</strong> y <strong>Cancel Transfer</strong> del traslado están dentro de su carril.</figcaption>
     </figure>
 
     <p class="lang-en"><strong>Guest</strong> shows the lead guest's name, email, phone and emergency phone. <strong>Documents</strong> holds the voucher and the invoice (see §8).</p>
@@ -670,8 +670,8 @@
              alt="The Agency view opened: What Ergos charged you for this itinerary, Your Ergos account with Due now and Settle balance, Airport transfer — for Ergos support with the Mozio reservation id, and Your earnings (P&amp;L)."
              loading="lazy" onerror="this.style.display='none'" />
       </div>
-      <figcaption class="lang-en">After <strong>Show agency figures</strong>: <em>Paid</em> USD 290.14 covers the hotel and the ride, <em>Method</em> CREDIT, <em>Payment Status</em> PAID; the Mozio reservation id is here for Ergos support, and the P&amp;L covers the whole itinerary.</figcaption>
-      <figcaption class="lang-es">Después de <strong>Show agency figures</strong>: <em>Paid</em> USD 290,14 cubre el hotel y el traslado, <em>Method</em> CREDIT, <em>Payment Status</em> PAID; el ID de reserva de Mozio está aquí para el soporte de Ergos, y el P&amp;L abarca todo el itinerario.</figcaption>
+      <figcaption class="lang-en">After <strong>Show agency figures</strong>: <em>Paid</em> USD 290.14 is what Ergos charged you for the hotel and the ride (<em>Method</em> CREDIT, <em>Payment Status</em> PAID). It equals the client's Trip Total here only because this test agency's markup is 0% — see <em>Your markup income (0%)</em>; with a markup, the Trip Total is higher than <em>Paid</em>. The Mozio reservation id is here for Ergos support.</figcaption>
+      <figcaption class="lang-es">Después de <strong>Show agency figures</strong>: <em>Paid</em> USD 290,14 es lo que Ergos le cobró por el hotel y el traslado (<em>Method</em> CREDIT, <em>Payment Status</em> PAID). Coincide aquí con el Trip Total del cliente solo porque el markup de esta agencia de prueba es 0 % — vea <em>Your markup income (0%)</em>; con un markup, el Trip Total es mayor que <em>Paid</em>. El ID de reserva de Mozio está aquí para el soporte de Ergos.</figcaption>
     </figure>
 
     <h3 class="lang-en">A cancelled booking: the fact on the page, the money in the agency view</h3>

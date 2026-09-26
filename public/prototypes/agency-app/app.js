@@ -786,7 +786,7 @@ function renderBookingsList() {
       '<div class="blc-right">' +
         '<div class="blc-price-label">Total Client Price</div>' +
         '<div class="blc-price">' + priceStr + '</div>' +
-        '<button class="btn-view-details" onclick="showScreen(\'' + b.screen + '\')">View Booking Details</button>' +
+        '<button class="btn-view-details" onclick="bdOpenBooking(\'' + b.screen + '\')">View Booking Details</button>' +
         rebookBtn +
       '</div>' +
     '</div>';
@@ -2335,6 +2335,7 @@ function validateForm(formCard) {
 document.addEventListener('input', (e) => {
   if (e.target.classList.contains('form-input') && e.target.classList.contains('error')) {
     e.target.classList.remove('error');
+    e.target.removeAttribute('aria-invalid');
     const errEl = e.target.parentElement.querySelector('.form-error');
     if (errEl) errEl.classList.remove('show');
   }
@@ -2553,7 +2554,8 @@ let bdItineraryFromNotification = false;
 let bdTransferLaneCancelled = false;
 let bdRideConf = null;       // Mozio confirmation returned by a post-booking add on this page
 let bdAgencyOpen = false;    // agency-only figures; closed every time the page opens
-let bdRideReservationId = 'MOZIO-RSV-4938-K2';  // Mozio's internal id — agency view only
+const BD_DEMO_RESERVATION_ID = 'MOZIO-RSV-4938-K2';
+let bdRideReservationId = BD_DEMO_RESERVATION_ID;  // Mozio's internal id — agency view only
 let bdRideNotBooked = false;       // documentation#37: refused by the provider, never booked
 let bdRideNotBookedFare = 0;
 let bdRideNotBookedReason = '';
@@ -2594,13 +2596,20 @@ function bdTotals() {
   return { hotel, hotelCounted, ride, rideCounted, total };
 }
 
+// Owner decision 1a: everything visible by default is the CLIENT price (Ergos price × (1 +
+// agency markup), the P&L's "Customer paid"); Ergos figures live only in the agency view.
+function bdClientPrice(ergos) {
+  const pct = (typeof agencyMarkupState !== 'undefined' && agencyMarkupState.percentage) || 0;
+  return Math.round(ergos * (1 + pct / 100) * 100) / 100;
+}
+
 function bdItRender() {
   const t = bdTotals();
-  bdSetAmount('bd-f1-hotel-amount', t.hotel, t.hotelCounted);
-  if (bdHasRide()) bdSetAmount('bd-f1-transport-amount', t.ride, t.rideCounted, bdRideNote());
-  // Header: the same total as the itinerary figures, cancelled services excluded.
+  bdSetAmount('bd-f1-hotel-amount', bdClientPrice(t.hotel), t.hotelCounted);
+  if (bdHasRide()) bdSetAmount('bd-f1-transport-amount', bdClientPrice(t.ride), t.rideCounted, bdRideNote());
+  // Header: the client's total of the services still booked, cancelled ones excluded.
   const price = document.getElementById('bd-header-price');
-  if (price) price.textContent = bdUSD(t.total);
+  if (price) price.textContent = bdUSD(bdClientPrice(t.total));
   const label = document.getElementById('bd-header-price-label');
   if (label) label.textContent = t.rideCounted ? 'Trip Total' : 'Total Client Price';
   if (bdAgencyOpen) bdAgencyRender();
@@ -2643,6 +2652,12 @@ function bdRenderRideLane() {
   if (add) add.hidden = bdHasActiveRide() || !!bookingState.isCancelled || (canRetry && !bdRetrying);
   const hotelLane = document.getElementById('bd-lane-hotel');
   if (hotelLane) hotelLane.classList.toggle('is-cancelled', !!bookingState.isCancelled);
+}
+
+// A real booking opened from the list or the confirmation — not the notification demo.
+function bdOpenBooking(screen) {
+  bdItineraryFromNotification = false;
+  showScreen(screen || 'booking-detail');
 }
 
 // The lane's retry is the add-transfer flow for this booking.
@@ -2982,7 +2997,8 @@ function bdTfcConfirm() {
   const orig = window.showScreen;
   if (typeof orig !== 'function') return;
   window.showScreen = function (id) {
-    if (id !== 'booking-detail') bdItineraryFromNotification = false;
+    // The notification demo itinerary survives Open PDF → Back; opening a real booking
+    // (the list's or the confirmation's View Booking Details) clears it — bdOpenBooking().
     const r = orig.apply(this, arguments);
     if (id === 'confirmation') setTimeout(f1RenderOnConfirmation, 50);
     if (id === 'payment') setTimeout(f1UpdatePaymentScreenAlternative, 50);
@@ -3642,11 +3658,21 @@ function bdatBook() {
   const orig = window.confirmBooking;
   if (typeof orig !== 'function') return;
   window.confirmBooking = function () {
-    if (!serviceTransferAdded) return orig.apply(this, arguments);
-    if (!f1RidePhoneOk()) return f1RefusePhone();
-    if (document.getElementById('pay-f1-refuse-demo')?.checked) {
-      return f1RunSagaOverlay(() => { f1RideRefusedAfterHotel(); orig.apply(this); }, true);
-    }
+    if (serviceTransferAdded && !f1RidePhoneOk()) return f1RefusePhone();
+    // A new booking starts clean: no ride state carries over from the previous one.
+    bdTransferLaneCancelled = false;
+    bdRideNotBooked = false;
+    bdRideNotBookedFare = 0;
+    bdRideNotBookedReason = '';
+    bdRetrying = false;
+    bdRideConf = null;
+    bdRideReservationId = BD_DEMO_RESERVATION_ID;
+    const demo = document.getElementById('pay-f1-refuse-demo');
+    const refuse = !!(serviceTransferAdded && demo && demo.checked);
+    if (demo) demo.checked = false;
+    const phone = document.getElementById('guest-phone');
+    if (phone) bdSetText('bd-guest-phone', phone.value.trim());
+    if (refuse) return f1RunSagaOverlay(() => { f1RideRefusedAfterHotel(); orig.apply(this); }, true);
     return orig.apply(this, arguments);
   };
 })();
