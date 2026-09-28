@@ -1319,6 +1319,9 @@ function ntSyncBadges() {
   document.querySelectorAll('.notif-badge').forEach(b => {
     b.textContent = n;
     b.style.display = n > 0 ? '' : 'none';
+    // documentation#53 AC 4 — the badge is aria-hidden; the bell's name carries the count, as live.
+    const bell = b.closest('.notif-bell');
+    if (bell) bell.setAttribute('aria-label', n > 0 ? 'Notifications, ' + n + ' unread' : 'Notifications');
   });
 }
 
@@ -1445,4 +1448,6 @@ function ntTogglePush(el) {
 }
 
 /* Initialise bell badges on load. */
-document.addEventListener('DOMContentLoaded', ntSyncBadges);
+// index.html injects this script after load, so DOMContentLoaded may already have fired.
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', ntSyncBadges);
+else ntSyncBadges();
