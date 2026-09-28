@@ -1146,11 +1146,13 @@
                 <!-- Inline results -->
                 <div class="svc-tf-results" id="svc-tf-results" style="display:none">
                   <div class="svc-tf-controls">
-                    <span class="svc-tf-count" id="svc-tf-count">6 vehicles found</span>
-                    <select class="svc-tf-sort" onchange="sortServiceVehicles(this.value)">
-                      <option value="price-asc">Price: Low to High</option>
-                      <option value="price-desc">Price: High to Low</option>
-                      <option value="capacity-desc">Capacity: Most first</option>
+                    <span class="svc-tf-count" id="svc-tf-count">6 options found</span>
+                    <!-- documentation#46: cheapest first by default; same four orders as the live list. -->
+                    <select class="svc-tf-sort" id="svc-tf-sort" aria-label="Sort transfer options" onchange="sortServiceVehicles(this.value)">
+                      <option value="price-asc">Price: low to high</option>
+                      <option value="price-desc">Price: high to low</option>
+                      <option value="capacity-desc">Capacity: most passengers</option>
+                      <option value="provider-asc">Provider: A–Z</option>
                     </select>
                   </div>
                   <div class="svc-tf-results-list" id="svc-tf-results-list">
@@ -2348,7 +2350,13 @@
               <!-- Results list (Mozio quotes) -->
               <div class="svc-tf-results bdat-results" id="bdat-results" style="display:none">
                 <div class="svc-tf-controls">
-                  <span class="svc-tf-count">2 vehicles found · prices from Mozio</span>
+                  <span class="svc-tf-count">2 options found</span>
+                  <select class="svc-tf-sort" id="bdat-sort" aria-label="Sort transfer options" onchange="sortVehicleCards('bdat-results-list', this.value)">
+                    <option value="price-asc">Price: low to high</option>
+                    <option value="price-desc">Price: high to low</option>
+                    <option value="capacity-desc">Capacity: most passengers</option>
+                    <option value="provider-asc">Provider: A–Z</option>
+                  </select>
                 </div>
                 <div class="svc-tf-results-list" id="bdat-results-list">
                   <!-- Quote 1 — Cadillac XTS / Book A Limo -->
@@ -2418,7 +2426,7 @@
               <p class="bd-card-hint">One of each, covering every service on this itinerary.</p>
               <div class="bd-sc-row bd-doc-line">
                 <span><span class="bd-sc-label">Voucher</span><br><span class="bd-card-hint">What the traveller presents. No prices.</span></span>
-                <button class="btn-doc" id="bd-it-voucher-open" onclick="showScreen('voucher')" aria-label="Open itinerary voucher (PDF)">Open PDF</button>
+                <button class="btn-doc" id="bd-it-voucher-open" onclick="openItineraryVoucher()" aria-label="Open itinerary voucher (PDF)">Open PDF</button>
               </div>
               <div class="bd-sc-row bd-doc-line">
                 <span><span class="bd-sc-label">Invoice</span><br><span class="bd-card-hint">For the end client, at their price.</span></span>
@@ -2790,6 +2798,15 @@
           <label class="bd-mb-field">Return Time *<input type="time" class="form-input" id="bd-tfm-return-time"></label>
         </div>
         <button class="btn-primary" id="bd-tfm-search" disabled onclick="bdTfmSearch()">Search Vehicles</button>
+        <div class="svc-tf-controls" id="bd-tfm-controls" hidden>
+          <span class="svc-tf-count" id="bd-tfm-count"></span>
+          <select class="svc-tf-sort" id="bd-tfm-sort" aria-label="Sort transfer options" onchange="sortVehicleCards('bd-tfm-results', this.value)">
+            <option value="price-asc">Price: low to high</option>
+            <option value="price-desc">Price: high to low</option>
+            <option value="capacity-desc">Capacity: most passengers</option>
+            <option value="provider-asc">Provider: A–Z</option>
+          </select>
+        </div>
         <div class="svc-tf-results-list bd-tfm-results" id="bd-tfm-results" hidden></div>
         <div class="bd-tfm-footer" id="bd-tfm-footer" hidden>
           <div class="svc-route-row" id="bd-tfm-flight" hidden>

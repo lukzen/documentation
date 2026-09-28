@@ -1573,9 +1573,47 @@ function buildInvoicePreview(lang) {
     </div>`;
 }
 
+// The Itinerary voucher PDF (Documents → Itinerary → Voucher → Open PDF), as TEST prints it
+// (documentation#46): one voucher for the trip, in travel order — the arrival ride first, then
+// the room — each item with its own Confirmation and the guest's name inside it. No prices.
+// The ride's places print in full, name first (owner's decision). English only, like the PDF.
+let voucherDocKind = 'hotel';   // 'itinerary' = the Itinerary PDF; 'hotel' = Preview Voucher
+
+function buildItineraryVoucher() {
+  const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[ch]));
+  const text = id => (document.getElementById(id)?.textContent || '').trim();
+  const guest = bookingState.guestFirstName + ' ' + bookingState.guestLastName;
+  const nights = nightsBetween(bookingState.checkin, bookingState.checkout);
+  const s = transferBookingState;
+  const ride = bdHasActiveRide() ? `
+    <div class="doc-itin-item">
+      <h3>${esc(s.supplier)} transfer — ${esc(serviceTransferVehicle || s.vehicle)}</h3>
+      <p class="doc-itin-meta">Passenger: ${esc(guest)}<br>Pick-up: ${esc(s.pickup)}<br>When: ${esc(s.date)}T${esc(s.time)}:00<br>Drop-off: ${esc(s.dropoff)}</p>
+      <p>Confirmation: ${esc(bdRideConfNumber())}</p>
+    </div>` : '';
+  return `
+    <div class="doc-itin">
+      <h2 class="doc-itin-title">Travel voucher</h2>
+      <p class="doc-itin-meta">${esc(text('bd-header-ref') || bookingState.bookingRef || 'PTA18G28E7CUANQ')}<br>Issued ${new Date().toISOString().slice(0, 10)}</p>
+      <p>Demo Agency<br><span class="doc-itin-meta">patria@demoagency.com · +34 911 234 567</span></p>
+      ${ride}
+      <div class="doc-itin-item">
+        <h3>${esc(bookingState.hotel)}</h3>
+        <p class="doc-itin-meta">Guest: ${esc(guest)}<br>${esc(bookingState.checkin)} to ${esc(bookingState.checkout)} (${nights} night${nights !== 1 ? 's' : ''})</p>
+        <p>Confirmation: ${esc(text('bd-f1-hotel-ref') || 'PTA18G28E7CUANQ')}</p>
+      </div>
+    </div>`;
+}
+
+function openItineraryVoucher() {
+  voucherDocKind = 'itinerary';
+  showScreen('voucher');   // showScreen('voucher') renders through renderVoucherPreview()
+}
+
 function renderVoucherPreview() {
   const lang = document.getElementById('voucher-preview-lang')?.value || 'English';
-  document.getElementById('voucher-preview-content').innerHTML = buildVoucherPreview(lang);
+  document.getElementById('voucher-preview-content').innerHTML =
+    voucherDocKind === 'itinerary' ? buildItineraryVoucher() : buildVoucherPreview(lang);
 }
 
 function renderInvoicePreview() {
@@ -1585,6 +1623,7 @@ function renderInvoicePreview() {
 
 function openVoucherPreview() {
   activeDocContext = 'hotel';
+  voucherDocKind = 'hotel';
   const lang = document.getElementById('voucher-lang')?.value || 'English';
   const langSelect = document.getElementById('voucher-preview-lang');
   if (langSelect) langSelect.value = lang;
@@ -2986,6 +3025,7 @@ function bdTfmOpen() {
   document.getElementById('bd-tfm-flightno').value = '';
   bdTfmMode('oneway');
   document.getElementById('bd-tfm-results').hidden = true;
+  document.getElementById('bd-tfm-controls').hidden = true;
   document.getElementById('bd-tfm-footer').hidden = true;
   bdTfmCard = null;
   bdTfmValidate();
@@ -3019,6 +3059,10 @@ function bdTfmSearch() {
       if (b) { b.textContent = 'Select'; b.removeAttribute('onclick'); b.addEventListener('click', () => bdTfmSelect(c)); }
       list.appendChild(c);
     });
+    const n = list.querySelectorAll('.vehicle-card').length;
+    document.getElementById('bd-tfm-count').textContent = n + ' option' + (n !== 1 ? 's' : '') + ' found';
+    sortVehicleCards('bd-tfm-results', document.getElementById('bd-tfm-sort').value);
+    document.getElementById('bd-tfm-controls').hidden = false;
     list.hidden = false;
     bdTfmCard = null;
     document.getElementById('bd-tfm-footer').hidden = true;
@@ -3165,10 +3209,11 @@ function searchServiceTransfers() {
     btn.disabled = false;
     resultsDiv.style.display = 'block';
     applyMarkupToServiceCards();
+    sortServiceVehicles(document.getElementById('svc-tf-sort')?.value || 'price-asc');
     // Update count
     const count = document.getElementById('svc-tf-count');
-    const cards = document.querySelectorAll('.vehicle-card');
-    if (count) count.textContent = cards.length + ' vehicles found';
+    const cards = document.querySelectorAll('#svc-tf-results-list .vehicle-card');
+    if (count) count.textContent = cards.length + ' option' + (cards.length !== 1 ? 's' : '') + ' found';
     resultsDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }, 1200);
 }
@@ -3579,18 +3624,26 @@ function applyMarkupToServiceCards() {
   });
 }
 
-// Sort cross-sell vehicle cards
-function sortServiceVehicles(criteria) {
-  const list = document.getElementById('svc-tf-results-list');
+// Sort transfer vehicle cards (documentation#46) — the live list's four orders, cheapest
+// first by default. Checkout cards carry data-price/-capacity/-supplier; the booking-page
+// cards carry data-base-price/-maxpax/-provider.
+function sortVehicleCards(listId, criteria) {
+  const list = document.getElementById(listId);
   if (!list) return;
-  const cards = Array.from(list.querySelectorAll('.vehicle-card'));
-  cards.sort((a, b) => {
-    if (criteria === 'price-asc') return parseFloat(a.dataset.price) - parseFloat(b.dataset.price);
-    if (criteria === 'price-desc') return parseFloat(b.dataset.price) - parseFloat(a.dataset.price);
-    if (criteria === 'capacity-desc') return parseInt(b.dataset.capacity) - parseInt(a.dataset.capacity);
-    return 0;
-  });
-  cards.forEach(card => list.appendChild(card));
+  const price = c => parseFloat(c.dataset.price || c.dataset.basePrice) || 0;
+  const seats = c => parseInt(c.dataset.capacity || c.dataset.maxpax, 10) || 0;
+  const provider = c => c.dataset.supplier || c.dataset.provider || '';
+  const compare = {
+    'price-asc': (a, b) => price(a) - price(b),
+    'price-desc': (a, b) => price(b) - price(a),
+    'capacity-desc': (a, b) => seats(b) - seats(a),
+    'provider-asc': (a, b) => provider(a).localeCompare(provider(b)),
+  }[criteria] || ((a, b) => price(a) - price(b));
+  Array.from(list.querySelectorAll('.vehicle-card')).sort(compare).forEach(card => list.appendChild(card));
+}
+
+function sortServiceVehicles(criteria) {
+  sortVehicleCards('svc-tf-results-list', criteria);
 }
 
 /* ============================================================
@@ -3665,6 +3718,7 @@ function bdatSearch() {
     results.style.display = 'block';
     // Re-price client-facing amounts in the active currency
     if (typeof updateVisiblePrices === 'function') updateVisiblePrices();
+    sortVehicleCards('bdat-results-list', document.getElementById('bdat-sort')?.value || 'price-asc');
     results.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     if (typeof protoToast === 'function') protoToast('2 Mozio quotes returned for ' + (document.getElementById('bdat-dropoff')?.value || 'the hotel'), 'info');
   }, 1100);
