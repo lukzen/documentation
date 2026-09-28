@@ -2430,6 +2430,39 @@ function f1RefusePhone() {
   if (input) { input.classList.add('error'); input.setAttribute('aria-invalid', 'true'); input.focus(); }
   if (typeof showToast === 'function') showToast('error', 'Check the guest phone', F1_PHONE_REFUSED);
 }
+// documentation#53 AC 6 — live BookingPage refuses the pay click when the ride needs flight
+// details and one is empty: the transfer section opens, the first missing field scrolls into
+// view and takes focus, the reason sits under it. Nothing is charged.
+const F1_FLIGHT_REASON = {
+  'svc-tf-airline': 'Enter the airline — the driver meets this flight.',
+  'svc-tf-flightnum': 'Enter the flight number — the driver meets this flight.',
+};
+function f1MissingFlightField() {
+  const info = document.getElementById('svc-flight-info');
+  if (!info || info.style.display !== 'block') return null;
+  return ['svc-tf-airline', 'svc-tf-flightnum'].find(id => !(document.getElementById(id)?.value || '').trim()) || null;
+}
+function f1ClearFlightError() {
+  Object.keys(F1_FLIGHT_REASON).forEach(id => {
+    const err = document.getElementById(id + '-error');
+    if (err) { err.textContent = ''; err.classList.remove('show'); }
+    const input = document.getElementById(id);
+    if (input && (input.value || '').trim()) { input.classList.remove('error'); input.removeAttribute('aria-invalid'); }
+  });
+}
+function f1RefuseFlight() {
+  const id = f1MissingFlightField();
+  openCheckoutTransfer();
+  const input = document.getElementById(id);
+  const err = document.getElementById(id + '-error');
+  if (err) { err.textContent = F1_FLIGHT_REASON[id]; err.classList.add('show'); }
+  if (input) {
+    input.classList.add('error'); input.setAttribute('aria-invalid', 'true');
+    input.scrollIntoView({ block: 'center' }); input.focus();
+  }
+  if (typeof showToast === 'function') showToast('error', 'Flight details missing', F1_FLIGHT_REASON[id]);
+}
+
 // Demo (documentation#37): the provider refuses the ride after the hotel is booked. The hotel
 // stands, the ride's fare comes back, and the booking carries a "Not booked" ride lane.
 function f1RideRefusedAfterHotel() {
@@ -3611,10 +3644,42 @@ function bdatSelect(card) {
   const note = document.getElementById('bdat-policy-note');
   if (note) {
     note.style.display = 'block';
-    note.innerHTML = '<button class="btn-primary bdat-book-btn" onclick="bdatBook()">Book transfer · '
+    note.innerHTML = BDAT_PHONE_FIELD
+      + '<button class="btn-primary bdat-book-btn" onclick="bdatBook()">Book Transfer — '
       + (card.querySelector('.vc-sell')?.textContent || '') + '</button>'
       + '<span class="bdat-policy-text">' + (card.dataset.cancel || '') + '</span>';
+    // Pre-filled from the guest's phone, as live.
+    const ph = document.getElementById('bdat-phone');
+    if (ph) ph.value = (document.getElementById('guest-phone')?.value || '').trim();
   }
+}
+
+// documentation#53 AC 3 — the passenger phone the driver calls, checked on Book before
+// anything is reserved (live AddTransferPage). Pre-filled from the guest's phone.
+const BDAT_PHONE_REFUSED = "Enter the passenger's phone with its country code — the driver needs a number they can reach (e.g. +1 305 555 0123).";
+const BDAT_PHONE_FIELD =
+  '<span class="form-group bdat-phone-group" style="display:block;margin-bottom:10px">'
+  + '<label for="bdat-phone">Passenger phone *</label>'
+  + '<span class="bdat-phone-hint" style="display:block;font-size:12px;color:#78716c">Used by the driver — include the country code.</span>'
+  + '<input type="tel" id="bdat-phone" class="form-input" aria-describedby="bdat-phone-error" oninput="bdatClearPhoneError()">'
+  + '<span class="form-error" id="bdat-phone-error" role="alert"></span></span>';
+function bdatPhoneOk() {
+  const v = (document.getElementById('bdat-phone')?.value || '').trim();
+  // The live app asks libphonenumber whether the number is reachable; the prototype
+  // approximates it with the same rule as the checkout's f1RidePhoneOk().
+  return /^\+/.test(v) && v.replace(/\D/g, '').length >= 10;
+}
+function bdatClearPhoneError() {
+  const err = document.getElementById('bdat-phone-error');
+  if (err) { err.textContent = ''; err.classList.remove('show'); }
+  const input = document.getElementById('bdat-phone');
+  if (input) { input.classList.remove('error'); input.removeAttribute('aria-invalid'); }
+}
+function bdatRefusePhone() {
+  const input = document.getElementById('bdat-phone');
+  const err = document.getElementById('bdat-phone-error');
+  if (err) { err.textContent = BDAT_PHONE_REFUSED; err.classList.add('show'); }
+  if (input) { input.classList.add('error'); input.setAttribute('aria-invalid', 'true'); input.focus(); }
 }
 
 function bdatGenConfNumber() {
@@ -3629,6 +3694,7 @@ function bdatGenConfNumber() {
 function bdatBook() {
   const card = bdatSelectedCard;
   if (!card) { if (typeof protoToast === 'function') protoToast('Select a vehicle first', 'error'); return; }
+  if (!bdatPhoneOk()) return bdatRefusePhone();
   const btn = document.querySelector('.bdat-book-btn');
   if (btn) { btn.textContent = 'Booking with Mozio…'; btn.disabled = true; }
   setTimeout(() => {
@@ -3677,6 +3743,9 @@ function bdatBook() {
   window.confirmBooking = function () {
     // Live BookingPage.tsx checks the phone on the soft-credit rail only.
     if (serviceTransferAdded && window.__pmMode === 'later' && !f1RidePhoneOk()) return f1RefusePhone();
+    // documentation#53 AC 6 — then a missing flight field, shown where the employee is looking.
+    // The payments-lane module names the credit rail 'balance' ('later' was the older name).
+    if (serviceTransferAdded && ['later', 'balance'].includes(window.__pmMode) && f1MissingFlightField()) return f1RefuseFlight();
     // A new booking starts clean: no ride state carries over from the previous one.
     bdTransferLaneCancelled = false;
     bdRideNotBooked = false;

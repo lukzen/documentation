@@ -477,6 +477,17 @@
       <span class="lang-en"> For airport pickups, some providers require the <strong>airline (IATA code)</strong> and <strong>flight number</strong> so the driver can track the flight and adjust for delays. If the chosen vehicle needs them, two fields appear before you can confirm — fill them in to enable the <strong>Book Transfer</strong> button.</span>
       <span class="lang-es"> Para recogidas en aeropuerto, algunos proveedores piden la <strong>aerolínea (código IATA)</strong> y el <strong>número de vuelo</strong> para que el conductor pueda seguir el vuelo y ajustarse a las demoras. Si el vehículo elegido los necesita, aparecen dos campos antes de poder confirmar — complételos para habilitar el botón <strong>Reservar traslado</strong>.</span>
     </div>
+    <p class="lang-en">At checkout the same fields appear under the vehicle you picked, and the pay button stays active. If you press <strong>Pay for both with credit →</strong> with the flight details empty, nothing is charged and no request leaves the app: the <strong>Airport Transfer</strong> section opens, the page scrolls to <strong>Airline (IATA)</strong>, the cursor is placed in it and the field reads <em>"Enter the airline — the driver meets this flight."</em> Fill in the airline, the <strong>Flight Number</strong> and the <strong>Flight Type</strong>, then pay again.</p>
+    <p class="lang-es">En el checkout aparecen los mismos campos debajo del vehículo elegido, y el botón de pago sigue activo. Si presiona <strong>Pay for both with credit →</strong> (pagar ambos con crédito) con los datos del vuelo vacíos, no se cobra nada y la app no envía ninguna solicitud: la sección <strong>Airport Transfer</strong> (traslado al aeropuerto) se abre, la página se desplaza hasta <strong>Airline (IATA)</strong> (aerolínea), el cursor queda en ese campo y debajo se lee <em>"Enter the airline — the driver meets this flight."</em> (ingrese la aerolínea; el conductor espera este vuelo). Complete la aerolínea, el <strong>Flight Number</strong> (número de vuelo) y el <strong>Flight Type</strong> (tipo de vuelo), y vuelva a pagar.</p>
+    <figure class="screenshot">
+      <div class="screenshot-frame">
+        <img src="f1-53-04-flight-details-refused.png"
+             alt="Checkout with Pay with soft credit selected: the Airline (IATA) field is focused and marked in red with Enter the airline — the driver meets this flight., while the summary shows the transfer, the Trip Total and Pay for both with credit."
+             loading="lazy" onerror="this.style.display='none'" />
+      </div>
+      <figcaption class="lang-en">Flight details missing at checkout: the cursor is in <em>Airline (IATA)</em> and nothing was charged. The transfer is still in the summary.</figcaption>
+      <figcaption class="lang-es">Faltan los datos del vuelo en el checkout: el cursor está en <em>Airline (IATA)</em> y no se cobró nada. El traslado sigue en el resumen.</figcaption>
+    </figure>
     <figure class="screenshot">
       <div class="screenshot-frame">
         <img src="mozio-03-results.png"
@@ -505,6 +516,19 @@
       </div>
       <figcaption class="lang-en">The selected vehicle is marked <em>Selected</em>; the sticky <strong>Book Transfer</strong> bar shows the total. Confirm to attach the transfer to the booking.</figcaption>
       <figcaption class="lang-es">El vehículo elegido queda marcado como <em>Seleccionado</em>; la barra fija <strong>Reservar traslado</strong> muestra el total. Confirme para asociar el traslado a la reserva.</figcaption>
+    </figure>
+    <h3 class="lang-en">A phone the driver cannot reach is refused before the ride is booked</h3>
+    <h3 class="lang-es">Un teléfono al que el conductor no puede llamar se rechaza antes de reservar el traslado</h3>
+    <p class="lang-en">When you add a transfer later, from <strong>+ Add airport transfer</strong> on a confirmed booking, the <strong>Add Airport Transfer</strong> page asks for a <strong>Passenger phone</strong> under the vehicle you selected (<em>"Used by the driver — include the country code."</em>). If the number is not one the driver can call, pressing <strong>Book Transfer</strong> reserves nothing: the cursor goes back to the phone field and the message under it reads <em>"Enter the passenger's phone with its country code — the driver needs a number they can reach (e.g. +1 305 555 0123)."</em> Correct the number and press <strong>Book Transfer</strong> again.</p>
+    <p class="lang-es">Cuando agrega un traslado más tarde, desde <strong>+ Add airport transfer</strong> en una reserva confirmada, la página <strong>Add Airport Transfer</strong> (agregar traslado al aeropuerto) pide un <strong>Passenger phone</strong> (teléfono del pasajero) debajo del vehículo elegido (<em>"Used by the driver — include the country code."</em>, lo usa el conductor; incluya el código de país). Si el número no es uno al que el conductor pueda llamar, al presionar <strong>Book Transfer</strong> (reservar traslado) no se reserva nada: el cursor vuelve al campo del teléfono y debajo se lee <em>"Enter the passenger's phone with its country code — the driver needs a number they can reach (e.g. +1 305 555 0123)."</em> (ingrese el teléfono del pasajero con su código de país; el conductor necesita un número al que pueda comunicarse). Corrija el número y vuelva a presionar <strong>Book Transfer</strong>.</p>
+    <figure class="screenshot">
+      <div class="screenshot-frame">
+        <img src="f1-53-05-add-transfer-phone-refused.png"
+             alt="Add Airport Transfer page for booking 54159110: the Passenger phone +34 555 123 456 is marked in red with the message asking for a phone with its country code, above the Book Transfer button."
+             loading="lazy" onerror="this.style.display='none'" />
+      </div>
+      <figcaption class="lang-en"><em>+34 555 123 456</em> is refused on <strong>Book Transfer</strong>; no ride was reserved.</figcaption>
+      <figcaption class="lang-es"><em>+34 555 123 456</em> se rechaza al presionar <strong>Book Transfer</strong>; no se reservó ningún traslado.</figcaption>
     </figure>
     <h3 class="lang-en">Round trips: one item, one price</h3>
     <h3 class="lang-es">Ida y vuelta: un ítem, un precio</h3>
@@ -1257,6 +1281,26 @@
     <h3 class="lang-es">La campana en la barra superior</h3>
     <p class="lang-en">A <strong>bell</strong> icon in the top navigation bar carries a number badge showing how many <strong>unread</strong> cover-payment reminders you have. The number reflects unread reminders only — once you open the Notifications page, the badge clears.</p>
     <p class="lang-es">Un ícono de <strong>campana</strong> en la barra de navegación superior lleva una insignia numérica que indica cuántos recordatorios de pago sin leer tiene. El número refleja solo los recordatorios <strong>no leídos</strong> — en cuanto abre la página de Notifications, la insignia se limpia.</p>
+    <p class="lang-en">The badge is gold with the number in navy, and it stays in the top bar on a phone 320 pixels wide. Screen readers announce the bell with its count — for example <em>"Notifications, 2 unread"</em>.</p>
+    <p class="lang-es">La insignia es dorada con el número en azul marino, y se mantiene en la barra superior en un teléfono de 320 píxeles de ancho. Los lectores de pantalla anuncian la campana con su cantidad — por ejemplo <em>"Notifications, 2 unread"</em> (notificaciones, 2 sin leer).</p>
+    <figure class="screenshot">
+      <div class="screenshot-frame">
+        <img src="f1-53-03-bell-unread-desktop.png"
+             alt="The top bar on a desktop: the language picker and the bell with a gold badge showing 2."
+             loading="lazy" onerror="this.style.display='none'" />
+      </div>
+      <figcaption class="lang-en">Two unread reminders: the gold badge on the bell.</figcaption>
+      <figcaption class="lang-es">Dos recordatorios sin leer: la insignia dorada en la campana.</figcaption>
+    </figure>
+    <figure class="screenshot">
+      <div class="screenshot-frame">
+        <img src="f1-53-02-bell-unread-320.png"
+             alt="The top bar at 320 pixels wide: logo, Home, My Bookings, the bell with a gold badge showing 2, and the avatar."
+             loading="lazy" onerror="this.style.display='none'" />
+      </div>
+      <figcaption class="lang-en">The same badge at 320 pixels wide.</figcaption>
+      <figcaption class="lang-es">La misma insignia a 320 píxeles de ancho.</figcaption>
+    </figure>
 
     <h3 class="lang-en">The 24-hour urgency banner</h3>
     <h3 class="lang-es">El banner de urgencia de 24 horas</h3>
