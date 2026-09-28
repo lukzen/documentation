@@ -4299,3 +4299,10 @@ details[open] .mr-tier-summary::before {
 .nt-dd-item:hover, .nt-dd-item:focus-visible, .nt-dd-all:hover, .nt-dd-all:focus-visible { background: var(--warm-100); outline: none; }
 .nt-dd-all { margin-top: 6px; font-weight: 500; }
 .nt-dd-empty { margin: 4px 12px 8px; font-size: 13px; color: var(--warm-500); }
+
+/* documentation#47 — add-transfer page refused / check failed (live: Mantine Alert, title + body + action) */
+.atg-alert { flex-direction: column; align-items: flex-start; gap: 8px; font-weight: 400; margin-top: 8px; }
+.atg-alert strong { font-weight: 600; }
+.atg-alert p { margin: 0; }
+.atg-alert[hidden] { display: none; }
+#bd-47-demo[hidden] { display: none; }

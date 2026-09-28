@@ -549,6 +549,37 @@
     <h3 class="lang-es">Un traslado por reserva</h3>
     <p class="lang-en">A booking carries <strong>at most one</strong> airport transfer. While it has a booked ride, its page offers no entry to add another: <strong>+ Add airport transfer</strong> is hidden. Cancel the existing transfer first and the button comes back for the replacement. A cancelled transfer does not count, so a booking whose ride you cancelled is free to take a new one.</p>
     <p class="lang-es">Una reserva lleva <strong>como máximo un</strong> traslado al aeropuerto. Mientras tenga un traslado reservado, su página no ofrece ninguna entrada para agregar otro: <strong>+ Add airport transfer</strong> (agregar traslado al aeropuerto) está oculto. Cancele primero el traslado existente y el botón vuelve a aparecer para el reemplazo. Un traslado cancelado no cuenta, así que una reserva cuyo traslado usted canceló puede tomar uno nuevo.</p>
+    <figure class="screenshot">
+      <div class="screenshot-frame">
+        <img src="f1-47-01-live-ride-no-add-entry.png"
+             alt="An Airport transfer lane marked CONFIRMED &amp; PAID with its amount USD 33.62 and the Modify and Cancel Transfer buttons, followed directly by the Guest section — no + Add airport transfer card."
+             loading="lazy" onerror="this.style.display='none'" />
+      </div>
+      <figcaption class="lang-en">A booked ride shows its lane with price and status (<strong>CONFIRMED &amp; PAID</strong>, USD 33.62), and the <em>Services</em> section ends there — no <strong>+ Add airport transfer</strong>.</figcaption>
+      <figcaption class="lang-es">Un traslado reservado muestra su carril con precio y estado (<strong>CONFIRMED &amp; PAID</strong>, USD 33.62), y la sección <em>Services</em> termina ahí — sin <strong>+ Add airport transfer</strong>.</figcaption>
+    </figure>
+    <p class="lang-en">If you reach the <strong>Add Airport Transfer</strong> page of such a booking anyway — from a saved link or a bookmark — the page shows no search form. A yellow notice reads <em>"This booking already has a transfer"</em>, followed by <em>"This booking already has a transfer — cancel it before adding another"</em> and <em>"Cancel it from the booking, then come back here."</em> <strong>Go to booking</strong> takes you back to the booking page, where <strong>Cancel Transfer</strong> sits in the ride's lane.</p>
+    <p class="lang-es">Si de todos modos llega a la página <strong>Add Airport Transfer</strong> (agregar traslado al aeropuerto) de una reserva así — desde un enlace guardado o un marcador — la página no muestra el formulario de búsqueda. Un aviso amarillo indica <em>"This booking already has a transfer"</em> (esta reserva ya tiene un traslado), seguido de <em>"This booking already has a transfer — cancel it before adding another"</em> (cancélelo antes de agregar otro) y <em>"Cancel it from the booking, then come back here."</em> (cancélelo desde la reserva y luego vuelva aquí). <strong>Go to booking</strong> (ir a la reserva) lo lleva de vuelta a la página de la reserva, donde <strong>Cancel Transfer</strong> está en el carril del traslado.</p>
+    <figure class="screenshot">
+      <div class="screenshot-frame">
+        <img src="f1-47-02-add-transfer-refused.png"
+             alt="Add Airport Transfer page for booking 54160126 showing a yellow notice: This booking already has a transfer — cancel it before adding another, with a Go to booking button and no search form."
+             loading="lazy" onerror="this.style.display='none'" />
+      </div>
+      <figcaption class="lang-en">Opened by link on a booking that already has a ride: the notice and <strong>Go to booking</strong>, and nothing to search.</figcaption>
+      <figcaption class="lang-es">Abierta por enlace en una reserva que ya tiene traslado: el aviso y <strong>Go to booking</strong>, sin nada que buscar.</figcaption>
+    </figure>
+    <p class="lang-en">If the app cannot check the booking's transfers at that moment (for example, the connection drops), it does not guess: a red notice reads <em>"Could not check this booking's transfers"</em> — <em>"A booking takes one transfer, and that could not be checked just now. Nothing was searched or booked."</em> — with a <strong>Try again</strong> button and still no form. Press <strong>Try again</strong> once the connection is back: the page checks again and, for a booking that already has a ride, shows the notice above.</p>
+    <p class="lang-es">Si en ese momento la app no puede comprobar los traslados de la reserva (por ejemplo, porque se cae la conexión), no lo supone: un aviso rojo indica <em>"Could not check this booking's transfers"</em> (no se pudieron comprobar los traslados de esta reserva) — <em>"A booking takes one transfer, and that could not be checked just now. Nothing was searched or booked."</em> (una reserva admite un traslado y eso no se pudo comprobar ahora; no se buscó ni se reservó nada) — con un botón <strong>Try again</strong> (reintentar) y, de nuevo, sin formulario. Presione <strong>Try again</strong> cuando vuelva la conexión: la página vuelve a comprobar y, si la reserva ya tiene un traslado, muestra el aviso anterior.</p>
+    <figure class="screenshot">
+      <div class="screenshot-frame">
+        <img src="f1-47-03-add-transfer-check-failed.png"
+             alt="Add Airport Transfer page showing a red notice: Could not check this booking's transfers, with a Try again button and no search form."
+             loading="lazy" onerror="this.style.display='none'" />
+      </div>
+      <figcaption class="lang-en">The check could not run: <strong>Try again</strong>, and no form until it succeeds.</figcaption>
+      <figcaption class="lang-es">No se pudo hacer la comprobación: <strong>Try again</strong>, y ningún formulario hasta que funcione.</figcaption>
+    </figure>
 
     <div class="callout callout-info">
       <strong class="lang-en">No second entry while a ride is booked</strong>

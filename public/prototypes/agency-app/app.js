@@ -2691,7 +2691,35 @@ function bdRenderRideLane() {
   if (add) add.hidden = bdHasActiveRide() || !!bookingState.isCancelled || (canRetry && !bdRetrying);
   const hotelLane = document.getElementById('bd-lane-hotel');
   if (hotelLane) hotelLane.classList.toggle('is-cancelled', !!bookingState.isCancelled);
+  // documentation#47: the saved-link demo exists only while the add entry is withheld for a live ride.
+  const guardDemo = document.getElementById('bd-47-demo');
+  if (guardDemo) guardDemo.hidden = !bdHasActiveRide() || !!bookingState.isCancelled;
 }
+
+// documentation#47 — the add-transfer page opened by link while the booking has a live ride
+// (live: AddTransferPage). It never shows the search form: it refuses, or — when the check of the
+// booking's transfers fails — says so with Try again, and a successful retry refuses.
+function bdGuardShow(state) {
+  const refused = document.getElementById('atg-refused');
+  const failed = document.getElementById('atg-failed');
+  if (refused) refused.hidden = state !== 'refused';
+  if (failed) failed.hidden = state !== 'failed';
+  const shown = state === 'failed' ? failed : refused;
+  if (shown) shown.focus({ preventScroll: true });
+}
+function bdGuardOpen() {
+  const failOnce = document.getElementById('bd-47-fail-once');
+  const failed = !!(failOnce && failOnce.checked);
+  if (failOnce) failOnce.checked = false;   // fails once: the retry's check goes through
+  // The live subtitle carries the hotel's name only — no star rating.
+  const copy = (from, to) => { const a = document.getElementById(from), b = document.getElementById(to); if (a && b) b.textContent = a.textContent.replace(/\s*★+\s*$/, ''); };
+  copy('bd-header-ref', 'atg-ref');
+  copy('bd-hotel-name', 'atg-hotel');
+  showScreen('add-transfer-guard');
+  bdGuardShow(failed ? 'failed' : 'refused');
+}
+function bdGuardRetry() { bdGuardShow('refused'); }
+function bdGuardBack() { showScreen('booking-detail'); }
 
 // A real booking opened from the list or the confirmation — not the notification demo.
 function bdOpenBooking(screen) {
