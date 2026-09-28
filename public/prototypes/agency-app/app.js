@@ -687,6 +687,7 @@ function snapshotBooking() {
   if (serviceTransferAdded) {
     entry.transferInfo = 'Airport Transfer · ' + serviceTransferVehicle;
   }
+  Object.assign(entry, listHeadline(hotelPrice));
 
   // Replace if same ref already exists (modification), otherwise add
   const idx = bookingsHistory.findIndex(b => b._bookingRef === entry._bookingRef);
@@ -695,6 +696,16 @@ function snapshotBooking() {
   } else {
     bookingsHistory.unshift(entry);
   }
+}
+
+// documentation#49 — the list card's headline (live listHeadline): the room at the client price,
+// plus the ride paid in the same checkout while it still counts. With a ride it is the Trip Total,
+// the same figure the booking-detail header shows; without one, the room's Total Client Price.
+function listHeadline(hotelErgosPrice) {
+  const room = bdClientPrice(hotelErgosPrice || 0);
+  const ride = bdHasActiveRide() ? bdRideAmount() : 0;
+  if (ride <= 0) return { price: room, isTripTotal: false };
+  return { price: Math.round((room + ride) * 100) / 100, isTripTotal: true };
 }
 
 function getActiveBookings() {
@@ -717,6 +728,7 @@ function getActiveBookings() {
       price: hotelPrice,
       ref: bookingState.bookingRef, screen: 'booking-detail'
     };
+    Object.assign(liveEntry, listHeadline(hotelPrice));
     if (serviceTransferAdded) {
       liveEntry.transferInfo = 'Airport Transfer · ' + serviceTransferVehicle;
     }
@@ -769,7 +781,7 @@ function renderBookingsList() {
       detailsHTML += '<div class="blc-details"><span>\uD83D\uDE97 ' + b.transferInfo + '</span></div>';
     }
 
-    const priceStr = formatUSD(b.price);
+    const priceStr = bdUSD(b.price);
     const extraClass = b.type === 'trip' ? ' trip-booking' : '';
 
     return '<div class="booking-list-card' + extraClass + '">' +
@@ -784,7 +796,7 @@ function renderBookingsList() {
         '<div class="blc-ref">Booking Ref: ' + b.ref + '</div>' +
       '</div>' +
       '<div class="blc-right">' +
-        '<div class="blc-price-label">Total Client Price</div>' +
+        '<div class="blc-price-label">' + (b.isTripTotal ? 'Trip Total' : 'Total Client Price') + '</div>' +
         '<div class="blc-price">' + priceStr + '</div>' +
         '<button class="btn-view-details" onclick="bdOpenBooking(\'' + b.screen + '\')">View Booking Details</button>' +
         rebookBtn +
