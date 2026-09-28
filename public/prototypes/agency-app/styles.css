@@ -1669,6 +1669,14 @@ body.modal-open { overflow: hidden; }
   color: #fff;
   letter-spacing: 0.5px;
 }
+/* Itinerary voucher PDF (documentation#46): plain, no prices, items in travel order */
+.doc-preview-paper .doc-itin { font-size: 14px; line-height: 1.5; color: #1f2937; }
+.doc-preview-paper .doc-itin-title { font-size: 26px; font-weight: 400; margin: 0 0 8px; }
+.doc-preview-paper .doc-itin p { margin: 0 0 10px; }
+.doc-preview-paper .doc-itin-meta { color: #6b7280; }
+.doc-preview-paper .doc-itin-item { margin-top: 20px; }
+.doc-preview-paper .doc-itin-item h3 { font-size: 17px; font-weight: 400; margin: 0 0 2px; }
+.doc-preview-paper .doc-itin-item p { margin: 0; }
 .doc-preview-paper .doc-service-header.hotel { background: var(--navy); }
 .doc-preview-paper .doc-service-header.transfer { background: var(--teal); }
 .doc-preview-paper .doc-service-body { padding: 20px; }
