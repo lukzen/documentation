@@ -2166,6 +2166,26 @@ body.modal-open { overflow: hidden; }
   display: flex; justify-content: space-between; font-size: 14px; color: var(--warm-600);
 }
 
+/* ========== PHONE FIELD (documentation#50) ==========
+   Country picker + dial-code chip + a box that holds the LOCAL number only. */
+.phone-hint {
+  display: block; font-size: 12px; color: var(--warm-500); margin: -3px 0 7px;
+}
+.phone-field { display: flex; align-items: stretch; gap: 8px; }
+.phone-country {
+  flex: 0 0 136px; min-width: 0; padding: 12px 8px;
+  border: 1.5px solid var(--warm-200); border-radius: var(--radius);
+  font-size: 14px; background: var(--warm-50); cursor: pointer;
+  transition: all var(--transition);
+}
+.phone-country:focus { outline: none; border-color: var(--primary-bright); background: var(--white); box-shadow: 0 0 0 3px rgba(79,70,229,.08); }
+.phone-dial {
+  display: flex; align-items: center; padding: 0 12px;
+  border: 1.5px solid var(--warm-200); border-radius: var(--radius);
+  background: var(--warm-50); font-size: 14px; font-weight: 600; color: var(--warm-600);
+}
+.phone-field .phone-local { flex: 1; min-width: 0; }
+
 /* ========== FORM VALIDATION ========== */
 .form-input.error { border-color: var(--red-500); background: var(--red-50); }
 .form-error {
