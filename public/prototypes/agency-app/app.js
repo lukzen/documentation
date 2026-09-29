@@ -2466,19 +2466,106 @@ function f1RunSagaOverlay(done, rideRefused) {
   };
 })();
 
-// The live app checks the guest phone with libphonenumber for the widget's country; the
-// prototype stands in with "a + country code and a full number".
-function f1RidePhoneOk() {
-  const v = (document.getElementById('guest-phone')?.value || '').trim();
-  return /^\+/.test(v) && v.replace(/\D/g, '').length >= 10;
+// ---------- Phone widget (documentation#50) ----------
+// Live: the box holds the LOCAL number only. The country comes from the picker beside it
+// (or from a pasted +NN… number) and its dial code shows as a chip. Typing a country code
+// into the box does nothing — the "+" is dropped and the digits stay national.
+// The live app then asks libphonenumber whether that national number is one the country
+// issues; the prototype stands in with a length + leading-digit table, which is enough to
+// refuse the numbers the live app refuses (a Spanish "555 123 456" is not a Spanish number).
+const PROTO_PHONE_COUNTRIES = [
+  { code: 'us', name: 'United States', flag: '🇺🇸', dial: '+1',  len: 10, starts: '23456789' },
+  { code: 'ca', name: 'Canada',        flag: '🇨🇦', dial: '+1',  len: 10, starts: '23456789' },
+  { code: 'mx', name: 'Mexico',        flag: '🇲🇽', dial: '+52', len: 10, starts: '123456789' },
+  { code: 'cu', name: 'Cuba',          flag: '🇨🇺', dial: '+53', len: 8,  starts: '57' },
+  { code: 'es', name: 'Spain',         flag: '🇪🇸', dial: '+34', len: 9,  starts: '6789' },
+  { code: 'co', name: 'Colombia',      flag: '🇨🇴', dial: '+57', len: 10, starts: '36' },
+];
+function protoPhoneCountry(code) {
+  return PROTO_PHONE_COUNTRIES.find(c => c.code === code) || PROTO_PHONE_COUNTRIES[0];
 }
-const F1_PHONE_REFUSED = "Enter the guest's phone with its country code — the airport transfer needs a number the driver can reach (e.g. +1 305 555 0123).";
+/** The picker + dial chip + local-number box, as one field. */
+function protoPhoneMarkup(id, label, selected) {
+  const chosen = protoPhoneCountry(selected);
+  const options = PROTO_PHONE_COUNTRIES.map(c =>
+    '<option value="' + c.code + '"' + (c.code === chosen.code ? ' selected' : '') + '>'
+    + c.flag + ' ' + c.name + '</option>').join('');
+  return '<label for="' + id + '">' + label + ' *</label>'
+    + '<span class="phone-hint" id="' + id + '-hint">Pick the country, then type the local number — the driver calls this.</span>'
+    + '<span class="phone-field">'
+    + '<select class="phone-country" id="' + id + '-country" aria-label="Country for the phone number"'
+    + ' onchange="protoPhoneCountryChanged(\'' + id + '\')">' + options + '</select>'
+    + '<span class="phone-dial" id="' + id + '-dial">' + chosen.dial + '</span>'
+    + '<input type="tel" id="' + id + '" class="form-input phone-local" aria-describedby="'
+    + id + '-hint ' + id + '-error" oninput="protoPhoneInput(\'' + id + '\')">'
+    + '</span>'
+    + '<span class="form-error" id="' + id + '-error" role="alert"></span>';
+}
+function protoPhoneSelected(id) {
+  return protoPhoneCountry(document.getElementById(id + '-country')?.value);
+}
+function protoPhoneCountryChanged(id) {
+  const dial = document.getElementById(id + '-dial');
+  if (dial) dial.textContent = protoPhoneSelected(id).dial;
+  protoPhoneClearError(id);
+}
+/** Keeps the box national: a pasted "+NN…" sets the country instead of sitting in the box. */
+function protoPhoneInput(id) {
+  const input = document.getElementById(id);
+  if (!input) return;
+  const raw = input.value;
+  let digits = raw.replace(/\D/g, '');
+  if (raw.trim().charAt(0) === '+') {
+    const match = PROTO_PHONE_COUNTRIES
+      .filter(c => digits.startsWith(c.dial.slice(1)))
+      .sort((a, b) => b.dial.length - a.dial.length)[0];
+    if (match) {
+      const select = document.getElementById(id + '-country');
+      if (select) { select.value = match.code; protoPhoneCountryChanged(id); }
+      digits = digits.slice(match.dial.length - 1);
+    }
+  }
+  input.value = digits.slice(0, protoPhoneSelected(id).len);
+  protoPhoneClearError(id);
+}
+function protoPhoneSet(id, countryCode, local) {
+  const select = document.getElementById(id + '-country');
+  if (select) { select.value = countryCode; protoPhoneCountryChanged(id); }
+  const input = document.getElementById(id);
+  if (input) input.value = local;
+}
+function protoPhoneLocal(id) {
+  return (document.getElementById(id)?.value || '').replace(/\D/g, '');
+}
+/** What the transportation provider is sent: the picker's dial code + the local number. */
+function protoPhoneFull(id) {
+  return protoPhoneSelected(id).dial + ' ' + protoPhoneLocal(id);
+}
+function protoPhoneOk(id) {
+  const country = protoPhoneSelected(id);
+  const local = protoPhoneLocal(id);
+  return local.length === country.len && country.starts.includes(local.charAt(0));
+}
+function protoPhoneClearError(id) {
+  const err = document.getElementById(id + '-error');
+  if (err) { err.textContent = ''; err.classList.remove('show'); }
+  const input = document.getElementById(id);
+  if (input) { input.classList.remove('error'); input.removeAttribute('aria-invalid'); }
+}
+function protoPhoneRefuse(id, message) {
+  const input = document.getElementById(id);
+  const err = document.getElementById(id + '-error');
+  if (err) { err.textContent = message; err.classList.add('show'); }
+  if (input) { input.classList.add('error'); input.setAttribute('aria-invalid', 'true'); input.focus(); }
+}
+
+function f1RidePhoneOk() {
+  return protoPhoneOk('guest-phone');
+}
+const F1_PHONE_REFUSED = "Pick the guest's country, then type their local number — the airport transfer needs a number the driver can reach.";
 function f1RefusePhone() {
   showScreen('guest');
-  const input = document.getElementById('guest-phone');
-  const err = document.getElementById('guest-phone-error');
-  if (err) { err.textContent = F1_PHONE_REFUSED; err.classList.add('show'); }
-  if (input) { input.classList.add('error'); input.setAttribute('aria-invalid', 'true'); input.focus(); }
+  protoPhoneRefuse('guest-phone', F1_PHONE_REFUSED);
   if (typeof showToast === 'function') showToast('error', 'Check the guest phone', F1_PHONE_REFUSED);
 }
 // documentation#53 AC 6 — live BookingPage refuses the pay click when the ride needs flight
@@ -3742,38 +3829,27 @@ function bdatSelect(card) {
       + '<button class="btn-primary bdat-book-btn" onclick="bdatBook()">Book Transfer — '
       + (card.querySelector('.vc-sell')?.textContent || '') + '</button>'
       + '<span class="bdat-policy-text">' + (card.dataset.cancel || '') + '</span>';
-    // Pre-filled from the guest's phone, as live.
-    const ph = document.getElementById('bdat-phone');
-    if (ph) ph.value = (document.getElementById('guest-phone')?.value || '').trim();
+    // Pre-filled from the guest's phone — country AND local number, as live.
+    protoPhoneSet(
+      'bdat-phone',
+      protoPhoneSelected('guest-phone').code,
+      protoPhoneLocal('guest-phone')
+    );
   }
 }
 
 // documentation#53 AC 3 — the passenger phone the driver calls, checked on Book before
 // anything is reserved (live AddTransferPage). Pre-filled from the guest's phone.
-const BDAT_PHONE_REFUSED = "Enter the passenger's phone with its country code — the driver needs a number they can reach (e.g. +1 305 555 0123).";
+const BDAT_PHONE_REFUSED = "Pick the passenger's country, then type their local number — the driver needs a number they can reach.";
 const BDAT_PHONE_FIELD =
   '<span class="form-group bdat-phone-group" style="display:block;margin-bottom:10px">'
-  + '<label for="bdat-phone">Passenger phone *</label>'
-  + '<span class="bdat-phone-hint" style="display:block;font-size:12px;color:#78716c">Used by the driver — include the country code.</span>'
-  + '<input type="tel" id="bdat-phone" class="form-input" aria-describedby="bdat-phone-error" oninput="bdatClearPhoneError()">'
-  + '<span class="form-error" id="bdat-phone-error" role="alert"></span></span>';
+  + protoPhoneMarkup('bdat-phone', 'Passenger phone', 'us')
+  + '</span>';
 function bdatPhoneOk() {
-  const v = (document.getElementById('bdat-phone')?.value || '').trim();
-  // The live app asks libphonenumber whether the number is reachable; the prototype
-  // approximates it with the same rule as the checkout's f1RidePhoneOk().
-  return /^\+/.test(v) && v.replace(/\D/g, '').length >= 10;
-}
-function bdatClearPhoneError() {
-  const err = document.getElementById('bdat-phone-error');
-  if (err) { err.textContent = ''; err.classList.remove('show'); }
-  const input = document.getElementById('bdat-phone');
-  if (input) { input.classList.remove('error'); input.removeAttribute('aria-invalid'); }
+  return protoPhoneOk('bdat-phone');
 }
 function bdatRefusePhone() {
-  const input = document.getElementById('bdat-phone');
-  const err = document.getElementById('bdat-phone-error');
-  if (err) { err.textContent = BDAT_PHONE_REFUSED; err.classList.add('show'); }
-  if (input) { input.classList.add('error'); input.setAttribute('aria-invalid', 'true'); input.focus(); }
+  protoPhoneRefuse('bdat-phone', BDAT_PHONE_REFUSED);
 }
 
 function bdatGenConfNumber() {
@@ -3851,8 +3927,10 @@ function bdatBook() {
     const demo = document.getElementById('pay-f1-refuse-demo');
     const refuse = !!(serviceTransferAdded && demo && demo.checked);
     if (demo) demo.checked = false;
-    const phone = document.getElementById('guest-phone');
-    if (phone) bdSetText('bd-guest-phone', phone.value.trim());
+    // The booking carries the whole number: the picker's dial code + the local part.
+    if (document.getElementById('guest-phone')) {
+      bdSetText('bd-guest-phone', protoPhoneFull('guest-phone'));
+    }
     if (refuse) return f1RunSagaOverlay(() => { f1RideRefusedAfterHotel(); orig.apply(this); }, true);
     return orig.apply(this, arguments);
   };

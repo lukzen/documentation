@@ -383,19 +383,32 @@
     <p class="lang-en">If your search had more than one room, the guest-info step expands into one block per room. Assign the lead guest of each room — they appear on the voucher per-room. Children's names are also required by most suppliers.</p>
     <p class="lang-es">Si su búsqueda tenía más de una habitación, el paso de datos del huésped se expande en un bloque por habitación. Asigne al huésped principal de cada habitación — aparecen en el voucher por habitación. La mayoría de los proveedores también requiere los nombres de los niños.</p>
 
-    <h3 class="lang-en">A phone the ride cannot use is refused before payment</h3>
-    <h3 class="lang-es">Un teléfono que el traslado no puede usar se rechaza antes del pago</h3>
-    <p class="lang-en">When the booking carries an airport transfer, the guest's <strong>Phone</strong> must carry its country code and be a number the driver can actually call. If it is not, pressing <strong>Pay for both with credit →</strong> charges nothing: the app takes you back to <em>Guest Details</em> with the error on the phone field — <em>"Enter the guest's phone with its country code — the airport transfer needs a number the driver can reach (e.g. +1 305 555 0123)."</em> Correct the number, press <strong>Continue →</strong> and pay again; the transfer you picked is kept.</p>
-    <p class="lang-es">Cuando la reserva lleva un traslado al aeropuerto, el <strong>Phone</strong> (teléfono) del huésped debe incluir su código de país y ser un número al que el conductor pueda llamar. Si no lo es, al presionar <strong>Pay for both with credit →</strong> (pagar ambos con crédito) no se cobra nada: la app lo lleva de vuelta a <em>Guest Details</em> (datos del huésped) con el error en el campo del teléfono — <em>"Enter the guest's phone with its country code — the airport transfer needs a number the driver can reach (e.g. +1 305 555 0123)."</em> (ingrese el teléfono del huésped con su código de país; el traslado necesita un número al que el conductor pueda comunicarse). Corrija el número, presione <strong>Continue →</strong> (continuar) y vuelva a pagar; el traslado que eligió se conserva.</p>
+    <h3 class="lang-en">The phone the driver calls: pick the country, then the local number</h3>
+    <h3 class="lang-es">El teléfono al que llama el conductor: elija el país y luego el número local</h3>
+    <p class="lang-en">On <em>Guest Details</em>, <strong>Phone</strong> is two controls, not one. The flag button on the left picks the country and its dial code appears as a chip beside it; the box holds the guest's <strong>local number exactly as they give it to you</strong>. Do not type a country code into the box — it will not stay there. The hint under the field says so: <em>"Pick the country, then type the local number — the driver calls this."</em> If you paste a number that already starts with <em>+</em>, the field reads the country from it and keeps only the local part. This is what stops a Spanish mobile written the local way, <em>612 345 678</em>, from being read as an Australian number.</p>
+    <p class="lang-es">En <em>Guest Details</em> (datos del huésped), <strong>Phone</strong> (teléfono) son dos controles, no uno. El botón con la bandera, a la izquierda, elige el país y su código de marcación aparece como una etiqueta al lado; la casilla contiene el <strong>número local del huésped tal como el huésped se lo indica</strong>. No escriba un código de país dentro de la casilla — no permanecerá ahí. La ayuda bajo el campo lo indica: <em>"Pick the country, then type the local number — the driver calls this."</em> (elija el país y luego escriba el número local; el conductor llama a este número). Si pega un número que ya comienza con <em>+</em>, el campo toma de ahí el país y conserva solo la parte local. Esto es lo que evita que un móvil español escrito a la manera local, <em>612 345 678</em>, se lea como un número australiano.</p>
 
     <figure class="screenshot">
       <div class="screenshot-frame">
-        <img src="f1-37-01-phone-refused-before-payment.png"
-             alt="Guest Details with the phone +34 555 123 456 marked in red and the message asking for a phone with its country code; the summary still shows the transfer and the Trip Total."
+        <img src="f1-50-01-guest-phone-country-and-local.png"
+             alt="Guest Details Phone field: a Spanish flag country picker, a +34 chip, and a box holding only the local number 612 345 678, under the hint Pick the country, then type the local number."
              loading="lazy" onerror="this.style.display='none'" />
       </div>
-      <figcaption class="lang-en">Refused before payment: <em>+34 555 123 456</em> is not a number the driver can reach. Nothing was charged; the transfer is still in the <em>Booking Summary</em>.</figcaption>
-      <figcaption class="lang-es">Rechazado antes del pago: <em>+34 555 123 456</em> no es un número al que el conductor pueda comunicarse. No se cobró nada; el traslado sigue en el <em>Booking Summary</em> (resumen de la reserva).</figcaption>
+      <figcaption class="lang-en">The country comes from the picker, the dial code shows as the <em>+34</em> chip, and the box holds only <em>612 345 678</em>.</figcaption>
+      <figcaption class="lang-es">El país viene del selector, el código de marcación se muestra como la etiqueta <em>+34</em> y la casilla contiene solo <em>612 345 678</em>.</figcaption>
+    </figure>
+
+    <p class="lang-en">A number the chosen country does not issue is refused <strong>before</strong> anything is paid. Pressing <strong>Pay for both with credit →</strong> then charges nothing: the app takes you back to <em>Guest Details</em> with the reason on the phone field — <em>"Pick the guest's country, then type their local number — the airport transfer needs a number the driver can reach."</em> Correct the country or the number, press <strong>Continue →</strong> and pay again; the transfer you picked is kept.</p>
+    <p class="lang-es">Un número que el país elegido no emite se rechaza <strong>antes</strong> de cobrar nada. Al presionar <strong>Pay for both with credit →</strong> (pagar ambos con crédito) no se cobra nada: la app lo lleva de vuelta a <em>Guest Details</em> (datos del huésped) con el motivo en el campo del teléfono — <em>"Pick the guest's country, then type their local number — the airport transfer needs a number the driver can reach."</em> (elija el país del huésped y luego escriba su número local; el traslado necesita un número al que el conductor pueda comunicarse). Corrija el país o el número, presione <strong>Continue →</strong> (continuar) y vuelva a pagar; el traslado que eligió se conserva.</p>
+
+    <figure class="screenshot">
+      <div class="screenshot-frame">
+        <img src="f1-50-02-guest-phone-refused.png"
+             alt="Guest Details with Spain picked and 555 123 456 in the box marked in red, under the message Pick the guest's country, then type their local number."
+             loading="lazy" onerror="this.style.display='none'" />
+      </div>
+      <figcaption class="lang-en">Refused before payment: with <em>Spain</em> picked, <em>555 123 456</em> is not a number Spain issues. Nothing was charged.</figcaption>
+      <figcaption class="lang-es">Rechazado antes del pago: con <em>Spain</em> (España) elegido, <em>555 123 456</em> no es un número que España emita. No se cobró nada.</figcaption>
     </figure>
 
     <h3 class="lang-en">If a booking fails partway through</h3>
@@ -519,16 +532,27 @@
     </figure>
     <h3 class="lang-en">A phone the driver cannot reach is refused before the ride is booked</h3>
     <h3 class="lang-es">Un teléfono al que el conductor no puede llamar se rechaza antes de reservar el traslado</h3>
-    <p class="lang-en">When you add a transfer later, from <strong>+ Add airport transfer</strong> on a confirmed booking, the <strong>Add Airport Transfer</strong> page asks for a <strong>Passenger phone</strong> under the vehicle you selected (<em>"Used by the driver — include the country code."</em>). If the number is not one the driver can call, pressing <strong>Book Transfer</strong> reserves nothing: the cursor goes back to the phone field and the message under it reads <em>"Enter the passenger's phone with its country code — the driver needs a number they can reach (e.g. +1 305 555 0123)."</em> Correct the number and press <strong>Book Transfer</strong> again.</p>
-    <p class="lang-es">Cuando agrega un traslado más tarde, desde <strong>+ Add airport transfer</strong> en una reserva confirmada, la página <strong>Add Airport Transfer</strong> (agregar traslado al aeropuerto) pide un <strong>Passenger phone</strong> (teléfono del pasajero) debajo del vehículo elegido (<em>"Used by the driver — include the country code."</em>, lo usa el conductor; incluya el código de país). Si el número no es uno al que el conductor pueda llamar, al presionar <strong>Book Transfer</strong> (reservar traslado) no se reserva nada: el cursor vuelve al campo del teléfono y debajo se lee <em>"Enter the passenger's phone with its country code — the driver needs a number they can reach (e.g. +1 305 555 0123)."</em> (ingrese el teléfono del pasajero con su código de país; el conductor necesita un número al que pueda comunicarse). Corrija el número y vuelva a presionar <strong>Book Transfer</strong>.</p>
+    <p class="lang-en">When you add a transfer later, from <strong>+ Add airport transfer</strong> on a confirmed booking, the <strong>Add Airport Transfer</strong> page asks for a <strong>Passenger phone</strong> under the vehicle you selected. It works exactly like the checkout's <strong>Phone</strong> (§5): pick the country from the flag beside the box, then type the passenger's local number — the hint reads <em>"Pick the country, then type the local number — the driver calls this."</em> It arrives pre-filled from the booking's guest, country included, so most of the time you only check it.</p>
+    <p class="lang-es">Cuando agrega un traslado más tarde, desde <strong>+ Add airport transfer</strong> en una reserva confirmada, la página <strong>Add Airport Transfer</strong> (agregar traslado al aeropuerto) pide un <strong>Passenger phone</strong> (teléfono del pasajero) debajo del vehículo elegido. Funciona igual que el <strong>Phone</strong> (teléfono) del checkout (§5): elija el país en la bandera junto a la casilla y luego escriba el número local del pasajero — la ayuda dice <em>"Pick the country, then type the local number — the driver calls this."</em> (elija el país y luego escriba el número local; el conductor llama a este número). Llega precargado con los datos del huésped de la reserva, país incluido, de modo que la mayoría de las veces solo debe revisarlo.</p>
     <figure class="screenshot">
       <div class="screenshot-frame">
-        <img src="f1-53-05-add-transfer-phone-refused.png"
-             alt="Add Airport Transfer page for booking 54159110: the Passenger phone +34 555 123 456 is marked in red with the message asking for a phone with its country code, above the Book Transfer button."
+        <img src="f1-50-03-add-transfer-passenger-phone.png"
+             alt="Add Airport Transfer page: Passenger phone with a Spanish flag country picker, a +34 chip and the local number 612 345 678, under the vehicle you selected."
              loading="lazy" onerror="this.style.display='none'" />
       </div>
-      <figcaption class="lang-en"><em>+34 555 123 456</em> is refused on <strong>Book Transfer</strong>; no ride was reserved.</figcaption>
-      <figcaption class="lang-es"><em>+34 555 123 456</em> se rechaza al presionar <strong>Book Transfer</strong>; no se reservó ningún traslado.</figcaption>
+      <figcaption class="lang-en"><em>Passenger phone</em>, pre-filled from the booking's guest: country <em>Spain</em>, local number <em>612 345 678</em>.</figcaption>
+      <figcaption class="lang-es"><em>Passenger phone</em> (teléfono del pasajero), precargado con el huésped de la reserva: país <em>Spain</em> (España), número local <em>612 345 678</em>.</figcaption>
+    </figure>
+    <p class="lang-en">If the number is not one that country issues, pressing <strong>Book Transfer</strong> reserves nothing: the cursor goes back to the phone field and the message under it reads <em>"Pick the passenger's country, then type their local number — the driver needs a number they can reach."</em> Correct the country or the number and press <strong>Book Transfer</strong> again.</p>
+    <p class="lang-es">Si el número no es uno que ese país emita, al presionar <strong>Book Transfer</strong> (reservar traslado) no se reserva nada: el cursor vuelve al campo del teléfono y debajo se lee <em>"Pick the passenger's country, then type their local number — the driver needs a number they can reach."</em> (elija el país del pasajero y luego escriba su número local; el conductor necesita un número al que pueda comunicarse). Corrija el país o el número y vuelva a presionar <strong>Book Transfer</strong>.</p>
+    <figure class="screenshot">
+      <div class="screenshot-frame">
+        <img src="f1-50-04-add-transfer-phone-refused.png"
+             alt="Add Airport Transfer page: with Spain picked, the Passenger phone 555 123 456 is marked in red under the message Pick the passenger's country, then type their local number."
+             loading="lazy" onerror="this.style.display='none'" />
+      </div>
+      <figcaption class="lang-en">With <em>Spain</em> picked, <em>555 123 456</em> is refused on <strong>Book Transfer</strong>; no ride was reserved.</figcaption>
+      <figcaption class="lang-es">Con <em>Spain</em> (España) elegido, <em>555 123 456</em> se rechaza al presionar <strong>Book Transfer</strong>; no se reservó ningún traslado.</figcaption>
     </figure>
     <h3 class="lang-en">Round trips: one item, one price</h3>
     <h3 class="lang-es">Ida y vuelta: un ítem, un precio</h3>
