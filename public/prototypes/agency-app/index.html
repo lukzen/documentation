@@ -2288,6 +2288,14 @@
               <!-- documentation#37: a ride the provider refused after the hotel was booked — never
                    booked, not counted; the provider's reason and the retry sit in its own lane. -->
               <p class="bd-lane-reason" id="bd-ride-reason" hidden></p>
+              <!-- documentation#40/#44: the provider refused to cancel the ride — it is still live and
+                   charged, and the room was left booked (live TransferCancelRetryAlert.tsx). -->
+              <div class="cancellation-banner yellow atg-alert" id="bd-ride-cancel-retry" role="alert" hidden>
+                <strong>This booking's airport transfer is still active</strong>
+                <p>The cancellation was not completed: the transportation provider refused to cancel the transfer, so the hotel was left booked. The transfer is still booked and still charged.</p>
+                <p id="bd-ride-cancel-retry-reason"></p>
+                <button class="btn-secondary" id="bd-ride-cancel-retry-btn" onclick="bdRideCancelRetry()">Try cancelling again</button>
+              </div>
               <div class="bd-lane-actions" id="bd-ride-retry-wrap" hidden>
                 <button class="btn-secondary" id="bd-ride-retry-btn" onclick="bdRideRetry()">Retry airport transfer</button>
               </div>
@@ -2672,7 +2680,7 @@
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#b45309" stroke-width="2" aria-hidden="true"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><path d="M12 9v4M12 17h.01"/></svg>
           <div>
             <strong>The airport transfer will be cancelled too</strong>
-            <p>This booking has <b>1</b> active airport transfer. Cancelling the booking cancels it as well, and refunds its fare. To keep the room and drop only the ride, cancel the transfer from the booking details page instead.</p>
+            <p>This booking has <b>1</b> active airport transfer. Cancelling the booking cancels it as well, and <span id="bd-cx-prompt-refund">refunds its fare</span>. To keep the room and drop only the ride, cancel the transfer from the booking details page instead.</p>
           </div>
         </div>
         <div class="modal-section">
@@ -2706,6 +2714,10 @@
             <span>I understand that this cancellation is <strong>irreversible</strong> and I have reviewed the cancellation policy and refund terms.</span>
           </label>
         </div>
+        <!-- documentation#40: the provider refused to cancel the ride, so the room was left booked
+             (live CancellationFlow.tsx: unfinishedCancelMessage, shown on this step). -->
+        <div class="cancellation-banner red atg-alert" id="bd-cx-error" role="alert" hidden></div>
+        <label class="f1-refuse-demo" id="bd-cx-refuse-demo-wrap" style="font-size:12px" hidden><input type="checkbox" id="bd-cx-refuse-demo"> <b>Demo:</b> the transport provider refuses to cancel the ride</label>
         <div class="modal-actions">
           <button class="btn-secondary" onclick="bdCancelStep(bdHasActiveRide() ? 'prompt' : 'review')">← Back</button>
           <button class="btn-danger" id="bd-cx-confirm-btn" disabled onclick="bdCancelConfirm()">⊘ Confirm Cancellation</button>

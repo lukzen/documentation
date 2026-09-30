@@ -2731,6 +2731,9 @@ let bdRideNotBooked = false;       // documentation#37: refused by the provider,
 let bdRideNotBookedFare = 0;
 let bdRideNotBookedReason = '';
 let bdRetrying = false;            // the lane's retry opened the add-transfer flow
+// documentation#40: the provider refused to cancel the ride — still live and charged, room left booked.
+let bdRideCancelStuck = false;
+const BD_RIDE_CANCEL_REFUSAL = 'The transport provider refused to cancel this transfer.';
 
 function bdRideConfNumber() {
   return bdRideConf || ('MOZ-' + (bookingState.bookingRef || 'PTA18G28E7CUANQ') + '-4821');
@@ -2818,6 +2821,9 @@ function bdRenderRideLane() {
     if (actions) actions.hidden = bdTransferLaneCancelled || bdRideNotBooked || !!bookingState.isCancelled;
     const reason = document.getElementById('bd-ride-reason');
     if (reason) { reason.hidden = !bdRideNotBooked; reason.textContent = bdRideNotBookedReason; }
+    const stuck = document.getElementById('bd-ride-cancel-retry');
+    if (stuck) stuck.hidden = !bdRideCancelStuck || bdTransferLaneCancelled || bdRideNotBooked;
+    bdSetText('bd-ride-cancel-retry-reason', 'Reason: ' + BD_RIDE_CANCEL_REFUSAL);
   }
   // A refused ride is retried from its own lane — no retry on a cancelled booking.
   const canRetry = bdRideNotBooked && !bookingState.isCancelled;
@@ -3017,14 +3023,21 @@ function bdCancelOpen() {
   bdSetText('bd-cx-refund', bdUSD(f.totalRefund));
   bdSetText('bd-cx-prompt-vehicle', serviceTransferVehicle || s.vehicle);
   bdSetText('bd-cx-prompt-meta', s.pickup + ' → ' + s.dropoff + ' · #' + bdRideConfNumber() + ' · ' + bdUSD(f.fare));
+  // What the ride's frozen policy gives back (live transferPromptRefundText) — full here.
+  bdSetText('bd-cx-prompt-refund', f.rideRefund >= f.fare ? 'refunds its fare (' + bdUSD(f.fare) + ')'
+    : f.rideRefund > 0 ? 'refunds ' + bdUSD(f.rideRefund) + ' of its ' + bdUSD(f.fare) + ' fare'
+    : 'refunds none of its ' + bdUSD(f.fare) + ' fare');
   const ci = bdFmtDay(bookingState.checkin), co = bdFmtDay(bookingState.checkout);
   document.getElementById('bd-cx-confirm-sub').innerHTML = '<strong>' + bookingState.hotel + '</strong> · ' +
     ci.replace(/, \d{4}$/, '') + '–' + co.replace(/^[A-Za-z]+ /, '') + ' · ' + bookingState.room;
   bdSetText('bd-cx-confirm-refund', 'Refund: ' + bdUSD(f.totalRefund) + f.breakdown + ' (full refund, no penalty)');
-  // The result states the ROOM's refund only — as the live result step does.
-  bdSetText('bd-cx-result-refund', 'Refund of ' + bdUSD(f.roomRefund) + ' will be processed.');
+  // The result states the TRIP's refund, room + ride (live refundProcessedText, documentation#40).
+  bdSetText('bd-cx-result-refund', 'Refund of ' + bdUSD(f.totalRefund) + ' will be processed' + f.breakdown + '.');
   document.getElementById('bd-cx-reason').value = '';
   document.getElementById('bd-cx-ack').checked = false;
+  document.getElementById('bd-cx-error').hidden = true;
+  document.getElementById('bd-cx-refuse-demo').checked = false;
+  document.getElementById('bd-cx-refuse-demo-wrap').hidden = !f.hasRide;
   bdCancelValidate();
   bdCancelStep('review');
   openModal('bd-cancel-modal');
@@ -3039,6 +3052,19 @@ function bdCancelConfirm() {
   btn.disabled = true; btn.textContent = 'Cancelling...';
   setTimeout(() => {
     btn.textContent = '⊘ Confirm Cancellation';
+    // documentation#40: the ride is cancelled first; when the provider refuses, the room is left
+    // booked and this step says what is still live (live unfinishedCancelMessage).
+    if (f.hasRide && document.getElementById('bd-cx-refuse-demo').checked) {
+      const err = document.getElementById('bd-cx-error');
+      err.textContent = 'The booking is NOT fully cancelled. transfer: ' + BD_RIDE_CANCEL_REFUSAL +
+        '; hotel: The transfer could not be cancelled, so the hotel was left booked. Try again.';
+      err.hidden = false;
+      bdRideCancelStuck = true;
+      bdCancelValidate();
+      f1RenderOnBookingDetail();
+      return;
+    }
+    bdRideCancelStuck = false;
     if (f.hasRide) bdTransferLaneCancelled = true;
     const msg = 'Your booking has been cancelled.' +
       (f.totalRefund > 0 ? ' Refund of ' + bdUSD(f.totalRefund) + ' will be processed' + f.breakdown + '.' : '') +
@@ -3207,8 +3233,23 @@ function bdTfcConfirm() {
   setTimeout(() => {
     btn.disabled = false;
     bdTransferLaneCancelled = true;
+    bdRideCancelStuck = false;
     closeModal('bd-tfc-modal');
     showToast('success', 'Transfer cancelled successfully', '');
+    f1RenderOnBookingDetail();
+  }, 600);
+}
+
+// documentation#40 — the lane's "Try cancelling again": cancels the ride only (transfer_only);
+// the room was left booked and stays booked.
+function bdRideCancelRetry() {
+  const btn = document.getElementById('bd-ride-cancel-retry-btn');
+  btn.disabled = true;
+  setTimeout(() => {
+    btn.disabled = false;
+    bdRideCancelStuck = false;
+    bdTransferLaneCancelled = true;
+    showToast('success', 'Airport transfer cancelled.', '');
     f1RenderOnBookingDetail();
   }, 600);
 }
@@ -3918,6 +3959,7 @@ function bdatBook() {
     if (serviceTransferAdded && ['later', 'balance'].includes(window.__pmMode) && f1MissingFlightField()) return f1RefuseFlight();
     // A new booking starts clean: no ride state carries over from the previous one.
     bdTransferLaneCancelled = false;
+    bdRideCancelStuck = false;
     bdRideNotBooked = false;
     bdRideNotBookedFare = 0;
     bdRideNotBookedReason = '';

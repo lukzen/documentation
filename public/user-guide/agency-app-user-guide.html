@@ -644,6 +644,29 @@
     </figure>
     <p class="lang-es"><strong>Modify</strong> abre <em>Modify Transfer — Search New Vehicle</em> (modificar traslado, buscar un vehículo nuevo) para cambiar la recogida, la fecha, la hora o los pasajeros. <strong>Cancel Transfer</strong> muestra el vehículo, la recogida, el precio y el número de confirmación y pregunta <em>"Are you sure you want to cancel this transfer? This action cannot be undone."</em> (¿está seguro de que desea cancelar este traslado? Esta acción no se puede deshacer) — <strong>Keep Transfer</strong> (conservar el traslado) o <strong>Yes, Cancel</strong> (sí, cancelar). El hotel sigue reservado y se vuelve a ofrecer <strong>+ Add airport transfer</strong>.</p>
 
+    <h3 class="lang-en">Cancelling only the transfer: the room stays booked and paid</h3>
+    <h3 class="lang-es">Cancelar solo el traslado: la habitación sigue reservada y pagada</h3>
+    <p class="lang-en">To drop the ride and keep the stay, use <strong>Cancel Transfer</strong> in the ride's lane — never <strong>Cancel Booking</strong>, which always takes the ride with the room (see §7). After <strong>Yes, Cancel</strong>, only the ride changes: its lane reads <strong>CANCELLED</strong> with its amount struck through as <em>Refunded — not counted</em>, while the <strong>Hotel</strong> lane stays <strong>CONFIRMED &amp; PAID</strong>. The header total drops to the room alone and reads <em>TOTAL CLIENT PRICE</em> instead of <em>TRIP TOTAL</em>, the <em>Booking Timeline</em> logs <em>Transfer Cancelled</em>, and <strong>+ Add airport transfer</strong> comes back. Only the ride's fare is refunded, under the cancellation policy stored when the ride was booked, and it goes back to whatever paid for it — for a ride paid with soft credit, your credit account shows <em>Booking cancelled — credit restored</em> for the fare.</p>
+    <p class="lang-es">Para quitar el traslado y conservar la estadía, use <strong>Cancel Transfer</strong> (cancelar traslado) en el carril del traslado — nunca <strong>Cancel Booking</strong> (cancelar la reserva), que siempre cancela el traslado junto con la habitación (ver §7). Después de <strong>Yes, Cancel</strong>, solo cambia el traslado: su carril indica <strong>CANCELLED</strong> (cancelado) con el importe tachado como <em>Refunded — not counted</em> (reembolsado, no se cuenta), mientras el carril <strong>Hotel</strong> sigue <strong>CONFIRMED &amp; PAID</strong> (confirmado y pagado). El total del encabezado baja al de la habitación sola y dice <em>TOTAL CLIENT PRICE</em> (precio total al cliente) en lugar de <em>TRIP TOTAL</em> (total del viaje); el <em>Booking Timeline</em> (historial de la reserva) registra <em>Transfer Cancelled</em> (traslado cancelado) y vuelve a aparecer <strong>+ Add airport transfer</strong>. Solo se reembolsa la tarifa del traslado, según la política de cancelación guardada al reservarlo, y vuelve a lo que la pagó — si el traslado se pagó con soft credit, su cuenta de crédito muestra <em>Booking cancelled — credit restored</em> (reserva cancelada, crédito restablecido) por la tarifa.</p>
+    <figure class="screenshot">
+      <div class="screenshot-frame">
+        <img src="f1-40-05-cancel-transfer-dialog.png"
+             alt="Cancel Airport Transfer dialog: Are you sure you want to cancel this transfer? This action cannot be undone. Vehicle Toyota Corolla or similar (Sedan), Pickup Cancun International Airport, Price USD 33.79, Confirmation # MOZ752c0d8, with Keep Transfer and Yes, Cancel."
+             loading="lazy" onerror="this.style.display='none'" />
+      </div>
+      <figcaption class="lang-en"><strong>Cancel Transfer</strong> asks about the ride alone — the room is not part of this dialog.</figcaption>
+      <figcaption class="lang-es"><strong>Cancel Transfer</strong> pregunta solo por el traslado — la habitación no forma parte de este diálogo.</figcaption>
+    </figure>
+    <figure class="screenshot">
+      <div class="screenshot-frame">
+        <img src="f1-40-06-transfer-cancelled-room-kept.png"
+             alt="Booking 54207434 after Cancel Transfer: header TOTAL CLIENT PRICE USD 319.67 and STATUS CONFIRMED; the Hotel lane is CONFIRMED &amp; PAID at USD 319.67; the Airport transfer lane is CANCELLED with USD 33.79 struck through as Refunded — not counted; + Add airport transfer is offered; the Booking Timeline shows Transfer Cancelled."
+             loading="lazy" onerror="this.style.display='none'" />
+      </div>
+      <figcaption class="lang-en">After cancelling only the ride: the room is still <strong>CONFIRMED &amp; PAID</strong> and the total is the room's USD 319.67; the ride's USD 33.79 is <em>Refunded — not counted</em>.</figcaption>
+      <figcaption class="lang-es">Después de cancelar solo el traslado: la habitación sigue <strong>CONFIRMED &amp; PAID</strong> y el total es el de la habitación, USD 319,67; los USD 33,79 del traslado figuran como <em>Refunded — not counted</em>.</figcaption>
+    </figure>
+
     <div class="callout callout-warning">
       <strong class="lang-en">If the room books but the transfer fails</strong>
       <strong class="lang-es">Si la habitación se reserva pero el traslado falla</strong>
@@ -795,18 +818,63 @@
 
     <h3 class="lang-en">Cancelling a booking that has a transfer</h3>
     <h3 class="lang-es">Cancelar una reserva que tiene traslado</h3>
-    <p class="lang-en"><strong>Cancel Booking</strong> warns you first: <em>"The airport transfer will be cancelled too"</em>, naming the vehicle, the route by its places' names (for example <em>Cancun International Airport → Grand Oasis Cancún</em>), the Mozio confirmation number and the fare. The final step states the refund in full — for example <em>"Refund: USD 417.88 (room USD 384.51 + airport transfer USD 33.37) (full refund, no penalty)"</em> — and asks for a cancellation reason. To keep the room and drop only the ride, use <strong>Cancel Transfer</strong> in the ride's lane instead.</p>
-    <p class="lang-es"><strong>Cancel Booking</strong> le avisa primero: <em>"The airport transfer will be cancelled too"</em> (el traslado al aeropuerto también se cancelará), indicando el vehículo, la ruta con los nombres de sus lugares (por ejemplo <em>Cancun International Airport → Grand Oasis Cancún</em>), el número de confirmación de Mozio y la tarifa. El último paso detalla el reembolso completo — por ejemplo <em>"Refund: USD 417.88 (room USD 384.51 + airport transfer USD 33.37) (full refund, no penalty)"</em> — y pide un motivo de cancelación. Para conservar la habitación y descartar solo el traslado, use <strong>Cancel Transfer</strong> en el carril del traslado.</p>
-
+    <p class="lang-en"><strong>Cancel Booking</strong> cancels the room <em>and</em> its airport transfer: the end client is never left with a ride to a hotel they no longer have. Each is refunded under its own policy. The dialog walks you through four steps, and nothing is cancelled until the last one.</p>
+    <p class="lang-es"><strong>Cancel Booking</strong> (cancelar la reserva) cancela la habitación <em>y</em> su traslado al aeropuerto: el cliente final nunca se queda con un traslado hacia un hotel que ya no tiene. Cada uno se reembolsa según su propia política. El diálogo lo guía en cuatro pasos, y no se cancela nada hasta el último.</p>
+    <ol class="lang-en">
+      <li><strong>Review.</strong> Under the room's <em>Cancellation Policy</em>, an <strong>Airport Transfer Cancellation Policy</strong> block shows the ride's <em>Fare</em>, its <em>Penalty if cancelled now</em>, its <em>Refund</em> and its tiers — for example <em>"100% back if cancelled at least 24h before pickup"</em>. This is the policy stored when the ride was booked. The <em>Cancellation Policy Tiers</em> table stays the room's. The totals list <em>Room</em>, <em>Airport Transfer</em>, <em>Trip Total</em>, <em>Cancellation Penalty (room)</em>, <em>Cancellation Penalty (transfer)</em> and <em>Refund Amount</em>. Click <strong>Continue to Cancellation →</strong>.</li>
+      <li><strong>The ride goes too.</strong> <em>"The airport transfer will be cancelled too"</em> says what the ride gives back: <em>"refunds its fare (USD 33.79)"</em> while its full refund still applies, or only a part of it inside a partial-refund window — for example <em>"refunds USD 30.00 of its USD 60.00 fare"</em>. The vehicle, the route by its places' names, the confirmation number and the fare are listed below it. Click <strong>Continue →</strong>.</li>
+      <li><strong>Confirm.</strong> The refund line covers the whole trip — for example <em>"Refund: USD 353.46 (room USD 319.67 + airport transfer USD 33.79) (full refund, no penalty)"</em>; when a penalty applies, it names the trip's penalty in money instead, for example <em>"(USD 30.00 penalty)"</em>. Enter a <em>Cancellation Reason</em>, tick the acknowledgement and click <strong>⊘ Confirm Cancellation</strong>.</li>
+      <li><strong>Result.</strong> <em>Booking Cancelled Successfully</em> with the refund for both — for example <em>"Refund of USD 353.46 will be processed (room USD 319.67 + airport transfer USD 33.79)."</em> The money goes back to whatever paid for it; for soft credit, your credit account shows a <em>Booking cancelled — credit restored</em> line for the room and another for the ride.</li>
+    </ol>
+    <ol class="lang-es">
+      <li><strong>Revisión.</strong> Debajo de la <em>Cancellation Policy</em> (política de cancelación) de la habitación, un bloque <strong>Airport Transfer Cancellation Policy</strong> (política de cancelación del traslado) muestra la <em>Fare</em> (tarifa) del traslado, su <em>Penalty if cancelled now</em> (penalización si cancela ahora), su <em>Refund</em> (reembolso) y sus tramos — por ejemplo <em>"100% back if cancelled at least 24h before pickup"</em> (se devuelve el 100 % si cancela al menos 24 h antes de la recogida). Es la política guardada al reservar el traslado. La tabla <em>Cancellation Policy Tiers</em> (tramos de la política) sigue siendo la de la habitación. Los totales muestran <em>Room</em> (habitación), <em>Airport Transfer</em> (traslado), <em>Trip Total</em> (total del viaje), <em>Cancellation Penalty (room)</em> (penalización de la habitación), <em>Cancellation Penalty (transfer)</em> (penalización del traslado) y <em>Refund Amount</em> (importe a reembolsar). Haga clic en <strong>Continue to Cancellation →</strong> (continuar con la cancelación).</li>
+      <li><strong>El traslado también se cancela.</strong> <em>"The airport transfer will be cancelled too"</em> (el traslado al aeropuerto también se cancelará) indica lo que devuelve el traslado: <em>"refunds its fare (USD 33.79)"</em> (reembolsa su tarifa) mientras aún aplica el reembolso completo, o solo una parte dentro de un tramo de reembolso parcial — por ejemplo <em>"refunds USD 30.00 of its USD 60.00 fare"</em> (reembolsa USD 30,00 de su tarifa de USD 60,00). Debajo figuran el vehículo, la ruta con los nombres de sus lugares, el número de confirmación y la tarifa. Haga clic en <strong>Continue →</strong> (continuar).</li>
+      <li><strong>Confirmación.</strong> La línea del reembolso cubre todo el viaje — por ejemplo <em>"Refund: USD 353.46 (room USD 319.67 + airport transfer USD 33.79) (full refund, no penalty)"</em> (reembolso completo, sin penalización); cuando hay penalización, indica en dinero la penalización del viaje, por ejemplo <em>"(USD 30.00 penalty)"</em>. Escriba un <em>Cancellation Reason</em> (motivo de cancelación), marque la casilla de confirmación y haga clic en <strong>⊘ Confirm Cancellation</strong> (confirmar la cancelación).</li>
+      <li><strong>Resultado.</strong> <em>Booking Cancelled Successfully</em> (reserva cancelada correctamente) con el reembolso de ambos — por ejemplo <em>"Refund of USD 353.46 will be processed (room USD 319.67 + airport transfer USD 33.79)."</em> (se procesará un reembolso de USD 353,46: habitación USD 319,67 + traslado USD 33,79). El dinero vuelve a lo que lo pagó; con soft credit, su cuenta de crédito muestra una línea <em>Booking cancelled — credit restored</em> para la habitación y otra para el traslado.</li>
+    </ol>
     <figure class="screenshot">
       <div class="screenshot-frame">
-        <img src="f1b-08-cancel-takes-transfer-too.png"
-             alt="Cancel booking dialog warning that the airport transfer will be cancelled too, listing the vehicle and fare."
+        <img src="f1-40-01-cancel-review-transfer-policy.png"
+             alt="Cancel Booking review step: Cancellable, full refund of USD 353.46 (room USD 319.67 + airport transfer USD 33.79); Airport Transfer Cancellation Policy with Fare USD 33.79, Penalty if cancelled now USD 0.00, Refund USD 33.79 and 100% back if cancelled at least 24h before pickup; the room tiers; then Room, Airport Transfer, Trip Total USD 353.46, both penalties at USD 0.00 and Refund Amount USD 353.46."
              loading="lazy" onerror="this.style.display='none'" />
       </div>
-      <figcaption class="lang-en">Cancelling the booking cancels the ride with it — the dialog says so before you commit.</figcaption>
-      <figcaption class="lang-es">Cancelar la reserva cancela también el traslado — el diálogo lo advierte antes de confirmar.</figcaption>
+      <figcaption class="lang-en">Step 1 — the ride's own policy and penalty sit beside the room's, before anything is cancelled.</figcaption>
+      <figcaption class="lang-es">Paso 1 — la política y la penalización propias del traslado aparecen junto a las de la habitación, antes de cancelar nada.</figcaption>
     </figure>
+    <figure class="screenshot">
+      <div class="screenshot-frame">
+        <img src="f1-40-02-cancel-transfer-goes-too.png"
+             alt="Cancel Booking step 2: The airport transfer will be cancelled too — This booking has 1 active airport transfer. Cancelling the booking cancels it as well, and refunds its fare (USD 33.79). Below: Toyota Alphard or similar, Cancun International Airport to Grand Oasis Cancún, #MOZ4200d51, USD 33.79."
+             loading="lazy" onerror="this.style.display='none'" />
+      </div>
+      <figcaption class="lang-en">Step 2 — the ride is cancelled with the room, and the dialog says what it gives back.</figcaption>
+      <figcaption class="lang-es">Paso 2 — el traslado se cancela con la habitación, y el diálogo indica lo que devuelve.</figcaption>
+    </figure>
+    <figure class="screenshot">
+      <div class="screenshot-frame">
+        <img src="f1-40-03-cancel-confirm-trip-refund.png"
+             alt="Cancel Booking confirm step: Are you sure you want to cancel this booking? Refund: USD 353.46 (room USD 319.67 + airport transfer USD 33.79) (full refund, no penalty), a cancellation reason, the ticked acknowledgement and Confirm Cancellation."
+             loading="lazy" onerror="this.style.display='none'" />
+      </div>
+      <figcaption class="lang-en">Step 3 — the last screen before the cancellation quotes the whole trip's refund.</figcaption>
+      <figcaption class="lang-es">Paso 3 — la última pantalla antes de cancelar indica el reembolso de todo el viaje.</figcaption>
+    </figure>
+    <figure class="screenshot">
+      <div class="screenshot-frame">
+        <img src="f1-40-04-cancel-result-refund.png"
+             alt="Cancel Booking result: Booking Cancelled Successfully — Refund of USD 353.46 will be processed (room USD 319.67 + airport transfer USD 33.79)."
+             loading="lazy" onerror="this.style.display='none'" />
+      </div>
+      <figcaption class="lang-en">Step 4 — the refund for the room and the ride.</figcaption>
+      <figcaption class="lang-es">Paso 4 — el reembolso de la habitación y del traslado.</figcaption>
+    </figure>
+
+    <div class="callout callout-warning">
+      <strong class="lang-en">If the transfer provider refuses to cancel the ride</strong>
+      <strong class="lang-es">Si el proveedor del traslado se niega a cancelarlo</strong>
+      <span class="lang-en"> The ride is always cancelled before the room. If the transportation provider refuses, the room is left booked — so no live ride is ever stranded against a cancelled room — and the dialog stays on its last step with <em>"The booking is NOT fully cancelled."</em> followed by each item still booked and why, for example <em>"transfer: The transport provider refused to cancel this transfer.; hotel: The transfer could not be cancelled, so the hotel was left booked. Try again."</em> On the booking page, the ride's lane then shows <strong>This booking's airport transfer is still active</strong> — the transfer is still booked and still charged — with <em>Reason: …</em> and <strong>Try cancelling again</strong>. That button retries the ride only; the room stays booked, so use <strong>Cancel Booking</strong> again afterwards if the client no longer wants it. When the provider will not cancel the ride online at all, the message says so instead: <em>"The transportation provider will not cancel this booking's transfer online, so the hotel was left booked. Contact the provider to cancel the transfer, then cancel this booking again."</em></span>
+      <span class="lang-es"> El traslado siempre se cancela antes que la habitación. Si el proveedor de transporte se niega, la habitación queda reservada — así nunca queda un traslado vigente frente a una habitación cancelada — y el diálogo permanece en su último paso con <em>"The booking is NOT fully cancelled."</em> (la reserva NO está completamente cancelada), seguido de cada ítem que sigue reservado y el motivo, por ejemplo <em>"transfer: The transport provider refused to cancel this transfer.; hotel: The transfer could not be cancelled, so the hotel was left booked. Try again."</em> (traslado: el proveedor de transporte se negó a cancelarlo; hotel: el traslado no se pudo cancelar, por eso el hotel quedó reservado; inténtelo de nuevo). En la página de la reserva, el carril del traslado muestra entonces <strong>This booking's airport transfer is still active</strong> (el traslado de esta reserva sigue activo) — el traslado sigue reservado y cobrado — con <em>Reason: …</em> (motivo) y <strong>Try cancelling again</strong> (intentar cancelar de nuevo). Ese botón reintenta solo el traslado; la habitación sigue reservada, así que use <strong>Cancel Booking</strong> otra vez después si el cliente ya no la quiere. Cuando el proveedor no cancela el traslado en línea en absoluto, el mensaje lo indica: <em>"The transportation provider will not cancel this booking's transfer online, so the hotel was left booked. Contact the provider to cancel the transfer, then cancel this booking again."</em> (el proveedor no cancelará el traslado en línea, por eso el hotel quedó reservado; contacte al proveedor para cancelar el traslado y luego vuelva a cancelar esta reserva).</span>
+    </div>
 
     <h3 class="lang-en">Modifying or cancelling</h3>
     <h3 class="lang-es">Modificar o cancelar</h3>
