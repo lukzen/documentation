@@ -4334,3 +4334,10 @@ details[open] .mr-tier-summary::before {
 .atg-alert p { margin: 0; }
 .atg-alert[hidden] { display: none; }
 #bd-47-demo[hidden] { display: none; }
+
+/* documentation#40 — cancel refused by the transport provider: the dialog's error and the lane's retry alert */
+#bd-cx-refuse-demo-wrap[hidden] { display: none; }
+#bd-cx-error { margin: 16px 28px 0; }
+#bd-cx-refuse-demo-wrap { margin: 10px 28px 0; }
+@media (max-width: 640px) { #bd-cx-error, #bd-cx-refuse-demo-wrap { margin-left: 16px; margin-right: 16px; } }
+#bd-ride-cancel-retry { margin: 12px 0; }
