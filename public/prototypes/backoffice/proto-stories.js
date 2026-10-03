@@ -5,6 +5,12 @@
 /* ---------- C1: Agency Remittances ---------- */
 let _frPendingRow = null;
 
+// One money format, as the live backoffice prints it (formatMoneySymbol, documentation#64):
+// en-US thousands separators and two decimals, for every amount on this screen.
+function frMoney(n) {
+  return '$' + Number(n).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
 function frOpenMarkPaid(btn) {
   const row = btn.closest('tr');
   _frPendingRow = row;
@@ -134,11 +140,11 @@ function frSaveAdjust() {
   if (_frAdjustRow) {
     const oldAmt = _frAdjustRow.querySelector('.fr-amt')?.textContent || '';
     const amtCell = _frAdjustRow.querySelector('.fr-amt');
-    if (amtCell) amtCell.textContent = '$' + newAmt.toFixed(2);
+    if (amtCell) amtCell.textContent = frMoney(newAmt);
     _frAdjustRow.classList.add('fr-row-just-changed');
     _frAdjustRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
     setTimeout(() => _frAdjustRow.classList.remove('fr-row-just-changed'), 1800);
-    boToast(`Adjusted ${oldAmt} → $${newAmt.toFixed(2)} · "${reason.slice(0, 40)}${reason.length > 40 ? '…' : ''}" logged`, 'success');
+    boToast(`Adjusted ${oldAmt} → ${frMoney(newAmt)} · "${reason.slice(0, 40)}${reason.length > 40 ? '…' : ''}" logged`, 'success');
   }
   frCloseAdjust();
 }
@@ -183,7 +189,7 @@ function frSaveManual() {
     tr.innerHTML = `
       <td><strong>${agencyName}</strong><span class="fr-license">${licenseStr}</span></td>
       <td>${period}</td>
-      <td class="text-right fr-amt">$${amount.toFixed(2)}</td>
+      <td class="text-right fr-amt">${frMoney(amount)}</td>
       <td>${new Date(due).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</td>
       <td><span class="badge badge-warning"><i class="ti ti-clock-hour-4"></i> Pending</span></td>
       <td>—</td>
@@ -199,7 +205,7 @@ function frSaveManual() {
       countEl.textContent = n + ' remittances total';
     }
   }
-  boToast(`Manual remittance created for ${agencyName} · ${period} · $${amount.toFixed(2)} · "${reason.slice(0, 40)}${reason.length > 40 ? '…' : ''}" logged`, 'success');
+  boToast(`Manual remittance created for ${agencyName} · ${period} · ${frMoney(amount)} · "${reason.slice(0, 40)}${reason.length > 40 ? '…' : ''}" logged`, 'success');
   frCloseManual();
 }
 
@@ -860,9 +866,9 @@ function frSelectAgency(linkOrRow) {
   const grid = document.getElementById('fr-detail-grid');
   if (grid) {
     grid.innerHTML = `
-      <div class="fr-detail-stat"><div class="fr-detail-label">Total billed</div><div class="fr-detail-value">$${s.totalBilled.toLocaleString()}</div><div class="muted">last 6 months</div></div>
-      <div class="fr-detail-stat fr-detail-stat-pos"><div class="fr-detail-label">Total paid</div><div class="fr-detail-value">$${s.totalPaid.toLocaleString()}</div><div class="muted">${s.cycles}</div></div>
-      <div class="fr-detail-stat ${s.flag === 'overdue' ? 'fr-detail-stat-warn' : 'fr-detail-stat-warn'}"><div class="fr-detail-label">Currently pending</div><div class="fr-detail-value">$${s.pending.toLocaleString()}</div><div class="muted">${s.dueText}</div></div>
+      <div class="fr-detail-stat"><div class="fr-detail-label">Total billed</div><div class="fr-detail-value">${frMoney(s.totalBilled)}</div><div class="muted">last 6 months</div></div>
+      <div class="fr-detail-stat fr-detail-stat-pos"><div class="fr-detail-label">Total paid</div><div class="fr-detail-value">${frMoney(s.totalPaid)}</div><div class="muted">${s.cycles}</div></div>
+      <div class="fr-detail-stat ${s.flag === 'overdue' ? 'fr-detail-stat-warn' : 'fr-detail-stat-warn'}"><div class="fr-detail-label">Currently pending</div><div class="fr-detail-value">${frMoney(s.pending)}</div><div class="muted">${s.dueText}</div></div>
       <div class="fr-detail-stat"><div class="fr-detail-label">Avg days to pay</div><div class="fr-detail-value">${s.avgDays}</div><div class="muted">${s.tone}</div></div>`;
   }
 
