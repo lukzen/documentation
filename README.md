@@ -76,5 +76,4 @@ npx serve            # or: python -m http.server
 | [lukzen/backend-service](https://github.com/lukzen/backend-service) | (per repo) | Express API server — GDS adapters, booking engine, API key management |
 | [lukzen/agency-app](https://github.com/lukzen/agency-app) | (per repo) | Travel agency booking portal (React SPA) |
 | [lukzen/backoffice-app](https://github.com/lukzen/backoffice-app) | (per repo) | Internal admin dashboard (React SPA) |
-| [lukzen/alibaba-infra](https://github.com/lukzen/alibaba-infra) | (per repo) | Terraform IaC for Alibaba Cloud infrastructure |
 | [lukzen/oneclick-local-infra](https://github.com/lukzen/oneclick-local-infra) | 🔒 Private | Local Mac Minikube + ArgoCD GitOps for the platform |
